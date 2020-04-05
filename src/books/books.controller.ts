@@ -1,12 +1,16 @@
 import { Controller, Get, Query, Param, Post, Body } from '@nestjs/common';
-import { BookDto } from './book.dto';
+import { BookDto } from './dto/book.dto';
+import { BooksService } from './books.service';
+import { Book } from './interfaces/book.interface';
 
 @Controller('books')
 export class BooksController {
+    constructor(private booksService: BooksService) {}
+
     @Get()
-    findAll(@Query('author') author:string): string {
+    async findAll(@Query('author') author:string): Promise<Book[]> {
         console.log('author ${author}');
-        return "all books " + author;
+        return this.booksService.findAll();
     }
 
     @Get(':id')
@@ -16,8 +20,8 @@ export class BooksController {
     }
 
     @Post()
-    create(@Body() bookDto: BookDto): string {
+    async create(@Body() bookDto: BookDto) {
         console.log(bookDto);
-        return "create new books";
+        this.booksService.create(bookDto);
     }
 }
