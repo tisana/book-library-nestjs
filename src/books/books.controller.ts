@@ -5,23 +5,23 @@ import { Book } from './interfaces/book.interface';
 
 @Controller('books')
 export class BooksController {
-    constructor(private booksService: BooksService) {}
+  constructor(private booksService: BooksService) {}
 
-    @Get()
-    async findAll(@Query('author') author:string): Promise<Book[]> {
-        console.log('author ${author}');
-        return this.booksService.findAll();
-    }
+  @Get()
+  async findAll(@Query('author') author: string): Promise<Book[]> {
+    console.log('author ${author}');
+    return this.booksService.findAll();
+  }
 
-    @Get(':id')
-    fineOne(@Param('id') id:string): string {
-        console.log(id);
-        return "book of #${id}";
-    }
+  @Get(':id')
+  fineOne(@Param('id') id: string): string {
+    console.log(id);
+    return 'book of #${id}';
+  }
 
-    @Post()
-    async create(@Body() bookDto: BookDto) {
-        console.log(bookDto);
-        this.booksService.create(bookDto);
-    }
+  @Post()
+  async create(@Body() bookDto: BookDto) {
+    console.log(bookDto);
+    return await this.booksService.create(bookDto);
+  }
 }
