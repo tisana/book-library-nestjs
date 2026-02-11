@@ -1,7 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { BookDto } from '../src/books/dto/book.dto';
-import { BooksModule } from '../src/books/books.module';
 import { BooksService } from '../src/books/books.service';
 import { Test } from '@nestjs/testing';
 
