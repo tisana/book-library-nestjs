@@ -5,6 +5,9 @@ import { BooksModule } from '../src/books/books.module';
 import { BooksService } from '../src/books/books.service';
 import { Test } from '@nestjs/testing';
 
+import { BooksController } from '../src/books/books.controller';
+import { getModelToken } from '@nestjs/mongoose';
+
 describe('Books', () => {
   let app: INestApplication;
   let book: BookDto;
@@ -12,12 +15,20 @@ describe('Books', () => {
     title: 'lord of the ring',
     author: 'JJ Token',
     isbn: '1234',
+    quantity: 1,
   };
   let booksService = { findAll: () => [book] };
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [BooksModule],
+      controllers: [BooksController],
+      providers: [
+        BooksService,
+        {
+          provide: getModelToken('Book'),
+          useValue: {},
+        },
+      ],
     })
       .overrideProvider(BooksService)
       .useValue(booksService)

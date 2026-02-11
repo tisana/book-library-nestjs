@@ -4,6 +4,8 @@ import { BooksService } from './books.service';
 import { BookDto } from './dto/book.dto';
 import { Book } from './interfaces/book.interface';
 
+import { getModelToken } from '@nestjs/mongoose';
+
 describe('Books Controller', () => {
   let controller: BooksController;
   let service: BooksService;
@@ -11,7 +13,13 @@ describe('Books Controller', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [BooksController],
-      providers: [BooksService],
+      providers: [
+        BooksService,
+        {
+          provide: getModelToken('Book'),
+          useValue: {},
+        },
+      ],
     }).compile();
 
     controller = module.get<BooksController>(BooksController);
@@ -27,7 +35,7 @@ describe('Books Controller', () => {
       book.isbn = '1234-32134';
       book.title = 'lord of the ring';
 
-      jest.spyOn(service, 'findAll').mockImplementation(() => result);
+      jest.spyOn(service, 'findAll').mockImplementation(async () => result);
 
       expect(await controller.findAll(null)).toBe(result);
     });
