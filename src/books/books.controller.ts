@@ -9,14 +9,14 @@ export class BooksController {
 
   @Get()
   async findAll(@Query('author') author: string): Promise<Book[]> {
-    console.log('author ${author}');
+    console.log(`author ${author}`);
     return this.booksService.findAll();
   }
 
   @Get(':id')
   fineOne(@Param('id') id: string): string {
     console.log(id);
-    return 'book of #${id}';
+    return `book of #${id}`;
   }
 
   @Post()

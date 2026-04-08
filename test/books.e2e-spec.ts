@@ -9,14 +9,13 @@ import { getModelToken } from '@nestjs/mongoose';
 
 describe('Books', () => {
   let app: INestApplication;
-  let book: BookDto;
-  book = {
+  const book: BookDto = {
     title: 'lord of the ring',
     author: 'JJ Token',
     isbn: '1234',
     quantity: 1,
   };
-  let booksService = { findAll: () => [book] };
+  const booksService = { findAll: () => [book] };
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({

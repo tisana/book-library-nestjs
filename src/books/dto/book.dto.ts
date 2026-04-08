@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsNumberString } from 'class-validator';
+import { IsInt, IsNotEmpty } from 'class-validator';
 export class BookDto {
   @IsNotEmpty()
   title: string;

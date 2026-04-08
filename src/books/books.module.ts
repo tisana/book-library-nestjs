@@ -1,4 +1,4 @@
-import { Module, Global } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { BooksController } from './books.controller';
 import { BooksService } from './books.service';
 import { MongooseModule } from '@nestjs/mongoose';

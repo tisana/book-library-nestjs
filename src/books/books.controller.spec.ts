@@ -30,7 +30,7 @@ describe('Books Controller', () => {
     it('should return an array of Books', async () => {
       const result: Book[] = [];
 
-      let book = new BookDto();
+      const book = new BookDto();
       book.author = 'jj token';
       book.isbn = '1234-32134';
       book.title = 'lord of the ring';
