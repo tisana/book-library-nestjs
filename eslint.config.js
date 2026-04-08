@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const tseslint = require('@typescript-eslint/eslint-plugin');
 const prettierConfig = require('eslint-config-prettier');
 
