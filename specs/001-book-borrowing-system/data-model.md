@@ -163,3 +163,68 @@ Borrowing Record: active -> cancelled
 - Overdue evaluation:
   - Overdue status is determined consistently from due date and return state.
   - Implementation may update status on read, scheduled job, or borrowing eligibility check, but tests must verify deterministic behavior.
+
+## Staff/Admin User
+
+Represents an authenticated system user allowed to perform protected library management actions.
+
+**Fields**
+
+- `id`: unique identifier
+- `email`: required unique string
+- `displayName`: required string
+- `passwordHash`: required string, never returned by API responses
+- `roles`: required array containing `staff` and/or `admin`
+- `status`: `active`, `suspended`, or `inactive`
+- `lastLoginAt`: optional date
+- `createdAt`, `updatedAt`
+- `createdBy`, `updatedBy`
+
+**Validation Rules**
+
+- Passwords must be hashed using an accepted password hashing algorithm before persistence.
+- Inactive or suspended staff/admin users cannot authenticate.
+- Protected management actions require an authenticated active staff/admin user and the required role.
+- Password hashes, raw passwords, and tokens must not be logged or returned.
+
+**Indexes**
+
+- Unique index on `email`.
+- Index on `status` and `roles`.
+
+## Migration Record
+
+Represents an applied MongoDB migration.
+
+**Fields**
+
+- `id`: unique identifier
+- `version`: required unique string
+- `name`: required string
+- `appliedAt`: required date
+- `checksum`: optional string
+- `rollbackNotes`: required string
+
+**Validation Rules**
+
+- A migration version can be applied only once.
+- Each migration must include rollback guidance before review.
+
+## Borrowing Policy
+
+Borrowing Policy is non-persisted domain/service logic, not a collection.
+
+**Inputs**
+
+- Member status
+- Membership Type `maxActiveLoans`
+- Member `activeLoanCount`
+- Active overdue Borrowing Records
+- Book `availableQuantity`
+- Book and Book Category status
+- Book Category `loanPeriodDays`
+
+**Validation Rules**
+
+- Policy rules are enforced by services before creating a borrowing record.
+- Policy failures return clear validation or conflict messages.
