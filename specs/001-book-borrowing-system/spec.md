@@ -8,6 +8,15 @@
 
 **Input**: User description: "This project intended to build as a book borrowing system like we have in a library. I want to have data on collection of books where it can be borrowed by member. It needs due date, quantity of the book. Membership system so it can track borrowing book, limited number of books a person can borrow. Tracking system to manage borrowing books."
 
+## Clarifications
+
+### Session 2026-05-29
+
+- Q: How should borrowing limits be determined for members? -> A: Borrowing limit is defined by membership type.
+- Q: How should books be tracked for borrowing availability? -> A: Track books by title/catalog record with total and available quantity only.
+- Q: How should due dates be determined for borrowing records? -> A: Due date is calculated from the book category or collection type.
+- Q: How should overdue loans affect borrowing eligibility? -> A: Block new borrowing until overdue loans are returned.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Manage Borrowable Book Collection (Priority: P1)
@@ -27,11 +36,11 @@ A library staff member can maintain a collection of books, including how many co
 
 ### User Story 2 - Track Member Borrowing Limits (Priority: P2)
 
-A library staff member can maintain member records and enforce the maximum number of books each active member may borrow at one time.
+A library staff member can maintain member records and enforce the maximum number of books each active member may borrow at one time based on the member's membership type.
 
 **Why this priority**: The system must prevent one member from borrowing beyond the allowed limit and must show each member's current borrowing status.
 
-**Independent Test**: Can be fully tested by creating an active member with a borrowing limit, lending books up to that limit, and confirming that another loan is blocked.
+**Independent Test**: Can be fully tested by creating an active member with a membership type that has a borrowing limit, lending books up to that limit, and confirming that another loan is blocked.
 
 **Acceptance Scenarios**:
 
@@ -43,15 +52,15 @@ A library staff member can maintain member records and enforce the maximum numbe
 
 ### User Story 3 - Manage Borrowing Lifecycle (Priority: P3)
 
-A library staff member can record when a member borrows a book, assign a due date, track the loan until return, and identify overdue items.
+A library staff member can record when a member borrows a book, have the due date calculated from the book category or collection type, track the loan until return, and identify overdue items.
 
 **Why this priority**: The core operational value is knowing who has each borrowed book, when it is due, and when it has been returned.
 
-**Independent Test**: Can be fully tested by lending an available book to an eligible member, verifying the due date and active loan record, returning the book, and confirming the book is available again.
+**Independent Test**: Can be fully tested by lending an available book to an eligible member, verifying the category-based due date and active loan record, returning the book, and confirming the book is available again.
 
 **Acceptance Scenarios**:
 
-1. **Given** an active member is eligible to borrow and a book copy is available, **When** staff records the borrowing transaction with a due date, **Then** the system creates an active loan for that member and reduces the book's available quantity by one.
+1. **Given** an active member is eligible to borrow and a book copy is available, **When** staff records the borrowing transaction, **Then** the system creates an active loan with a due date calculated from the book category or collection type and reduces the book's available quantity by one.
 2. **Given** a member returns a borrowed book, **When** staff records the return, **Then** the loan is marked returned and the book's available quantity increases by one.
 3. **Given** an active loan is past its due date, **When** staff reviews borrowing records, **Then** the loan is clearly identifiable as overdue.
 
@@ -61,38 +70,42 @@ A library staff member can record when a member borrows a book, assign a due dat
 
 - A book quantity cannot be reduced below the number of copies currently on loan.
 - A book cannot be borrowed when its available quantity is zero.
-- A borrowing record cannot be created without an eligible member, borrowable book, and due date.
-- A due date cannot be earlier than the borrowing date.
+- A borrowing record cannot be created without an eligible member, borrowable book, and book category or collection type with an active loan period.
+- A calculated due date cannot be earlier than the borrowing date.
 - Returning the same borrowing record more than once must not increase availability more than once.
 - Suspended or inactive members cannot create new borrowing records but their existing borrowing history remains visible.
-- If a member has overdue books, the system prevents additional borrowing until the overdue loans are resolved.
+- If a member has overdue books, the system prevents additional borrowing until the overdue loans are returned.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
 - **FR-001**: System MUST allow staff to create, view, update, and deactivate book records in the library collection.
-- **FR-002**: System MUST store each book's title, author, identifying catalog information, total quantity, available quantity, and borrowing status.
+- **FR-002**: System MUST store each book's title, author, identifying catalog information, book category or collection type, total quantity, available quantity, and borrowing status at the title/catalog record level.
 - **FR-003**: System MUST prevent a book's total quantity from being set lower than the number of active loans for that book.
 - **FR-004**: System MUST allow staff to create, view, update, and deactivate member records.
-- **FR-005**: System MUST store each member's identity details, membership status, borrowing limit, active borrowed count, and borrowing history.
+- **FR-005**: System MUST store each member's identity details, membership status, membership type, active borrowed count, and borrowing history.
 - **FR-006**: System MUST prevent inactive or suspended members from creating new borrowing records.
-- **FR-007**: System MUST allow staff to create a borrowing record only when the selected member is eligible, the selected book has at least one available copy, and a valid due date is provided.
+- **FR-007**: System MUST allow staff to create a borrowing record only when the selected member is eligible, the selected book has at least one available copy, and the book category or collection type has an active loan period.
 - **FR-008**: System MUST reduce a book's available quantity by one when a borrowing record is created.
-- **FR-009**: System MUST prevent a member from borrowing more books than their configured borrowing limit allows.
-- **FR-010**: System MUST track each borrowing record with the member, book, borrowed date, due date, return date when returned, and current status.
+- **FR-009**: System MUST prevent a member from borrowing more books than the borrowing limit assigned to their membership type.
+- **FR-010**: System MUST track each borrowing record with the member, book catalog record, borrowed date, due date, return date when returned, and current status.
 - **FR-011**: System MUST mark active borrowing records as overdue when the due date has passed and the book has not been returned.
 - **FR-012**: System MUST allow staff to record book returns and increase the book's available quantity by one exactly once per returned loan.
 - **FR-013**: System MUST allow staff to view active, returned, and overdue borrowing records by member and by book.
 - **FR-014**: System MUST preserve borrowing history even after books or members are deactivated.
-- **FR-015**: System MUST provide clear validation messages when borrowing is blocked by availability, membership status, borrowing limit, overdue loans, or invalid dates.
+- **FR-015**: System MUST provide clear validation messages when borrowing is blocked by availability, membership status, borrowing limit, overdue loans, missing loan-period rules, or invalid dates.
+- **FR-016**: System MUST calculate each borrowing due date from the loan period assigned to the borrowed book's category or collection type.
+- **FR-017**: System MUST block new borrowing for members with overdue loans until those overdue loans are returned.
 
 ### Key Entities *(include if feature involves data)*
 
-- **Book**: A library collection item that can be borrowed. Key attributes include title, author, catalog identifier, total quantity, available quantity, and active/deactivated status.
-- **Member**: A person registered with the library. Key attributes include identity details, membership status, borrowing limit, active borrowed count, and borrowing history.
+- **Book**: A library collection item tracked at the title/catalog record level rather than as individually identified physical copies. Key attributes include title, author, catalog identifier, total quantity, available quantity, and active/deactivated status.
+- **Book Category or Collection Type**: A classification assigned to books that determines the loan period used to calculate borrowing due dates.
+- **Member**: A person registered with the library. Key attributes include identity details, membership status, membership type, active borrowed count, and borrowing history.
+- **Membership Type**: A category of membership that defines borrowing rules for members in that category, including the maximum number of active loans allowed.
 - **Borrowing Record**: A transaction connecting one member to one borrowed book. Key attributes include borrowed date, due date, return date, status, and overdue state.
-- **Borrowing Policy**: Library rules that determine eligibility, including member status requirements, maximum active loans per member, and whether overdue loans block new borrowing.
+- **Borrowing Policy**: Library rules that determine eligibility, including member status requirements, maximum active loans per member, and overdue-loan borrowing blocks.
 
 ## Success Criteria *(mandatory)*
 
@@ -110,6 +123,8 @@ A library staff member can record when a member borrows a book, assign a due dat
 - Library staff are the primary users for managing books, members, borrowing, and returns.
 - Members are tracked by the system, but self-service member borrowing is outside the first version unless added later.
 - Each borrowing record represents one borrowed copy of one book.
-- Borrowing limits are configurable per member or by a library policy assigned to the member.
-- Active overdue loans block new borrowing until returned or otherwise resolved.
+- Individual physical copy identifiers, barcodes, and copy-level condition tracking are outside the first version.
+- Due dates are calculated automatically from the borrowed book's category or collection type.
+- Borrowing limits are configured by membership type.
+- Active overdue loans block new borrowing until returned.
 - Deactivating a book or member prevents new borrowing activity but does not delete historical records.
