@@ -44,7 +44,7 @@
 ### Foundational Tests
 
 - [ ] T015 [P] Add unit tests for staff/admin password hashing and redaction in src/staff-users/staff-users.service.spec.ts
-- [ ] T016 [P] Add unit tests for JWT login and inactive-user rejection in src/auth/auth.service.spec.ts
+- [ ] T016 [P] Add unit tests for JWT login and inactive-user rejection in src/auth/auth.service.spec.ts and e2e login plus staff-users authorization coverage in test/auth.e2e-spec.ts
 - [ ] T017 [P] Add unit tests for role authorization guard behavior in src/auth/roles.guard.spec.ts
 - [ ] T018 [P] Add integration tests for migration apply-once behavior and rollback metadata in test/migrations.e2e-spec.ts
 - [ ] T019 [P] Add integration test utilities for transaction-capable MongoDB in test/utils/mongo-test-setup.ts
@@ -61,7 +61,7 @@
 - [ ] T027 [P] Create Staff/Admin User schema with password hash, roles, status, and audit fields in src/staff-users/schemas/staff-user.schema.ts
 - [ ] T028 [P] Create Staff/Admin User DTOs for create, login-safe response, and query operations in src/staff-users/dto/staff-user.dto.ts
 - [ ] T029 Implement Staff Users service with password hashing, credential redaction, role assignment, and active-user checks in src/staff-users/staff-users.service.ts
-- [ ] T030 Create Staff Users module with Mongoose model registration in src/staff-users/staff-users.module.ts
+- [ ] T030 Implement admin-guarded Staff Users controller endpoints and module wiring in src/staff-users/staff-users.controller.ts and src/staff-users/staff-users.module.ts
 - [ ] T031 [P] Implement current user decorator for authenticated actor access in src/auth/current-user.decorator.ts
 - [ ] T032 [P] Implement roles decorator for staff/admin route authorization in src/auth/roles.decorator.ts
 - [ ] T033 Implement JWT strategy for bearer token validation and active staff/admin lookup in src/auth/jwt.strategy.ts
@@ -282,6 +282,7 @@ Task: "T081 [P] [US3] Implement non-persisted Borrowing Policy rules service for
 npm run lint
 npm run test
 npm run test:e2e
+npm run migrate:up
 npm run migrate:status
 npm run build
 docker compose up --build

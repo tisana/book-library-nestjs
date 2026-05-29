@@ -79,6 +79,7 @@ src/
 │   └── roles.guard.ts
 ├── staff-users/
 │   ├── staff-users.module.ts
+│   ├── staff-users.controller.ts
 │   ├── staff-users.service.ts
 │   ├── dto/
 │   └── schemas/
@@ -87,8 +88,12 @@ src/
 ├── membership-types/
 ├── members/
 ├── borrowings/
+│   ├── borrowings.module.ts
+│   ├── borrowings.controller.ts
+│   ├── borrowings.service.ts
 │   ├── borrowings-rules.service.ts
-│   └── ...
+│   ├── dto/
+│   └── schemas/
 ├── health/
 │   ├── health.module.ts
 │   ├── health.controller.ts
@@ -104,6 +109,7 @@ migrations/
 ├── migrate.ts
 ├── README.md
 └── versions/
+    ├── 000-migration-record.ts
     └── 001-library-core.ts
 
 test/
