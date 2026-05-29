@@ -26,7 +26,7 @@
 - [ ] T006 Add Swagger bootstrap for API documentation in src/main.ts
 - [ ] T007 [P] Add production app container definition in Dockerfile
 - [ ] T008 Update local container stack with app service, MongoDB service, health check, and env wiring in docker-compose.yml
-- [ ] T009 [P] Create health endpoint module, controller, and service in src/health/health.module.ts
+- [ ] T009 [P] Create health endpoint module, controller, and service in src/health/health.module.ts, src/health/health.controller.ts, and src/health/health.service.ts
 
 ---
 
