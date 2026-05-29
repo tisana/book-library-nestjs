@@ -11,12 +11,21 @@
 
 ## Decision: Use MongoDB with Mongoose schemas and transactional service methods
 
-**Rationale**: The project already uses `@nestjs/mongoose` and `mongoose`. Borrowing and returning require coordinated updates to borrowing records, book availability, and member active counts. MongoDB transactions provide consistency when the app is deployed with a replica set or compatible managed MongoDB.
+**Rationale**: The project already uses `@nestjs/mongoose` and `mongoose`. Borrowing and returning require coordinated updates to borrowing records, book availability, and member active counts. MongoDB transactions provide consistency, and the clarified spec requires transaction-capable local, test, and container environments.
 
 **Alternatives considered**:
 
 - Rely only on independent document updates: rejected because partial writes could corrupt availability or member counts.
 - Switch to SQL: rejected because the user asked to use MongoDB as the baseline.
+
+## Decision: Configure MongoDB replica set support for local, test, and container environments
+
+**Rationale**: MongoDB transactions require a transaction-capable deployment. Running local/test/container MongoDB in replica set mode avoids a design that only works in production.
+
+**Alternatives considered**:
+
+- Use transactions only in production: rejected because tests and local development would not exercise the same consistency model.
+- Avoid transactions and rely only on conditional updates: rejected because the clarified spec selected transaction-capable environments.
 
 ## Decision: Track books by aggregate title/catalog record for v1
 
@@ -54,14 +63,32 @@
 - Track fines: rejected as a constitution non-goal unless explicitly specified.
 - Staff override: rejected for v1 because it adds authorization and audit complexity not requested.
 
-## Decision: Add explicit authentication and role authorization boundary
+## Decision: Add first-party staff/admin JWT authentication and role authorization
 
-**Rationale**: The constitution requires authentication for non-public actions and server-side authorization. Existing code has no auth module, so implementation must either add a minimal staff/admin auth boundary or integrate with an existing one if introduced before implementation.
+**Rationale**: The constitution requires authentication for non-public actions and server-side authorization. The clarified spec selected first-party staff/admin JWT authentication, so the service must own staff/admin credentials, password hashing, token issuance, role authorization, and authenticated actor context for audit fields.
 
 **Alternatives considered**:
 
 - Leave endpoints unauthenticated: rejected by constitution.
+- External identity provider: rejected for v1 because no provider exists in the current codebase and first-party auth was selected.
 - Full borrower self-service auth: rejected because member self-service is out of scope for v1.
+
+## Decision: Use versioned MongoDB migration scripts with rollback notes
+
+**Rationale**: The constitution requires versioned and reviewable database changes. The clarified spec requires MongoDB collection, index, and reference-data changes to be deployed through migration scripts instead of relying only on Mongoose schema synchronization.
+
+**Alternatives considered**:
+
+- Mongoose auto-index/schema sync only: rejected because it is not sufficiently reviewable and does not document rollback.
+- Manual deployment steps: rejected because hidden manual changes violate operability and traceability.
+
+## Decision: Keep Borrowing Policy as non-persisted domain/service logic
+
+**Rationale**: Borrowing Policy is a rule set combining member status, membership type limit, availability, due-date rules, and overdue blocking. The clarified spec explicitly says it is not a persisted policy collection in v1.
+
+**Alternatives considered**:
+
+- Persist a separate borrowing policy collection: rejected because current policy inputs already live in membership types, book categories, member status, and borrowing records.
 
 ## Decision: Use DTO validation and predictable error responses
 
@@ -81,7 +108,7 @@
 
 ## Decision: Containerize app and MongoDB together for local and deployment baseline
 
-**Rationale**: The repository already has `docker-compose.yml` for MongoDB only. Deployment should be container based, so add a production app Dockerfile, env-based MongoDB URI, health check, and compose service for local parity.
+**Rationale**: The repository already has `docker-compose.yml` for MongoDB only. Deployment should be container based, so add a production app Dockerfile, env-based MongoDB URI, health check, compose service for local parity, and MongoDB replica set initialization for transaction support.
 
 **Alternatives considered**:
 

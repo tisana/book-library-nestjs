@@ -1,47 +1,47 @@
 # Implementation Plan: Book Borrowing System
 
-**Branch**: `001-book-borrowing-system` | **Date**: 2026-05-29 | **Spec**: [spec.md](spec.md)
+**Branch**: `001-book-borrowing-system` | **Date**: 2026-05-30 | **Spec**: [spec.md](spec.md)
 
 **Input**: Feature specification from `/specs/001-book-borrowing-system/spec.md`
 
 ## Summary
 
-Build a staff-facing library borrowing API on the existing NestJS service and MongoDB baseline. Extend the current books module from simple quantity storage into a domain model with book categories, membership types, members, and borrowing records. Enforce core library rules in application services: aggregate book availability, membership-type borrowing limits, category-based due dates, overdue borrowing blocks, soft deactivation, validation, and auditable state changes.
+Build a staff-facing library borrowing API on the existing NestJS service and MongoDB baseline. Extend the current books module into explicit modules for book categories, membership types, members, borrowings, staff/admin users, authentication, migrations, and health. Enforce aggregate book availability, membership-type borrowing limits, category-based due dates, overdue borrowing blocks, first-party staff/admin JWT authentication, server-side role authorization, audit actor tracking, versioned MongoDB migrations, and transaction-capable MongoDB consistency for borrow/return workflows.
 
 ## Technical Context
 
 **Language/Version**: TypeScript 5.9.3 on Node.js, NestJS 11.x
 
-**Primary Dependencies**: Existing `@nestjs/common`, `@nestjs/core`, `@nestjs/mongoose`, `mongoose`, `class-validator`, `class-transformer`; recommended additions: `@nestjs/config` for environment configuration, `@nestjs/swagger` for API contract generation, `mongodb-memory-server` for isolated integration tests, and auth libraries if no project auth exists yet (`@nestjs/passport`, `passport-jwt`, `@nestjs/jwt`, password hashing with `bcrypt` or `argon2`)
+**Primary Dependencies**: Existing `@nestjs/common`, `@nestjs/core`, `@nestjs/mongoose`, `mongoose`, `class-validator`, `class-transformer`; add `@nestjs/config`, `@nestjs/swagger`, `@nestjs/passport`, `@nestjs/jwt`, `passport`, `passport-jwt`, password hashing with `argon2` or `bcrypt`, and `mongodb-memory-server` for transaction-capable integration tests.
 
-**Storage**: MongoDB via Mongoose. Existing connection is hardcoded to `mongodb://localhost/bookstore`; plan changes this to environment-driven configuration.
+**Storage**: MongoDB via Mongoose. Use environment-driven `MONGODB_URI`. Local, automated test, and container MongoDB configurations must support transactions through replica set mode. MongoDB collection/index/reference-data changes are managed through versioned migration scripts with rollback notes.
 
-**Testing**: Jest unit tests for domain services and Nest testing utilities plus Supertest for API/e2e tests. Add MongoDB-backed integration tests for borrowing and return consistency.
+**Testing**: Jest unit tests for domain services and auth rules, Nest testing utilities plus Supertest for API/e2e tests, and MongoDB-backed integration tests for migration behavior and borrow/return transaction consistency.
 
-**Target Platform**: Containerized Linux service with app container plus MongoDB container.
+**Target Platform**: Containerized Linux service with app container plus transaction-capable MongoDB container.
 
 **Project Type**: Backend web service/API.
 
-**Performance Goals**: Staff can complete valid borrowing in under 1 minute; active/overdue member loan lookup in under 30 seconds; common list/search endpoints return within interactive API time under normal library load.
+**Performance Goals**: Staff can record books in under 2 minutes, complete valid borrowing in under 1 minute, and retrieve member loan/overdue status in under 30 seconds under normal expected library usage.
 
-**Constraints**: Preserve borrowing history; no hard delete for historical entities; server-side validation and authorization for non-public actions; deterministic date calculations; aggregate book quantity model for v1.
+**Constraints**: Preserve borrowing history; no hard delete for historical entities; first-party staff/admin JWT auth for protected management actions; server-side role authorization; deterministic date calculations; aggregate book quantity model for v1; Borrowing Policy is non-persisted service-domain logic; no payment, barcode, RFID, mobile app, or multi-branch support.
 
-**Scale/Scope**: Single library-like deployment, no multi-branch, no payment processing, no barcode/RFID, no public discovery portal in this feature.
+**Scale/Scope**: Single library-like deployment. Lists must be paginated and indexed for books, members, loans, and overdue records.
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- **User-Centered Library Workflow**: PASS. Feature serves staff workflows for inventory, membership, loans, returns, and overdue tracking.
-- **Correctness Over Cleverness**: PASS with documented aggregate-quantity decision. Availability invariant is `availableQuantity >= 0` and `activeLoans <= totalQuantity` instead of per-copy identifiers for v1.
-- **Security and Privacy by Default**: PASS with required server-side auth/authorization in API contracts. Existing app lacks auth, so implementation must add or integrate an auth/roles boundary before exposing protected actions.
-- **Spec-First, Traceable Changes**: PASS. Plan is derived from clarified spec and records tradeoffs.
-- **Test the Rules That Matter**: PASS. Borrowing limit, availability, due-date, overdue block, return idempotency, and authorization tests are required.
-- **Maintainable Architecture**: PASS. Add explicit modules/services for domain concepts rather than over-general repositories.
-- **Data Integrity and Auditability**: PASS. State-changing records include audit fields and are updated in transactions where consistency matters.
-- **Usability and Accessibility**: PASS for backend scope through predictable validation messages, filtering, and status fields.
-- **Performance With Practical Limits**: PASS. Indexes planned for list/search and borrowing-state queries.
-- **Operability and Observability**: PASS. Add env-based config, container health checks, and safe operational logging.
+- **User-Centered Library Workflow**: PASS. User stories now keep US1 and US2 independently testable without requiring borrowing endpoints.
+- **Correctness Over Cleverness**: PASS. Borrowing Policy remains explicit non-persisted domain/service logic; borrow/return consistency uses MongoDB transactions in transaction-capable environments.
+- **Security and Privacy by Default**: PASS. First-party staff/admin JWT auth, role authorization, password hashing, token secrecy, and actor audit tracking are explicit requirements.
+- **Spec-First, Traceable Changes**: PASS. Plan reflects `FR-018` through `FR-024` added by clarification.
+- **Test the Rules That Matter**: PASS. AuthN/authZ, domain rules, migrations, and transaction consistency require automated tests.
+- **Maintainable Architecture**: PASS. Single NestJS app with feature modules; no microservices.
+- **Data Integrity and Auditability**: PASS. State changes record actor/time; MongoDB changes use versioned migration scripts with rollback notes.
+- **Usability and Accessibility**: PASS for backend scope through clear status, pagination, validation messages, and predictable API errors.
+- **Performance With Practical Limits**: PASS. Indexes and pagination are planned for common queries.
+- **Operability and Observability**: PASS. Env config, health endpoint, container health checks, safe logs, transaction-capable MongoDB, and migration commands are planned.
 
 ## Project Structure
 
@@ -65,65 +65,69 @@ specs/001-book-borrowing-system/
 ```text
 src/
 ├── app.module.ts
+├── main.ts
 ├── config/
+│   ├── auth.config.ts
 │   └── database.config.ts
 ├── auth/
 │   ├── auth.module.ts
+│   ├── auth.controller.ts
+│   ├── auth.service.ts
+│   ├── current-user.decorator.ts
+│   ├── jwt.strategy.ts
 │   ├── roles.decorator.ts
 │   └── roles.guard.ts
+├── staff-users/
+│   ├── staff-users.module.ts
+│   ├── staff-users.service.ts
+│   ├── dto/
+│   └── schemas/
 ├── books/
-│   ├── books.module.ts
-│   ├── books.controller.ts
-│   ├── books.service.ts
-│   ├── dto/
-│   ├── interfaces/
-│   └── schemas/
 ├── book-categories/
-│   ├── book-categories.module.ts
-│   ├── book-categories.controller.ts
-│   ├── book-categories.service.ts
-│   ├── dto/
-│   └── schemas/
 ├── membership-types/
-│   ├── membership-types.module.ts
-│   ├── membership-types.controller.ts
-│   ├── membership-types.service.ts
-│   ├── dto/
-│   └── schemas/
 ├── members/
-│   ├── members.module.ts
-│   ├── members.controller.ts
-│   ├── members.service.ts
-│   ├── dto/
-│   └── schemas/
 ├── borrowings/
-│   ├── borrowings.module.ts
-│   ├── borrowings.controller.ts
-│   ├── borrowings.service.ts
-│   ├── dto/
-│   └── schemas/
+│   ├── borrowings-rules.service.ts
+│   └── ...
+├── health/
+│   ├── health.module.ts
+│   ├── health.controller.ts
+│   └── health.service.ts
 └── common/
+    ├── audit/
     ├── dto/
-    ├── filters/
-    └── audit/
+    ├── enums/
+    ├── exceptions/
+    └── filters/
+
+migrations/
+├── migrate.ts
+├── README.md
+└── versions/
+    └── 001-library-core.ts
 
 test/
-├── app.e2e-spec.ts
-└── borrowing.e2e-spec.ts
+├── utils/
+├── auth.e2e-spec.ts
+├── book-collection.e2e-spec.ts
+├── membership.e2e-spec.ts
+├── borrowing.e2e-spec.ts
+├── migrations.e2e-spec.ts
+└── authorization.e2e-spec.ts
 
 docker-compose.yml
 Dockerfile
 ```
 
-**Structure Decision**: Keep a single NestJS API application and expand it with feature modules. Reuse and evolve the existing `src/books` module instead of replacing it wholesale. Add new modules for the missing domain concepts and cross-cutting `common`/`auth` helpers only where required by the constitution.
+**Structure Decision**: Keep a single NestJS API application and expand it with feature modules. Reuse and evolve the existing `src/books` module. Add `auth` and `staff-users` modules because the clarified spec requires first-party staff/admin authentication. Add `migrations/` for versioned MongoDB changes and rollback notes. Add `health/` and env-based config for container operation.
 
 ## Complexity Tracking
 
-No constitution gate violations require complexity tracking. The aggregate book quantity model is a deliberate v1 scope choice from the clarified spec and is represented as an aggregate invariant rather than an individual-copy subsystem.
+No constitution violations require exceptions. The added auth and migration modules are required by the constitution and clarified spec, not optional architectural complexity.
 
 ## Phase 0: Research
 
-Completed in [research.md](research.md). All planning unknowns are resolved with decisions for architecture, MongoDB consistency, validation, authorization, testing, containers, and operational configuration.
+Completed in [research.md](research.md). Decisions cover NestJS module structure, MongoDB transactions, replica set local/test/container support, first-party JWT auth, versioned migrations, non-persisted Borrowing Policy, validation/error handling, OpenAPI docs, and container deployment.
 
 ## Phase 1: Design & Contracts
 
@@ -135,8 +139,9 @@ Completed design artifacts:
 
 ## Post-Design Constitution Check
 
-- **Security and Privacy**: PASS. Contracts require authenticated staff/admin roles; implementation tasks must add role enforcement before non-public endpoints are considered complete.
-- **Correctness and Data Integrity**: PASS. Borrow and return workflows use transactional updates and explicit statuses.
-- **Auditability**: PASS. Data model includes `createdBy`, `updatedBy`, `borrowedByStaffId`, and `returnedByStaffId` fields for state changes.
-- **Testing**: PASS. Quickstart and future tasks require unit and integration/e2e coverage for business-critical rules.
-- **Operability**: PASS. Plan includes containerized app/MongoDB, env configuration, health endpoint, and non-sensitive logging.
+- **Security and Privacy**: PASS. Contracts include auth endpoints and require bearer auth on management endpoints; data model includes Staff/Admin User.
+- **Correctness and Data Integrity**: PASS. Borrow/return workflows use transactions; local/test/container MongoDB must support transactions.
+- **Auditability**: PASS. State-changing entities include audit actor fields; authenticated actor context is required.
+- **Migration Reviewability**: PASS. Data model and quickstart include migration record and versioned migration flow with rollback notes.
+- **Testing**: PASS. Design requires unit, integration, e2e, auth, authorization, migration, and transaction consistency tests.
+- **Operability**: PASS. Container stack, replica set requirement, health endpoint, env config, and migration commands are documented.

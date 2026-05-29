@@ -1,6 +1,6 @@
 # API Contract: Book Borrowing System
 
-This contract describes the REST API shape to implement in the NestJS service. All non-public endpoints require authenticated staff/admin access unless noted otherwise.
+This contract describes the REST API shape to implement in the NestJS service. All management endpoints require staff/admin bearer JWT authentication unless noted otherwise.
 
 ## Common Response Rules
 
@@ -10,6 +10,55 @@ This contract describes the REST API shape to implement in the NestJS service. A
 - Unauthorized requests return `401`.
 - Authenticated users without the required role return `403`.
 - List endpoints support pagination using `page` and `limit`.
+- Responses must never include raw passwords, password hashes, or tokens except the explicit login token response.
+
+## Authentication
+
+### `POST /auth/login`
+
+Authenticates a staff/admin user and returns a JWT.
+
+**Request**
+
+```json
+{
+  "email": "staff@example.com",
+  "password": "correct-horse-battery-staple"
+}
+```
+
+**Response `200`**
+
+```json
+{
+  "accessToken": "jwt-token",
+  "user": {
+    "id": "staff-user-id",
+    "email": "staff@example.com",
+    "displayName": "Staff User",
+    "roles": ["staff"]
+  }
+}
+```
+
+### `POST /staff-users`
+
+Creates a staff/admin user. Requires `admin` role.
+
+**Request**
+
+```json
+{
+  "email": "staff@example.com",
+  "displayName": "Staff User",
+  "password": "correct-horse-battery-staple",
+  "roles": ["staff"]
+}
+```
+
+### `GET /staff-users`
+
+Lists staff/admin users. Requires `admin` role.
 
 ## Book Categories
 
@@ -217,7 +266,7 @@ Lists active loans past their due date.
 
 ### `GET /health`
 
-Returns service readiness for container deployment.
+Returns service readiness for container deployment. This endpoint may be public for platform health checks.
 
 **Response `200`**
 
