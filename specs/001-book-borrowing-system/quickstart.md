@@ -116,5 +116,6 @@ npm run test
 npm run test:e2e
 npm run lint
 npm run build
+npm run migrate:up
 npm run migrate:status
 ```
