@@ -1,6 +1,33 @@
-version: '3'
 services:
+  app:
+    build: .
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      PORT: 3000
+      MONGODB_URI: mongodb://mongodb:27017/bookstore?replicaSet=rs0
+      JWT_SECRET: local-development-secret-change-me
+      JWT_EXPIRES_IN: 1h
+      INITIAL_ADMIN_EMAIL: admin@example.com
+      INITIAL_ADMIN_PASSWORD: replace-with-a-strong-password
+      INITIAL_ADMIN_NAME: Library Admin
+    ports:
+      - "3000:3000"
+
   mongodb:
     image: mongo:8
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
     ports:
       - "27017:27017"
+    healthcheck:
+      test: >
+        mongosh --quiet --eval "try { rs.status().ok } catch (e) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongodb:27017'}]}).ok }"
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - mongodb-data:/data/db
+
+volumes:
+  mongodb-data:
