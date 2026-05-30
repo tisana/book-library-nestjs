@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BooksController } from './books/books.controller';
 import { BooksModule } from './books/books.module';
+import { BookCategoriesModule } from './book-categories/book-categories.module';
 import authConfig from './config/auth.config';
 import databaseConfig from './config/database.config';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -31,6 +32,7 @@ import { StaffUsersModule } from './staff-users/staff-users.module';
     AuthModule,
     StaffUsersModule,
     HealthModule,
+    BookCategoriesModule,
     BooksModule,
   ],
   controllers: [AppController],

@@ -1,19 +1,26 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { BookDto } from '../src/books/dto/book.dto';
+import { BookResponseDto } from '../src/books/dto/book.dto';
 import { BooksService } from '../src/books/books.service';
 import { Test } from '@nestjs/testing';
 
 import { BooksController } from '../src/books/books.controller';
-import { getModelToken } from '@nestjs/mongoose';
+import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
+import { RolesGuard } from '../src/auth/roles.guard';
+import { LibraryItemStatus } from '../src/common/enums/library-status.enum';
 
 describe('Books', () => {
   let app: INestApplication;
-  const book: BookDto = {
+  const book: BookResponseDto = {
+    id: 'book-id',
     title: 'lord of the ring',
     author: 'JJ Token',
     isbn: '1234',
-    quantity: 1,
+    catalogIdentifier: 'BK-LEGACY',
+    categoryId: '64f000000000000000000001',
+    totalQuantity: 1,
+    availableQuantity: 1,
+    status: LibraryItemStatus.Active,
   };
   const booksService = { findAll: () => [book] };
 
@@ -21,15 +28,13 @@ describe('Books', () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [BooksController],
       providers: [
-        BooksService,
-        {
-          provide: getModelToken('Book'),
-          useValue: {},
-        },
+        { provide: BooksService, useValue: booksService },
       ],
     })
-      .overrideProvider(BooksService)
-      .useValue(booksService)
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(RolesGuard)
+      .useValue({ canActivate: () => true })
       .compile();
     app = moduleRef.createNestApplication();
     await app.init();

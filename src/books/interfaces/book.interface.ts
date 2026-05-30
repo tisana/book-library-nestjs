@@ -1,8 +1,3 @@
-import { Document } from 'mongoose';
+import { BookDocument } from '../schemas/book.schema';
 
-export interface Book extends Document {
-  readonly title: string;
-  readonly author: string;
-  readonly isbn: string;
-  readonly quantity: number;
-}
+export type Book = BookDocument;
