@@ -18,20 +18,20 @@
 
 **Purpose**: Prepare dependencies, configuration, container runtime, health checks, and migration command scaffolding.
 
-- [ ] T001 Update dependencies and scripts for config, Swagger, JWT auth, Passport, password hashing, migrations, and MongoDB integration tests in package.json
-- [ ] T002 [P] Create environment example with `MONGODB_URI`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `PORT`, and initial admin placeholders in .env.example
-- [ ] T003 [P] Create database configuration helper in src/config/database.config.ts
-- [ ] T004 [P] Create auth configuration helper in src/config/auth.config.ts
-- [ ] T005 Update MongoDB connection to use environment-based configuration in src/app.module.ts
-- [ ] T006 Enable global validation, DTO transformation, and global exception filter registration in src/main.ts
-- [ ] T007 Add Swagger bootstrap and bearer auth setup in src/main.ts
-- [ ] T008 [P] Add production app container definition in Dockerfile
-- [ ] T009 Configure app and MongoDB replica set services for local transaction support in docker-compose.yml
-- [ ] T010 [P] Create health endpoint module in src/health/health.module.ts
-- [ ] T011 [P] Create health endpoint controller in src/health/health.controller.ts
-- [ ] T012 [P] Create health endpoint service in src/health/health.service.ts
-- [ ] T013 [P] Create migration runner entrypoint in migrations/migrate.ts
-- [ ] T014 [P] Document migration usage and rollback-note requirements in migrations/README.md
+- [X] T001 Update dependencies and scripts for config, Swagger, JWT auth, Passport, password hashing, migrations, and MongoDB integration tests in package.json
+- [X] T002 [P] Create environment example with `MONGODB_URI`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `PORT`, and initial admin placeholders in .env.example
+- [X] T003 [P] Create database configuration helper in src/config/database.config.ts
+- [X] T004 [P] Create auth configuration helper in src/config/auth.config.ts
+- [X] T005 Update MongoDB connection to use environment-based configuration in src/app.module.ts
+- [X] T006 Enable global validation, DTO transformation, and global exception filter registration in src/main.ts
+- [X] T007 Add Swagger bootstrap and bearer auth setup in src/main.ts
+- [X] T008 [P] Add production app container definition in Dockerfile
+- [X] T009 Configure app and MongoDB replica set services for local transaction support in docker-compose.yml
+- [X] T010 [P] Create health endpoint module in src/health/health.module.ts
+- [X] T011 [P] Create health endpoint controller in src/health/health.controller.ts
+- [X] T012 [P] Create health endpoint service in src/health/health.service.ts
+- [X] T013 [P] Create migration runner entrypoint in migrations/migrate.ts
+- [X] T014 [P] Document migration usage and rollback-note requirements in migrations/README.md
 
 ---
 
@@ -43,36 +43,36 @@
 
 ### Foundational Tests
 
-- [ ] T015 [P] Add unit tests for staff/admin password hashing and redaction in src/staff-users/staff-users.service.spec.ts
-- [ ] T016 [P] Add unit tests for JWT login and inactive-user rejection in src/auth/auth.service.spec.ts and e2e login plus staff-users authorization coverage in test/auth.e2e-spec.ts
-- [ ] T017 [P] Add unit tests for role authorization guard behavior in src/auth/roles.guard.spec.ts
-- [ ] T018 [P] Add integration tests for migration apply-once behavior and rollback metadata in test/migrations.e2e-spec.ts
-- [ ] T019 [P] Add integration test utilities for transaction-capable MongoDB in test/utils/mongo-test-setup.ts
-- [ ] T020 [P] Add authenticated request helpers for staff/admin roles in test/utils/auth-test-helpers.ts
+- [X] T015 [P] Add unit tests for staff/admin password hashing and redaction in src/staff-users/staff-users.service.spec.ts
+- [X] T016 [P] Add unit tests for JWT login and inactive-user rejection in src/auth/auth.service.spec.ts and e2e login plus staff-users authorization coverage in test/auth.e2e-spec.ts
+- [X] T017 [P] Add unit tests for role authorization guard behavior in src/auth/roles.guard.spec.ts
+- [X] T018 [P] Add integration tests for migration apply-once behavior and rollback metadata in test/migrations.e2e-spec.ts
+- [X] T019 [P] Add integration test utilities for transaction-capable MongoDB in test/utils/mongo-test-setup.ts
+- [X] T020 [P] Add authenticated request helpers for staff/admin roles in test/utils/auth-test-helpers.ts
 
 ### Foundational Implementation
 
-- [ ] T021 [P] Define shared status, role, and loan-state enums in src/common/enums/library-status.enum.ts
-- [ ] T022 [P] Define shared pagination and list query DTOs in src/common/dto/pagination-query.dto.ts
-- [ ] T023 [P] Define audit field schema helper for Mongoose documents in src/common/audit/audit-fields.schema.ts
-- [ ] T024 [P] Implement current-user audit context type in src/common/audit/audit-context.ts
-- [ ] T025 [P] Implement domain exception helper for business rule conflicts in src/common/exceptions/domain-conflict.exception.ts
-- [ ] T026 Implement HTTP exception filter for validation and domain errors in src/common/filters/http-exception.filter.ts
-- [ ] T027 [P] Create Staff/Admin User schema with password hash, roles, status, and audit fields in src/staff-users/schemas/staff-user.schema.ts
-- [ ] T028 [P] Create Staff/Admin User DTOs for create, login-safe response, and query operations in src/staff-users/dto/staff-user.dto.ts
-- [ ] T029 Implement Staff Users service with password hashing, credential redaction, role assignment, and active-user checks in src/staff-users/staff-users.service.ts
-- [ ] T030 Implement admin-guarded Staff Users controller endpoints and module wiring in src/staff-users/staff-users.controller.ts and src/staff-users/staff-users.module.ts
-- [ ] T031 [P] Implement current user decorator for authenticated actor access in src/auth/current-user.decorator.ts
-- [ ] T032 [P] Implement roles decorator for staff/admin route authorization in src/auth/roles.decorator.ts
-- [ ] T033 Implement JWT strategy for bearer token validation and active staff/admin lookup in src/auth/jwt.strategy.ts
-- [ ] T034 Implement role guard for server-side staff/admin authorization in src/auth/roles.guard.ts
-- [ ] T035 Implement Auth service for first-party staff/admin login and JWT issuance in src/auth/auth.service.ts
-- [ ] T036 Implement Auth controller login endpoint in src/auth/auth.controller.ts
-- [ ] T037 Create Auth module wiring JWT, Passport, Staff Users, strategy, and guards in src/auth/auth.module.ts
-- [ ] T038 Register Auth, Staff Users, Health, and global exception filter providers in src/app.module.ts
-- [ ] T039 [P] Define Migration Record schema or migration metadata collection contract in migrations/versions/000-migration-record.ts
-- [ ] T040 Create initial library-core migration for indexes, reference data, and initial admin seed support in migrations/versions/001-library-core.ts
-- [ ] T041 Wire migration commands and status output to npm scripts in package.json
+- [X] T021 [P] Define shared status, role, and loan-state enums in src/common/enums/library-status.enum.ts
+- [X] T022 [P] Define shared pagination and list query DTOs in src/common/dto/pagination-query.dto.ts
+- [X] T023 [P] Define audit field schema helper for Mongoose documents in src/common/audit/audit-fields.schema.ts
+- [X] T024 [P] Implement current-user audit context type in src/common/audit/audit-context.ts
+- [X] T025 [P] Implement domain exception helper for business rule conflicts in src/common/exceptions/domain-conflict.exception.ts
+- [X] T026 Implement HTTP exception filter for validation and domain errors in src/common/filters/http-exception.filter.ts
+- [X] T027 [P] Create Staff/Admin User schema with password hash, roles, status, and audit fields in src/staff-users/schemas/staff-user.schema.ts
+- [X] T028 [P] Create Staff/Admin User DTOs for create, login-safe response, and query operations in src/staff-users/dto/staff-user.dto.ts
+- [X] T029 Implement Staff Users service with password hashing, credential redaction, role assignment, and active-user checks in src/staff-users/staff-users.service.ts
+- [X] T030 Implement admin-guarded Staff Users controller endpoints and module wiring in src/staff-users/staff-users.controller.ts and src/staff-users/staff-users.module.ts
+- [X] T031 [P] Implement current user decorator for authenticated actor access in src/auth/current-user.decorator.ts
+- [X] T032 [P] Implement roles decorator for staff/admin route authorization in src/auth/roles.decorator.ts
+- [X] T033 Implement JWT strategy for bearer token validation and active staff/admin lookup in src/auth/jwt.strategy.ts
+- [X] T034 Implement role guard for server-side staff/admin authorization in src/auth/roles.guard.ts
+- [X] T035 Implement Auth service for first-party staff/admin login and JWT issuance in src/auth/auth.service.ts
+- [X] T036 Implement Auth controller login endpoint in src/auth/auth.controller.ts
+- [X] T037 Create Auth module wiring JWT, Passport, Staff Users, strategy, and guards in src/auth/auth.module.ts
+- [X] T038 Register Auth, Staff Users, Health, and global exception filter providers in src/app.module.ts
+- [X] T039 [P] Define Migration Record schema or migration metadata collection contract in migrations/versions/000-migration-record.ts
+- [X] T040 Create initial library-core migration for indexes, reference data, and initial admin seed support in migrations/versions/001-library-core.ts
+- [X] T041 Wire migration commands and status output to npm scripts in package.json
 
 **Checkpoint**: Foundation ready; user story implementation can now begin.
 
