@@ -86,25 +86,25 @@
 
 ### Tests for User Story 1
 
-- [ ] T042 [P] [US1] Add unit tests for book category validation and loan period rules in src/book-categories/book-categories.service.spec.ts
-- [ ] T043 [P] [US1] Add unit tests for book aggregate quantity, unavailable display status, and deactivation rules in src/books/books.service.spec.ts
-- [ ] T044 [P] [US1] Add authorization tests for category and book management endpoints in test/book-collection-authorization.e2e-spec.ts
-- [ ] T045 [P] [US1] Add e2e tests for category and book collection endpoints in test/book-collection.e2e-spec.ts
+- [X] T042 [P] [US1] Add unit tests for book category validation and loan period rules in src/book-categories/book-categories.service.spec.ts
+- [X] T043 [P] [US1] Add unit tests for book aggregate quantity, unavailable display status, and deactivation rules in src/books/books.service.spec.ts
+- [X] T044 [P] [US1] Add authorization tests for category and book management endpoints in test/book-collection-authorization.e2e-spec.ts
+- [X] T045 [P] [US1] Add e2e tests for category and book collection endpoints in test/book-collection.e2e-spec.ts
 
 ### Implementation for User Story 1
 
-- [ ] T046 [P] [US1] Create Book Category schema with unique code, status, loan period, audit fields, and indexes in src/book-categories/schemas/book-category.schema.ts
-- [ ] T047 [P] [US1] Create Book Category DTOs for create, update, and query operations in src/book-categories/dto/book-category.dto.ts
-- [ ] T048 [US1] Implement Book Categories service with create, list, update, deactivation, and active loan-period validation in src/book-categories/book-categories.service.ts
-- [ ] T049 [US1] Implement Book Categories controller endpoints with staff/admin guards in src/book-categories/book-categories.controller.ts
-- [ ] T050 [US1] Create Book Categories module with Mongoose model registration in src/book-categories/book-categories.module.ts
-- [ ] T051 [US1] Expand Book schema with catalog identifier, category reference, total quantity, available quantity, status, audit fields, and indexes in src/books/schemas/book.schema.ts
-- [ ] T052 [US1] Update Book DTOs for create, update, and query operations with aggregate quantity validation in src/books/dto/book.dto.ts
-- [ ] T053 [US1] Update Book interface or document type to match the planned data model in src/books/interfaces/book.interface.ts
-- [ ] T054 [US1] Update Books service for create, list, detail, zero-availability display, quantity update, deactivation, and active-loan quantity checks in src/books/books.service.ts
-- [ ] T055 [US1] Update Books controller endpoints, query parameters, and staff/admin guards in src/books/books.controller.ts
-- [ ] T056 [US1] Register Book Categories module and updated Books module dependencies in src/app.module.ts
-- [ ] T057 [US1] Add book and category indexes to initial migration in migrations/versions/001-library-core.ts
+- [X] T046 [P] [US1] Create Book Category schema with unique code, status, loan period, audit fields, and indexes in src/book-categories/schemas/book-category.schema.ts
+- [X] T047 [P] [US1] Create Book Category DTOs for create, update, and query operations in src/book-categories/dto/book-category.dto.ts
+- [X] T048 [US1] Implement Book Categories service with create, list, update, deactivation, and active loan-period validation in src/book-categories/book-categories.service.ts
+- [X] T049 [US1] Implement Book Categories controller endpoints with staff/admin guards in src/book-categories/book-categories.controller.ts
+- [X] T050 [US1] Create Book Categories module with Mongoose model registration in src/book-categories/book-categories.module.ts
+- [X] T051 [US1] Expand Book schema with catalog identifier, category reference, total quantity, available quantity, status, audit fields, and indexes in src/books/schemas/book.schema.ts
+- [X] T052 [US1] Update Book DTOs for create, update, and query operations with aggregate quantity validation in src/books/dto/book.dto.ts
+- [X] T053 [US1] Update Book interface or document type to match the planned data model in src/books/interfaces/book.interface.ts
+- [X] T054 [US1] Update Books service for create, list, detail, zero-availability display, quantity update, deactivation, and active-loan quantity checks in src/books/books.service.ts
+- [X] T055 [US1] Update Books controller endpoints, query parameters, and staff/admin guards in src/books/books.controller.ts
+- [X] T056 [US1] Register Book Categories module and updated Books module dependencies in src/app.module.ts
+- [X] T057 [US1] Add book and category indexes to initial migration in migrations/versions/001-library-core.ts
 
 **Checkpoint**: User Story 1 is fully functional and testable independently.
 

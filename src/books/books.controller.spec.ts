@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BooksController } from './books.controller';
 import { BooksService } from './books.service';
-import { BookDto } from './dto/book.dto';
-import { Book } from './interfaces/book.interface';
+import { BookResponseDto } from './dto/book.dto';
 
 import { getModelToken } from '@nestjs/mongoose';
+import { LibraryItemStatus } from '../common/enums/library-status.enum';
+import { BookModelName } from './schemas/book.schema';
 
 describe('Books Controller', () => {
   let controller: BooksController;
@@ -16,7 +17,7 @@ describe('Books Controller', () => {
       providers: [
         BooksService,
         {
-          provide: getModelToken('Book'),
+          provide: getModelToken(BookModelName),
           useValue: {},
         },
       ],
@@ -28,16 +29,23 @@ describe('Books Controller', () => {
 
   describe('findAll', () => {
     it('should return an array of Books', async () => {
-      const result: Book[] = [];
-
-      const book = new BookDto();
-      book.author = 'jj token';
-      book.isbn = '1234-32134';
-      book.title = 'lord of the ring';
+      const result: BookResponseDto[] = [
+        {
+          id: 'book-id',
+          title: 'Clean Code',
+          author: 'Robert C. Martin',
+          isbn: '9780132350884',
+          catalogIdentifier: 'BK-0001',
+          categoryId: '64f000000000000000000001',
+          totalQuantity: 3,
+          availableQuantity: 3,
+          status: LibraryItemStatus.Active,
+        },
+      ];
 
       jest.spyOn(service, 'findAll').mockImplementation(async () => result);
 
-      expect(await controller.findAll(null)).toBe(result);
+      expect(await controller.findAll({ page: 1, limit: 25 })).toBe(result);
     });
   });
 });
