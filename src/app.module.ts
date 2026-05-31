@@ -19,6 +19,7 @@ import { StaffUsersModule } from './staff-users/staff-users.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '.env',
       load: [authConfig, databaseConfig],
     }),
     MongooseModule.forRootAsync({
@@ -27,6 +28,8 @@ import { StaffUsersModule } from './staff-users/staff-users.module';
         uri:
           configService.get<string>('database.uri') ??
           'mongodb://localhost:27017/bookstore',
+        directConnection: true,
+        serverSelectionTimeoutMS: 5000,
       }),
     }),
     AuthModule,
