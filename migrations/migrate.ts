@@ -78,6 +78,15 @@ export function getMongoUri(): string {
   return process.env.MONGODB_URI ?? 'mongodb://localhost:27017/bookstore';
 }
 
+export function getMongoConnectionOptions(): Parameters<
+  typeof mongoose.connect
+>[1] {
+  return {
+    directConnection: true,
+    serverSelectionTimeoutMS: 5000,
+  };
+}
+
 export function getCommand(): MigrationCommand {
   const command = process.argv[2] ?? 'status';
 
@@ -162,7 +171,7 @@ async function main() {
   const command = getCommand();
   const connection = mongoose.connection as unknown as MigrationConnection;
 
-  await mongoose.connect(getMongoUri());
+  await mongoose.connect(getMongoUri(), getMongoConnectionOptions());
 
   try {
     const migrations = await loadMigrations();
