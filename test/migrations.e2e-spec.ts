@@ -4,6 +4,7 @@ import {
   MigrationDefinition,
   MigrationRecord,
   MigrationSession,
+  getMongoConnectionOptions,
   runPendingMigrations,
 } from '../migrations/migrate';
 
@@ -69,6 +70,13 @@ class FakeMigrationConnection implements MigrationConnection {
 }
 
 describe('migration runner', () => {
+  it('uses direct host connections so local Docker replica set hostnames do not break status checks', () => {
+    expect(getMongoConnectionOptions()).toMatchObject({
+      directConnection: true,
+      serverSelectionTimeoutMS: 5000,
+    });
+  });
+
   it('applies each migration once and stores rollback metadata', async () => {
     const connection = new FakeMigrationConnection();
     const up = jest.fn().mockResolvedValue(undefined);
