@@ -47,6 +47,25 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Local Test Users
+
+Sample staff/admin users are not seeded during application startup or by default migrations. To create or reset sample login users for local API testing, run the seed script explicitly after MongoDB is running:
+
+```bash
+npm run seed:users
+```
+
+The script uses `MONGODB_URI` when it is set, otherwise it connects to `mongodb://localhost:27017/bookstore`.
+
+Seeded credentials:
+
+| Role | Email | Password |
+|------|-------|----------|
+| admin | `admin@example.com` | `AdminPass123!` |
+| staff | `staff@example.com` | `StaffPass123!` |
+
+The script is idempotent for these sample emails and resets their passwords to the values above each time it is run.
+
 ## Test
 
 ```bash
