@@ -1,5 +1,6 @@
 import { BorrowingsRulesService } from './borrowings-rules.service';
 import { BorrowingsService } from './borrowings.service';
+import { UnauthorizedException } from '@nestjs/common';
 
 describe('BorrowingsService', () => {
   function createService(): BorrowingsService {
@@ -30,5 +31,24 @@ describe('BorrowingsService', () => {
     service.calculateDueAt(borrowedAt, 7);
 
     expect(borrowedAt.toISOString()).toBe('2026-06-01T00:00:00.000Z');
+  });
+
+  it('requires an authenticated staff actor before creating borrowing records', async () => {
+    const service = createService();
+
+    await expect(
+      service.create({
+        memberId: '665f4d3b8f4c8a001f5f0a12',
+        bookId: '665f4d3b8f4c8a001f5f0a13',
+      }),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+  });
+
+  it('requires an authenticated staff actor before returning borrowing records', async () => {
+    const service = createService();
+
+    await expect(service.returnBorrowing('borrowing-id')).rejects.toBeInstanceOf(
+      UnauthorizedException,
+    );
   });
 });

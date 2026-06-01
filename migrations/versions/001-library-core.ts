@@ -4,7 +4,10 @@ export const migration: MigrationDefinition = {
   version: '001',
   name: 'library-core',
   rollbackNotes: [
-    'Drop staff user indexes only after confirming no deployed code relies on them.',
+    'Drops for this migration must be reviewed per collection because deployed code depends on these indexes for auth, catalog, membership, and borrowing queries.',
+    'If rollback is required, drop the staffusers email and status/roles indexes only after confirming no staff login or authorization flow depends on them.',
+    'Drop bookcategories, books, membershiptypes, members, and borrowings indexes only after confirming replacement indexes or older code paths are deployed.',
+    'Do not drop collections as part of rollback; borrowing history and audit-related records must be preserved unless an explicit data-retention decision is approved.',
   ],
   async up({ connection, session }) {
     const staffUsers = connection.collection('staffusers');

@@ -1,4 +1,9 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiForbiddenResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -13,6 +18,9 @@ import {
 import { StaffUsersService } from './staff-users.service';
 
 @Controller('staff-users')
+@ApiBearerAuth()
+@ApiUnauthorizedResponse({ description: 'Bearer token is missing or invalid.' })
+@ApiForbiddenResponse({ description: 'Admin role is required.' })
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(StaffRole.Admin)
 export class StaffUsersController {
