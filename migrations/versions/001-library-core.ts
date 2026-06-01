@@ -10,6 +10,8 @@ export const migration: MigrationDefinition = {
     const staffUsers = connection.collection('staffusers');
     const books = connection.collection('books');
     const bookCategories = connection.collection('bookcategories');
+    const membershipTypes = connection.collection('membershiptypes');
+    const members = connection.collection('members');
 
     await staffUsers.createIndex({ email: 1 }, { unique: true, session });
     await staffUsers.createIndex({ status: 1, roles: 1 }, { session });
@@ -21,5 +23,13 @@ export const migration: MigrationDefinition = {
     await books.createIndex({ author: 1 }, { session });
     await books.createIndex({ status: 1 }, { session });
     await books.createIndex({ categoryId: 1 }, { session });
+    await membershipTypes.createIndex({ code: 1 }, { unique: true, session });
+    await membershipTypes.createIndex({ status: 1 }, { session });
+    await members.createIndex({ memberNumber: 1 }, { unique: true, session });
+    await members.createIndex(
+      { email: 1 },
+      { unique: true, sparse: true, session },
+    );
+    await members.createIndex({ status: 1, membershipTypeId: 1 }, { session });
   },
 };

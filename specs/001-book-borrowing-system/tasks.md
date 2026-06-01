@@ -118,25 +118,25 @@
 
 ### Tests for User Story 2
 
-- [ ] T058 [P] [US2] Add unit tests for membership type limit validation and deactivation rules in src/membership-types/membership-types.service.spec.ts
-- [ ] T059 [P] [US2] Add unit tests for member status, remaining allowance, and membership type eligibility in src/members/members.service.spec.ts
-- [ ] T060 [P] [US2] Add authorization tests for membership type and member endpoints in test/membership-authorization.e2e-spec.ts
-- [ ] T061 [P] [US2] Add e2e tests for membership type and member policy status endpoints in test/membership.e2e-spec.ts
+- [X] T058 [P] [US2] Add unit tests for membership type limit validation and deactivation rules in src/membership-types/membership-types.service.spec.ts
+- [X] T059 [P] [US2] Add unit tests for member status, remaining allowance, and membership type eligibility in src/members/members.service.spec.ts
+- [X] T060 [P] [US2] Add authorization tests for membership type and member endpoints in test/membership-authorization.e2e-spec.ts
+- [X] T061 [P] [US2] Add e2e tests for membership type and member policy status endpoints in test/membership.e2e-spec.ts
 
 ### Implementation for User Story 2
 
-- [ ] T062 [P] [US2] Create Membership Type schema with unique code, max active loans, status, audit fields, and indexes in src/membership-types/schemas/membership-type.schema.ts
-- [ ] T063 [P] [US2] Create Membership Type DTOs for create, update, and query operations in src/membership-types/dto/membership-type.dto.ts
-- [ ] T064 [US2] Implement Membership Types service with active policy validation in src/membership-types/membership-types.service.ts
-- [ ] T065 [US2] Implement Membership Types controller endpoints with staff/admin guards in src/membership-types/membership-types.controller.ts
-- [ ] T066 [US2] Create Membership Types module with Mongoose model registration in src/membership-types/membership-types.module.ts
-- [ ] T067 [P] [US2] Create Member schema with member number, membership type reference, status, active loan count, audit fields, and indexes in src/members/schemas/member.schema.ts
-- [ ] T068 [P] [US2] Create Member DTOs for create, update, query, and policy status response operations in src/members/dto/member.dto.ts
-- [ ] T069 [US2] Implement Members service with create, update, list, remaining allowance, status eligibility, and membership type lookup in src/members/members.service.ts
-- [ ] T070 [US2] Implement Members controller endpoints including policy status and staff/admin guards in src/members/members.controller.ts
-- [ ] T071 [US2] Create Members module with Mongoose model registration and Membership Types dependency in src/members/members.module.ts
-- [ ] T072 [US2] Register Membership Types and Members modules in src/app.module.ts
-- [ ] T073 [US2] Add membership type and member indexes to initial migration in migrations/versions/001-library-core.ts
+- [X] T062 [P] [US2] Create Membership Type schema with unique code, max active loans, status, audit fields, and indexes in src/membership-types/schemas/membership-type.schema.ts
+- [X] T063 [P] [US2] Create Membership Type DTOs for create, update, and query operations in src/membership-types/dto/membership-type.dto.ts
+- [X] T064 [US2] Implement Membership Types service with active policy validation in src/membership-types/membership-types.service.ts
+- [X] T065 [US2] Implement Membership Types controller endpoints with staff/admin guards in src/membership-types/membership-types.controller.ts
+- [X] T066 [US2] Create Membership Types module with Mongoose model registration in src/membership-types/membership-types.module.ts
+- [X] T067 [P] [US2] Create Member schema with member number, membership type reference, status, active loan count, audit fields, and indexes in src/members/schemas/member.schema.ts
+- [X] T068 [P] [US2] Create Member DTOs for create, update, query, and policy status response operations in src/members/dto/member.dto.ts
+- [X] T069 [US2] Implement Members service with create, update, list, remaining allowance, status eligibility, and membership type lookup in src/members/members.service.ts
+- [X] T070 [US2] Implement Members controller endpoints including policy status and staff/admin guards in src/members/members.controller.ts
+- [X] T071 [US2] Create Members module with Mongoose model registration and Membership Types dependency in src/members/members.module.ts
+- [X] T072 [US2] Register Membership Types and Members modules in src/app.module.ts
+- [X] T073 [US2] Add membership type and member indexes to initial migration in migrations/versions/001-library-core.ts
 
 **Checkpoint**: User Stories 1 and 2 work independently and expose the data needed for borrowing eligibility.
 

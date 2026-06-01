@@ -13,6 +13,8 @@ import databaseConfig from './config/database.config';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { HealthModule } from './health/health.module';
 import { LoggerMiddleware } from './logger.middleware';
+import { MembersModule } from './members/members.module';
+import { MembershipTypesModule } from './membership-types/membership-types.module';
 import { StaffUsersModule } from './staff-users/staff-users.module';
 
 @Module({
@@ -37,6 +39,8 @@ import { StaffUsersModule } from './staff-users/staff-users.module';
     HealthModule,
     BookCategoriesModule,
     BooksModule,
+    MembershipTypesModule,
+    MembersModule,
   ],
   controllers: [AppController],
   providers: [
