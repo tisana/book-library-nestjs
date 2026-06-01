@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
 import { RolesGuard } from '../src/auth/roles.guard';
+import { BorrowingsService } from '../src/borrowings/borrowings.service';
 import {
   LibraryItemStatus,
   MemberStatus,
@@ -25,6 +26,9 @@ describe('Membership endpoints (e2e)', () => {
     findOne: jest.fn(),
     update: jest.fn(),
     getPolicyStatus: jest.fn(),
+  };
+  const borrowingsService = {
+    findByMember: jest.fn(),
   };
 
   const membershipType = {
@@ -73,6 +77,7 @@ describe('Membership endpoints (e2e)', () => {
       providers: [
         { provide: MembershipTypesService, useValue: membershipTypesService },
         { provide: MembersService, useValue: membersService },
+        { provide: BorrowingsService, useValue: borrowingsService },
       ],
     })
       .overrideGuard(JwtAuthGuard)

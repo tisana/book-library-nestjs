@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BooksController } from './books/books.controller';
 import { BooksModule } from './books/books.module';
+import { BorrowingsModule } from './borrowings/borrowings.module';
 import { BookCategoriesModule } from './book-categories/book-categories.module';
 import authConfig from './config/auth.config';
 import databaseConfig from './config/database.config';
@@ -41,6 +42,7 @@ import { StaffUsersModule } from './staff-users/staff-users.module';
     BooksModule,
     MembershipTypesModule,
     MembersModule,
+    BorrowingsModule,
   ],
   controllers: [AppController],
   providers: [

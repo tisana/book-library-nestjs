@@ -150,25 +150,25 @@
 
 ### Tests for User Story 3
 
-- [ ] T074 [P] [US3] Add unit tests for due date calculation from book category in src/borrowings/borrowings.service.spec.ts
-- [ ] T075 [P] [US3] Add unit tests for non-persisted Borrowing Policy eligibility failures in src/borrowings/borrowings-rules.service.spec.ts
-- [ ] T076 [P] [US3] Add integration tests for transactional borrow and return consistency in test/borrowing.e2e-spec.ts
-- [ ] T077 [P] [US3] Add authorization tests for borrowing state-changing endpoints in test/authorization.e2e-spec.ts
-- [ ] T078 [P] [US3] Add e2e tests for overdue listing and overdue borrowing block in test/borrowing-overdue.e2e-spec.ts
+- [X] T074 [P] [US3] Add unit tests for due date calculation from book category in src/borrowings/borrowings.service.spec.ts
+- [X] T075 [P] [US3] Add unit tests for non-persisted Borrowing Policy eligibility failures in src/borrowings/borrowings-rules.service.spec.ts
+- [X] T076 [P] [US3] Add integration tests for transactional borrow and return consistency in test/borrowing.e2e-spec.ts
+- [X] T077 [P] [US3] Add authorization tests for borrowing state-changing endpoints in test/authorization.e2e-spec.ts
+- [X] T078 [P] [US3] Add e2e tests for overdue listing and overdue borrowing block in test/borrowing-overdue.e2e-spec.ts
 
 ### Implementation for User Story 3
 
-- [ ] T079 [P] [US3] Create Borrowing Record schema with member, book, category snapshot, dates, status, staff audit fields, and indexes in src/borrowings/schemas/borrowing.schema.ts
-- [ ] T080 [P] [US3] Create Borrowing DTOs for create, return, and query operations in src/borrowings/dto/borrowing.dto.ts
-- [ ] T081 [P] [US3] Implement non-persisted Borrowing Policy rules service for availability, membership limit, member status, overdue block, and category loan-period validation in src/borrowings/borrowings-rules.service.ts
-- [ ] T082 [US3] Implement Borrowings service with MongoDB transaction for create borrowing, due date calculation, actor audit fields, and aggregate count updates in src/borrowings/borrowings.service.ts
-- [ ] T083 [US3] Implement return workflow with transaction, idempotency guard, actor audit fields, and aggregate count updates in src/borrowings/borrowings.service.ts
-- [ ] T084 [US3] Implement overdue query and deterministic overdue status evaluation in src/borrowings/borrowings.service.ts
-- [ ] T085 [US3] Implement Borrowings controller endpoints from the contract with staff/admin guards in src/borrowings/borrowings.controller.ts
-- [ ] T086 [US3] Create Borrowings module with Mongoose model registration and dependencies on Books, Members, Book Categories, and Membership Types in src/borrowings/borrowings.module.ts
-- [ ] T087 [US3] Wire member borrowing history route to Borrowings service with authorization in src/members/members.controller.ts
-- [ ] T088 [US3] Register Borrowings module in src/app.module.ts
-- [ ] T089 [US3] Add borrowing record indexes to initial migration in migrations/versions/001-library-core.ts
+- [X] T079 [P] [US3] Create Borrowing Record schema with member, book, category snapshot, dates, status, staff audit fields, and indexes in src/borrowings/schemas/borrowing.schema.ts
+- [X] T080 [P] [US3] Create Borrowing DTOs for create, return, and query operations in src/borrowings/dto/borrowing.dto.ts
+- [X] T081 [P] [US3] Implement non-persisted Borrowing Policy rules service for availability, membership limit, member status, overdue block, and category loan-period validation in src/borrowings/borrowings-rules.service.ts
+- [X] T082 [US3] Implement Borrowings service with MongoDB transaction for create borrowing, due date calculation, actor audit fields, and aggregate count updates in src/borrowings/borrowings.service.ts
+- [X] T083 [US3] Implement return workflow with transaction, idempotency guard, actor audit fields, and aggregate count updates in src/borrowings/borrowings.service.ts
+- [X] T084 [US3] Implement overdue query and deterministic overdue status evaluation in src/borrowings/borrowings.service.ts
+- [X] T085 [US3] Implement Borrowings controller endpoints from the contract with staff/admin guards in src/borrowings/borrowings.controller.ts
+- [X] T086 [US3] Create Borrowings module with Mongoose model registration and dependencies on Books, Members, Book Categories, and Membership Types in src/borrowings/borrowings.module.ts
+- [X] T087 [US3] Wire member borrowing history route to Borrowings service with authorization in src/members/members.controller.ts
+- [X] T088 [US3] Register Borrowings module in src/app.module.ts
+- [X] T089 [US3] Add borrowing record indexes to initial migration in migrations/versions/001-library-core.ts
 
 **Checkpoint**: All user stories are independently functional and the complete borrowing lifecycle is testable.
 

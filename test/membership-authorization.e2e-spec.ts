@@ -8,6 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
 import { RolesGuard } from '../src/auth/roles.guard';
+import { BorrowingsService } from '../src/borrowings/borrowings.service';
 import { MembersController } from '../src/members/members.controller';
 import { MembersService } from '../src/members/members.service';
 import { MembershipTypesController } from '../src/membership-types/membership-types.controller';
@@ -61,6 +62,12 @@ describe('Membership authorization (e2e)', () => {
             findOne: jest.fn().mockResolvedValue({ id: 'member-id' }),
             update: jest.fn().mockResolvedValue({ id: 'member-id' }),
             getPolicyStatus: jest.fn().mockResolvedValue({ id: 'member-id' }),
+          },
+        },
+        {
+          provide: BorrowingsService,
+          useValue: {
+            findByMember: jest.fn().mockResolvedValue([]),
           },
         },
       ],
