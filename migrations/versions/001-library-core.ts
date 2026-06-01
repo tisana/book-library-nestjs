@@ -12,6 +12,7 @@ export const migration: MigrationDefinition = {
     const bookCategories = connection.collection('bookcategories');
     const membershipTypes = connection.collection('membershiptypes');
     const members = connection.collection('members');
+    const borrowings = connection.collection('borrowings');
 
     await staffUsers.createIndex({ email: 1 }, { unique: true, session });
     await staffUsers.createIndex({ status: 1, roles: 1 }, { session });
@@ -31,5 +32,8 @@ export const migration: MigrationDefinition = {
       { unique: true, sparse: true, session },
     );
     await members.createIndex({ status: 1, membershipTypeId: 1 }, { session });
+    await borrowings.createIndex({ memberId: 1, status: 1 }, { session });
+    await borrowings.createIndex({ bookId: 1, status: 1 }, { session });
+    await borrowings.createIndex({ dueAt: 1, status: 1 }, { session });
   },
 };
