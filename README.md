@@ -1,94 +1,173 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# Book Library API
 
-[travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
-[travis-url]: https://travis-ci.org/nestjs/nest
-[linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
-[linux-url]: https://travis-ci.org/nestjs/nest
-  
-  <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://api.travis-ci.org/nestjs/nest.svg?branch=master" alt="Travis" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://img.shields.io/travis/nestjs/nest/master.svg?label=linux" alt="Linux" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#5" alt="Coverage" /></a>
-<a href="https://gitter.im/nestjs/nestjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge"><img src="https://badges.gitter.im/nestjs/nestjs.svg" alt="Gitter" /></a>
-<a href="https://opencollective.com/nest#backer"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec"><img src="https://img.shields.io/badge/Donate-PayPal-dc3d53.svg"/></a>
-  <a href="https://twitter.com/nestframework"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Staff-facing NestJS API for managing a library book collection, members, membership borrowing limits, and borrowing/return workflows.
 
-## Description
+## Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Staff/admin JWT authentication.
+- Book categories with category-based loan periods.
+- Aggregate book inventory with total and available quantities.
+- Membership types with configurable active-loan limits.
+- Member records with policy status and borrowing history.
+- Borrowing lifecycle with due dates, overdue checks, returns, audit fields, and MongoDB transactions.
+- Versioned MongoDB migrations and container-based local runtime.
 
-## Installation
+## Requirements
 
-```bash
-$ npm install
+- Node.js compatible with the current NestJS 11 project.
+- npm.
+- Docker and Docker Compose for local MongoDB replica set support.
+- MongoDB must run as a replica set for borrow/return transactions.
+
+## Environment
+
+Copy `.env.example` to `.env` for local development and adjust values as needed:
+
+```env
+PORT=3000
+MONGODB_URI=mongodb://localhost:27017/bookstore?replicaSet=rs0
+JWT_SECRET=replace-with-a-long-random-secret
+JWT_EXPIRES_IN=1h
 ```
 
-## Running the app
+`MONGODB_URI` is used by the API, migration runner, and sample user seed script. For Docker Compose, the app service uses `mongodb://mongodb:27017/bookstore?replicaSet=rs0`.
+
+## Local Setup
+
+Install dependencies:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Local Test Users
+Start transaction-capable MongoDB:
 
-Sample staff/admin users are not seeded during application startup or by default migrations. To create or reset sample login users for local API testing, run the seed script explicitly after MongoDB is running:
+```bash
+docker compose up -d mongodb
+```
+
+Verify the replica set is ready:
+
+```bash
+docker compose exec mongodb mongosh --quiet --eval "rs.status().ok"
+```
+
+Run migrations:
+
+```bash
+npm run migrate:up
+npm run migrate:status
+```
+
+Seed sample staff/admin users only when needed for manual API testing:
 
 ```bash
 npm run seed:users
 ```
 
-The script uses `MONGODB_URI` when it is set, otherwise it connects to `mongodb://localhost:27017/bookstore`.
-
 Seeded credentials:
 
 | Role | Email | Password |
-|------|-------|----------|
+| --- | --- | --- |
 | admin | `admin@example.com` | `AdminPass123!` |
 | staff | `staff@example.com` | `StaffPass123!` |
 
-The script is idempotent for these sample emails and resets their passwords to the values above each time it is run.
+The seed is explicit and idempotent. It is not run during app startup or by default migrations.
 
-## Test
+Start the API:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run start:dev
 ```
 
-## Support
+Open API docs:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```text
+http://localhost:3000/docs
+```
 
-## Stay in touch
+Health check:
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+curl http://localhost:3000/health
+```
 
-## License
+## Auth
 
-  Nest is [MIT licensed](LICENSE).
+Log in with a seeded staff/admin user:
+
+```bash
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com","password":"AdminPass123!"}'
+```
+
+Use the returned access token for protected endpoints:
+
+```bash
+curl http://localhost:3000/books \
+  -H "Authorization: Bearer <accessToken>"
+```
+
+Protected management endpoints require a valid bearer token and an allowed staff/admin role.
+
+## API Areas
+
+- `POST /auth/login` for staff/admin login.
+- `/staff-users` for admin-managed staff users.
+- `/book-categories` and `/books` for catalog and inventory management.
+- `/membership-types` and `/members` for member policy and borrowing-limit management.
+- `/borrowings` for borrowing creation, return, list, overdue checks, and member borrowing history.
+- `/health` for runtime readiness.
+
+## Migrations
+
+Migration files live under `migrations/versions` and record applied versions in MongoDB.
+
+```bash
+npm run migrate:up
+npm run migrate:status
+```
+
+Migration commands read `MONGODB_URI`; if it is missing, the runner falls back to `mongodb://localhost:27017/bookstore`.
+
+## Tests and Verification
+
+```bash
+npm run lint
+npm run test
+npm run test:e2e
+npm run build
+```
+
+Run migration verification against a local MongoDB instance:
+
+```bash
+npm run migrate:status
+```
+
+## Containers
+
+Build and start the app plus MongoDB replica set:
+
+```bash
+docker compose up --build
+```
+
+Run only MongoDB for local development:
+
+```bash
+docker compose up -d mongodb
+```
+
+Stop containers:
+
+```bash
+docker compose down
+```
+
+Remove the local MongoDB volume only when intentionally resetting local data:
+
+```bash
+docker compose down -v
+```

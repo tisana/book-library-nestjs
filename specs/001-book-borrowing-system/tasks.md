@@ -178,22 +178,22 @@
 
 **Purpose**: Finish documentation, generated API docs, operational readiness, and full verification.
 
-- [ ] T090 [P] Update project README with library API setup, auth, migrations, replica set MongoDB, environment variables, tests, and container commands in README.md
-- [ ] T091 [P] Add OpenAPI annotations to auth DTOs in src/auth/auth.controller.ts
-- [ ] T092 [P] Add OpenAPI annotations to staff user DTOs in src/staff-users/dto/staff-user.dto.ts
-- [ ] T093 [P] Add OpenAPI annotations to book DTOs in src/books/dto/book.dto.ts
-- [ ] T094 [P] Add OpenAPI annotations to book category DTOs in src/book-categories/dto/book-category.dto.ts
-- [ ] T095 [P] Add OpenAPI annotations to membership type DTOs in src/membership-types/dto/membership-type.dto.ts
-- [ ] T096 [P] Add OpenAPI annotations to member DTOs in src/members/dto/member.dto.ts
-- [ ] T097 [P] Add OpenAPI annotations to borrowing DTOs in src/borrowings/dto/borrowing.dto.ts
-- [ ] T098 Update quickstart verification examples for auth, migrations, and transaction-capable MongoDB in specs/001-book-borrowing-system/quickstart.md
-- [ ] T099 Remove unsafe console logging and sensitive data exposure from existing controller and middleware code in src/books/books.controller.ts
-- [ ] T100 Run and fix `npm run lint` issues across source and test files in package.json
-- [ ] T101 Run and fix `npm run test` failures across unit specs in package.json
-- [ ] T102 Run and fix `npm run test:e2e` failures across e2e specs in package.json
-- [ ] T103 Run and fix `npm run migrate:status` and migration command failures in package.json
-- [ ] T104 Run and fix `npm run build` production compilation issues in package.json
-- [ ] T105 Validate container startup, MongoDB replica set readiness, migrations, and health check with `docker compose up --build` using docker-compose.yml
+- [X] T090 [P] Update project README with library API setup, auth, migrations, replica set MongoDB, environment variables, tests, and container commands in README.md
+- [X] T091 [P] Add OpenAPI annotations to auth DTOs in src/auth/auth.controller.ts
+- [X] T092 [P] Add OpenAPI annotations to staff user DTOs in src/staff-users/dto/staff-user.dto.ts
+- [X] T093 [P] Add OpenAPI annotations to book DTOs in src/books/dto/book.dto.ts
+- [X] T094 [P] Add OpenAPI annotations to book category DTOs in src/book-categories/dto/book-category.dto.ts
+- [X] T095 [P] Add OpenAPI annotations to membership type DTOs in src/membership-types/dto/membership-type.dto.ts
+- [X] T096 [P] Add OpenAPI annotations to member DTOs in src/members/dto/member.dto.ts
+- [X] T097 [P] Add OpenAPI annotations to borrowing DTOs in src/borrowings/dto/borrowing.dto.ts
+- [X] T098 Update quickstart verification examples for auth, migrations, and transaction-capable MongoDB in specs/001-book-borrowing-system/quickstart.md
+- [X] T099 Remove unsafe console logging and sensitive data exposure from existing controller and middleware code in src/books/books.controller.ts
+- [X] T100 Run and fix `npm run lint` issues across source and test files in package.json
+- [X] T101 Run and fix `npm run test` failures across unit specs in package.json
+- [X] T102 Run and fix `npm run test:e2e` failures across e2e specs in package.json
+- [X] T103 Run and fix `npm run migrate:status` and migration command failures in package.json
+- [X] T104 Run and fix `npm run build` production compilation issues in package.json
+- [X] T105 Validate container startup, MongoDB replica set readiness, migrations, and health check with `docker compose up --build` using docker-compose.yml
 
 ---
 

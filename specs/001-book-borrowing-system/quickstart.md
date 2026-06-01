@@ -2,10 +2,10 @@
 
 ## Prerequisites
 
-- Node.js compatible with the current NestJS 11 project
-- npm
-- Docker and Docker Compose
-- MongoDB configured with replica set support for transactions
+- Node.js compatible with the current NestJS 11 project.
+- npm.
+- Docker and Docker Compose.
+- MongoDB running as a replica set. Borrow and return workflows use MongoDB transactions, so standalone MongoDB is not sufficient for full local verification.
 
 ## Local Development
 
@@ -15,107 +15,146 @@
    npm install
    ```
 
-2. Start MongoDB in transaction-capable replica set mode:
+2. Start MongoDB in replica set mode:
 
    ```bash
    docker compose up -d mongodb
    ```
 
-3. Configure the application:
+3. Verify MongoDB is transaction-capable:
 
    ```bash
-   MONGODB_URI=mongodb://localhost:27017/bookstore
-   PORT=3000
-   JWT_SECRET=replace-with-local-secret
+   docker compose exec mongodb mongosh --quiet --eval "rs.status().ok"
    ```
 
-4. Run MongoDB migrations:
+   Expected result:
+
+   ```text
+   1
+   ```
+
+4. Configure the application with `.env`:
+
+   ```env
+   PORT=3000
+   MONGODB_URI=mongodb://localhost:27017/bookstore?replicaSet=rs0
+   JWT_SECRET=replace-with-local-secret
+   JWT_EXPIRES_IN=1h
+   ```
+
+5. Run migrations and verify status:
 
    ```bash
    npm run migrate:up
+   npm run migrate:status
    ```
 
-5. Start the NestJS app:
+   Expected status output should show the versioned library migration as applied.
+
+6. Seed local staff/admin users for manual testing:
+
+   ```bash
+   npm run seed:users
+   ```
+
+7. Start the NestJS app:
 
    ```bash
    npm run start:dev
    ```
 
-6. Verify readiness:
+8. Verify readiness:
 
    ```bash
    curl http://localhost:3000/health
    ```
 
-## Container Deployment Baseline
+## Auth Verification
 
-The implementation should add:
-
-- `Dockerfile` for the NestJS app
-- App service in `docker-compose.yml`
-- Environment-based `MONGODB_URI`
-- MongoDB replica set initialization for transaction support
-- Migration command for collection/index/reference-data changes
-- Health check endpoint and container health check
-- No secrets committed to source control
-
-Expected local container flow:
+Log in as the seeded admin:
 
 ```bash
-docker compose up --build
-curl http://localhost:3000/health
-npm run migrate:status
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com","password":"AdminPass123!"}'
 ```
 
-## Seed Data for Manual Testing
+Use the returned access token:
 
-Create these records through migrations or authenticated admin/staff APIs before testing borrowing:
+```bash
+curl http://localhost:3000/members \
+  -H "Authorization: Bearer <accessToken>"
+```
 
-0. Staff/admin user:
-   - Active status
-   - `admin` or `staff` role
-   - Password stored only as a hash
+Confirm protected endpoints reject missing credentials:
+
+```bash
+curl -i http://localhost:3000/members
+```
+
+Expected result: `401 Unauthorized`.
+
+## Seed Data for Borrowing Tests
+
+Create these records through authenticated staff/admin APIs before manual borrowing tests:
 
 1. Book category:
    - `code`: `STANDARD`
    - `loanPeriodDays`: `14`
+   - `status`: `active`
 
 2. Membership type:
    - `code`: `STANDARD`
    - `maxActiveLoans`: `5`
+   - `status`: `active`
 
 3. Member:
-   - Active status
-   - Assigned to `STANDARD` membership type
+   - Active status.
+   - Assigned to the `STANDARD` membership type.
 
 4. Book:
-   - Active status
-   - Assigned to `STANDARD` category
+   - Active status.
+   - Assigned to the `STANDARD` category.
    - `totalQuantity`: `2`
    - `availableQuantity`: `2`
 
 ## Verification Scenarios
 
-- Authenticate as staff/admin and use the bearer token for protected management endpoints.
-- Confirm protected endpoints reject unauthenticated requests.
-- Confirm protected endpoints reject authenticated users without the required role.
-- Create a valid borrowing and confirm book availability decreases by one.
+- Create a borrowing and confirm the due date is based on the book category loan period.
+- Confirm book availability decreases by one after borrowing.
 - Return the borrowing and confirm availability increases exactly once.
+- Attempt to return the same borrowing twice and confirm the second return is blocked.
 - Attempt to borrow when `availableQuantity` is zero and confirm the request is blocked.
 - Attempt to borrow beyond the membership-type limit and confirm the request is blocked.
 - Create or simulate an overdue loan and confirm the member cannot borrow another book.
 - Attempt to borrow with an inactive member and confirm the request is blocked.
-- Confirm staff/admin authorization is required for state-changing endpoints.
-- Confirm migrations apply once, record their version, and include rollback notes.
-- Confirm borrow and return workflows run against transaction-capable MongoDB.
+- Confirm protected endpoints require bearer auth and staff/admin authorization.
+- Confirm migrations apply once and retain rollback notes.
+- Confirm borrow and return tests run against transaction-capable MongoDB.
 
 ## Test Commands
 
 ```bash
+npm run lint
 npm run test
 npm run test:e2e
-npm run lint
 npm run build
-npm run migrate:up
 npm run migrate:status
 ```
+
+## Container Baseline
+
+Start the full app stack:
+
+```bash
+docker compose up --build
+```
+
+After startup:
+
+```bash
+curl http://localhost:3000/health
+npm run migrate:status
+```
+
+The app container uses `mongodb://mongodb:27017/bookstore?replicaSet=rs0`. The local host workflow uses `mongodb://localhost:27017/bookstore?replicaSet=rs0`.
