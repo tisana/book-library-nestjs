@@ -3,8 +3,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { APP_FILTER } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { BooksController } from './books/books.controller';
 import { BooksModule } from './books/books.module';
 import { BorrowingsModule } from './borrowings/borrowings.module';
@@ -44,9 +42,8 @@ import { StaffUsersModule } from './staff-users/staff-users.module';
     MembersModule,
     BorrowingsModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [
-    AppService,
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,

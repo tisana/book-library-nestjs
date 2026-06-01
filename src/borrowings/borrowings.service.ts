@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { ClientSession, Connection, Model } from 'mongoose';
@@ -46,6 +47,8 @@ export class BorrowingsService {
     dto: CreateBorrowingDto,
     actor?: AuditActor,
   ): Promise<BorrowingResponseDto> {
+    const auditActor = this.requireActor(actor);
+
     return this.runInTransaction(async (session) => {
       const borrowedAt = new Date();
       const member = await this.findMember(dto.memberId, session);
@@ -79,13 +82,13 @@ export class BorrowingsService {
         borrowedAt,
         dueAt: this.calculateDueAt(borrowedAt, category.loanPeriodDays),
         status: LoanState.Active,
-        borrowedByStaffId: actor?.id ?? 'system',
+        borrowedByStaffId: auditActor.id,
       }).save({ session });
 
       book.availableQuantity -= 1;
-      book.updatedBy = actor?.id;
+      book.updatedBy = auditActor.id;
       member.activeLoanCount += 1;
-      member.updatedBy = actor?.id;
+      member.updatedBy = auditActor.id;
 
       await book.save({ session });
       await member.save({ session });
@@ -99,6 +102,8 @@ export class BorrowingsService {
     dto: ReturnBorrowingDto = {},
     actor?: AuditActor,
   ): Promise<BorrowingResponseDto> {
+    const auditActor = this.requireActor(actor);
+
     return this.runInTransaction(async (session) => {
       const returnedAt = dto.returnedAt ? new Date(dto.returnedAt) : new Date();
       const borrowing = await this.findBorrowing(id, session);
@@ -121,12 +126,12 @@ export class BorrowingsService {
       );
 
       borrowing.returnedAt = returnedAt;
-      borrowing.returnedByStaffId = actor?.id ?? 'system';
+      borrowing.returnedByStaffId = auditActor.id;
       borrowing.status = LoanState.Returned;
       book.availableQuantity += 1;
-      book.updatedBy = actor?.id;
+      book.updatedBy = auditActor.id;
       member.activeLoanCount = Math.max(member.activeLoanCount - 1, 0);
-      member.updatedBy = actor?.id;
+      member.updatedBy = auditActor.id;
 
       await borrowing.save({ session });
       await book.save({ session });
@@ -313,6 +318,14 @@ export class BorrowingsService {
     } finally {
       await session.endSession();
     }
+  }
+
+  private requireActor(actor?: AuditActor): AuditActor {
+    if (!actor?.id) {
+      throw new UnauthorizedException('Authenticated staff actor is required');
+    }
+
+    return actor;
   }
 
   private toResponse(
