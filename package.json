@@ -17,6 +17,7 @@
     "migrate:up": "ts-node -r tsconfig-paths/register migrations/migrate.ts up",
     "migrate:status": "ts-node -r tsconfig-paths/register migrations/migrate.ts status",
     "seed:users": "ts-node -r tsconfig-paths/register scripts/seed-sample-users.ts",
+    "seed:demo": "ts-node -r tsconfig-paths/register scripts/seed-demo-data.ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",

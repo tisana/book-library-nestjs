@@ -30,7 +30,7 @@ JWT_SECRET=replace-with-a-long-random-secret
 JWT_EXPIRES_IN=1h
 ```
 
-`MONGODB_URI` is used by the API, migration runner, and sample user seed script. For Docker Compose, the app service uses `mongodb://mongodb:27017/bookstore?replicaSet=rs0`.
+`MONGODB_URI` is used by the API, migration runner, and sample seed scripts. For Docker Compose, the app service uses `mongodb://mongodb:27017/bookstore?replicaSet=rs0`.
 
 ## Local Setup
 
@@ -73,6 +73,14 @@ Seeded credentials:
 | staff | `staff@example.com` | `StaffPass123!` |
 
 The seed is explicit and idempotent. It is not run during app startup or by default migrations.
+
+Seed demo library data when needed for API client demos or e2e walkthroughs:
+
+```bash
+npm run seed:demo
+```
+
+The demo seed creates book categories, membership types, books, members, and borrowing records covering available inventory, active loans, returned loans, overdue loans, suspended members, and a member at the borrowing limit. It is explicit and idempotent: it upserts fixed demo records and replaces only borrowing records created by the demo seed actor.
 
 Start the API:
 
