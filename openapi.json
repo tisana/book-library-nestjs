@@ -1,0 +1,1471 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "JWT access token and authenticated staff profile.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid login request payload."
+          },
+          "401": {
+            "description": "Invalid staff credentials."
+          }
+        },
+        "summary": "Authenticate a staff user",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/staff-users": {
+      "post": {
+        "operationId": "StaffUsersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStaffUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "StaffUsers"
+        ]
+      },
+      "get": {
+        "operationId": "StaffUsersController_findAll",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/StaffUserStatus"
+            }
+          },
+          {
+            "name": "role",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/StaffRole"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "StaffUsers"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "HealthController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/book-categories": {
+      "post": {
+        "operationId": "BookCategoriesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBookCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "BookCategories"
+        ]
+      },
+      "get": {
+        "operationId": "BookCategoriesController_findAll",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/LibraryItemStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "BookCategories"
+        ]
+      }
+    },
+    "/book-categories/{id}": {
+      "patch": {
+        "operationId": "BookCategoriesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBookCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "BookCategories"
+        ]
+      }
+    },
+    "/books": {
+      "get": {
+        "operationId": "BooksController_findAll",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Search term for title or identifier.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "author",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "Robert C. Martin",
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "507f1f77bcf86cd799439011",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/LibraryItemStatus"
+            }
+          },
+          {
+            "name": "availableOnly",
+            "required": false,
+            "in": "query",
+            "description": "When true, only books with available copies are returned.",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Books"
+        ]
+      },
+      "post": {
+        "operationId": "BooksController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBookDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Books"
+        ]
+      }
+    },
+    "/books/{id}": {
+      "get": {
+        "operationId": "BooksController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Books"
+        ]
+      },
+      "patch": {
+        "operationId": "BooksController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBookDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Books"
+        ]
+      }
+    },
+    "/membership-types": {
+      "post": {
+        "operationId": "MembershipTypesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMembershipTypeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "MembershipTypes"
+        ]
+      },
+      "get": {
+        "operationId": "MembershipTypesController_findAll",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "active",
+              "type": "string",
+              "enum": [
+                "active",
+                "deactivated"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "MembershipTypes"
+        ]
+      }
+    },
+    "/membership-types/{id}": {
+      "patch": {
+        "operationId": "MembershipTypesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMembershipTypeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "MembershipTypes"
+        ]
+      }
+    },
+    "/members": {
+      "post": {
+        "operationId": "MembersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMemberDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Members"
+        ]
+      },
+      "get": {
+        "operationId": "MembersController_findAll",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "jane",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "active",
+              "type": "string",
+              "enum": [
+                "active",
+                "suspended",
+                "inactive"
+              ]
+            }
+          },
+          {
+            "name": "membershipTypeId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "665f4d3b8f4c8a001f5f0a11",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Members"
+        ]
+      }
+    },
+    "/members/{id}/policy-status": {
+      "get": {
+        "operationId": "MembersController_getPolicyStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Members"
+        ]
+      }
+    },
+    "/members/{id}/borrowings": {
+      "get": {
+        "operationId": "MembersController_findBorrowings",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "memberId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "665f4d3b8f4c8a001f5f0a12",
+              "type": "string"
+            }
+          },
+          {
+            "name": "bookId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "665f4d3b8f4c8a001f5f0a13",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "active",
+              "type": "string",
+              "enum": [
+                "active",
+                "returned",
+                "overdue",
+                "cancelled"
+              ]
+            }
+          },
+          {
+            "name": "overdueOnly",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": true,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Members"
+        ]
+      }
+    },
+    "/members/{id}": {
+      "get": {
+        "operationId": "MembersController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Members"
+        ]
+      },
+      "patch": {
+        "operationId": "MembersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMemberDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Members"
+        ]
+      }
+    },
+    "/borrowings": {
+      "post": {
+        "operationId": "BorrowingsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBorrowingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Borrowings"
+        ]
+      },
+      "get": {
+        "operationId": "BorrowingsController_findAll",
+        "parameters": [
+          {
+            "name": "memberId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "665f4d3b8f4c8a001f5f0a12",
+              "type": "string"
+            }
+          },
+          {
+            "name": "bookId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "665f4d3b8f4c8a001f5f0a13",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "active",
+              "type": "string",
+              "enum": [
+                "active",
+                "returned",
+                "overdue",
+                "cancelled"
+              ]
+            }
+          },
+          {
+            "name": "overdueOnly",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": true,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Borrowings"
+        ]
+      }
+    },
+    "/borrowings/overdue": {
+      "get": {
+        "operationId": "BorrowingsController_findOverdue",
+        "parameters": [
+          {
+            "name": "memberId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "665f4d3b8f4c8a001f5f0a12",
+              "type": "string"
+            }
+          },
+          {
+            "name": "bookId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "665f4d3b8f4c8a001f5f0a13",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "active",
+              "type": "string",
+              "enum": [
+                "active",
+                "returned",
+                "overdue",
+                "cancelled"
+              ]
+            }
+          },
+          {
+            "name": "overdueOnly",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": true,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Borrowings"
+        ]
+      }
+    },
+    "/borrowings/{id}": {
+      "get": {
+        "operationId": "BorrowingsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Borrowings"
+        ]
+      }
+    },
+    "/borrowings/{id}/return": {
+      "post": {
+        "operationId": "BorrowingsController_returnBorrowing",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReturnBorrowingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid."
+          },
+          "403": {
+            "description": "Staff or admin role is required."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Borrowings"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Book Library API",
+    "description": "Staff-facing API for book borrowing workflows",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "admin@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "ChangeMe12345"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "StaffRole": {
+        "type": "string",
+        "enum": [
+          "staff",
+          "admin"
+        ]
+      },
+      "StaffUserStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "suspended",
+          "inactive"
+        ]
+      },
+      "StaffUserResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "507f1f77bcf86cd799439011"
+          },
+          "email": {
+            "type": "string",
+            "example": "staff@example.com"
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Circulation Staff"
+          },
+          "roles": {
+            "type": "array",
+            "example": [
+              "staff"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/StaffRole"
+            }
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffUserStatus"
+              }
+            ]
+          },
+          "lastLoginAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-06-01T10:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "displayName",
+          "roles"
+        ]
+      },
+      "LoginResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "Bearer token used to authenticate staff API requests."
+          },
+          "user": {
+            "$ref": "#/components/schemas/StaffUserResponseDto"
+          }
+        },
+        "required": [
+          "accessToken",
+          "user"
+        ]
+      },
+      "CreateStaffUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "staff@example.com"
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Circulation Staff"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 12,
+            "example": "ChangeMe12345"
+          },
+          "roles": {
+            "type": "array",
+            "example": [
+              "staff"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/StaffRole"
+            }
+          }
+        },
+        "required": [
+          "email",
+          "displayName",
+          "password",
+          "roles"
+        ]
+      },
+      "CreateBookCategoryDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "FIC"
+          },
+          "name": {
+            "type": "string",
+            "example": "Fiction"
+          },
+          "loanPeriodDays": {
+            "type": "number",
+            "minimum": 1,
+            "example": 14
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "loanPeriodDays"
+        ]
+      },
+      "LibraryItemStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "deactivated"
+        ]
+      },
+      "UpdateBookCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Fiction"
+          },
+          "loanPeriodDays": {
+            "type": "number",
+            "minimum": 1,
+            "example": 14
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LibraryItemStatus"
+              }
+            ]
+          }
+        }
+      },
+      "CreateBookDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Clean Code"
+          },
+          "author": {
+            "type": "string",
+            "example": "Robert C. Martin"
+          },
+          "isbn": {
+            "type": "string",
+            "example": "9780132350884"
+          },
+          "catalogIdentifier": {
+            "type": "string",
+            "example": "BOOK-0001"
+          },
+          "categoryId": {
+            "type": "string",
+            "example": "507f1f77bcf86cd799439011"
+          },
+          "totalQuantity": {
+            "type": "number",
+            "minimum": 0,
+            "example": 3
+          }
+        },
+        "required": [
+          "title",
+          "catalogIdentifier",
+          "categoryId",
+          "totalQuantity"
+        ]
+      },
+      "UpdateBookDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Clean Code"
+          },
+          "author": {
+            "type": "string",
+            "example": "Robert C. Martin"
+          },
+          "isbn": {
+            "type": "string",
+            "example": "9780132350884"
+          },
+          "catalogIdentifier": {
+            "type": "string",
+            "example": "BOOK-0001"
+          },
+          "categoryId": {
+            "type": "string",
+            "example": "507f1f77bcf86cd799439011"
+          },
+          "totalQuantity": {
+            "type": "number",
+            "minimum": 0,
+            "example": 3
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LibraryItemStatus"
+              }
+            ]
+          }
+        }
+      },
+      "CreateMembershipTypeDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "STANDARD"
+          },
+          "name": {
+            "type": "string",
+            "example": "Standard Membership"
+          },
+          "maxActiveLoans": {
+            "type": "number",
+            "example": 5,
+            "minimum": 0
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "maxActiveLoans"
+        ]
+      },
+      "UpdateMembershipTypeDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Premium Membership"
+          },
+          "maxActiveLoans": {
+            "type": "number",
+            "example": 10,
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "deactivated"
+            ],
+            "example": "active"
+          }
+        }
+      },
+      "CreateMemberDto": {
+        "type": "object",
+        "properties": {
+          "memberNumber": {
+            "type": "string",
+            "example": "M-10001"
+          },
+          "fullName": {
+            "type": "string",
+            "example": "Jane Reader"
+          },
+          "email": {
+            "type": "string",
+            "example": "jane.reader@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+66123456789"
+          },
+          "membershipTypeId": {
+            "type": "string",
+            "example": "665f4d3b8f4c8a001f5f0a11"
+          },
+          "activeLoanCount": {
+            "type": "number",
+            "example": 0,
+            "minimum": 0
+          }
+        },
+        "required": [
+          "memberNumber",
+          "fullName",
+          "membershipTypeId"
+        ]
+      },
+      "UpdateMemberDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "example": "Jane Reader"
+          },
+          "email": {
+            "type": "string",
+            "example": "jane.reader@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+66123456789"
+          },
+          "membershipTypeId": {
+            "type": "string",
+            "example": "665f4d3b8f4c8a001f5f0a11"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "suspended",
+              "inactive"
+            ],
+            "example": "active"
+          },
+          "activeLoanCount": {
+            "type": "number",
+            "example": 2,
+            "minimum": 0
+          }
+        }
+      },
+      "CreateBorrowingDto": {
+        "type": "object",
+        "properties": {
+          "memberId": {
+            "type": "string",
+            "example": "665f4d3b8f4c8a001f5f0a12"
+          },
+          "bookId": {
+            "type": "string",
+            "example": "665f4d3b8f4c8a001f5f0a13"
+          }
+        },
+        "required": [
+          "memberId",
+          "bookId"
+        ]
+      },
+      "ReturnBorrowingDto": {
+        "type": "object",
+        "properties": {
+          "returnedAt": {
+            "type": "string",
+            "example": "2026-06-01T10:00:00.000Z"
+          }
+        }
+      }
+    }
+  }
+}
