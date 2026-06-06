@@ -6,6 +6,7 @@ import { BookCategoryDocument } from './schemas/book-category.schema';
 
 describe('BookCategoriesService', () => {
   describe('when managing categories', () => {
+    const validCategoryId = '665f4d3b8f4c8a001f5f0a11';
     const actor = {
       id: 'staff-user-id',
       email: 'staff@example.com',
@@ -15,7 +16,7 @@ describe('BookCategoriesService', () => {
     type MockCategoryModel = jest.Mock & {
       exists?: jest.Mock;
       find?: jest.Mock;
-      findById?: jest.Mock;
+      findOne?: jest.Mock;
     };
 
     function asModel(model: MockCategoryModel): Model<BookCategoryDocument> {
@@ -48,7 +49,9 @@ describe('BookCategoriesService', () => {
         actor,
       );
 
-      expect(model.exists).toHaveBeenCalledWith({ code: 'STANDARD' });
+      expect(model.exists).toHaveBeenCalledWith({
+        code: { $eq: 'STANDARD' },
+      });
       expect(createdDocuments[0]).toMatchObject({
         code: 'STANDARD',
         name: 'Standard Collection',
@@ -78,7 +81,9 @@ describe('BookCategoriesService', () => {
           loanPeriodDays: 14,
         }),
       ).rejects.toBeInstanceOf(ConflictException);
-      expect(model.exists).toHaveBeenCalledWith({ code: 'STANDARD' });
+      expect(model.exists).toHaveBeenCalledWith({
+        code: { $eq: 'STANDARD' },
+      });
       expect(model).not.toHaveBeenCalled();
     });
 
@@ -106,7 +111,9 @@ describe('BookCategoriesService', () => {
         limit: 10,
       });
 
-      expect(find).toHaveBeenCalledWith({ status: LibraryItemStatus.Active });
+      expect(find).toHaveBeenCalledWith({
+        status: { $eq: LibraryItemStatus.Active },
+      });
       expect(sort).toHaveBeenCalledWith({ code: 1 });
       expect(skip).toHaveBeenCalledWith(10);
       expect(limit).toHaveBeenCalledWith(10);
@@ -116,10 +123,10 @@ describe('BookCategoriesService', () => {
     it('returns category details or not found for missing identifiers', async () => {
       const exec = jest.fn().mockResolvedValue(null);
       const model: MockCategoryModel = jest.fn();
-      model.findById = jest.fn().mockReturnValue({ exec });
+      model.findOne = jest.fn().mockReturnValue({ exec });
       const service = new BookCategoriesService(asModel(model));
 
-      await expect(service.findOne('missing-id')).rejects.toBeInstanceOf(
+      await expect(service.findOne(validCategoryId)).rejects.toBeInstanceOf(
         NotFoundException,
       );
     });
@@ -138,11 +145,11 @@ describe('BookCategoriesService', () => {
       };
       const exec = jest.fn().mockResolvedValue(document);
       const model: MockCategoryModel = jest.fn();
-      model.findById = jest.fn().mockReturnValue({ exec });
+      model.findOne = jest.fn().mockReturnValue({ exec });
       const service = new BookCategoriesService(asModel(model));
 
       const result = await service.update(
-        'category-id',
+        validCategoryId,
         { status: LibraryItemStatus.Deactivated },
         actor,
       );
@@ -164,11 +171,11 @@ describe('BookCategoriesService', () => {
         status: LibraryItemStatus.Deactivated,
       });
       const model: MockCategoryModel = jest.fn();
-      model.findById = jest.fn().mockReturnValue({ exec });
+      model.findOne = jest.fn().mockReturnValue({ exec });
       const service = new BookCategoriesService(asModel(model));
 
       await expect(
-        service.validateActiveLoanPeriod('category-id'),
+        service.validateActiveLoanPeriod(validCategoryId),
       ).rejects.toBeInstanceOf(ConflictException);
     });
   });

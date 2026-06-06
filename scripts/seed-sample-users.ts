@@ -62,9 +62,7 @@ async function seedSampleUsers(): Promise<void> {
         { upsert: true },
       );
 
-      console.log(
-        `Seeded ${user.roles.join(',')} user ${email} with password ${user.password}`,
-      );
+      console.log(`Seeded ${user.roles.join(',')} user ${email}`);
     }
   } finally {
     await mongoose.disconnect();

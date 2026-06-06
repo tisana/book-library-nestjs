@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AuditActor } from '../common/audit/audit-context';
 import { LibraryItemStatus } from '../common/enums/library-status.enum';
+import { equals, toMongoObjectId } from '../common/mongo/mongo-query.helpers';
 import {
   BookCategoryQueryDto,
   BookCategoryResponseDto,
@@ -34,7 +35,10 @@ export class BookCategoriesService {
       exists?: (filter: Record<string, unknown>) => Promise<unknown>;
     };
 
-    if (modelWithExists.exists && (await modelWithExists.exists({ code }))) {
+    if (
+      modelWithExists.exists &&
+      (await modelWithExists.exists({ code: equals(code) }))
+    ) {
       throw new ConflictException('Book category code already exists');
     }
 
@@ -56,7 +60,7 @@ export class BookCategoriesService {
     const filter: Record<string, unknown> = {};
 
     if (query.status) {
-      filter.status = query.status;
+      filter.status = equals(query.status);
     }
 
     const categories = await this.bookCategoryModel
@@ -111,7 +115,9 @@ export class BookCategoriesService {
   }
 
   private async findDocumentById(id: string): Promise<BookCategoryDocument> {
-    const category = await this.bookCategoryModel.findById(id).exec();
+    const category = await this.bookCategoryModel
+      .findOne({ _id: equals(toMongoObjectId(id)) })
+      .exec();
 
     if (!category) {
       throw new NotFoundException('Book category not found');

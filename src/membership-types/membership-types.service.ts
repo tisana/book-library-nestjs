@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AuditActor } from '../common/audit/audit-context';
 import { LibraryItemStatus } from '../common/enums/library-status.enum';
+import { equals, toMongoObjectId } from '../common/mongo/mongo-query.helpers';
 import {
   CreateMembershipTypeDto,
   MembershipTypeQueryDto,
@@ -34,7 +35,10 @@ export class MembershipTypesService {
       exists?: (filter: Record<string, unknown>) => Promise<unknown>;
     };
 
-    if (modelWithExists.exists && (await modelWithExists.exists({ code }))) {
+    if (
+      modelWithExists.exists &&
+      (await modelWithExists.exists({ code: equals(code) }))
+    ) {
       throw new ConflictException('Membership type code already exists');
     }
 
@@ -56,7 +60,7 @@ export class MembershipTypesService {
     const filter: Record<string, unknown> = {};
 
     if (query.status) {
-      filter.status = query.status;
+      filter.status = equals(query.status);
     }
 
     const membershipTypes = await this.membershipTypeModel
@@ -110,7 +114,9 @@ export class MembershipTypesService {
   }
 
   private async findDocumentById(id: string): Promise<MembershipTypeDocument> {
-    const membershipType = await this.membershipTypeModel.findById(id).exec();
+    const membershipType = await this.membershipTypeModel
+      .findOne({ _id: equals(toMongoObjectId(id)) })
+      .exec();
 
     if (!membershipType) {
       throw new NotFoundException('Membership type not found');

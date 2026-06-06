@@ -5,6 +5,7 @@ import { MembershipTypesService } from './membership-types.service';
 import { MembershipTypeDocument } from './schemas/membership-type.schema';
 
 describe('MembershipTypesService', () => {
+  const validMembershipTypeId = '665f4d3b8f4c8a001f5f0a11';
   const actor = {
     id: 'staff-user-id',
     email: 'staff@example.com',
@@ -14,7 +15,7 @@ describe('MembershipTypesService', () => {
   type MockMembershipTypeModel = jest.Mock & {
     exists?: jest.Mock;
     find?: jest.Mock;
-    findById?: jest.Mock;
+    findOne?: jest.Mock;
   };
 
   function asModel(
@@ -49,7 +50,7 @@ describe('MembershipTypesService', () => {
       actor,
     );
 
-    expect(model.exists).toHaveBeenCalledWith({ code: 'STANDARD' });
+    expect(model.exists).toHaveBeenCalledWith({ code: { $eq: 'STANDARD' } });
     expect(createdDocuments[0]).toMatchObject({
       code: 'STANDARD',
       name: 'Standard Member',
@@ -78,7 +79,7 @@ describe('MembershipTypesService', () => {
         maxActiveLoans: 3,
       }),
     ).rejects.toBeInstanceOf(ConflictException);
-    expect(model.exists).toHaveBeenCalledWith({ code: 'STANDARD' });
+    expect(model.exists).toHaveBeenCalledWith({ code: { $eq: 'STANDARD' } });
     expect(model).not.toHaveBeenCalled();
   });
 
@@ -106,7 +107,9 @@ describe('MembershipTypesService', () => {
       limit: 10,
     });
 
-    expect(find).toHaveBeenCalledWith({ status: LibraryItemStatus.Active });
+    expect(find).toHaveBeenCalledWith({
+      status: { $eq: LibraryItemStatus.Active },
+    });
     expect(sort).toHaveBeenCalledWith({ code: 1 });
     expect(skip).toHaveBeenCalledWith(10);
     expect(limit).toHaveBeenCalledWith(10);
@@ -116,10 +119,10 @@ describe('MembershipTypesService', () => {
   it('returns not found for missing membership types', async () => {
     const exec = jest.fn().mockResolvedValue(null);
     const model: MockMembershipTypeModel = jest.fn();
-    model.findById = jest.fn().mockReturnValue({ exec });
+    model.findOne = jest.fn().mockReturnValue({ exec });
     const service = new MembershipTypesService(asModel(model));
 
-    await expect(service.findOne('missing-id')).rejects.toBeInstanceOf(
+    await expect(service.findOne(validMembershipTypeId)).rejects.toBeInstanceOf(
       NotFoundException,
     );
   });
@@ -138,11 +141,11 @@ describe('MembershipTypesService', () => {
     };
     const exec = jest.fn().mockResolvedValue(document);
     const model: MockMembershipTypeModel = jest.fn();
-    model.findById = jest.fn().mockReturnValue({ exec });
+    model.findOne = jest.fn().mockReturnValue({ exec });
     const service = new MembershipTypesService(asModel(model));
 
     const result = await service.update(
-      'membership-type-id',
+      validMembershipTypeId,
       {
         maxActiveLoans: 1,
         status: LibraryItemStatus.Deactivated,
@@ -169,11 +172,11 @@ describe('MembershipTypesService', () => {
       status: LibraryItemStatus.Deactivated,
     });
     const model: MockMembershipTypeModel = jest.fn();
-    model.findById = jest.fn().mockReturnValue({ exec });
+    model.findOne = jest.fn().mockReturnValue({ exec });
     const service = new MembershipTypesService(asModel(model));
 
     await expect(
-      service.validateActivePolicy('membership-type-id'),
+      service.validateActivePolicy(validMembershipTypeId),
     ).rejects.toBeInstanceOf(ConflictException);
   });
 });

@@ -10,6 +10,7 @@ import { MembersService } from './members.service';
 import { MemberDocument } from './schemas/member.schema';
 
 describe('MembersService', () => {
+  const validMemberId = '665f4d3b8f4c8a001f5f0a12';
   const actor = {
     id: 'staff-user-id',
     email: 'staff@example.com',
@@ -27,7 +28,7 @@ describe('MembersService', () => {
   type MockMemberModel = jest.Mock & {
     exists?: jest.Mock;
     find?: jest.Mock;
-    findById?: jest.Mock;
+    findOne?: jest.Mock;
   };
 
   type MockMemberDocument = Omit<Partial<MemberDocument>, 'save'> & {
@@ -92,7 +93,9 @@ describe('MembersService', () => {
     expect(membershipTypesService.validateActivePolicy).toHaveBeenCalledWith(
       '64f000000000000000000001',
     );
-    expect(model.exists).toHaveBeenCalledWith({ memberNumber: 'MEM-0001' });
+    expect(model.exists).toHaveBeenCalledWith({
+      memberNumber: { $eq: 'MEM-0001' },
+    });
     expect(createdDocuments[0]).toMatchObject({
       memberNumber: 'MEM-0001',
       email: 'ada@example.com',
@@ -125,7 +128,9 @@ describe('MembersService', () => {
         membershipTypeId: '64f000000000000000000001',
       }),
     ).rejects.toBeInstanceOf(ConflictException);
-    expect(model.exists).toHaveBeenCalledWith({ memberNumber: 'MEM-0001' });
+    expect(model.exists).toHaveBeenCalledWith({
+      memberNumber: { $eq: 'MEM-0001' },
+    });
     expect(model).not.toHaveBeenCalled();
   });
 
@@ -152,8 +157,12 @@ describe('MembersService', () => {
 
     expect(find).toHaveBeenCalledWith(
       expect.objectContaining({
-        status: MemberStatus.Active,
-        membershipTypeId: '64f000000000000000000001',
+        status: { $eq: MemberStatus.Active },
+        membershipTypeId: {
+          $eq: expect.objectContaining({
+            _bsontype: 'ObjectId',
+          }),
+        },
       }),
     );
     expect(sort).toHaveBeenCalledWith({ memberNumber: 1 });
@@ -162,16 +171,41 @@ describe('MembersService', () => {
     expect(result).toHaveLength(1);
   });
 
-  it('returns not found for missing members', async () => {
-    const exec = jest.fn().mockResolvedValue(null);
+  it('builds literal case-insensitive search filters', async () => {
+    const exec = jest.fn().mockResolvedValue([]);
+    const limit = jest.fn().mockReturnValue({ exec });
+    const skip = jest.fn().mockReturnValue({ limit });
+    const sort = jest.fn().mockReturnValue({ skip });
+    const find = jest.fn().mockReturnValue({ sort });
     const model: MockMemberModel = jest.fn();
-    model.findById = jest.fn().mockReturnValue({ exec });
+    model.find = find;
     const service = new MembersService(
       asModel(model),
       createMembershipTypesService(),
     );
 
-    await expect(service.findOne('missing-id')).rejects.toBeInstanceOf(
+    await service.findAll({
+      q: 'Ada.*',
+      page: 1,
+      limit: 20,
+    });
+
+    const filter = find.mock.calls[0][0];
+    expect(filter.$or[0].memberNumber).toEqual(/Ada\.\*/i);
+    expect(filter.$or[1].fullName).toEqual(/Ada\.\*/i);
+    expect(filter.$or[2].email).toEqual(/Ada\.\*/i);
+  });
+
+  it('returns not found for missing members', async () => {
+    const exec = jest.fn().mockResolvedValue(null);
+    const model: MockMemberModel = jest.fn();
+    model.findOne = jest.fn().mockReturnValue({ exec });
+    const service = new MembersService(
+      asModel(model),
+      createMembershipTypesService(),
+    );
+
+    await expect(service.findOne(validMemberId)).rejects.toBeInstanceOf(
       NotFoundException,
     );
   });
@@ -181,12 +215,12 @@ describe('MembersService', () => {
     document.save.mockResolvedValue(document);
     const exec = jest.fn().mockResolvedValue(document);
     const model: MockMemberModel = jest.fn();
-    model.findById = jest.fn().mockReturnValue({ exec });
+    model.findOne = jest.fn().mockReturnValue({ exec });
     const membershipTypesService = createMembershipTypesService();
     const service = new MembersService(asModel(model), membershipTypesService);
 
     const result = await service.update(
-      'member-id',
+      validMemberId,
       {
         membershipTypeId: '64f000000000000000000002',
         status: MemberStatus.Suspended,
@@ -216,13 +250,13 @@ describe('MembersService', () => {
       }),
     );
     const model: MockMemberModel = jest.fn();
-    model.findById = jest.fn().mockReturnValue({ exec });
+    model.findOne = jest.fn().mockReturnValue({ exec });
     const service = new MembersService(
       asModel(model),
       createMembershipTypesService(),
     );
 
-    await expect(service.getPolicyStatus('member-id')).resolves.toEqual({
+    await expect(service.getPolicyStatus(validMemberId)).resolves.toEqual({
       memberId: 'member-id',
       status: MemberStatus.Active,
       membershipTypeId: '64f000000000000000000001',
@@ -243,13 +277,13 @@ describe('MembersService', () => {
       }),
     );
     const model: MockMemberModel = jest.fn();
-    model.findById = jest.fn().mockReturnValue({ exec });
+    model.findOne = jest.fn().mockReturnValue({ exec });
     const service = new MembersService(
       asModel(model),
       createMembershipTypesService(),
     );
 
-    await expect(service.getPolicyStatus('member-id')).resolves.toMatchObject({
+    await expect(service.getPolicyStatus(validMemberId)).resolves.toMatchObject({
       status: MemberStatus.Suspended,
       activeLoanCount: 3,
       remainingAllowance: 0,

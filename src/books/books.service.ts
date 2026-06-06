@@ -9,6 +9,11 @@ import { Model } from 'mongoose';
 import { AuditActor } from '../common/audit/audit-context';
 import { LibraryItemStatus } from '../common/enums/library-status.enum';
 import {
+  containsLiteral,
+  equals,
+  toMongoObjectId,
+} from '../common/mongo/mongo-query.helpers';
+import {
   BookQueryDto,
   BookResponseDto,
   CreateBookDto,
@@ -43,23 +48,24 @@ export class BooksService {
     const filter: Record<string, unknown> = {};
 
     if (query.q) {
+      const search = containsLiteral(query.q);
       filter.$or = [
-        { title: new RegExp(query.q, 'i') },
-        { author: new RegExp(query.q, 'i') },
-        { catalogIdentifier: new RegExp(query.q, 'i') },
+        { title: search },
+        { author: search },
+        { catalogIdentifier: search },
       ];
     }
 
     if (query.author) {
-      filter.author = new RegExp(query.author, 'i');
+      filter.author = containsLiteral(query.author);
     }
 
     if (query.categoryId) {
-      filter.categoryId = query.categoryId;
+      filter.categoryId = equals(toMongoObjectId(query.categoryId, 'categoryId'));
     }
 
     if (query.status) {
-      filter.status = query.status;
+      filter.status = equals(query.status);
     }
 
     if (query.availableOnly) {
@@ -133,7 +139,9 @@ export class BooksService {
   }
 
   private async findDocumentById(id: string): Promise<BookDocument> {
-    const book = await this.bookModel.findById(id).exec();
+    const book = await this.bookModel
+      .findOne({ _id: equals(toMongoObjectId(id)) })
+      .exec();
 
     if (!book) {
       throw new NotFoundException('Book not found');

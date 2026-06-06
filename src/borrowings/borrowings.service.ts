@@ -10,6 +10,7 @@ import { BookCategoryDocument, BookCategoryModelName } from '../book-categories/
 import { BookDocument, BookModelName } from '../books/schemas/book.schema';
 import { AuditActor } from '../common/audit/audit-context';
 import { LoanState } from '../common/enums/library-status.enum';
+import { equals, toMongoObjectId } from '../common/mongo/mongo-query.helpers';
 import { MemberDocument, MemberModelName } from '../members/schemas/member.schema';
 import {
   MembershipTypeDocument,
@@ -157,7 +158,9 @@ export class BorrowingsService {
   }
 
   async findOne(id: string): Promise<BorrowingResponseDto> {
-    const borrowing = await this.borrowingModel.findById(id).exec();
+    const borrowing = await this.borrowingModel
+      .findOne({ _id: equals(toMongoObjectId(id)) })
+      .exec();
 
     if (!borrowing) {
       throw new NotFoundException('Borrowing record not found');
@@ -192,11 +195,11 @@ export class BorrowingsService {
     const filter: Record<string, unknown> = {};
 
     if (query.memberId) {
-      filter.memberId = query.memberId;
+      filter.memberId = equals(toMongoObjectId(query.memberId, 'memberId'));
     }
 
     if (query.bookId) {
-      filter.bookId = query.bookId;
+      filter.bookId = equals(toMongoObjectId(query.bookId, 'bookId'));
     }
 
     if (query.overdueOnly) {
@@ -207,7 +210,7 @@ export class BorrowingsService {
     }
 
     if (query.status) {
-      filter.status = query.status;
+      filter.status = equals(query.status);
     }
 
     return filter;
@@ -220,7 +223,7 @@ export class BorrowingsService {
   ): Promise<boolean> {
     const overdue = await this.borrowingModel
       .exists({
-        memberId,
+        memberId: equals(toMongoObjectId(memberId, 'memberId')),
         returnedAt: { $exists: false },
         status: { $in: [LoanState.Active, LoanState.Overdue] },
         dueAt: { $lt: now },
@@ -235,7 +238,7 @@ export class BorrowingsService {
     session: ClientSession,
   ): Promise<BorrowingDocument> {
     const borrowing = await this.borrowingModel
-      .findById(id)
+      .findOne({ _id: equals(toMongoObjectId(id)) })
       .session(session)
       .exec();
 
@@ -250,7 +253,10 @@ export class BorrowingsService {
     id: string,
     session: ClientSession,
   ): Promise<BookDocument> {
-    const book = await this.bookModel.findById(id).session(session).exec();
+    const book = await this.bookModel
+      .findOne({ _id: equals(toMongoObjectId(id, 'bookId')) })
+      .session(session)
+      .exec();
 
     if (!book) {
       throw new NotFoundException('Book not found');
@@ -264,7 +270,7 @@ export class BorrowingsService {
     session: ClientSession,
   ): Promise<BookCategoryDocument> {
     const category = await this.bookCategoryModel
-      .findById(id)
+      .findOne({ _id: equals(toMongoObjectId(id, 'categoryId')) })
       .session(session)
       .exec();
 
@@ -279,7 +285,10 @@ export class BorrowingsService {
     id: string,
     session: ClientSession,
   ): Promise<MemberDocument> {
-    const member = await this.memberModel.findById(id).session(session).exec();
+    const member = await this.memberModel
+      .findOne({ _id: equals(toMongoObjectId(id, 'memberId')) })
+      .session(session)
+      .exec();
 
     if (!member) {
       throw new NotFoundException('Member not found');
@@ -293,7 +302,7 @@ export class BorrowingsService {
     session: ClientSession,
   ): Promise<MembershipTypeDocument> {
     const membershipType = await this.membershipTypeModel
-      .findById(id)
+      .findOne({ _id: equals(toMongoObjectId(id, 'membershipTypeId')) })
       .session(session)
       .exec();
 
