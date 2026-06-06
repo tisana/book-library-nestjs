@@ -82,6 +82,14 @@ npm run seed:demo
 
 The demo seed creates book categories, membership types, books, members, and borrowing records covering available inventory, active loans, returned loans, overdue loans, suspended members, and a member at the borrowing limit. It is explicit and idempotent: it upserts fixed demo records and replaces only borrowing records created by the demo seed actor.
 
+If an existing local database already has demo ISBNs or demo member emails under different identifiers, the seed will reuse and update the matching record instead of inserting a duplicate. For a clean demo/e2e dataset, reset matching demo records and seed again:
+
+```bash
+npm run seed:demo:reset
+```
+
+The reset command deletes matching demo books, demo members, and borrowings connected to them or created by the demo seed actor before reseeding. It does not run during app startup or migrations.
+
 Start the API:
 
 ```bash

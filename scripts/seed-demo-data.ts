@@ -8,6 +8,29 @@ import {
 
 const DEMO_ACTOR_ID = 'demo-seed';
 const DAY_MS = 24 * 60 * 60 * 1000;
+const DEMO_CATEGORY_CODES = ['STANDARD', 'SHORT', 'REFERENCE'];
+const DEMO_MEMBERSHIP_TYPE_CODES = ['STANDARD', 'PREMIUM'];
+const DEMO_BOOK_CATALOG_IDENTIFIERS = [
+  'BK-1001',
+  'BK-1002',
+  'BK-1003',
+  'BK-1004',
+  'BK-1005',
+  'BK-1006',
+  'BK-1007',
+];
+const DEMO_BOOK_ISBNS = [
+  '9780132350884',
+  '9780321125217',
+  '9780134757599',
+];
+const DEMO_MEMBER_NUMBERS = ['M-1001', 'M-1002', 'M-1003', 'M-1004'];
+const DEMO_MEMBER_EMAILS = [
+  'jane.reader@example.test',
+  'max.limit@example.test',
+  'sam.suspended@example.test',
+  'olivia.overdue@example.test',
+];
 
 type SeededDocument = {
   _id: mongoose.Types.ObjectId;
@@ -54,11 +77,32 @@ async function upsertDocument(
   filter: Record<string, unknown>,
   fields: Record<string, unknown>,
   now: Date,
+  uniqueFilters: Record<string, unknown>[] = [filter],
 ): Promise<SeededDocument> {
   const collection = mongoose.connection.collection(collectionName);
+  const existingDocuments = await collection
+    .find({ $or: uniqueFilters })
+    .toArray();
+  const existingIds = [
+    ...new Map(
+      existingDocuments.map((document) => [
+        document._id.toString(),
+        document._id,
+      ]),
+    ).values(),
+  ];
+
+  if (existingIds.length > 1) {
+    throw new Error(
+      `Demo seed cannot safely merge multiple ${collectionName} records that match unique demo keys. Run npm run seed:demo:reset or resolve the duplicate records manually.`,
+    );
+  }
+
+  const updateFilter =
+    existingIds.length === 1 ? { _id: existingIds[0] } : filter;
 
   await collection.updateOne(
-    filter,
+    updateFilter,
     {
       $set: {
         ...fields,
@@ -73,7 +117,7 @@ async function upsertDocument(
     { upsert: true },
   );
 
-  const document = await collection.findOne(filter);
+  const document = await collection.findOne(updateFilter);
   if (!document) {
     throw new Error(
       `Failed to load seeded document from ${collectionName}: ${JSON.stringify(
@@ -83,6 +127,65 @@ async function upsertDocument(
   }
 
   return document as SeededDocument;
+}
+
+async function resetDemoData(): Promise<void> {
+  const books = mongoose.connection.collection('books');
+  const members = mongoose.connection.collection('members');
+  const borrowings = mongoose.connection.collection('borrowings');
+
+  const [demoBooks, demoMembers] = await Promise.all([
+    books
+      .find(
+        {
+          $or: [
+            { catalogIdentifier: { $in: DEMO_BOOK_CATALOG_IDENTIFIERS } },
+            { isbn: { $in: DEMO_BOOK_ISBNS } },
+          ],
+        },
+        { projection: { _id: 1 } },
+      )
+      .toArray(),
+    members
+      .find(
+        {
+          $or: [
+            { memberNumber: { $in: DEMO_MEMBER_NUMBERS } },
+            { email: { $in: DEMO_MEMBER_EMAILS } },
+          ],
+        },
+        { projection: { _id: 1 } },
+      )
+      .toArray(),
+  ]);
+
+  const demoBookIds = demoBooks.map((book) => book._id);
+  const demoMemberIds = demoMembers.map((member) => member._id);
+
+  const borrowingReset = await borrowings.deleteMany({
+    $or: [
+      { borrowedByStaffId: DEMO_ACTOR_ID },
+      { returnedByStaffId: DEMO_ACTOR_ID },
+      { bookId: { $in: demoBookIds } },
+      { memberId: { $in: demoMemberIds } },
+    ],
+  });
+  const bookReset = await books.deleteMany({
+    $or: [
+      { catalogIdentifier: { $in: DEMO_BOOK_CATALOG_IDENTIFIERS } },
+      { isbn: { $in: DEMO_BOOK_ISBNS } },
+    ],
+  });
+  const memberReset = await members.deleteMany({
+    $or: [
+      { memberNumber: { $in: DEMO_MEMBER_NUMBERS } },
+      { email: { $in: DEMO_MEMBER_EMAILS } },
+    ],
+  });
+
+  console.log(
+    `Reset demo data: ${borrowingReset.deletedCount} borrowings, ${bookReset.deletedCount} books, ${memberReset.deletedCount} members`,
+  );
 }
 
 async function seedDemoData(): Promise<void> {
@@ -166,6 +269,7 @@ async function seedDemoData(): Promise<void> {
         status: LibraryItemStatus.Active,
       },
       now,
+      [{ catalogIdentifier: 'BK-1001' }, { isbn: '9780132350884' }],
     ),
     domainDrivenDesign: await upsertDocument(
       'books',
@@ -181,6 +285,7 @@ async function seedDemoData(): Promise<void> {
         status: LibraryItemStatus.Active,
       },
       now,
+      [{ catalogIdentifier: 'BK-1002' }, { isbn: '9780321125217' }],
     ),
     refactoring: await upsertDocument(
       'books',
@@ -196,6 +301,7 @@ async function seedDemoData(): Promise<void> {
         status: LibraryItemStatus.Active,
       },
       now,
+      [{ catalogIdentifier: 'BK-1003' }, { isbn: '9780134757599' }],
     ),
     referenceHandbook: await upsertDocument(
       'books',
@@ -269,6 +375,7 @@ async function seedDemoData(): Promise<void> {
         activeLoanCount: 1,
       },
       now,
+      [{ memberNumber: 'M-1001' }, { email: 'jane.reader@example.test' }],
     ),
     max: await upsertDocument(
       'members',
@@ -283,6 +390,7 @@ async function seedDemoData(): Promise<void> {
         activeLoanCount: 3,
       },
       now,
+      [{ memberNumber: 'M-1002' }, { email: 'max.limit@example.test' }],
     ),
     sam: await upsertDocument(
       'members',
@@ -297,6 +405,7 @@ async function seedDemoData(): Promise<void> {
         activeLoanCount: 0,
       },
       now,
+      [{ memberNumber: 'M-1003' }, { email: 'sam.suspended@example.test' }],
     ),
     olivia: await upsertDocument(
       'members',
@@ -311,6 +420,7 @@ async function seedDemoData(): Promise<void> {
         activeLoanCount: 1,
       },
       now,
+      [{ memberNumber: 'M-1004' }, { email: 'olivia.overdue@example.test' }],
     ),
   };
 
@@ -387,8 +497,10 @@ async function seedDemoData(): Promise<void> {
     },
   ]);
 
-  console.log('Seeded demo categories: STANDARD, SHORT, REFERENCE');
-  console.log('Seeded demo membership types: STANDARD, PREMIUM');
+  console.log(`Seeded demo categories: ${DEMO_CATEGORY_CODES.join(', ')}`);
+  console.log(
+    `Seeded demo membership types: ${DEMO_MEMBERSHIP_TYPE_CODES.join(', ')}`,
+  );
   console.log(
     'Seeded demo books: BK-1001, BK-1002, BK-1003, BK-1004, BK-1005, BK-1006, BK-1007',
   );
@@ -398,6 +510,7 @@ async function seedDemoData(): Promise<void> {
 
 async function main(): Promise<void> {
   const mongoUri = getMongoUri();
+  const shouldReset = process.argv.includes('--reset');
 
   await mongoose.connect(mongoUri, {
     directConnection: true,
@@ -406,6 +519,9 @@ async function main(): Promise<void> {
 
   try {
     await ensureIndexes();
+    if (shouldReset) {
+      await resetDemoData();
+    }
     await seedDemoData();
   } finally {
     await mongoose.disconnect();
