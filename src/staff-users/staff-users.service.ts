@@ -11,6 +11,7 @@ import {
   StaffRole,
   StaffUserStatus,
 } from '../common/enums/library-status.enum';
+import { equals, toMongoObjectId } from '../common/mongo/mongo-query.helpers';
 import {
   CreateStaffUserDto,
   StaffUserQueryDto,
@@ -38,7 +39,10 @@ export class StaffUsersService {
       exists?: (filter: Record<string, unknown>) => Promise<unknown>;
     };
 
-    if (modelWithExists.exists && (await modelWithExists.exists({ email }))) {
+    if (
+      modelWithExists.exists &&
+      (await modelWithExists.exists({ email: equals(email) }))
+    ) {
       throw new ConflictException('Staff user email already exists');
     }
 
@@ -60,11 +64,11 @@ export class StaffUsersService {
     const filter: Record<string, unknown> = {};
 
     if (query.status) {
-      filter.status = query.status;
+      filter.status = equals(query.status);
     }
 
     if (query.role) {
-      filter.roles = query.role;
+      filter.roles = equals(query.role);
     }
 
     const users = await this.staffUserModel
@@ -81,13 +85,15 @@ export class StaffUsersService {
     email: string,
   ): Promise<StaffUserDocument | null> {
     return this.staffUserModel
-      .findOne({ email: email.toLowerCase() })
+      .findOne({ email: equals(email.toLowerCase()) })
       .select('+passwordHash')
       .exec();
   }
 
   async findActiveById(id: string): Promise<StaffUserDocument> {
-    const user = await this.staffUserModel.findById(id).exec();
+    const user = await this.staffUserModel
+      .findOne({ _id: equals(toMongoObjectId(id)) })
+      .exec();
 
     if (!user || user.status !== StaffUserStatus.Active) {
       throw new NotFoundException('Active staff user not found');
@@ -98,7 +104,7 @@ export class StaffUsersService {
 
   async touchLastLogin(id: string): Promise<void> {
     await this.staffUserModel.updateOne(
-      { _id: id },
+      { _id: equals(toMongoObjectId(id)) },
       { $set: { lastLoginAt: new Date() } },
     );
   }

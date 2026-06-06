@@ -7,6 +7,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AuditActor } from '../common/audit/audit-context';
 import { MemberStatus } from '../common/enums/library-status.enum';
+import {
+  containsLiteral,
+  equals,
+  toMongoObjectId,
+} from '../common/mongo/mongo-query.helpers';
 import { MembershipTypesService } from '../membership-types/membership-types.service';
 import {
   CreateMemberDto,
@@ -38,7 +43,7 @@ export class MembersService {
 
     if (
       modelWithExists.exists &&
-      (await modelWithExists.exists({ memberNumber }))
+      (await modelWithExists.exists({ memberNumber: equals(memberNumber) }))
     ) {
       throw new ConflictException('Member number already exists');
     }
@@ -62,19 +67,22 @@ export class MembersService {
     const filter: Record<string, unknown> = {};
 
     if (query.q) {
+      const search = containsLiteral(query.q);
       filter.$or = [
-        { memberNumber: new RegExp(query.q, 'i') },
-        { fullName: new RegExp(query.q, 'i') },
-        { email: new RegExp(query.q, 'i') },
+        { memberNumber: search },
+        { fullName: search },
+        { email: search },
       ];
     }
 
     if (query.status) {
-      filter.status = query.status;
+      filter.status = equals(query.status);
     }
 
     if (query.membershipTypeId) {
-      filter.membershipTypeId = query.membershipTypeId;
+      filter.membershipTypeId = equals(
+        toMongoObjectId(query.membershipTypeId, 'membershipTypeId'),
+      );
     }
 
     const members = await this.memberModel
@@ -157,7 +165,9 @@ export class MembersService {
   }
 
   private async findDocumentById(id: string): Promise<MemberDocument> {
-    const member = await this.memberModel.findById(id).exec();
+    const member = await this.memberModel
+      .findOne({ _id: equals(toMongoObjectId(id)) })
+      .exec();
 
     if (!member) {
       throw new NotFoundException('Member not found');

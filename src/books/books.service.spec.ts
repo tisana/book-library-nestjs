@@ -7,10 +7,11 @@ import { LibraryItemStatus } from '../common/enums/library-status.enum';
 import { BookDocument, BookModelName } from './schemas/book.schema';
 
 describe('BooksService', () => {
+  const validBookId = '665f4d3b8f4c8a001f5f0a13';
   let service: BooksService;
   let model: jest.Mock & {
     find: jest.Mock;
-    findById: jest.Mock;
+    findOne: jest.Mock;
   };
 
   type MockBookDocument = Omit<Partial<BookDocument>, 'save'> & {
@@ -40,7 +41,7 @@ describe('BooksService', () => {
       save: jest.fn().mockResolvedValue(createBookDocument(document)),
     })) as typeof model;
     model.find = jest.fn();
-    model.findById = jest.fn();
+    model.findOne = jest.fn();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -105,18 +106,44 @@ describe('BooksService', () => {
     ]);
   });
 
+  it('builds literal case-insensitive search filters', async () => {
+    model.find.mockReturnValue({
+      sort: jest.fn().mockReturnThis(),
+      skip: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockReturnThis(),
+      exec: jest.fn().mockResolvedValue([]),
+    });
+
+    await service.findAll({
+      q: 'Clean.*',
+      author: 'Martin?',
+      categoryId: '64f000000000000000000001',
+      status: LibraryItemStatus.Active,
+      page: 1,
+      limit: 20,
+    });
+
+    const filter = model.find.mock.calls[0][0];
+    expect(filter.$or[0].title).toEqual(/Clean\.\*/i);
+    expect(filter.author).toEqual(/Martin\?/i);
+    expect(filter.categoryId.$eq.toString()).toBe(
+      '64f000000000000000000001',
+    );
+    expect(filter.status).toEqual({ $eq: LibraryItemStatus.Active });
+  });
+
   it('prevents reducing total quantity below active loans', async () => {
     const existingBook = createBookDocument({
       totalQuantity: 5,
       availableQuantity: 2,
     });
-    model.findById.mockReturnValue({
+    model.findOne.mockReturnValue({
       exec: jest.fn().mockResolvedValue(existingBook),
     });
 
-    await expect(service.update('book-id', { totalQuantity: 2 })).rejects.toBeInstanceOf(
-      ConflictException,
-    );
+    await expect(
+      service.update(validBookId, { totalQuantity: 2 }),
+    ).rejects.toBeInstanceOf(ConflictException);
   });
 
   it('updates available quantity by the total quantity delta', async () => {
@@ -125,11 +152,13 @@ describe('BooksService', () => {
       availableQuantity: 2,
     });
     existingBook.save.mockResolvedValue(existingBook);
-    model.findById.mockReturnValue({
+    model.findOne.mockReturnValue({
       exec: jest.fn().mockResolvedValue(existingBook),
     });
 
-    await expect(service.update('book-id', { totalQuantity: 7 })).resolves.toMatchObject({
+    await expect(
+      service.update(validBookId, { totalQuantity: 7 }),
+    ).resolves.toMatchObject({
       totalQuantity: 7,
       availableQuantity: 4,
     });
