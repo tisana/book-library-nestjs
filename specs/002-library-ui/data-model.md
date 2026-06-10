@@ -147,8 +147,38 @@ The frontend introduces no new persistent library domain store. It uses typed vi
 - `phone`
 - `status`
 - `membershipTierId`
+- `loginIdentifier`
+- `passwordHash`
+- `passwordUpdatedAt`
+- `lastLoginAt`
+- `authStatus`
 - `createdAt`
 - `updatedAt`
+
+### Member Authentication Document Extension
+
+Member self-service authentication is stored on the existing Member document. This keeps login identity, membership status, and self-service authorization on the member aggregate because they are read together during member login and member-scoped `me` requests.
+
+Additional fields:
+
+- `loginIdentifier`: unique member login value, normally email or member number
+- `passwordHash`: hashed password, never returned to clients
+- `passwordUpdatedAt`: timestamp for the most recent credential update
+- `lastLoginAt`: timestamp for the most recent successful member login when available
+- `authStatus`: active, locked, or reset-required where supported
+
+Indexes:
+
+- Unique index on `loginIdentifier`
+- Existing lookup indexes for `memberNumber` and `email` must remain compatible
+- Borrowing queries for member self-service require indexed `memberId` and active/status fields on borrowing records
+
+Migration impact:
+
+- Add nullable credential fields for existing members
+- Backfill demo member credentials only in seed/demo data
+- Add the unique login identifier index after duplicate login identifiers are resolved
+- Rollback removes credential fields and authentication indexes without deleting member records
 
 **Relationships**:
 

@@ -16,6 +16,8 @@ Build a responsive web UI for the existing book library system. Add a desktop/ta
 
 **Storage**: Existing MongoDB remains the source of truth through the backend. Frontend stores no domain data permanently. Access tokens must not be stored in localStorage; use memory-only token handling for v1 unless backend tasks add an HTTP-only cookie session flow.
 
+**Document Model Design**: Member self-service adds authentication data to the existing Member document instead of creating a relational-style member credentials collection. Store member credential fields on the member aggregate because login identity, membership status, and self-service authorization are read together. Add unique indexes for member login identifiers such as email or member number where used for authentication. Keep borrowings as separate documents referenced by member id because borrowing history grows without a predictable bound and needs independent status/query access. Member self-service `me` endpoints derive identity from the authenticated member token and query member, policy status, and borrowings by indexed member id. Migration impact: add credential fields/indexes to the members collection, seed demo member credentials, and preserve rollback notes for removing those fields/indexes.
+
 **Testing**: Keep existing backend Jest/e2e coverage. Add frontend unit/component tests with Vitest and Testing Library, REST contract mocks with MSW, and Playwright end-to-end tests for staff happy paths, blocked borrowing states, member mobile status, and access control.
 
 **Target Platform**: Browser-based web app. Staff back office targets laptop, desktop, and tablet layouts. Member self-service targets mobile-first phone layouts while remaining usable on tablet/desktop.
@@ -39,6 +41,7 @@ Build a responsive web UI for the existing book library system. Add a desktop/ta
 - **Test the Rules That Matter**: PASS. Playwright, component tests, backend authorization tests, and contract mocks cover staff workflows, member privacy, and blocked states.
 - **Maintainable Architecture**: PASS. Adds a separate `frontend/` app without moving the existing backend or introducing microservices.
 - **Data Integrity and Auditability**: PASS. Staff state changes continue through authenticated backend workflows with actor tracking.
+- **Document-Oriented MongoDB Data Modeling**: PASS. Member authentication extends the existing member document aggregate; borrowings remain referenced because history is unbounded; member lookup and borrowing queries require explicit indexes and migration notes.
 - **Usability and Accessibility**: PASS. Component stack and contracts require keyboard, screen-reader labels, responsive layouts, and explicit loading/empty/error states.
 - **Performance With Practical Limits**: PASS. Uses server pagination, route-level code splitting, and server-state caching.
 - **Operability and Observability**: PASS. Quickstart includes local run, build, and verification commands; UI errors avoid sensitive data.
@@ -136,6 +139,7 @@ Completed design artifacts:
 - **Test the Rules That Matter**: PASS. Quickstart defines staff, member, blocked-state, privacy, and responsive validation scenarios.
 - **Maintainable Architecture**: PASS. Frontend is isolated under `frontend/`; shared concepts are represented through typed API adapters and feature folders.
 - **Data Integrity and Auditability**: PASS. State-changing staff actions are routed through existing backend workflows.
+- **Document-Oriented MongoDB Data Modeling**: PASS. Member authentication extends the existing member document aggregate; borrowings remain referenced because history is unbounded; member lookup and borrowing queries require explicit indexes and migration notes.
 - **Usability and Accessibility**: PASS. Design-system contract includes responsive, keyboard, contrast, empty, loading, and error state requirements.
 - **Performance With Practical Limits**: PASS. Contracts require pagination, cache invalidation, and code splitting for role areas.
 - **Operability and Observability**: PASS. Quickstart provides local run/build/test validation; error handling avoids sensitive data.
