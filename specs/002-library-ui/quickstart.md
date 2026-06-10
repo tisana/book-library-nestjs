@@ -137,6 +137,20 @@ Expected:
 - Icon-only controls have accessible names.
 - Color is not the only status signal.
 
+## Validation Scenario 6: Performance Smoke Checks
+
+Run automated checks against the seeded demo dataset for:
+
+- Staff list and detail views.
+- Member home on a phone-sized viewport.
+
+Use seeded demo data with at least 100 books, 50 members, 25 active borrowings, 10 overdue borrowings, and member accounts covering no-borrowing, due-soon, due-today, overdue, quota-reached, suspended, and inactive states.
+
+Expected:
+
+- Staff list/detail views and member home render useful content within 2 seconds.
+- If a larger local dataset is added later, document the record counts used for validation.
+
 ## Verification Commands
 
 Backend:
@@ -161,4 +175,4 @@ npm run build
 Expected:
 
 - All commands pass.
-- Playwright tests cover staff happy path, blocked borrowing, member mobile home, and member privacy.
+- Playwright tests cover staff happy path, blocked borrowing, member mobile home, member privacy, responsive layouts, accessibility, and performance smoke checks.
