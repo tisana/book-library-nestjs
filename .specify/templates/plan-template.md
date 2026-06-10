@@ -22,7 +22,9 @@
 
 **Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]
 
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
+**Storage**: [if applicable, e.g., MongoDB document collections with embedding/reference strategy, files, or N/A]
+
+**Document Model Design**: [for MongoDB-backed features, describe document shape, aggregate ownership, embedding vs referencing decisions, indexes, denormalized fields, and migration impact; otherwise N/A]
 
 **Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]
 
@@ -41,6 +43,10 @@
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 [Gates determined based on constitution file]
+
+For MongoDB-backed changes, this gate MUST confirm that the plan uses document-oriented
+modeling, documents embedding/reference choices, identifies required indexes, and avoids
+relational-style collection design unless justified.
 
 ## Project Structure
 
