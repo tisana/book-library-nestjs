@@ -1,9 +1,31 @@
+<!--
+Sync Impact Report
+Version change: 1.0.0 -> 1.1.0
+Modified principles:
+- VII. Data Integrity and Auditability -> VII. Data Integrity and Auditability
+- VIII. Usability and Accessibility -> IX. Usability and Accessibility
+- IX. Performance With Practical Limits -> X. Performance With Practical Limits
+- X. Operability and Observability -> XI. Operability and Observability
+Added sections:
+- VIII. Document-Oriented MongoDB Data Modeling
+Removed sections:
+- None
+Templates requiring updates:
+- ✅ updated .specify/templates/plan-template.md
+- ✅ updated .specify/templates/tasks-template.md
+- ✅ reviewed .specify/templates/spec-template.md
+- ✅ reviewed .specify/templates/commands/
+- ✅ updated README.md
+Follow-up TODOs:
+- None
+-->
+
 # Book Borrowing System Constitution
 
 ## Purpose
 
 This project is a web application for managing book borrowing in a library-like environment.  
-The system should help users discover books, borrow and return them, and help librarians or administrators manage inventory, members, loans, and overdue items.
+The system helps users discover books, borrow and return them, and helps librarians or administrators manage inventory, members, loans, and overdue items.
 
 The goal of this constitution is to keep implementation quality high while avoiding unnecessary process or over-engineering.
 
@@ -22,7 +44,7 @@ The application must prioritize clear, predictable workflows for the main user g
 Every feature must clearly state which user role it serves and what user outcome it supports.
 
 Required behavior:
-- Users should understand whether a book is available, borrowed, reserved, overdue, or unavailable.
+- Users MUST be able to understand whether a book is available, borrowed, reserved, overdue, or unavailable.
 - Borrowing and returning flows must avoid ambiguity.
 - Staff-facing actions must be efficient and auditable.
 - Error messages must explain what happened and what the user can do next.
@@ -73,14 +95,14 @@ Avoid:
 
 ### IV. Spec-First, Traceable Changes
 
-Specifications are the source of truth for what should be built. Implementation should follow the approved spec, plan, and task breakdown.
+Specifications are the source of truth for what is to be built. Implementation MUST follow the approved spec, plan, and task breakdown.
 
 Required behavior:
 - Every feature starts with a spec describing user goals, acceptance criteria, and key edge cases.
 - Plans must explain major design choices and trade-offs.
 - Tasks must be small enough to review and test independently.
 - Implementation must not introduce major behavior not described in the spec.
-- Any discovered requirement change should update the spec before code is changed.
+- Any discovered requirement change MUST update the spec before code is changed.
 
 Avoid:
 - “Just implement it” changes with no acceptance criteria.
@@ -91,7 +113,7 @@ Avoid:
 
 ### V. Test the Rules That Matter
 
-Testing should focus on business-critical behavior, not arbitrary coverage targets.
+Testing MUST focus on business-critical behavior, not arbitrary coverage targets.
 
 Required behavior:
 - Domain rules for borrowing, returning, renewing, reserving, and overdue handling must have automated tests.
@@ -114,7 +136,7 @@ Avoid:
 
 ### VI. Maintainable Architecture
 
-The codebase should be easy to understand, modify, and review.
+The codebase MUST be easy to understand, modify, and review.
 
 Required behavior:
 - Separate concerns between UI, application logic, domain rules, persistence, and infrastructure.
@@ -138,25 +160,63 @@ Library operations must be reliable and explainable.
 Required behavior:
 - Important state-changing actions must record who performed the action and when.
 - Loan, return, renewal, reservation, and inventory changes must be auditable.
-- Destructive actions should be soft-delete or status-based where historical accuracy matters.
-- Database constraints should protect critical invariants where practical.
+- Destructive actions MUST use soft-delete or status-based changes where historical accuracy matters.
+- MongoDB schema validation, unique indexes, transactions, and service-level checks must protect critical invariants where practical.
 - Data model changes must include migration and rollback considerations.
 
 Avoid:
 - Hard-deleting loan history.
 - Manual data repair as a normal workflow.
 - Relying only on frontend validation for critical rules.
+- Assuming relational database constraints exist when MongoDB requires explicit schema, index, and service safeguards.
 
 ---
 
-### VIII. Usability and Accessibility
+### VIII. Document-Oriented MongoDB Data Modeling
 
-The system should be usable by real staff and borrowers, including non-technical users.
+MongoDB is the primary database. Data models must be designed as document models that
+match library workflows, query patterns, and aggregate boundaries instead of defaulting
+to traditional relational normalization.
+
+Required behavior:
+- Plans that change stored data must document document shape, ownership boundaries,
+  embedding versus referencing decisions, indexes, and expected query patterns.
+- Related data that is read and updated together SHOULD be embedded when document
+  size, history, and consistency requirements make embedding practical.
+- References SHOULD be used when data is shared across aggregates, grows without a
+  predictable bound, has independent lifecycle rules, or would cause excessive
+  duplication or document growth.
+- MongoDB indexes must be designed for common access paths such as book search,
+  member lookup, active loans, overdue loans, membership tier lookup, and audit queries.
+- Cross-document updates that affect borrowing correctness must use transactions in
+  transaction-capable environments or document a simpler consistency strategy that
+  preserves the invariant.
+- Denormalized fields are allowed when they improve read performance or preserve
+  historical meaning, but the owning source and update strategy must be explicit.
+
+Avoid:
+- Translating relational tables directly into many small MongoDB collections without
+  considering document aggregates and query locality.
+- Modeling every relationship as a foreign-key-style reference by default.
+- Embedding unbounded histories or high-growth arrays inside documents without a
+  documented archival or pagination strategy.
+- Relying on application convention alone for uniqueness, lookup, and lifecycle
+  invariants that MongoDB indexes or schema validation can enforce.
+
+Rationale: A document database provides value when the model is shaped around how the
+application reads and changes data. The project MUST use MongoDB deliberately rather
+than treating it like a relational database with a different driver.
+
+---
+
+### IX. Usability and Accessibility
+
+The system MUST be usable by real staff and borrowers, including non-technical users.
 
 Required behavior:
 - Core workflows must be usable with keyboard and screen readers where practical.
 - Forms must show clear validation errors.
-- Search, filter, and sort should be available for large lists such as books, members, and loans.
+- Search, filter, and sort MUST be available for large lists such as books, members, and loans.
 - UI must clearly show current status and next available action.
 - Loading, empty, and error states must be handled intentionally.
 
@@ -167,37 +227,39 @@ Avoid:
 
 ---
 
-### IX. Performance With Practical Limits
+### X. Performance With Practical Limits
 
-Performance should be good enough for expected library usage without premature optimization.
+Performance MUST be good enough for expected library usage without premature optimization.
 
 Required behavior:
 - Common queries such as book search, availability lookup, member loan history, and overdue list must be efficient.
 - Pagination or lazy loading must be used for potentially large lists.
-- Expensive operations should not block normal user interactions.
-- Indexes should be added for frequently queried fields.
+- Expensive operations MUST NOT block normal user interactions.
+- Indexes MUST be added for frequently queried fields.
+- Document shape must support common read paths without excessive client-side joins or repeated full-collection scans.
 
 Initial performance target:
-- Common pages should respond within a reasonable interactive time under normal expected load.
-- Exact scalability requirements should be defined in feature specs when needed.
+- Common pages MUST respond within a reasonable interactive time under normal expected load.
+- Exact scalability requirements MUST be defined in feature specs when needed.
 
 Avoid:
 - Optimizing for massive scale before the product needs it.
 - Loading entire tables into memory for normal workflows.
 - Adding caching before correctness is proven.
+- Creating relational-style collection graphs that require many round trips for common library workflows.
 
 ---
 
-### X. Operability and Observability
+### XI. Operability and Observability
 
-The application should be easy to run, debug, and support.
+The application MUST be easy to run, debug, and support.
 
 Required behavior:
 - The project must include clear local setup instructions.
 - Configuration must be environment-based.
 - Logs must be useful for debugging but must not expose sensitive data.
-- Errors should be captured with enough context to diagnose failures.
-- Health checks or equivalent readiness signals should exist for deployed environments.
+- Errors MUST be captured with enough context to diagnose failures.
+- Health checks or equivalent readiness signals MUST exist for deployed environments.
 
 Avoid:
 - Hidden manual setup steps.
@@ -213,7 +275,7 @@ A change is ready for implementation only when:
 1. The spec identifies the user role, user goal, and acceptance criteria.
 2. Important edge cases are listed.
 3. Security and authorization impact is considered.
-4. Data model changes are described if applicable.
+4. Data model changes are described if applicable, including document shape, embedding/reference decisions, indexes, and migration impact.
 5. Test expectations are clear.
 
 A change is ready for review only when:
@@ -221,7 +283,7 @@ A change is ready for review only when:
 1. The implementation matches the spec.
 2. Critical domain rules have tests.
 3. Authorization-sensitive behavior has tests.
-4. Database migrations are included and reviewed if needed.
+4. MongoDB schema/index/reference-data migrations are included and reviewed if needed.
 5. Error, loading, and empty states are handled for user-facing changes.
 6. No secrets, sensitive data, or debug-only code are committed.
 
@@ -240,7 +302,7 @@ The following rules apply unless a feature spec explicitly changes them:
 - Returning a copy closes the active loan and makes the copy available unless it is reserved, damaged, lost, or otherwise restricted.
 - Overdue status must be calculated consistently from due date and return status.
 - Staff/admin actions that affect loans or inventory must be auditable.
-- Borrowing history should be preserved.
+- Borrowing history MUST be preserved.
 
 ---
 
@@ -277,7 +339,7 @@ These may be added later through normal spec-driven changes.
 
 ## Governance
 
-This constitution is intentionally stable. It should change only when the team learns something that affects many future decisions.
+This constitution is intentionally stable. It MUST change only when the team learns something that affects many future decisions.
 
 Amendments require:
 1. A clear reason for the change.
@@ -290,4 +352,4 @@ When there is conflict:
 3. Simplicity takes priority over architectural novelty.
 4. The approved spec takes priority over assumptions made during implementation.
 
-**Version**: 1.0.0 | **Ratified**: 2026-05-29 | **Last Amended**: 2026-05-29
+**Version**: 1.1.0 | **Ratified**: 2026-05-29 | **Last Amended**: 2026-06-10

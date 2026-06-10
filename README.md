@@ -10,6 +10,7 @@ Staff-facing NestJS API for managing a library book collection, members, members
 - Membership types with configurable active-loan limits.
 - Member records with policy status and borrowing history.
 - Borrowing lifecycle with due dates, overdue checks, returns, audit fields, and MongoDB transactions.
+- MongoDB document-based data modeling with explicit collection shapes, references, indexes, and migrations.
 - Versioned MongoDB migrations and container-based local runtime.
 
 ## Requirements
@@ -139,6 +140,9 @@ Protected management endpoints require a valid bearer token and an allowed staff
 ## Migrations
 
 Migration files live under `migrations/versions` and record applied versions in MongoDB.
+Data model changes should be designed as MongoDB document models first, documenting
+collection shape, embedding versus reference choices, denormalized fields, indexes, and
+rollback considerations rather than defaulting to relational table-style decomposition.
 
 ```bash
 npm run migrate:up
