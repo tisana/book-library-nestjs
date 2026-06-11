@@ -13,12 +13,23 @@ This contract defines the look-and-feel direction for implementation. It is inte
 
 ## Visual Direction
 
+Selected direction: **Ledger Blue**.
+
+Reference mockup: [ledger-blue-reference.png](../assets/ledger-blue-reference.png)
+
+Ledger Blue is a structured circulation-console design language for high-volume
+library operations. It uses a blue and white base, compact data density,
+split-pane task flows, and clear status semantics. The member self-service area
+uses the same visual system with simpler rows, larger touch targets, and a
+single-column hierarchy.
+
 Staff back office:
 
 - Quiet, utilitarian, dense, and scan-friendly.
 - Avoid marketing-style hero sections and decorative layouts.
-- Prefer clear tables, filters, side navigation, status badges, and compact forms.
+- Prefer clear tables, command search, filters, side navigation, status badges, split detail panels, and compact forms.
 - Use cards only for repeated summary items, detail panels, and modal/sheet content.
+- Make borrowing and return workflows feel like a circulation console: selected row on the left, detail and action panel on the right.
 
 Member mobile area:
 
@@ -36,6 +47,15 @@ Member mobile area:
 | Forms | Sheet or page section for common create/edit flows | Sheet or full-page form based on width | Full-page or bottom-sheet style where appropriate |
 | Tables | Dense table with filters above | Column priority and horizontal overflow | Use list cards where table would be unreadable |
 
+### Ledger Blue Screen Patterns
+
+| Pattern | Use For | Composition |
+| --- | --- | --- |
+| Circulation console | Borrowing records, returns, selected borrowing detail | Sidebar, command bar, table pane, selected detail pane, right member preview or contextual summary |
+| Management list | Books, catalog, membership types, members | Sidebar, top utility bar, page title, search/filter row, dense table, add/edit sheet |
+| Detail workspace | Book, member, borrowing detail | Summary header, status badges, tabs, policy/availability block, history table or timeline |
+| Member home | `/member` mobile-first dashboard | Tier/status block, quota progress, urgent reminders, active borrowings, return guidance |
+
 ## Component Rules
 
 - Buttons use icons where a familiar icon exists and text where command clarity matters.
@@ -45,6 +65,11 @@ Member mobile area:
 - Use toast notifications for save success only when the page content also updates visibly.
 - Use form field messages tied to the relevant input.
 - Use empty states that state what is missing and what action is available.
+- Use split panes for workflows where a selected table row drives a detail/action area.
+- Use command search for staff workflows that benefit from fast keyboard access, especially circulation, books, and members.
+- Keep staff row height compact, but leave enough space for two-line due date/status text where needed.
+- Selected rows use a pale blue background and a stronger blue leading edge or checkbox state.
+- Member list items should be row-like grouped surfaces, not heavy individual cards unless each item needs rich detail.
 
 ## Status Semantics
 
@@ -79,8 +104,45 @@ Before completion, verify:
 
 ## Theme Direction
 
-- Use a neutral base with restrained accent colors.
-- Do not let the UI become a one-hue theme.
+- Use Ledger Blue as the implementation theme.
+- Use a white base with restrained blue accents and cool neutral surfaces.
+- Do not let the UI become a one-hue theme: reserve strong blue for primary navigation, selected states, and primary actions.
 - Use status colors only for status meaning.
 - Use 8px or smaller radius for operational staff cards unless the shadcn default component requires otherwise.
 - Member cards may use slightly more spacing but should still remain compact.
+
+### Color Tokens
+
+| Token | Value | Usage |
+| --- | --- | --- |
+| `background` | `#FFFFFF` | Main app canvas and card surfaces |
+| `foreground` | `#102A56` | Headings and primary text |
+| `muted-foreground` | `#64748B` | Secondary text, metadata, helper copy |
+| `primary` | `#155EEF` | Primary actions, active navigation, selected controls |
+| `primary-foreground` | `#FFFFFF` | Text/icons on primary blue |
+| `primary-soft` | `#EFF6FF` | Selected rows, soft highlights, member quota surfaces |
+| `primary-line` | `#D6E9FF` | Blue-tinted borders and separators |
+| `sidebar` | `#063B73` | Staff navigation shell |
+| `sidebar-accent` | `#0B64D8` | Active navigation item |
+| `border` | `#D8E1EC` | Default dividers and input borders |
+| `muted` | `#F6F9FC` | Subtle table/header backgrounds |
+| `success` | `#16A34A` | Active, available, returned successfully |
+| `success-soft` | `#EAF8F0` | Success badge background |
+| `warning` | `#F59E0B` | Due soon, due today, quota warning |
+| `warning-soft` | `#FFF7E6` | Warning badge background |
+| `danger` | `#DC2626` | Overdue, suspended, destructive confirmation |
+| `danger-soft` | `#FDECEC` | Danger badge background and overdue alert |
+
+### Typography
+
+- Use `Inter` as the default UI font. `IBM Plex Sans` is acceptable if the implementation wants a more ledger-like operational feel.
+- Body text defaults to `14px` in staff tables and `16px` in member mobile surfaces.
+- Use tabular numbers for due dates, quotas, borrowing IDs, and dashboard metrics where practical.
+- Keep page titles concise and task-oriented, such as `Borrowing Management`, `Members`, and `Book Collection`.
+
+### Density And Shape
+
+- Staff surfaces use `4px` to `8px` radius and compact vertical rhythm.
+- Member surfaces may use `8px` radius and more padding, but should still feel connected to the staff theme.
+- Prefer borders and separators over shadows. Use shadow only for overlays, popovers, and sheets.
+- Tables should support selected row, hover row, disabled row, loading skeleton row, and empty state variants.
