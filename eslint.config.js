@@ -6,7 +6,17 @@ const tsFiles = ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'];
 
 module.exports = [
   {
-    ignores: ['coverage/**', 'dist/**', 'node_modules/**'],
+    ignores: [
+      'coverage/**',
+      'dist/**',
+      'build/**',
+      'node_modules/**',
+      'frontend/coverage/**',
+      'frontend/dist/**',
+      'frontend/node_modules/**',
+      'frontend/test-results/**',
+      'frontend/playwright-report/**',
+    ],
   },
   ...tseslint.configs['flat/recommended'],
   {

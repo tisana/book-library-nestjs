@@ -18,15 +18,15 @@
 
 **Purpose**: Initialize the frontend app and shared tooling beside the existing NestJS API.
 
-- [ ] T001 Create the frontend project directory structure with placeholder files in frontend/src/app/.gitkeep, frontend/src/routes/.gitkeep, frontend/src/features/.gitkeep, frontend/src/components/.gitkeep, frontend/src/lib/.gitkeep, frontend/src/test/.gitkeep, and frontend/tests/e2e/.gitkeep
-- [ ] T002 Initialize frontend/package.json with React, Vite, TypeScript, Tailwind CSS, shadcn/ui support, Radix UI, lucide-react, TanStack Query, TanStack Router, TanStack Table, React Hook Form, Zod, date-fns, Vitest, Testing Library, Playwright, and MSW dependencies
-- [ ] T003 Configure Vite and TypeScript in frontend/vite.config.ts, frontend/tsconfig.json, frontend/tsconfig.node.json, and frontend/index.html
-- [ ] T004 Configure Tailwind CSS and shadcn/ui base paths in frontend/src/styles.css, frontend/components.json, and frontend/src/components/ui/.gitkeep
-- [ ] T005 [P] Configure frontend linting and formatting scripts in frontend/package.json and frontend/eslint.config.js
-- [ ] T006 [P] Configure Vitest and Testing Library setup in frontend/vitest.config.ts and frontend/src/test/setup.ts
-- [ ] T007 [P] Configure Playwright projects for desktop, tablet, and mobile validation in frontend/playwright.config.ts
-- [ ] T008 [P] Configure MSW browser and test handlers in frontend/src/test/mocks/server.ts and frontend/src/test/mocks/handlers.ts
-- [ ] T009 Add root convenience scripts for frontend development and validation in package.json
+- [X] T001 Create the frontend project directory structure with placeholder files in frontend/src/app/.gitkeep, frontend/src/routes/.gitkeep, frontend/src/features/.gitkeep, frontend/src/components/.gitkeep, frontend/src/lib/.gitkeep, frontend/src/test/.gitkeep, and frontend/tests/e2e/.gitkeep
+- [X] T002 Initialize frontend/package.json with React, Vite, TypeScript, Tailwind CSS, shadcn/ui support, Radix UI, lucide-react, TanStack Query, TanStack Router, TanStack Table, React Hook Form, Zod, date-fns, Vitest, Testing Library, Playwright, and MSW dependencies
+- [X] T003 Configure Vite and TypeScript in frontend/vite.config.ts, frontend/tsconfig.json, frontend/tsconfig.node.json, and frontend/index.html
+- [X] T004 Configure Tailwind CSS and shadcn/ui base paths in frontend/src/styles.css, frontend/components.json, and frontend/src/components/ui/.gitkeep
+- [X] T005 [P] Configure frontend linting and formatting scripts in frontend/package.json and frontend/eslint.config.js
+- [X] T006 [P] Configure Vitest and Testing Library setup in frontend/vitest.config.ts and frontend/src/test/setup.ts
+- [X] T007 [P] Configure Playwright projects for desktop, tablet, and mobile validation in frontend/playwright.config.ts
+- [X] T008 [P] Configure MSW browser and test handlers in frontend/src/test/mocks/server.ts and frontend/src/test/mocks/handlers.ts
+- [X] T009 Add root convenience scripts for frontend development and validation in package.json
 
 ---
 
