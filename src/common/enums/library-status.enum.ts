@@ -9,6 +9,12 @@ export enum MemberStatus {
   Inactive = 'inactive',
 }
 
+export enum MemberAuthStatus {
+  Active = 'active',
+  Locked = 'locked',
+  ResetRequired = 'reset-required',
+}
+
 export enum StaffUserStatus {
   Active = 'active',
   Suspended = 'suspended',

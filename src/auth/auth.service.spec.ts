@@ -2,6 +2,8 @@
 import { UnauthorizedException } from '@nestjs/common';
 
 import {
+  MemberAuthStatus,
+  MemberStatus,
   StaffRole,
   StaffUserStatus,
 } from '../common/enums/library-status.enum';
@@ -40,6 +42,7 @@ describe('AuthService login contract', () => {
       };
       const service = new AuthService(
         staffUsersService,
+        undefined,
         passwordHasher,
         jwtService,
       );
@@ -57,6 +60,7 @@ describe('AuthService login contract', () => {
         sub: staffUser.id,
         email: staffUser.email,
         roles: staffUser.roles,
+        roleArea: 'staff',
       });
       expect(result).toEqual({
         accessToken: 'jwt-token',
@@ -88,6 +92,7 @@ describe('AuthService login contract', () => {
       };
       const service = new AuthService(
         staffUsersService,
+        undefined,
         passwordHasher,
         jwtService,
       );
@@ -95,6 +100,98 @@ describe('AuthService login contract', () => {
       await expect(
         service.login({
           email: 'staff@example.com',
+          password: 'correct-password',
+        }),
+      ).rejects.toBeInstanceOf(UnauthorizedException);
+      expect(jwtService.signAsync).not.toHaveBeenCalled();
+    });
+
+    it('returns a member JWT and redacted member profile for valid member credentials', async () => {
+      const member = {
+        id: 'member-id',
+        memberNumber: 'M-1001',
+        fullName: 'Jane Reader',
+        email: 'jane.reader@example.test',
+        membershipTypeId: 'membership-type-id',
+        passwordHash: 'hashed-password',
+        status: MemberStatus.Active,
+        authStatus: MemberAuthStatus.Active,
+      };
+      const membersService = {
+        findByLoginIdentifierWithPassword: jest.fn().mockResolvedValue(member),
+        touchLastLogin: jest.fn().mockResolvedValue(undefined),
+      };
+      const passwordHasher = {
+        verify: jest.fn().mockResolvedValue(true),
+      };
+      const jwtService = {
+        signAsync: jest.fn().mockResolvedValue('member-jwt-token'),
+      };
+      const service = new AuthService(
+        { findByEmailWithPassword: jest.fn() },
+        membersService,
+        passwordHasher,
+        jwtService,
+      );
+
+      const result = await service.memberLogin({
+        loginIdentifier: 'M-1001',
+        password: 'correct-password',
+      });
+
+      expect(membersService.findByLoginIdentifierWithPassword).toHaveBeenCalledWith(
+        'M-1001',
+      );
+      expect(passwordHasher.verify).toHaveBeenCalledWith(
+        member.passwordHash,
+        'correct-password',
+      );
+      expect(jwtService.signAsync).toHaveBeenCalledWith({
+        sub: member.id,
+        memberNumber: member.memberNumber,
+        roleArea: 'member',
+      });
+      expect(result).toEqual({
+        accessToken: 'member-jwt-token',
+        member: {
+          id: member.id,
+          memberNumber: member.memberNumber,
+          displayName: member.fullName,
+          email: member.email,
+          membershipStatus: member.status,
+          membershipTypeId: member.membershipTypeId,
+        },
+      });
+    });
+
+    it('rejects suspended member credentials before issuing a token', async () => {
+      const membersService = {
+        findByLoginIdentifierWithPassword: jest.fn().mockResolvedValue({
+          id: 'member-id',
+          memberNumber: 'M-1001',
+          fullName: 'Jane Reader',
+          passwordHash: 'hashed-password',
+          status: MemberStatus.Suspended,
+          authStatus: MemberAuthStatus.Active,
+        }),
+        touchLastLogin: jest.fn(),
+      };
+      const passwordHasher = {
+        verify: jest.fn().mockResolvedValue(true),
+      };
+      const jwtService = {
+        signAsync: jest.fn(),
+      };
+      const service = new AuthService(
+        { findByEmailWithPassword: jest.fn() },
+        membersService,
+        passwordHasher,
+        jwtService,
+      );
+
+      await expect(
+        service.memberLogin({
+          loginIdentifier: 'M-1001',
           password: 'correct-password',
         }),
       ).rejects.toBeInstanceOf(UnauthorizedException);

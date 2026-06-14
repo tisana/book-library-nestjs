@@ -36,40 +36,40 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T010 Verify planned member authentication implementation matches the documented MongoDB member document extension, indexes, and migration impact in specs/002-library-ui/data-model.md
-- [ ] T011 Add backend unit tests for member credential validation and member JWT payload handling in src/auth/auth.service.spec.ts
-- [ ] T012 Add backend authorization tests proving members cannot access staff member IDs in test/member-auth.e2e-spec.ts
-- [ ] T013 Add member credential fields, schema validation notes, and required indexes to src/members/schemas/member.schema.ts
-- [ ] T014 Create MongoDB migration for member authentication fields and indexes in migrations/versions/002-member-auth.ts
-- [ ] T015 Verify npm run migrate:status discovers migrations/versions/002-member-auth.ts through the existing migration auto-loader in migrations/migrate.ts
-- [ ] T016 Add member password hashing and credential validation support in src/members/members.service.ts
-- [ ] T017 Add member login DTOs and response DTOs in src/auth/dto/member-auth.dto.ts
-- [ ] T018 Extend JWT payload role-area support for staff and member sessions in src/auth/auth.service.ts and src/auth/jwt.strategy.ts
-- [ ] T019 Add member login endpoint POST /auth/member-login in src/auth/auth.controller.ts
-- [ ] T020 Add member-only auth guard and current-member decorator in src/auth/member-auth.guard.ts and src/auth/current-member.decorator.ts
-- [ ] T021 Add member-scoped read endpoints GET /members/me, GET /members/me/policy-status, GET /members/me/borrowings, and GET /members/me/borrowings/:id in src/members/members.controller.ts
-- [ ] T022 Update demo seed data with member login credentials and due-state scenarios in scripts/seed-demo-data.ts
-- [ ] T023 Add Swagger decorators for member auth DTOs and member-scoped endpoint responses in src/auth/dto/member-auth.dto.ts and src/members/dto/member-self-service.dto.ts
-- [ ] T024 Verify OpenAPI generation includes member auth and member-scoped endpoints through src/main.ts
-- [ ] T025 Create frontend API client with base URL, error normalization, session-expired handling, and typed request helpers in frontend/src/lib/api/client.ts
-- [ ] T026 Create frontend API type and view-model definitions in frontend/src/lib/api/types.ts
-- [ ] T027 Create TanStack Query client and invalidation helpers in frontend/src/app/query-client.ts and frontend/src/lib/api/query-keys.ts
-- [ ] T028 Create auth session store with memory-only access token handling in frontend/src/lib/auth/session.ts
-- [ ] T029 Create route guards for staff and member role areas in frontend/src/lib/auth/route-guards.ts
-- [ ] T030 Create TanStack Router root in frontend/src/app/router.tsx
-- [ ] T031 Create public login and unauthorized routes in frontend/src/routes/public.tsx
-- [ ] T032 Create staff route shell in frontend/src/routes/staff/route.tsx
-- [ ] T033 Create member route shell in frontend/src/routes/member/route.tsx
-- [ ] T034 Create app providers for router, query client, auth session, tooltip, and toast support in frontend/src/app/providers.tsx
-- [ ] T035 Create shared date utilities for due-soon, due-today, overdue, and local date formatting in frontend/src/lib/dates/due-status.ts
-- [ ] T036 Create Zod schemas for auth, books, catalog, membership tiers, members, borrowings, returns, list queries, and member self-service view models in frontend/src/lib/validation/schemas.ts
-- [ ] T037 Create shared page header component in frontend/src/components/page-header.tsx
-- [ ] T038 Create shared status badge component in frontend/src/components/status-badge.tsx
-- [ ] T039 Create shared empty, loading, and error state components in frontend/src/components/states.tsx
-- [ ] T040 Create shared form field and confirmation dialog wrappers in frontend/src/components/forms.tsx
-- [ ] T041 Create reusable data-table wrapper using TanStack Table and shadcn/ui table components in frontend/src/components/data-table/data-table.tsx
-- [ ] T042 Create staff shell layout in frontend/src/components/layout/staff-shell.tsx
-- [ ] T043 Create member shell layout in frontend/src/components/layout/member-shell.tsx
+- [X] T010 Verify planned member authentication implementation matches the documented MongoDB member document extension, indexes, and migration impact in specs/002-library-ui/data-model.md
+- [X] T011 Add backend unit tests for member credential validation and member JWT payload handling in src/auth/auth.service.spec.ts
+- [X] T012 Add backend authorization tests proving members cannot access staff member IDs in test/member-auth.e2e-spec.ts
+- [X] T013 Add member credential fields, schema validation notes, and required indexes to src/members/schemas/member.schema.ts
+- [X] T014 Create MongoDB migration for member authentication fields and indexes in migrations/versions/002-member-auth.ts
+- [X] T015 Verify npm run migrate:status discovers migrations/versions/002-member-auth.ts through the existing migration auto-loader in migrations/migrate.ts
+- [X] T016 Add member password hashing and credential validation support in src/members/members.service.ts
+- [X] T017 Add member login DTOs and response DTOs in src/auth/dto/member-auth.dto.ts
+- [X] T018 Extend JWT payload role-area support for staff and member sessions in src/auth/auth.service.ts and src/auth/jwt.strategy.ts
+- [X] T019 Add member login endpoint POST /auth/member-login in src/auth/auth.controller.ts
+- [X] T020 Add member-only auth guard and current-member decorator in src/auth/member-auth.guard.ts and src/auth/current-member.decorator.ts
+- [X] T021 Add member-scoped read endpoints GET /members/me, GET /members/me/policy-status, GET /members/me/borrowings, and GET /members/me/borrowings/:id in src/members/members.controller.ts
+- [X] T022 Update demo seed data with member login credentials and due-state scenarios in scripts/seed-demo-data.ts
+- [X] T023 Add Swagger decorators for member auth DTOs and member-scoped endpoint responses in src/auth/dto/member-auth.dto.ts and src/members/dto/member-self-service.dto.ts
+- [X] T024 Verify OpenAPI generation includes member auth and member-scoped endpoints through src/main.ts
+- [X] T025 Create frontend API client with base URL, error normalization, session-expired handling, and typed request helpers in frontend/src/lib/api/client.ts
+- [X] T026 Create frontend API type and view-model definitions in frontend/src/lib/api/types.ts
+- [X] T027 Create TanStack Query client and invalidation helpers in frontend/src/app/query-client.ts and frontend/src/lib/api/query-keys.ts
+- [X] T028 Create auth session store with memory-only access token handling in frontend/src/lib/auth/session.ts
+- [X] T029 Create route guards for staff and member role areas in frontend/src/lib/auth/route-guards.ts
+- [X] T030 Create TanStack Router root in frontend/src/app/router.tsx
+- [X] T031 Create public login and unauthorized routes in frontend/src/routes/public.tsx
+- [X] T032 Create staff route shell in frontend/src/routes/staff/route.tsx
+- [X] T033 Create member route shell in frontend/src/routes/member/route.tsx
+- [X] T034 Create app providers for router, query client, auth session, tooltip, and toast support in frontend/src/app/providers.tsx
+- [X] T035 Create shared date utilities for due-soon, due-today, overdue, and local date formatting in frontend/src/lib/dates/due-status.ts
+- [X] T036 Create Zod schemas for auth, books, catalog, membership tiers, members, borrowings, returns, list queries, and member self-service view models in frontend/src/lib/validation/schemas.ts
+- [X] T037 Create shared page header component in frontend/src/components/page-header.tsx
+- [X] T038 Create shared status badge component in frontend/src/components/status-badge.tsx
+- [X] T039 Create shared empty, loading, and error state components in frontend/src/components/states.tsx
+- [X] T040 Create shared form field and confirmation dialog wrappers in frontend/src/components/forms.tsx
+- [X] T041 Create reusable data-table wrapper using TanStack Table and shadcn/ui table components in frontend/src/components/data-table/data-table.tsx
+- [X] T042 Create staff shell layout in frontend/src/components/layout/staff-shell.tsx
+- [X] T043 Create member shell layout in frontend/src/components/layout/member-shell.tsx
 
 **Checkpoint**: Foundation ready; staff and member story implementation can begin.
 

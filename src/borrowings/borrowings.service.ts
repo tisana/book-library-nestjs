@@ -169,6 +169,24 @@ export class BorrowingsService {
     return this.toResponse(borrowing);
   }
 
+  async findOneForMember(
+    id: string,
+    memberId: string,
+  ): Promise<BorrowingResponseDto> {
+    const borrowing = await this.borrowingModel
+      .findOne({
+        _id: equals(toMongoObjectId(id)),
+        memberId: equals(toMongoObjectId(memberId, 'memberId')),
+      })
+      .exec();
+
+    if (!borrowing) {
+      throw new NotFoundException('Borrowing record not found');
+    }
+
+    return this.toResponse(borrowing);
+  }
+
   async findOverdue(
     query: BorrowingQueryDto = new BorrowingQueryDto(),
   ): Promise<BorrowingResponseDto[]> {
