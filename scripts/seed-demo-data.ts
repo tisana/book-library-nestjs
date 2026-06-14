@@ -1,12 +1,15 @@
 import mongoose from 'mongoose';
+import * as bcrypt from 'bcryptjs';
 
 import {
   LibraryItemStatus,
   LoanState,
+  MemberAuthStatus,
   MemberStatus,
 } from '../src/common/enums/library-status.enum';
 
 const DEMO_ACTOR_ID = 'demo-seed';
+const DEMO_MEMBER_PASSWORD = 'DemoMember#2026';
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DEMO_CATEGORY_CODES = ['STANDARD', 'SHORT', 'REFERENCE'];
 const DEMO_MEMBERSHIP_TYPE_CODES = ['STANDARD', 'PREMIUM'];
@@ -64,6 +67,10 @@ async function ensureIndexes(): Promise<void> {
     mongoose.connection
       .collection('members')
       .createIndex({ email: 1 }, { unique: true, sparse: true }),
+    mongoose.connection
+      .collection('members')
+      .createIndex({ loginIdentifier: 1 }, { unique: true, sparse: true }),
+    mongoose.connection.collection('members').createIndex({ authStatus: 1 }),
     mongoose.connection.collection('borrowings').createIndex({ memberId: 1 }),
     mongoose.connection.collection('borrowings').createIndex({ bookId: 1 }),
     mongoose.connection
@@ -191,6 +198,7 @@ async function resetDemoData(): Promise<void> {
 async function seedDemoData(): Promise<void> {
   const now = new Date();
   const today = new Date(now);
+  const memberPasswordHash = await bcrypt.hash(DEMO_MEMBER_PASSWORD, 12);
   today.setUTCHours(0, 0, 0, 0);
 
   const categories = {
@@ -372,6 +380,10 @@ async function seedDemoData(): Promise<void> {
         phone: '+66020001001',
         membershipTypeId: membershipTypes.standard._id,
         status: MemberStatus.Active,
+        loginIdentifier: 'jane.reader@example.test',
+        passwordHash: memberPasswordHash,
+        passwordUpdatedAt: now,
+        authStatus: MemberAuthStatus.Active,
         activeLoanCount: 1,
       },
       now,
@@ -387,6 +399,10 @@ async function seedDemoData(): Promise<void> {
         phone: '+66020001002',
         membershipTypeId: membershipTypes.standard._id,
         status: MemberStatus.Active,
+        loginIdentifier: 'max.limit@example.test',
+        passwordHash: memberPasswordHash,
+        passwordUpdatedAt: now,
+        authStatus: MemberAuthStatus.Active,
         activeLoanCount: 3,
       },
       now,
@@ -402,6 +418,10 @@ async function seedDemoData(): Promise<void> {
         phone: '+66020001003',
         membershipTypeId: membershipTypes.standard._id,
         status: MemberStatus.Suspended,
+        loginIdentifier: 'sam.suspended@example.test',
+        passwordHash: memberPasswordHash,
+        passwordUpdatedAt: now,
+        authStatus: MemberAuthStatus.Locked,
         activeLoanCount: 0,
       },
       now,
@@ -417,6 +437,10 @@ async function seedDemoData(): Promise<void> {
         phone: '+66020001004',
         membershipTypeId: membershipTypes.premium._id,
         status: MemberStatus.Active,
+        loginIdentifier: 'olivia.overdue@example.test',
+        passwordHash: memberPasswordHash,
+        passwordUpdatedAt: now,
+        authStatus: MemberAuthStatus.Active,
         activeLoanCount: 1,
       },
       now,
@@ -505,6 +529,9 @@ async function seedDemoData(): Promise<void> {
     'Seeded demo books: BK-1001, BK-1002, BK-1003, BK-1004, BK-1005, BK-1006, BK-1007',
   );
   console.log('Seeded demo members: M-1001, M-1002, M-1003, M-1004');
+  console.log(
+    `Seeded demo member logins use password: ${DEMO_MEMBER_PASSWORD}`,
+  );
   console.log('Seeded demo borrowings: 6 records');
 }
 

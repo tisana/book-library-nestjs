@@ -1,9 +1,5 @@
+import { AppProviders } from './app/providers';
+
 export function App() {
-  return (
-    <main className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto flex min-h-screen max-w-5xl items-center justify-center px-6">
-        <h1 className="text-2xl font-semibold">Book Library</h1>
-      </div>
-    </main>
-  );
+  return <AppProviders />;
 }

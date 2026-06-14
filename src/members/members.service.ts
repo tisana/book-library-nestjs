@@ -3,10 +3,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AuditActor } from '../common/audit/audit-context';
-import { MemberStatus } from '../common/enums/library-status.enum';
+import { MemberAuthStatus, MemberStatus } from '../common/enums/library-status.enum';
 import {
   containsLiteral,
   equals,
@@ -21,6 +22,9 @@ import {
   UpdateMemberDto,
 } from './dto/member.dto';
 import { MemberDocument, MemberModelName } from './schemas/member.schema';
+import { MemberSelfServiceProfileDto } from './dto/member-self-service.dto';
+
+const MEMBER_PASSWORD_HASH_ROUNDS = 12;
 
 @Injectable()
 export class MembersService {
@@ -99,6 +103,23 @@ export class MembersService {
     return this.toResponse(await this.findDocumentById(id));
   }
 
+  async findSelfServiceProfile(
+    id: string,
+  ): Promise<MemberSelfServiceProfileDto> {
+    const member = await this.findDocumentById(id);
+
+    return {
+      id: getMemberId(member),
+      memberNumber: member.memberNumber,
+      displayName: member.fullName,
+      email: member.email,
+      phone: member.phone,
+      membershipStatus: member.status,
+      membershipTypeId: member.membershipTypeId.toString(),
+      activeLoanCount: member.activeLoanCount,
+    };
+  }
+
   async update(
     id: string,
     dto: UpdateMemberDto,
@@ -164,6 +185,75 @@ export class MembersService {
     };
   }
 
+  async findByLoginIdentifierWithPassword(
+    loginIdentifier: string,
+  ): Promise<MemberDocument | null> {
+    const normalized = this.normalizeLoginIdentifier(loginIdentifier);
+
+    return this.memberModel
+      .findOne({
+        $or: [
+          { loginIdentifier: equals(normalized) },
+          { memberNumber: equals(loginIdentifier.trim().toUpperCase()) },
+          { email: equals(normalized) },
+        ],
+      })
+      .select('+passwordHash')
+      .exec();
+  }
+
+  async findActiveById(id: string): Promise<MemberDocument> {
+    const member = await this.findDocumentById(id);
+
+    if (
+      member.status !== MemberStatus.Active ||
+      member.authStatus !== MemberAuthStatus.Active
+    ) {
+      throw new NotFoundException('Active member not found');
+    }
+
+    return member;
+  }
+
+  async touchLastLogin(id: string): Promise<void> {
+    await this.memberModel.updateOne(
+      { _id: equals(toMongoObjectId(id)) },
+      { $set: { lastLoginAt: new Date() } },
+    );
+  }
+
+  async setMemberCredentials(
+    id: string,
+    loginIdentifier: string,
+    password: string,
+    actor?: AuditActor,
+  ): Promise<MemberResponseDto> {
+    const member = await this.findDocumentById(id);
+    const normalizedLoginIdentifier =
+      this.normalizeLoginIdentifier(loginIdentifier);
+    const modelWithExists = this.memberModel as Model<MemberDocument> & {
+      exists?: (filter: Record<string, unknown>) => Promise<unknown>;
+    };
+
+    if (
+      modelWithExists.exists &&
+      (await modelWithExists.exists({
+        _id: { $ne: member._id },
+        loginIdentifier: equals(normalizedLoginIdentifier),
+      }))
+    ) {
+      throw new ConflictException('Member login identifier already exists');
+    }
+
+    member.loginIdentifier = normalizedLoginIdentifier;
+    member.passwordHash = await bcrypt.hash(password, MEMBER_PASSWORD_HASH_ROUNDS);
+    member.passwordUpdatedAt = new Date();
+    member.authStatus = MemberAuthStatus.Active;
+    member.updatedBy = actor?.id;
+
+    return this.toResponse(await member.save());
+  }
+
   private async findDocumentById(id: string): Promise<MemberDocument> {
     const member = await this.memberModel
       .findOne({ _id: equals(toMongoObjectId(id)) })
@@ -188,4 +278,13 @@ export class MembersService {
       activeLoanCount: member.activeLoanCount,
     };
   }
+
+  private normalizeLoginIdentifier(loginIdentifier: string): string {
+    return loginIdentifier.trim().toLowerCase();
+  }
+}
+
+export function getMemberId(member: Partial<MemberDocument>): string {
+  const maybeObjectId = member._id as { toString?: () => string } | undefined;
+  return member.id ?? maybeObjectId?.toString?.() ?? '';
 }

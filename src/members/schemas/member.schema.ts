@@ -1,6 +1,9 @@
 import { Document, Schema, Types } from 'mongoose';
 import { auditFieldsSchemaDefinition } from '../../common/audit/audit-fields.schema';
-import { MemberStatus } from '../../common/enums/library-status.enum';
+import {
+  MemberAuthStatus,
+  MemberStatus,
+} from '../../common/enums/library-status.enum';
 
 export const MemberModelName = 'Member';
 
@@ -14,6 +17,11 @@ export interface MemberDocument extends Document<Types.ObjectId> {
   membershipTypeId: Types.ObjectId | string;
   status: MemberStatus;
   activeLoanCount: number;
+  loginIdentifier?: string;
+  passwordHash?: string;
+  passwordUpdatedAt?: Date;
+  lastLoginAt?: Date;
+  authStatus?: MemberAuthStatus;
   createdBy?: string;
   updatedBy?: string;
   createdAt: Date;
@@ -40,9 +48,27 @@ export const MemberSchema: Schema<MemberDocument> = new Schema<MemberDocument>(
       index: true,
     },
     activeLoanCount: { type: Number, required: true, min: 0, default: 0 },
+    loginIdentifier: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      unique: true,
+      sparse: true,
+      index: true,
+    },
+    passwordHash: { type: String, select: false },
+    passwordUpdatedAt: { type: Date },
+    lastLoginAt: { type: Date },
+    authStatus: {
+      type: String,
+      enum: Object.values(MemberAuthStatus),
+      default: MemberAuthStatus.Active,
+      index: true,
+    },
     ...auditFieldsSchemaDefinition,
   },
   { timestamps: true },
 );
 
 MemberSchema.index({ status: 1, membershipTypeId: 1 });
+MemberSchema.index({ loginIdentifier: 1 }, { unique: true, sparse: true });

@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { StaffRole } from '../common/enums/library-status.enum';
+import { MembersService, getMemberId } from '../members/members.service';
 import {
   getStaffUserId,
   StaffUsersService,
@@ -10,8 +11,10 @@ import {
 
 interface JwtPayload {
   sub: string;
-  email: string;
-  roles: StaffRole[];
+  email?: string;
+  memberNumber?: string;
+  roles?: StaffRole[];
+  roleArea?: 'staff' | 'member';
 }
 
 @Injectable()
@@ -19,6 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     configService: ConfigService,
     private readonly staffUsersService: StaffUsersService,
+    private readonly membersService: MembersService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -30,6 +34,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload) {
+    if (payload.roleArea === 'member') {
+      const member = await this.membersService.findActiveById(payload.sub);
+
+      return {
+        id: getMemberId(member),
+        memberNumber: member.memberNumber,
+        roleArea: 'member',
+      };
+    }
+
     const user = await this.staffUsersService.findActiveById(payload.sub);
 
     if (!user) {
@@ -41,6 +55,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       email: user.email,
       displayName: user.displayName,
       roles: user.roles,
+      roleArea: 'staff',
     };
   }
 }
