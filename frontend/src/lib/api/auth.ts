@@ -10,13 +10,18 @@ export async function staffLogin(input: StaffLoginRequest) {
   );
   const user = response.user ?? response.principal;
 
-  if (!user || user.roleArea !== 'staff') {
+  if (!user) {
     throw new Error('Staff login did not return a staff session.');
   }
 
-  authSession.setSession(response.accessToken, user);
+  const staffUser: StaffSessionUser = {
+    ...user,
+    roleArea: 'staff',
+  };
 
-  return user;
+  authSession.setSession(response.accessToken, staffUser);
+
+  return staffUser;
 }
 
 export function staffLogout() {

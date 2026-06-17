@@ -71,4 +71,3 @@ export const MemberSchema: Schema<MemberDocument> = new Schema<MemberDocument>(
 );
 
 MemberSchema.index({ status: 1, membershipTypeId: 1 });
-MemberSchema.index({ loginIdentifier: 1 }, { unique: true, sparse: true });

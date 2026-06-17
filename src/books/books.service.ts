@@ -44,7 +44,9 @@ export class BooksService {
     return this.toResponse(createdBook);
   }
 
-  async findAll(query: BookQueryDto = new BookQueryDto()): Promise<BookResponseDto[]> {
+  async findAll(
+    query: BookQueryDto = new BookQueryDto(),
+  ): Promise<BookResponseDto[]> {
     const filter: Record<string, unknown> = {};
 
     if (query.q) {
@@ -61,7 +63,9 @@ export class BooksService {
     }
 
     if (query.categoryId) {
-      filter.categoryId = equals(toMongoObjectId(query.categoryId, 'categoryId'));
+      filter.categoryId = equals(
+        toMongoObjectId(query.categoryId, 'categoryId'),
+      );
     }
 
     if (query.status) {
@@ -121,6 +125,10 @@ export class BooksService {
       book.isbn = dto.isbn;
     }
 
+    if (dto.coverImageUrl !== undefined) {
+      book.coverImageUrl = dto.coverImageUrl;
+    }
+
     if (dto.catalogIdentifier !== undefined) {
       book.catalogIdentifier = dto.catalogIdentifier;
     }
@@ -152,7 +160,9 @@ export class BooksService {
 
   private validateQuantity(totalQuantity: number): void {
     if (!Number.isInteger(totalQuantity) || totalQuantity < 0) {
-      throw new BadRequestException('Book total quantity must be zero or greater');
+      throw new BadRequestException(
+        'Book total quantity must be zero or greater',
+      );
     }
   }
 
@@ -162,6 +172,7 @@ export class BooksService {
       title: book.title,
       author: book.author,
       isbn: book.isbn,
+      coverImageUrl: book.coverImageUrl,
       catalogIdentifier: book.catalogIdentifier,
       categoryId: book.categoryId.toString(),
       totalQuantity: book.totalQuantity,

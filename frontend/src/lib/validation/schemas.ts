@@ -22,6 +22,7 @@ export const bookSchema = z.object({
   title: z.string().trim().min(1),
   author: z.string().trim().min(1),
   isbn: z.string().trim().optional(),
+  coverImageUrl: z.url().optional(),
   categoryId: z.string().trim().min(1),
   totalQuantity: z.coerce.number().int().min(0),
   availableQuantity: z.coerce.number().int().min(0),

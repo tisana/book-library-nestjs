@@ -1,36 +1,85 @@
 import { expect, test, type Page } from '@playwright/test';
 
-test('staff can create and update a book from the collection screen', async ({ page }) => {
+test('staff can create and update a book from the collection screen', async ({
+  page,
+}) => {
   await mockStaffLogin(page);
-  await page.route('http://localhost:3000/members**', (route) => route.fulfill({ json: [] }));
-  await page.route('http://localhost:3000/borrowings/overdue**', (route) => route.fulfill({ json: [] }));
-  await page.route('http://localhost:3000/borrowings**', (route) => route.fulfill({ json: [] }));
+  await page.route('http://localhost:3000/members**', (route) =>
+    route.fulfill({ json: [] }),
+  );
+  await page.route('http://localhost:3000/borrowings/overdue**', (route) =>
+    route.fulfill({ json: [] }),
+  );
+  await page.route('http://localhost:3000/borrowings**', (route) =>
+    route.fulfill({ json: [] }),
+  );
   await page.route('http://localhost:3000/book-categories**', (route) =>
     route.fulfill({
-      json: [{ id: 'cat-1', code: 'STD', name: 'Standard', loanPeriodDays: 14, status: 'active' }],
+      json: [
+        {
+          id: 'cat-1',
+          code: 'STD',
+          name: 'Standard',
+          loanPeriodDays: 14,
+          status: 'active',
+        },
+      ],
     }),
   );
   await page.route('http://localhost:3000/books**', async (route) => {
     if (route.request().url().endsWith('/books/book-1')) {
       await route.fulfill({
-        json: { id: 'book-1', title: 'Clean Code', author: 'Robert C. Martin', catalogIdentifier: 'BK-1001', categoryId: 'cat-1', totalQuantity: 3, availableQuantity: 2, status: 'active' },
+        json: {
+          id: 'book-1',
+          title: 'Clean Code',
+          author: 'Robert C. Martin',
+          catalogIdentifier: 'BK-1001',
+          categoryId: 'cat-1',
+          totalQuantity: 3,
+          availableQuantity: 2,
+          status: 'active',
+          coverImageUrl:
+            'https://covers.openlibrary.org/b/isbn/9780132350884-L.jpg',
+        },
       });
       return;
     }
     if (route.request().method() === 'POST') {
       await route.fulfill({
-        json: { id: 'book-2', title: 'Refactoring', author: 'Martin Fowler', catalogIdentifier: 'BK-1002', categoryId: 'cat-1', totalQuantity: 1, availableQuantity: 1, status: 'active' },
+        json: {
+          id: 'book-2',
+          title: 'Refactoring',
+          author: 'Martin Fowler',
+          catalogIdentifier: 'BK-1002',
+          categoryId: 'cat-1',
+          totalQuantity: 1,
+          availableQuantity: 1,
+          status: 'active',
+        },
       });
       return;
     }
     await route.fulfill({
-      json: [{ id: 'book-1', title: 'Clean Code', author: 'Robert C. Martin', catalogIdentifier: 'BK-1001', categoryId: 'cat-1', totalQuantity: 3, availableQuantity: 2, status: 'active' }],
+      json: [
+        {
+          id: 'book-1',
+          title: 'Clean Code',
+          author: 'Robert C. Martin',
+          catalogIdentifier: 'BK-1001',
+          categoryId: 'cat-1',
+          totalQuantity: 3,
+          availableQuantity: 2,
+          status: 'active',
+        },
+      ],
     });
   });
 
   await signIn(page);
   await page.getByRole('link', { name: 'Books' }).click();
-  await expect(page.getByRole('heading', { name: 'Book Collection' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Book Collection' }),
+  ).toBeVisible();
   await page.getByRole('button', { name: /add book/i }).click();
   await page.getByLabel('Title').fill('Refactoring');
   await page.getByLabel('Author').fill('Martin Fowler');
@@ -41,6 +90,9 @@ test('staff can create and update a book from the collection screen', async ({ p
 
   await page.getByRole('link', { name: /Clean Code/i }).click();
   await expect(page.getByRole('heading', { name: 'Clean Code' })).toBeVisible();
+  await expect(
+    page.getByRole('img', { name: 'Cover thumbnail for Clean Code' }),
+  ).toBeVisible();
   await expect(page.getByText('2 of 3 available')).toBeVisible();
 });
 

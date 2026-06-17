@@ -22,11 +22,7 @@ const DEMO_BOOK_CATALOG_IDENTIFIERS = [
   'BK-1006',
   'BK-1007',
 ];
-const DEMO_BOOK_ISBNS = [
-  '9780132350884',
-  '9780321125217',
-  '9780134757599',
-];
+const DEMO_BOOK_ISBNS = ['9780132350884', '9780321125217', '9780134757599'];
 const DEMO_MEMBER_NUMBERS = ['M-1001', 'M-1002', 'M-1003', 'M-1004'];
 const DEMO_MEMBER_EMAILS = [
   'jane.reader@example.test',
@@ -271,6 +267,8 @@ async function seedDemoData(): Promise<void> {
         title: 'Clean Code',
         author: 'Robert C. Martin',
         isbn: '9780132350884',
+        coverImageUrl:
+          'https://covers.openlibrary.org/b/isbn/9780132350884-L.jpg',
         categoryId: categories.standard._id,
         totalQuantity: 3,
         availableQuantity: 2,
@@ -287,6 +285,8 @@ async function seedDemoData(): Promise<void> {
         title: 'Domain-Driven Design',
         author: 'Eric Evans',
         isbn: '9780321125217',
+        coverImageUrl:
+          'https://covers.openlibrary.org/b/isbn/9780321125217-L.jpg',
         categoryId: categories.standard._id,
         totalQuantity: 2,
         availableQuantity: 2,
@@ -303,6 +303,8 @@ async function seedDemoData(): Promise<void> {
         title: 'Refactoring',
         author: 'Martin Fowler',
         isbn: '9780134757599',
+        coverImageUrl:
+          'https://covers.openlibrary.org/b/isbn/9780134757599-L.jpg',
         categoryId: categories.shortLoan._id,
         totalQuantity: 1,
         availableQuantity: 0,
@@ -318,6 +320,8 @@ async function seedDemoData(): Promise<void> {
         catalogIdentifier: 'BK-1004',
         title: 'Architecture Reference Handbook',
         author: 'Library Desk',
+        coverImageUrl:
+          'https://placehold.co/320x480/e2e8f0/334155?text=Architecture%0AReference',
         categoryId: categories.reference._id,
         totalQuantity: 1,
         availableQuantity: 0,
@@ -332,6 +336,8 @@ async function seedDemoData(): Promise<void> {
         catalogIdentifier: 'BK-1005',
         title: 'Limit Demo Book A',
         author: 'Library Demo',
+        coverImageUrl:
+          'https://placehold.co/320x480/dcfce7/166534?text=Limit%0ADemo%20A',
         categoryId: categories.standard._id,
         totalQuantity: 1,
         availableQuantity: 0,
@@ -346,6 +352,8 @@ async function seedDemoData(): Promise<void> {
         catalogIdentifier: 'BK-1006',
         title: 'Limit Demo Book B',
         author: 'Library Demo',
+        coverImageUrl:
+          'https://placehold.co/320x480/dbeafe/1e40af?text=Limit%0ADemo%20B',
         categoryId: categories.standard._id,
         totalQuantity: 1,
         availableQuantity: 0,
@@ -360,6 +368,8 @@ async function seedDemoData(): Promise<void> {
         catalogIdentifier: 'BK-1007',
         title: 'Limit Demo Book C',
         author: 'Library Demo',
+        coverImageUrl:
+          'https://placehold.co/320x480/fef3c7/92400e?text=Limit%0ADemo%20C',
         categoryId: categories.standard._id,
         totalQuantity: 1,
         availableQuantity: 0,
