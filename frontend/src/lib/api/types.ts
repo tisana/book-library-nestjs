@@ -60,6 +60,7 @@ export interface BookView {
   title: string;
   author: string;
   isbn?: string;
+  coverImageUrl?: string;
   categoryId: string;
   totalQuantity: number;
   availableQuantity: number;
@@ -140,6 +141,7 @@ export interface CreateBookInput {
   title: string;
   author?: string;
   isbn?: string;
+  coverImageUrl?: string;
   catalogIdentifier: string;
   categoryId: string;
   totalQuantity: number;
@@ -165,8 +167,7 @@ export interface CreateMembershipTierInput {
   maxActiveLoans: number;
 }
 
-export interface UpdateMembershipTierInput
-  extends Partial<CreateMembershipTierInput> {
+export interface UpdateMembershipTierInput extends Partial<CreateMembershipTierInput> {
   status?: LibraryStatus;
 }
 

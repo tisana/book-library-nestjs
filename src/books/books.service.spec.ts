@@ -18,13 +18,17 @@ describe('BooksService', () => {
     save: jest.Mock;
   };
 
-  function createBookDocument(overrides: Partial<MockBookDocument> = {}): MockBookDocument {
+  function createBookDocument(
+    overrides: Partial<MockBookDocument> = {},
+  ): MockBookDocument {
     return {
       _id: { toString: () => 'book-id' } as BookDocument['_id'],
       id: 'book-id',
       title: 'Clean Code',
       author: 'Robert C. Martin',
       isbn: '9780132350884',
+      coverImageUrl:
+        'https://covers.openlibrary.org/b/isbn/9780132350884-L.jpg',
       catalogIdentifier: 'BK-0001',
       categoryId: '64f000000000000000000001',
       totalQuantity: 3,
@@ -66,6 +70,8 @@ describe('BooksService', () => {
         title: 'Clean Code',
         author: 'Robert C. Martin',
         isbn: '9780132350884',
+        coverImageUrl:
+          'https://covers.openlibrary.org/b/isbn/9780132350884-L.jpg',
         catalogIdentifier: 'BK-0001',
         categoryId: '64f000000000000000000001',
         totalQuantity: 3,
@@ -79,6 +85,8 @@ describe('BooksService', () => {
 
     expect(model).toHaveBeenCalledWith(
       expect.objectContaining({
+        coverImageUrl:
+          'https://covers.openlibrary.org/b/isbn/9780132350884-L.jpg',
         totalQuantity: 3,
         availableQuantity: 3,
         status: LibraryItemStatus.Active,
@@ -126,9 +134,7 @@ describe('BooksService', () => {
     const filter = model.find.mock.calls[0][0];
     expect(filter.$or[0].title).toEqual(/Clean\.\*/i);
     expect(filter.author).toEqual(/Martin\?/i);
-    expect(filter.categoryId.$eq.toString()).toBe(
-      '64f000000000000000000001',
-    );
+    expect(filter.categoryId.$eq.toString()).toBe('64f000000000000000000001');
     expect(filter.status).toEqual({ $eq: LibraryItemStatus.Active });
   });
 

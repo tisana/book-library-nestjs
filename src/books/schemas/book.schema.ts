@@ -10,6 +10,7 @@ export interface BookDocument extends Document<Types.ObjectId> {
   title: string;
   author?: string;
   isbn?: string;
+  coverImageUrl?: string;
   catalogIdentifier: string;
   categoryId: Types.ObjectId | string;
   totalQuantity: number;
@@ -26,6 +27,7 @@ export const BookSchema: Schema<BookDocument> = new Schema<BookDocument>(
     title: { type: String, required: true, trim: true, index: true },
     author: { type: String, trim: true, index: true },
     isbn: { type: String, trim: true, sparse: true, unique: true },
+    coverImageUrl: { type: String, trim: true },
     catalogIdentifier: {
       type: String,
       required: true,

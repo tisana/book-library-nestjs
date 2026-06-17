@@ -6,6 +6,7 @@ import {
   IsMongoId,
   IsOptional,
   IsString,
+  IsUrl,
   Min,
 } from 'class-validator';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
@@ -25,6 +26,13 @@ export class CreateBookDto {
   @IsOptional()
   @IsString()
   isbn?: string;
+
+  @ApiPropertyOptional({
+    example: 'https://covers.openlibrary.org/b/isbn/9780132350884-L.jpg',
+  })
+  @IsOptional()
+  @IsUrl({ require_protocol: true })
+  coverImageUrl?: string;
 
   @ApiProperty({ example: 'BOOK-0001' })
   @IsString()
@@ -55,6 +63,13 @@ export class UpdateBookDto {
   @IsOptional()
   @IsString()
   isbn?: string;
+
+  @ApiPropertyOptional({
+    example: 'https://covers.openlibrary.org/b/isbn/9780132350884-L.jpg',
+  })
+  @IsOptional()
+  @IsUrl({ require_protocol: true })
+  coverImageUrl?: string;
 
   @ApiPropertyOptional({ example: 'BOOK-0001' })
   @IsOptional()
@@ -126,6 +141,11 @@ export class BookResponseDto {
 
   @ApiPropertyOptional({ example: '9780132350884' })
   isbn?: string;
+
+  @ApiPropertyOptional({
+    example: 'https://covers.openlibrary.org/b/isbn/9780132350884-L.jpg',
+  })
+  coverImageUrl?: string;
 
   @ApiProperty({ example: 'BOOK-0001' })
   catalogIdentifier: string;
