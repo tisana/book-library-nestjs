@@ -7,6 +7,9 @@ import {
   getMongoConnectionOptions,
   runPendingMigrations,
 } from '../migrations/migrate';
+import { migration as migration000 } from '../migrations/versions/000-migration-record';
+import { migration as migration001 } from '../migrations/versions/001-library-core';
+import { migration as migration002 } from '../migrations/versions/002-member-auth';
 
 class FakeMigrationCollection<T extends { version?: string }>
   implements MigrationCollection<T>
@@ -69,6 +72,28 @@ class FakeMigrationConnection implements MigrationConnection {
   }
 }
 
+class FakeIndexConnection implements MigrationConnection {
+  readonly collections = new Map<
+    string,
+    FakeMigrationCollection<Record<string, unknown>>
+  >();
+
+  collection<T>(name: string): MigrationCollection<T> {
+    let collection = this.collections.get(name);
+
+    if (!collection) {
+      collection = new FakeMigrationCollection<Record<string, unknown>>();
+      this.collections.set(name, collection);
+    }
+
+    return collection as MigrationCollection<T>;
+  }
+
+  async startSession(): Promise<MigrationSession> {
+    return new FakeMigrationSession();
+  }
+}
+
 describe('migration runner', () => {
   it('uses direct host connections so local Docker replica set hostnames do not break status checks', () => {
     expect(getMongoConnectionOptions()).toMatchObject({
@@ -103,5 +128,20 @@ describe('migration runner', () => {
         appliedAt: expect.any(Date),
       },
     ]);
+  });
+
+  it('keeps index DDL outside transaction sessions for MongoDB compatibility', async () => {
+    const connection = new FakeIndexConnection();
+    const session = new FakeMigrationSession();
+
+    await migration000.up({ connection, session });
+    await migration001.up({ connection, session });
+    await migration002.up({ connection, session });
+
+    for (const collection of connection.collections.values()) {
+      for (const index of collection.indexes) {
+        expect(index.options ?? {}).not.toHaveProperty('session');
+      }
+    }
   });
 });

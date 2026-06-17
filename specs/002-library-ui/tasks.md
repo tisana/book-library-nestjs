@@ -83,32 +83,32 @@
 
 ### Tests for User Story 1
 
-- [ ] T044 [P] [US1] Add Playwright staff login and dashboard smoke test in frontend/tests/e2e/staff-dashboard.spec.ts
-- [ ] T045 [P] [US1] Add Playwright staff book create/update test in frontend/tests/e2e/staff-books.spec.ts
-- [ ] T046 [P] [US1] Add Playwright staff borrowing and return happy-path test in frontend/tests/e2e/staff-borrowing.spec.ts
-- [ ] T047 [P] [US1] Add Playwright blocked borrowing scenarios for unavailable, inactive, suspended, overdue, and quota-reached states in frontend/tests/e2e/staff-blocked-borrowing.spec.ts
-- [ ] T048 [P] [US1] Add Playwright borrowing history preservation test for deactivated books, catalog classifications, and members in frontend/tests/e2e/staff-borrowing-history.spec.ts
-- [ ] T049 [P] [US1] Add component tests for reusable staff data-table loading, empty, no-result, and error states in frontend/src/components/data-table/data-table.test.tsx
-- [ ] T050 [P] [US1] Add component tests for staff form validation messages in frontend/src/features/books/book-form.test.tsx
+- [X] T044 [P] [US1] Add Playwright staff login and dashboard smoke test in frontend/tests/e2e/staff-dashboard.spec.ts
+- [X] T045 [P] [US1] Add Playwright staff book create/update test in frontend/tests/e2e/staff-books.spec.ts
+- [X] T046 [P] [US1] Add Playwright staff borrowing and return happy-path test in frontend/tests/e2e/staff-borrowing.spec.ts
+- [X] T047 [P] [US1] Add Playwright blocked borrowing scenarios for unavailable, inactive, suspended, overdue, and quota-reached states in frontend/tests/e2e/staff-blocked-borrowing.spec.ts
+- [X] T048 [P] [US1] Add Playwright borrowing history preservation test for deactivated books, catalog classifications, and members in frontend/tests/e2e/staff-borrowing-history.spec.ts
+- [X] T049 [P] [US1] Add component tests for reusable staff data-table loading, empty, no-result, and error states in frontend/src/components/data-table/data-table.test.tsx
+- [X] T050 [P] [US1] Add component tests for staff form validation messages in frontend/src/features/books/book-form.test.tsx
 
 ### Implementation for User Story 1
 
-- [ ] T051 [P] [US1] Implement staff login API adapter and form in frontend/src/features/auth/staff-login.tsx and frontend/src/lib/api/auth.ts
-- [ ] T052 [P] [US1] Implement staff dashboard API composition and summary cards in frontend/src/features/staff-dashboard/staff-dashboard.tsx
-- [ ] T053 [P] [US1] Implement book list API adapter, query hooks, and route screen in frontend/src/lib/api/books.ts and frontend/src/routes/staff/books.tsx
-- [ ] T054 [US1] Implement book create/edit form with React Hook Form and Zod in frontend/src/features/books/book-form.tsx
-- [ ] T055 [P] [US1] Implement book detail route with availability and inactive states in frontend/src/routes/staff/books.$bookId.tsx
-- [ ] T056 [P] [US1] Implement catalog classification API adapter, table, and form in frontend/src/lib/api/catalog.ts and frontend/src/routes/staff/catalog.tsx
-- [ ] T057 [P] [US1] Implement membership tier API adapter, table, and form in frontend/src/lib/api/membership-types.ts and frontend/src/routes/staff/membership-types.tsx
-- [ ] T058 [P] [US1] Implement member list API adapter, query hooks, filters, and route screen in frontend/src/lib/api/members.ts and frontend/src/routes/staff/members.tsx
-- [ ] T059 [US1] Implement member detail route with profile, eligibility, quota, active borrowings, and history tabs in frontend/src/routes/staff/members.$memberId.tsx
-- [ ] T060 [P] [US1] Implement borrowing list and overdue routes in frontend/src/lib/api/borrowings.ts, frontend/src/routes/staff/borrowings.tsx, and frontend/src/routes/staff/borrowings.overdue.tsx
-- [ ] T061 [US1] Implement borrowing creation workflow with member selector, book selector, eligibility summary, calculated due date display, and conflict handling in frontend/src/routes/staff/borrowings.new.tsx
-- [ ] T062 [US1] Implement borrowing detail and return workflow with confirmation and invalidation in frontend/src/routes/staff/borrowings.$borrowingId.tsx
-- [ ] T063 [US1] Wire mutation invalidation for books, members, member policy, borrowings, and affected member self-service queries in frontend/src/lib/api/mutations.ts
-- [ ] T064 [US1] Add staff route error boundary and permission-denied handling in frontend/src/routes/staff/error-boundary.tsx
-- [ ] T065 [US1] Add validation and conflict error mapping for staff mutations in frontend/src/lib/api/errors.ts
-- [ ] T066 [US1] Verify staff shell keyboard navigation, labels, icon button names, and table accessibility in frontend/src/components/layout/staff-shell.tsx and frontend/src/components/data-table/data-table.tsx
+- [X] T051 [P] [US1] Implement staff login API adapter and form in frontend/src/features/auth/staff-login.tsx and frontend/src/lib/api/auth.ts
+- [X] T052 [P] [US1] Implement staff dashboard API composition and summary cards in frontend/src/features/staff-dashboard/staff-dashboard.tsx
+- [X] T053 [P] [US1] Implement book list API adapter, query hooks, and route screen in frontend/src/lib/api/books.ts and frontend/src/routes/staff/books.tsx
+- [X] T054 [US1] Implement book create/edit form with React Hook Form and Zod in frontend/src/features/books/book-form.tsx
+- [X] T055 [P] [US1] Implement book detail route with availability and inactive states in frontend/src/routes/staff/books.$bookId.tsx
+- [X] T056 [P] [US1] Implement catalog classification API adapter, table, and form in frontend/src/lib/api/catalog.ts and frontend/src/routes/staff/catalog.tsx
+- [X] T057 [P] [US1] Implement membership tier API adapter, table, and form in frontend/src/lib/api/membership-types.ts and frontend/src/routes/staff/membership-types.tsx
+- [X] T058 [P] [US1] Implement member list API adapter, query hooks, filters, and route screen in frontend/src/lib/api/members.ts and frontend/src/routes/staff/members.tsx
+- [X] T059 [US1] Implement member detail route with profile, eligibility, quota, active borrowings, and history tabs in frontend/src/routes/staff/members.$memberId.tsx
+- [X] T060 [P] [US1] Implement borrowing list and overdue routes in frontend/src/lib/api/borrowings.ts, frontend/src/routes/staff/borrowings.tsx, and frontend/src/routes/staff/borrowings.overdue.tsx
+- [X] T061 [US1] Implement borrowing creation workflow with member selector, book selector, eligibility summary, calculated due date display, and conflict handling in frontend/src/routes/staff/borrowings.new.tsx
+- [X] T062 [US1] Implement borrowing detail and return workflow with confirmation and invalidation in frontend/src/routes/staff/borrowings.$borrowingId.tsx
+- [X] T063 [US1] Wire mutation invalidation for books, members, member policy, borrowings, and affected member self-service queries in frontend/src/lib/api/mutations.ts
+- [X] T064 [US1] Add staff route error boundary and permission-denied handling in frontend/src/routes/staff/error-boundary.tsx
+- [X] T065 [US1] Add validation and conflict error mapping for staff mutations in frontend/src/lib/api/errors.ts
+- [X] T066 [US1] Verify staff shell keyboard navigation, labels, icon button names, and table accessibility in frontend/src/components/layout/staff-shell.tsx and frontend/src/components/data-table/data-table.tsx
 
 **Checkpoint**: User Story 1 is fully functional and independently testable as the MVP.
 

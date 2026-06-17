@@ -4,15 +4,17 @@ import {
   useReactTable,
   type ColumnDef,
 } from '@tanstack/react-table';
-import { EmptyState, LoadingState } from '@/components/states';
+import { EmptyState, ErrorState, LoadingState } from '@/components/states';
 import { cn } from '@/lib/utils';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   isLoading?: boolean;
+  errorMessage?: string;
   emptyTitle?: string;
   emptyDescription?: string;
+  state?: 'empty' | 'no-results';
   className?: string;
 }
 
@@ -20,8 +22,10 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   isLoading = false,
+  errorMessage,
   emptyTitle = 'No records found',
   emptyDescription,
+  state = 'empty',
   className,
 }: DataTableProps<TData, TValue>) {
   // TanStack Table intentionally returns table helper functions from this hook.
@@ -36,8 +40,27 @@ export function DataTable<TData, TValue>({
     return <LoadingState title="Loading records" />;
   }
 
+  if (errorMessage) {
+    return (
+      <ErrorState
+        description={errorMessage}
+        title="Unable to load records"
+      />
+    );
+  }
+
   if (data.length === 0) {
-    return <EmptyState title={emptyTitle} description={emptyDescription} />;
+    return (
+      <EmptyState
+        title={emptyTitle}
+        description={
+          emptyDescription ??
+          (state === 'no-results'
+            ? 'Adjust the search or filters and try again.'
+            : undefined)
+        }
+      />
+    );
   }
 
   return (

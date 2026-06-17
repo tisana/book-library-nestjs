@@ -1,13 +1,25 @@
 import type { ReactNode } from 'react';
 import { Link } from '@tanstack/react-router';
-import { BookOpen, ClipboardList, Library, Users } from 'lucide-react';
+import {
+  BookOpen,
+  ClipboardList,
+  Layers,
+  Library,
+  ShieldAlert,
+  Ticket,
+  Users,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const staffNavItems = [
   { to: '/staff', label: 'Dashboard', icon: Library },
   { to: '/staff/books', label: 'Books', icon: BookOpen },
+  { to: '/staff/catalog', label: 'Catalog', icon: Layers },
+  { to: '/staff/membership-types', label: 'Membership', icon: Ticket },
   { to: '/staff/members', label: 'Members', icon: Users },
   { to: '/staff/borrowings', label: 'Borrowings', icon: ClipboardList },
+  { to: '/staff/borrowings/new', label: 'New borrowing', icon: ClipboardList },
+  { to: '/staff/borrowings/overdue', label: 'Overdue', icon: ShieldAlert },
 ] as const;
 
 export function StaffShell({ children }: { children: ReactNode }) {

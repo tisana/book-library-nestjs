@@ -9,18 +9,17 @@ export const migration: MigrationDefinition = {
     'Keep member documents and borrowing history intact; rollback must not delete members or borrowings.',
     'Drop the borrowings memberId/status/dueAt index only after confirming member self-service borrowing queries no longer use it.',
   ],
-  async up({ connection, session }) {
+  async up({ connection }) {
     const members = connection.collection('members');
     const borrowings = connection.collection('borrowings');
 
     await members.createIndex(
       { loginIdentifier: 1 },
-      { unique: true, sparse: true, session },
+      { unique: true, sparse: true },
     );
-    await members.createIndex({ authStatus: 1 }, { session });
+    await members.createIndex({ authStatus: 1 });
     await borrowings.createIndex(
       { memberId: 1, status: 1, dueAt: 1 },
-      { session },
     );
   },
 };

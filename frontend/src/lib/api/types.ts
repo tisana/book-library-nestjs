@@ -135,3 +135,59 @@ export interface ListQuery {
   page?: number;
   limit?: number;
 }
+
+export interface CreateBookInput {
+  title: string;
+  author?: string;
+  isbn?: string;
+  catalogIdentifier: string;
+  categoryId: string;
+  totalQuantity: number;
+}
+
+export interface UpdateBookInput extends Partial<CreateBookInput> {
+  status?: LibraryStatus;
+}
+
+export interface CreateCatalogInput {
+  code: string;
+  name: string;
+  loanPeriodDays: number;
+}
+
+export interface UpdateCatalogInput extends Partial<CreateCatalogInput> {
+  status?: LibraryStatus;
+}
+
+export interface CreateMembershipTierInput {
+  code: string;
+  name: string;
+  maxActiveLoans: number;
+}
+
+export interface UpdateMembershipTierInput
+  extends Partial<CreateMembershipTierInput> {
+  status?: LibraryStatus;
+}
+
+export interface CreateMemberInput {
+  memberNumber: string;
+  fullName: string;
+  email?: string;
+  phone?: string;
+  membershipTypeId: string;
+}
+
+export interface UpdateMemberInput extends Partial<CreateMemberInput> {
+  status?: MemberStatus;
+  activeLoanCount?: number;
+}
+
+export interface CreateBorrowingInput {
+  memberId: string;
+  bookId: string;
+}
+
+export interface ReturnBorrowingInput {
+  returnedAt?: string;
+}

@@ -24,11 +24,16 @@ export const migration: MigrationDefinition = {
   rollbackNotes: [
     'Describe the manual rollback steps for every collection, index, or seed change.',
   ],
-  async up({ connection, session }) {
-    await connection.collection('books').createIndex({ title: 1 }, { session });
+  async up({ connection }) {
+    await connection.collection('books').createIndex({ title: 1 });
   },
 };
 ```
+
+Index DDL must not pass the migration transaction session to `createIndex`.
+MongoDB rejects creating new indexes on existing collections inside a
+multi-document transaction. The runner still records successful migrations in
+`migration_records` after the migration body completes.
 
 ## Rollback Notes
 

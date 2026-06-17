@@ -9,7 +9,7 @@ export const migration: MigrationDefinition = {
     'Drop bookcategories, books, membershiptypes, members, and borrowings indexes only after confirming replacement indexes or older code paths are deployed.',
     'Do not drop collections as part of rollback; borrowing history and audit-related records must be preserved unless an explicit data-retention decision is approved.',
   ],
-  async up({ connection, session }) {
+  async up({ connection }) {
     const staffUsers = connection.collection('staffusers');
     const books = connection.collection('books');
     const bookCategories = connection.collection('bookcategories');
@@ -17,26 +17,26 @@ export const migration: MigrationDefinition = {
     const members = connection.collection('members');
     const borrowings = connection.collection('borrowings');
 
-    await staffUsers.createIndex({ email: 1 }, { unique: true, session });
-    await staffUsers.createIndex({ status: 1, roles: 1 }, { session });
-    await bookCategories.createIndex({ code: 1 }, { unique: true, session });
-    await bookCategories.createIndex({ status: 1 }, { session });
-    await books.createIndex({ catalogIdentifier: 1 }, { unique: true, session });
-    await books.createIndex({ isbn: 1 }, { unique: true, sparse: true, session });
-    await books.createIndex({ title: 1 }, { session });
-    await books.createIndex({ author: 1 }, { session });
-    await books.createIndex({ status: 1 }, { session });
-    await books.createIndex({ categoryId: 1 }, { session });
-    await membershipTypes.createIndex({ code: 1 }, { unique: true, session });
-    await membershipTypes.createIndex({ status: 1 }, { session });
-    await members.createIndex({ memberNumber: 1 }, { unique: true, session });
+    await staffUsers.createIndex({ email: 1 }, { unique: true });
+    await staffUsers.createIndex({ status: 1, roles: 1 });
+    await bookCategories.createIndex({ code: 1 }, { unique: true });
+    await bookCategories.createIndex({ status: 1 });
+    await books.createIndex({ catalogIdentifier: 1 }, { unique: true });
+    await books.createIndex({ isbn: 1 }, { unique: true, sparse: true });
+    await books.createIndex({ title: 1 });
+    await books.createIndex({ author: 1 });
+    await books.createIndex({ status: 1 });
+    await books.createIndex({ categoryId: 1 });
+    await membershipTypes.createIndex({ code: 1 }, { unique: true });
+    await membershipTypes.createIndex({ status: 1 });
+    await members.createIndex({ memberNumber: 1 }, { unique: true });
     await members.createIndex(
       { email: 1 },
-      { unique: true, sparse: true, session },
+      { unique: true, sparse: true },
     );
-    await members.createIndex({ status: 1, membershipTypeId: 1 }, { session });
-    await borrowings.createIndex({ memberId: 1, status: 1 }, { session });
-    await borrowings.createIndex({ bookId: 1, status: 1 }, { session });
-    await borrowings.createIndex({ dueAt: 1, status: 1 }, { session });
+    await members.createIndex({ status: 1, membershipTypeId: 1 });
+    await borrowings.createIndex({ memberId: 1, status: 1 });
+    await borrowings.createIndex({ bookId: 1, status: 1 });
+    await borrowings.createIndex({ dueAt: 1, status: 1 });
   },
 };
