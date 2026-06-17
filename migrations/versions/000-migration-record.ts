@@ -15,9 +15,9 @@ export const migration: MigrationDefinition = {
   rollbackNotes: [
     'Drop the migration_records collection only when intentionally resetting migration history.',
   ],
-  async up({ connection, session }) {
+  async up({ connection }) {
     await connection
       .collection(migrationRecordCollection)
-      .createIndex({ version: 1 }, { unique: true, session });
+      .createIndex({ version: 1 }, { unique: true });
   },
 };

@@ -8,6 +8,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import { queryClient } from './query-client';
 import {
   LoginRoute,
+  MemberLoginPlaceholderRoute,
   PublicHome,
   UnauthorizedRoute,
 } from '@/routes/public';
@@ -34,6 +35,12 @@ const loginRoute = createRoute({
   component: LoginRoute,
 });
 
+const memberLoginRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/member/login',
+  component: MemberLoginPlaceholderRoute,
+});
+
 const unauthorizedRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: 'unauthorized',
@@ -43,6 +50,7 @@ const unauthorizedRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
+  memberLoginRoute,
   unauthorizedRoute,
   createStaffRoutes(rootRoute),
   createMemberRoutes(rootRoute),

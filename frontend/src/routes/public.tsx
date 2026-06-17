@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { PageHeader } from '@/components/page-header';
+import { StaffLogin } from '@/features/auth/staff-login';
 
 export function PublicHome() {
   return (
@@ -20,9 +21,9 @@ export function PublicHome() {
         <div className="flex flex-wrap gap-3">
           <Link
             className="rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white"
-            to="/login"
+            to="/staff/login"
           >
-            Sign in
+            Staff sign in
           </Link>
           <Link
             className="rounded-md border bg-white px-4 py-2 text-sm font-medium text-slate-700"
@@ -48,15 +49,15 @@ export function LoginRoute() {
           <div className="flex flex-col gap-3 p-5">
             <Link
               className="rounded-md bg-slate-950 px-4 py-2 text-center text-sm font-medium text-white"
-              to="/staff"
+              to="/staff/login"
             >
-              Continue as staff
+              Staff sign in
             </Link>
             <Link
               className="rounded-md border px-4 py-2 text-center text-sm font-medium text-slate-700"
-              to="/member"
+              to="/member/login"
             >
-              Continue as member
+              Member sign in
             </Link>
           </div>
         </section>
@@ -77,10 +78,41 @@ export function UnauthorizedRoute() {
         </p>
         <Link
           className="mt-5 inline-flex rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white"
-          to="/login"
+          to="/staff/login"
         >
           Return to sign in
         </Link>
+      </section>
+    </main>
+  );
+}
+
+export function StaffLoginRoute() {
+  return (
+    <main className="min-h-screen bg-slate-100">
+      <div className="mx-auto flex min-h-screen max-w-md items-center px-5">
+        <section className="w-full rounded-md border bg-white p-5 shadow-sm">
+          <PageHeader
+            description="Use your staff or librarian account."
+            title="Staff sign in"
+          />
+          <div className="p-5">
+            <StaffLogin />
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}
+
+export function MemberLoginPlaceholderRoute() {
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-slate-100 px-5">
+      <section className="max-w-md rounded-md border bg-white p-6 text-center">
+        <h1 className="text-xl font-semibold text-slate-950">Member sign in</h1>
+        <p className="mt-2 text-sm text-slate-600">
+          Member login is implemented in the mobile member phase.
+        </p>
       </section>
     </main>
   );
