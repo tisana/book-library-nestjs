@@ -150,17 +150,17 @@
 
 ### Tests for User Story 3
 
-- [ ] T079 [P] [US3] Add unit tests for due-soon, due-today, overdue, returned, and mixed due-state classification in frontend/src/lib/dates/due-status.test.ts
-- [ ] T080 [P] [US3] Add component tests for reminder ordering, severity, and copy in frontend/src/features/member-home/reminders.test.tsx
-- [ ] T081 [P] [US3] Add Playwright mobile reminder and quota warning scenarios in frontend/tests/e2e/member-reminders.spec.ts
+- [X] T079 [P] [US3] Add unit tests for due-soon, due-today, overdue, returned, and mixed due-state classification in frontend/src/lib/dates/due-status.test.ts
+- [X] T080 [P] [US3] Add component tests for reminder ordering, severity, and copy in frontend/src/features/member-home/reminders.test.tsx
+- [X] T081 [P] [US3] Add Playwright mobile reminder and quota warning scenarios in frontend/tests/e2e/member-reminders.spec.ts
 
 ### Implementation for User Story 3
 
-- [ ] T082 [US3] Implement reminder derivation for due-soon, due-today, overdue, suspended, inactive, and quota-reached states in frontend/src/features/member-home/reminders.ts
-- [ ] T083 [US3] Implement reminder banner/list UI with severity badges and accessible status text in frontend/src/features/member-home/reminders-panel.tsx
-- [ ] T084 [US3] Integrate reminder panel above lower-priority member content in frontend/src/routes/member/index.tsx
-- [ ] T085 [US3] Add quota-reached and overdue next-step copy using consistent terminology in frontend/src/features/member-home/quota-status-card.tsx
-- [ ] T086 [US3] Ensure reminders refresh across date boundaries and after borrowing/return invalidation in frontend/src/lib/api/member-self-service.ts and frontend/src/app/query-client.ts
+- [X] T082 [US3] Implement reminder derivation for due-soon, due-today, overdue, suspended, inactive, and quota-reached states in frontend/src/features/member-home/reminders.ts
+- [X] T083 [US3] Implement reminder banner/list UI with severity badges and accessible status text in frontend/src/features/member-home/reminders-panel.tsx
+- [X] T084 [US3] Integrate reminder panel above lower-priority member content in frontend/src/routes/member/index.tsx
+- [X] T085 [US3] Add quota-reached and overdue next-step copy using consistent terminology in frontend/src/features/member-home/quota-status-card.tsx
+- [X] T086 [US3] Ensure reminders refresh across date boundaries and after borrowing/return invalidation in frontend/src/lib/api/member-self-service.ts and frontend/src/app/query-client.ts
 
 **Checkpoint**: User Story 3 is fully functional and independently testable.
 

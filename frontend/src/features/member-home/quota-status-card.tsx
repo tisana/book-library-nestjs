@@ -46,7 +46,7 @@ export function QuotaStatusCard({ policy }: QuotaStatusCardProps) {
       {!policy.eligibleByStatus ? (
         <p className="mt-3 rounded-md border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
           This account cannot borrow new books while its membership is{' '}
-          {policy.status}.
+          {policy.status}. Ask library staff to reactivate borrowing access.
         </p>
       ) : policy.limitReached ? (
         <p className="mt-3 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
