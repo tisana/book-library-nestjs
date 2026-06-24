@@ -6,12 +6,18 @@ import {
 } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { ClientSession, Connection, Model } from 'mongoose';
-import { BookCategoryDocument, BookCategoryModelName } from '../book-categories/schemas/book-category.schema';
+import {
+  BookCategoryDocument,
+  BookCategoryModelName,
+} from '../book-categories/schemas/book-category.schema';
 import { BookDocument, BookModelName } from '../books/schemas/book.schema';
 import { AuditActor } from '../common/audit/audit-context';
 import { LoanState } from '../common/enums/library-status.enum';
 import { equals, toMongoObjectId } from '../common/mongo/mongo-query.helpers';
-import { MemberDocument, MemberModelName } from '../members/schemas/member.schema';
+import {
+  MemberDocument,
+  MemberModelName,
+} from '../members/schemas/member.schema';
 import {
   MembershipTypeDocument,
   MembershipTypeModelName,
@@ -94,7 +100,7 @@ export class BorrowingsService {
       await book.save({ session });
       await member.save({ session });
 
-      return this.toResponse(borrowing, borrowedAt);
+      return this.toResponse(borrowing, borrowedAt, book);
     });
   }
 
@@ -110,7 +116,9 @@ export class BorrowingsService {
       const borrowing = await this.findBorrowing(id, session);
 
       if (borrowing.returnedAt || borrowing.status === LoanState.Returned) {
-        throw new ConflictException('Borrowing record has already been returned');
+        throw new ConflictException(
+          'Borrowing record has already been returned',
+        );
       }
 
       if (
@@ -138,7 +146,7 @@ export class BorrowingsService {
       await book.save({ session });
       await member.save({ session });
 
-      return this.toResponse(borrowing, returnedAt);
+      return this.toResponse(borrowing, returnedAt, book);
     });
   }
 
@@ -149,6 +157,7 @@ export class BorrowingsService {
     const filter = this.buildListFilter(query, now);
     const borrowings = await this.borrowingModel
       .find(filter)
+      .populate('bookId')
       .sort({ dueAt: 1 })
       .skip((query.page - 1) * query.limit)
       .limit(query.limit)
@@ -160,6 +169,7 @@ export class BorrowingsService {
   async findOne(id: string): Promise<BorrowingResponseDto> {
     const borrowing = await this.borrowingModel
       .findOne({ _id: equals(toMongoObjectId(id)) })
+      .populate('bookId')
       .exec();
 
     if (!borrowing) {
@@ -178,6 +188,7 @@ export class BorrowingsService {
         _id: equals(toMongoObjectId(id)),
         memberId: equals(toMongoObjectId(memberId, 'memberId')),
       })
+      .populate('bookId')
       .exec();
 
     if (!borrowing) {
@@ -224,6 +235,12 @@ export class BorrowingsService {
       filter.returnedAt = { $exists: false };
       filter.status = { $in: [LoanState.Active, LoanState.Overdue] };
       filter.dueAt = { $lt: now };
+      return filter;
+    }
+
+    if (query.currentOnly) {
+      filter.returnedAt = { $exists: false };
+      filter.status = { $in: [LoanState.Active, LoanState.Overdue] };
       return filter;
     }
 
@@ -358,6 +375,7 @@ export class BorrowingsService {
   private toResponse(
     borrowing: BorrowingDocument,
     now = new Date(),
+    book?: BookDocument,
   ): BorrowingResponseDto {
     const effectiveStatus =
       borrowing.status === LoanState.Active &&
@@ -366,10 +384,13 @@ export class BorrowingsService {
         ? LoanState.Overdue
         : borrowing.status;
 
+    const resolvedBook = book ?? getPopulatedBook(borrowing.bookId);
+
     return {
       id: borrowing.id ?? borrowing._id.toString(),
       memberId: borrowing.memberId.toString(),
-      bookId: borrowing.bookId.toString(),
+      bookId: getReferenceId(borrowing.bookId),
+      bookTitle: resolvedBook?.title,
       bookCategoryId: borrowing.bookCategoryId.toString(),
       borrowedAt: borrowing.borrowedAt.toISOString(),
       dueAt: borrowing.dueAt.toISOString(),
@@ -379,4 +400,30 @@ export class BorrowingsService {
       returnedByStaffId: borrowing.returnedByStaffId,
     };
   }
+}
+
+function getReferenceId(value: unknown): string {
+  if (
+    value &&
+    typeof value === 'object' &&
+    '_id' in value &&
+    (value as { _id?: { toString?: () => string } })._id?.toString
+  ) {
+    return (value as { _id: { toString: () => string } })._id.toString();
+  }
+
+  return String(value);
+}
+
+function getPopulatedBook(value: unknown): BookDocument | undefined {
+  if (
+    value &&
+    typeof value === 'object' &&
+    'title' in value &&
+    typeof (value as { title?: unknown }).title === 'string'
+  ) {
+    return value as BookDocument;
+  }
+
+  return undefined;
 }

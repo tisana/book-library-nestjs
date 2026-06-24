@@ -9,7 +9,7 @@ import type {
   ReturnBorrowingInput,
 } from './types';
 
-const asArray = <T,>(value: T[] | { items: T[] }) =>
+const asArray = <T>(value: T[] | { items: T[] }) =>
   Array.isArray(value) ? value : value.items;
 
 function borrowingQueryPath(basePath: string, query: ListQuery = {}) {
@@ -22,17 +22,17 @@ function borrowingQueryPath(basePath: string, query: ListQuery = {}) {
 
 export function listBorrowings(query: ListQuery = {}) {
   return apiClient
-    .get<BorrowingView[] | { items: BorrowingView[] }>(
-      borrowingQueryPath('/borrowings', query),
-    )
+    .get<
+      BorrowingView[] | { items: BorrowingView[] }
+    >(borrowingQueryPath('/borrowings', query))
     .then(asArray);
 }
 
 export function listOverdueBorrowings(query: ListQuery = {}) {
   return apiClient
-    .get<BorrowingView[] | { items: BorrowingView[] }>(
-      borrowingQueryPath('/borrowings/overdue', query),
-    )
+    .get<
+      BorrowingView[] | { items: BorrowingView[] }
+    >(borrowingQueryPath('/borrowings/overdue', query))
     .then(asArray);
 }
 
@@ -109,6 +109,6 @@ async function invalidateBorrowingMutation(borrowing: BorrowingView) {
     queryClient.invalidateQueries({
       queryKey: queryKeys.staff.memberBorrowings(borrowing.memberId),
     }),
-    queryClient.invalidateQueries({ queryKey: ['member-self'] }),
+    queryClient.invalidateQueries({ queryKey: ['member'] }),
   ]);
 }

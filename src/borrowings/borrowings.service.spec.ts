@@ -1,12 +1,16 @@
 import { BorrowingsRulesService } from './borrowings-rules.service';
 import { BorrowingsService } from './borrowings.service';
 import { UnauthorizedException } from '@nestjs/common';
+import { LoanState } from '../common/enums/library-status.enum';
+import { BorrowingQueryDto } from './dto/borrowing.dto';
 
 describe('BorrowingsService', () => {
-  function createService(): BorrowingsService {
+  function createService(
+    borrowingModel: Record<string, unknown> = {},
+  ): BorrowingsService {
     return new BorrowingsService(
       {} as never,
-      {} as never,
+      borrowingModel as never,
       {} as never,
       {} as never,
       {} as never,
@@ -50,5 +54,27 @@ describe('BorrowingsService', () => {
     await expect(service.returnBorrowing('borrowing-id')).rejects.toBeInstanceOf(
       UnauthorizedException,
     );
+  });
+
+  it('filters current borrowings to unreturned active and overdue records', async () => {
+    const exec = jest.fn().mockResolvedValue([]);
+    const limit = jest.fn().mockReturnValue({ exec });
+    const skip = jest.fn().mockReturnValue({ limit });
+    const sort = jest.fn().mockReturnValue({ skip });
+    const populate = jest.fn().mockReturnValue({ sort });
+    const find = jest.fn().mockReturnValue({ populate });
+    const service = createService({ find });
+    const query = {
+      currentOnly: true,
+      page: 1,
+      limit: 20,
+    } as BorrowingQueryDto & { currentOnly: boolean };
+
+    await service.findAll(query);
+
+    expect(find).toHaveBeenCalledWith({
+      returnedAt: { $exists: false },
+      status: { $in: [LoanState.Active, LoanState.Overdue] },
+    });
   });
 });

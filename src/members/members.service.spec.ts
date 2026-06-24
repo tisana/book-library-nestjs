@@ -61,6 +61,7 @@ describe('MembersService', () => {
     overrides: Partial<MembershipTypesService> = {},
   ): MembershipTypesService {
     return {
+      findOne: jest.fn().mockResolvedValue(activeMembershipType),
       validateActivePolicy: jest.fn().mockResolvedValue(activeMembershipType),
       ...overrides,
     } as unknown as MembershipTypesService;
@@ -210,6 +211,32 @@ describe('MembersService', () => {
     );
   });
 
+  it('returns self-service profile with readable membership tier metadata', async () => {
+    const exec = jest.fn().mockResolvedValue(createMemberDocument());
+    const model: MockMemberModel = jest.fn();
+    model.findOne = jest.fn().mockReturnValue({ exec });
+    const membershipTypesService = createMembershipTypesService();
+    const service = new MembersService(asModel(model), membershipTypesService);
+
+    await expect(
+      service.findSelfServiceProfile(validMemberId),
+    ).resolves.toEqual({
+      id: 'member-id',
+      memberNumber: 'MEM-0001',
+      displayName: 'Ada Lovelace',
+      email: 'ada@example.com',
+      phone: '123456789',
+      membershipStatus: MemberStatus.Active,
+      membershipTypeId: '64f000000000000000000001',
+      membershipTypeCode: 'STANDARD',
+      membershipTypeName: 'Standard Member',
+      activeLoanCount: 1,
+    });
+    expect(membershipTypesService.findOne).toHaveBeenCalledWith(
+      '64f000000000000000000001',
+    );
+  });
+
   it('updates status, loan count, membership type, and audit actor', async () => {
     const document = createMemberDocument();
     document.save.mockResolvedValue(document);
@@ -283,13 +310,15 @@ describe('MembersService', () => {
       createMembershipTypesService(),
     );
 
-    await expect(service.getPolicyStatus(validMemberId)).resolves.toMatchObject({
-      status: MemberStatus.Suspended,
-      activeLoanCount: 3,
-      remainingAllowance: 0,
-      eligibleByStatus: false,
-      withinLimit: false,
-      limitReached: true,
-    });
+    await expect(service.getPolicyStatus(validMemberId)).resolves.toMatchObject(
+      {
+        status: MemberStatus.Suspended,
+        activeLoanCount: 3,
+        remainingAllowance: 0,
+        eligibleByStatus: false,
+        withinLimit: false,
+        limitReached: true,
+      },
+    );
   });
 });

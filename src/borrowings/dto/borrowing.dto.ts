@@ -48,6 +48,12 @@ export class BorrowingQueryDto extends PaginationQueryDto {
   @Transform(({ value }) => value === true || value === 'true')
   @IsBoolean()
   overdueOnly?: boolean;
+
+  @ApiPropertyOptional({ example: true })
+  @IsOptional()
+  @Transform(({ value }) => value === true || value === 'true')
+  @IsBoolean()
+  currentOnly?: boolean;
 }
 
 export class BorrowingResponseDto {
@@ -59,6 +65,9 @@ export class BorrowingResponseDto {
 
   @ApiProperty({ example: '665f4d3b8f4c8a001f5f0a13' })
   bookId: string;
+
+  @ApiPropertyOptional({ example: 'Clean Code' })
+  bookTitle?: string;
 
   @ApiProperty({ example: '665f4d3b8f4c8a001f5f0a15' })
   bookCategoryId: string;

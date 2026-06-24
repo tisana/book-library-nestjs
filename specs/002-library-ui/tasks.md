@@ -122,21 +122,21 @@
 
 ### Tests for User Story 2
 
-- [ ] T067 [P] [US2] Add Playwright member login and mobile home status test in frontend/tests/e2e/member-home.spec.ts
-- [ ] T068 [P] [US2] Add Playwright member privacy test proving member routes never expose arbitrary member IDs in frontend/tests/e2e/member-privacy.spec.ts
-- [ ] T069 [P] [US2] Add component tests for member quota, no-borrowings, and borrowing-card states in frontend/src/features/member-home/member-home.test.tsx
-- [ ] T070 [P] [US2] Add backend e2e tests for GET /members/me and GET /members/me/borrowings ownership enforcement in test/member-self-service.e2e-spec.ts
+- [X] T067 [P] [US2] Add Playwright member login and mobile home status test in frontend/tests/e2e/member-home.spec.ts
+- [X] T068 [P] [US2] Add Playwright member privacy test proving member routes never expose arbitrary member IDs in frontend/tests/e2e/member-privacy.spec.ts
+- [X] T069 [P] [US2] Add component tests for member quota, no-borrowings, and borrowing-card states in frontend/src/features/member-home/member-home.test.tsx
+- [X] T070 [P] [US2] Add backend e2e tests for GET /members/me and GET /members/me/borrowings ownership enforcement in test/member-self-service.e2e-spec.ts
 
 ### Implementation for User Story 2
 
-- [ ] T071 [P] [US2] Implement member login API adapter and form in frontend/src/features/auth/member-login.tsx and frontend/src/lib/api/member-auth.ts
-- [ ] T072 [P] [US2] Implement member-scoped API adapters and query hooks in frontend/src/lib/api/member-self-service.ts
-- [ ] T073 [US2] Implement mobile-first member home route with membership tier, account status, quota summary, and active borrowed count in frontend/src/routes/member/index.tsx
-- [ ] T074 [US2] Implement current borrowed books list with title, borrowed date, due date, and due status in frontend/src/features/member-home/borrowed-books-list.tsx
-- [ ] T075 [US2] Implement member borrowings list and detail routes in frontend/src/routes/member/borrowings.tsx and frontend/src/routes/member/borrowings.$borrowingId.tsx
-- [ ] T076 [US2] Implement no-current-borrowings and quota-available empty states in frontend/src/features/member-home/member-empty-states.tsx
-- [ ] T077 [US2] Enforce member route privacy by deriving identity only from the active session in frontend/src/lib/auth/route-guards.ts and frontend/src/lib/api/member-self-service.ts
-- [ ] T078 [US2] Apply responsive mobile layout constraints and long-text handling for member cards in frontend/src/components/layout/member-shell.tsx, frontend/src/features/member-home/borrowed-books-list.tsx, frontend/src/features/member-home/member-empty-states.tsx, and frontend/src/features/member-home/quota-status-card.tsx
+- [X] T071 [P] [US2] Implement member login API adapter and form in frontend/src/features/auth/member-login.tsx and frontend/src/lib/api/member-auth.ts
+- [X] T072 [P] [US2] Implement member-scoped API adapters and query hooks in frontend/src/lib/api/member-self-service.ts
+- [X] T073 [US2] Implement mobile-first member home route with membership tier, account status, quota summary, and active borrowed count in frontend/src/routes/member/index.tsx
+- [X] T074 [US2] Implement current borrowed books list with title, borrowed date, due date, and due status in frontend/src/features/member-home/borrowed-books-list.tsx
+- [X] T075 [US2] Implement member borrowings list and detail routes in frontend/src/routes/member/borrowings.tsx and frontend/src/routes/member/borrowings.$borrowingId.tsx
+- [X] T076 [US2] Implement no-current-borrowings and quota-available empty states in frontend/src/features/member-home/member-empty-states.tsx
+- [X] T077 [US2] Enforce member route privacy by deriving identity only from the active session in frontend/src/lib/auth/route-guards.ts and frontend/src/lib/api/member-self-service.ts
+- [X] T078 [US2] Apply responsive mobile layout constraints and long-text handling for member cards in frontend/src/components/layout/member-shell.tsx, frontend/src/features/member-home/borrowed-books-list.tsx, frontend/src/features/member-home/member-empty-states.tsx, and frontend/src/features/member-home/quota-status-card.tsx
 
 **Checkpoint**: User Story 2 is fully functional and independently testable on mobile.
 

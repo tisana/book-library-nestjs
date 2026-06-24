@@ -6,7 +6,9 @@ export async function invalidateBookMutation(bookId?: string) {
   await Promise.all([
     queryClient.invalidateQueries({ queryKey: ['staff', 'books'] }),
     bookId
-      ? queryClient.invalidateQueries({ queryKey: queryKeys.staff.book(bookId) })
+      ? queryClient.invalidateQueries({
+          queryKey: queryKeys.staff.book(bookId),
+        })
       : Promise.resolve(),
   ]);
 }
@@ -40,6 +42,6 @@ export async function invalidateBorrowingMutation(borrowing: BorrowingView) {
     queryClient.invalidateQueries({
       queryKey: queryKeys.staff.memberBorrowings(borrowing.memberId),
     }),
-    queryClient.invalidateQueries({ queryKey: ['member-self'] }),
+    queryClient.invalidateQueries({ queryKey: ['member'] }),
   ]);
 }

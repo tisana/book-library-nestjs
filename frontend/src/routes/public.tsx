@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { PageHeader } from '@/components/page-header';
+import { MemberLogin } from '@/features/auth/member-login';
 import { StaffLogin } from '@/features/auth/staff-login';
 
 export function PublicHome() {
@@ -107,13 +108,18 @@ export function StaffLoginRoute() {
 
 export function MemberLoginPlaceholderRoute() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-100 px-5">
-      <section className="max-w-md rounded-md border bg-white p-6 text-center">
-        <h1 className="text-xl font-semibold text-slate-950">Member sign in</h1>
-        <p className="mt-2 text-sm text-slate-600">
-          Member login is implemented in the mobile member phase.
-        </p>
-      </section>
+    <main className="min-h-screen bg-slate-100">
+      <div className="mx-auto flex min-h-screen max-w-md items-center px-5">
+        <section className="w-full rounded-md border bg-white p-5 shadow-sm">
+          <PageHeader
+            description="Use your member number or login email."
+            title="Member sign in"
+          />
+          <div className="p-5">
+            <MemberLogin />
+          </div>
+        </section>
+      </div>
     </main>
   );
 }

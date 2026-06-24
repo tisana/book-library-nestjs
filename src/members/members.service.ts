@@ -7,7 +7,10 @@ import * as bcrypt from 'bcryptjs';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AuditActor } from '../common/audit/audit-context';
-import { MemberAuthStatus, MemberStatus } from '../common/enums/library-status.enum';
+import {
+  MemberAuthStatus,
+  MemberStatus,
+} from '../common/enums/library-status.enum';
 import {
   containsLiteral,
   equals,
@@ -38,7 +41,9 @@ export class MembersService {
     dto: CreateMemberDto,
     actor?: AuditActor,
   ): Promise<MemberResponseDto> {
-    await this.membershipTypesService.validateActivePolicy(dto.membershipTypeId);
+    await this.membershipTypesService.validateActivePolicy(
+      dto.membershipTypeId,
+    );
 
     const memberNumber = dto.memberNumber.trim().toUpperCase();
     const modelWithExists = this.memberModel as Model<MemberDocument> & {
@@ -67,7 +72,9 @@ export class MembersService {
     return this.toResponse(created);
   }
 
-  async findAll(query: MemberQueryDto = new MemberQueryDto()): Promise<MemberResponseDto[]> {
+  async findAll(
+    query: MemberQueryDto = new MemberQueryDto(),
+  ): Promise<MemberResponseDto[]> {
     const filter: Record<string, unknown> = {};
 
     if (query.q) {
@@ -107,6 +114,9 @@ export class MembersService {
     id: string,
   ): Promise<MemberSelfServiceProfileDto> {
     const member = await this.findDocumentById(id);
+    const membershipType = await this.membershipTypesService.findOne(
+      member.membershipTypeId.toString(),
+    );
 
     return {
       id: getMemberId(member),
@@ -116,6 +126,8 @@ export class MembersService {
       phone: member.phone,
       membershipStatus: member.status,
       membershipTypeId: member.membershipTypeId.toString(),
+      membershipTypeCode: membershipType.code,
+      membershipTypeName: membershipType.name,
       activeLoanCount: member.activeLoanCount,
     };
   }
@@ -246,7 +258,10 @@ export class MembersService {
     }
 
     member.loginIdentifier = normalizedLoginIdentifier;
-    member.passwordHash = await bcrypt.hash(password, MEMBER_PASSWORD_HASH_ROUNDS);
+    member.passwordHash = await bcrypt.hash(
+      password,
+      MEMBER_PASSWORD_HASH_ROUNDS,
+    );
     member.passwordUpdatedAt = new Date();
     member.authStatus = MemberAuthStatus.Active;
     member.updatedBy = actor?.id;

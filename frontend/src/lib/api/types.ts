@@ -42,6 +42,9 @@ export interface MemberSessionUser {
   displayName: string;
   email?: string;
   membershipStatus: MemberStatus;
+  membershipTypeId?: string;
+  membershipTypeCode?: string;
+  membershipTypeName?: string;
   roleArea: 'member';
 }
 
@@ -102,6 +105,8 @@ export interface MemberSelfServiceProfileView {
   phone?: string;
   membershipStatus: MemberStatus;
   membershipTypeId: string;
+  membershipTypeCode?: string;
+  membershipTypeName?: string;
   activeLoanCount: number;
 }
 
@@ -121,6 +126,7 @@ export interface BorrowingView {
   id: string;
   memberId: string;
   bookId: string;
+  bookTitle?: string;
   bookCategoryId: string;
   borrowedAt: string;
   dueAt: string;
@@ -133,6 +139,7 @@ export interface BorrowingView {
 export interface ListQuery {
   q?: string;
   status?: string;
+  currentOnly?: boolean;
   page?: number;
   limit?: number;
 }

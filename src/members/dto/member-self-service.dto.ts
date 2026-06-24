@@ -24,6 +24,12 @@ export class MemberSelfServiceProfileDto {
   @ApiProperty({ example: '665f4d3b8f4c8a001f5f0a11' })
   membershipTypeId: string;
 
+  @ApiProperty({ example: 'STANDARD' })
+  membershipTypeCode: string;
+
+  @ApiProperty({ example: 'Standard Member' })
+  membershipTypeName: string;
+
   @ApiProperty({ example: 1, minimum: 0 })
   activeLoanCount: number;
 }
