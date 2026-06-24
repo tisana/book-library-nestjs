@@ -124,3 +124,23 @@
 **Sources**:
 
 - Existing local `openapi.json` paths show staff auth and staff/member management endpoints but no member-scoped auth/read routes.
+
+## Decision: Use memory-only client sign-out for v1
+
+**Rationale**: The current frontend auth plan uses memory-only bearer token handling rather than localStorage or HTTP-only cookies. In that design, sign-out should clear the in-memory auth session, clear or invalidate role-specific TanStack Query caches, and redirect staff/member users to the correct login route. A backend logout endpoint or token denylist would add server-side token lifecycle work that is only useful if token revocation, refresh tokens, or cookie sessions are introduced later.
+
+**Alternatives considered**:
+
+- **Backend `/auth/logout` endpoint**: Rejected for this iteration because there is no server-side token store to invalidate in the current bearer-token design.
+- **Persisting logout state in localStorage**: Rejected because the plan explicitly avoids persistent token/session storage in the frontend.
+- **Relying only on route guards after clearing token**: Insufficient alone because stale query cache data could remain visible until navigation completes; sign-out should clear role-specific cached data as part of the flow.
+
+## Decision: Enrich staff borrowing responses with member/book display fields
+
+**Rationale**: Staff borrowing, overdue, and dashboard attention views currently expose MongoDB IDs, which are operationally poor labels. The backend already owns borrowing list filtering, overdue filtering, and pagination, so it should return display fields alongside identifiers. Borrowing documents remain reference-based in MongoDB; response DTOs can derive `memberDisplayName`, `memberNumber`, `bookTitle`, and `bookCatalogIdentifier` from populated or explicitly queried Member and Book documents. This keeps the UI simple, avoids N+1 frontend lookups, and preserves backend ownership of list semantics.
+
+**Alternatives considered**:
+
+- **Frontend joins by calling member/book endpoints per row**: Rejected because it creates N+1 requests, complicates loading/error states, and can break pagination performance.
+- **Denormalize all display labels into borrowing documents immediately**: Rejected for this iteration because existing referenced Member and Book documents can provide the labels without a migration. Denormalized snapshots can be reconsidered later if deleted historical records need immutable display labels.
+- **Continue showing raw IDs with tooltips**: Rejected because the primary row text remains confusing for staff workflows.

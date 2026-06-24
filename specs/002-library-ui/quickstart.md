@@ -68,6 +68,7 @@ Expected:
 4. Open the books screen.
 5. Search, filter, sort, and paginate the list.
 6. Create or update a book.
+7. Open the dashboard attention list and confirm overdue rows show book title and member name/member number, not only a borrowing id.
 
 Expected:
 
@@ -75,6 +76,7 @@ Expected:
 - Table loading, empty, and no-result states are intentional.
 - Successful save updates visible data.
 - Validation errors appear next to fields.
+- Attention rows are understandable without copying internal IDs.
 
 ## Validation Scenario 2: Borrowing and Return
 
@@ -84,12 +86,14 @@ Expected:
 4. Confirm due date and quota update.
 5. Return the borrowing.
 6. Confirm book availability and borrowing history update.
+7. Open `/staff/borrowings` and `/staff/borrowings/overdue` and confirm rows use member name/member number and book title/catalog identifier as primary labels.
 
 Expected:
 
 - Borrowing and return complete within the spec success criteria.
 - Backend conflict responses display clear blocking reasons.
 - Borrowing history remains visible after return.
+- Borrowing and overdue tables do not use raw `memberId` or `bookId` as primary visible labels.
 
 ## Validation Scenario 3: Blocked Borrowing
 
@@ -130,12 +134,14 @@ Run manual and automated checks for:
 - Keyboard navigation through login, staff list filters, dialogs/sheets, and forms.
 - Screen-reader labels for inputs, icon buttons, menus, dialogs, and status badges.
 - Long book titles, member names, and catalog identifiers.
+- Staff and member sign-out controls with keyboard and screen-reader labels.
 
 Expected:
 
 - No overlapping text or unusable controls.
 - Icon-only controls have accessible names.
 - Color is not the only status signal.
+- Sign-out can be reached by keyboard in both staff and member shells.
 
 ## Validation Scenario 6: Performance Smoke Checks
 
@@ -150,6 +156,23 @@ Expected:
 
 - Staff list/detail views and member home render useful content within 2 seconds.
 - If a larger local dataset is added later, document the record counts used for validation.
+
+## Validation Scenario 7: Sign Out
+
+1. Sign in as a seeded staff/admin user.
+2. Use the staff sign-out control.
+3. Confirm the app routes to `/staff/login`.
+4. Navigate directly to `/staff` and confirm protected staff data is not visible without signing in again.
+5. Sign in as a demo member user.
+6. Use the member sign-out control.
+7. Confirm the app routes to `/member/login`.
+8. Navigate directly to `/member` and confirm the previous member's data is not visible without signing in again.
+
+Expected:
+
+- Sign-out clears memory-only access token state.
+- Staff and member query data from the previous session is not visible after sign-out.
+- The sign-out controls have accessible labels and remain usable at phone widths.
 
 ## Verification Commands
 
@@ -175,4 +198,4 @@ npm run build
 Expected:
 
 - All commands pass.
-- Playwright tests cover staff happy path, blocked borrowing, member mobile home, member privacy, responsive layouts, accessibility, and performance smoke checks.
+- Playwright tests cover staff happy path, blocked borrowing, member mobile home, member privacy, sign-out, human-readable staff borrowing rows, responsive layouts, accessibility, and performance smoke checks.

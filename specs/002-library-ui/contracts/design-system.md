@@ -70,6 +70,8 @@ Member mobile area:
 - Keep staff row height compact, but leave enough space for two-line due date/status text where needed.
 - Selected rows use a pale blue background and a stronger blue leading edge or checkbox state.
 - Member list items should be row-like grouped surfaces, not heavy individual cards unless each item needs rich detail.
+- Staff operational rows must prioritize human labels over database identifiers. Use primary text for member names and book titles, and secondary text for member numbers, catalog identifiers, due dates, and status metadata.
+- Sign-out controls should use a recognizable log-out icon plus text where space allows; icon-only sign-out must have an accessible name and tooltip.
 
 ## Status Semantics
 

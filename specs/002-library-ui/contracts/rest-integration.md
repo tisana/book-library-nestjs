@@ -19,6 +19,8 @@ The current `openapi.json` exposes these REST areas:
 | Member borrowings | `/members/{id}/borrowings` | Staff member borrowing tabs |
 | Borrowings | `/borrowings`, `/borrowings/{id}`, `/borrowings/overdue`, `/borrowings/{id}/return` | Staff lending, return, detail, and overdue workflows |
 
+Sign-out in the current bearer-token UI is client-owned. Staff and member sign-out clear the memory auth session and cached role data; no REST endpoint is required unless server-side token revocation or cookie sessions are added later.
+
 ## Required Member-Scoped REST Additions
 
 The mobile member experience requires member authentication and "current member" endpoints. Names below are the planned contract unless implementation discovers a stronger existing pattern.
@@ -68,6 +70,30 @@ Preferred paginated envelope:
 }
 ```
 
+Borrowing responses used by staff screens should include display fields in addition to stable identifiers:
+
+```json
+{
+  "id": "665f4d3b8f4c8a001f5f0a14",
+  "memberId": "665f4d3b8f4c8a001f5f0a12",
+  "memberDisplayName": "Olivia Overdue",
+  "memberNumber": "M-1004",
+  "bookId": "665f4d3b8f4c8a001f5f0a13",
+  "bookTitle": "Refactoring",
+  "bookCatalogIdentifier": "BK-1003",
+  "borrowedAt": "2026-06-01T09:00:00.000Z",
+  "dueAt": "2026-06-15T09:00:00.000Z",
+  "status": "overdue"
+}
+```
+
+Rules:
+
+- Existing IDs remain in the response for links, authorization, mutations, and diagnostics.
+- Staff list/detail UI must prefer display fields over raw IDs when rendering row labels.
+- If a referenced book or member is missing, deactivated, or cannot be populated, the UI may fall back to a safe label such as `Unknown member` or `Book unavailable`, with the ID only as secondary diagnostic text.
+- Backend list endpoints should provide these fields in the same borrowing request to avoid frontend N+1 fetches.
+
 Error handling expectations:
 
 | Status | UI Behavior |
@@ -103,6 +129,7 @@ Mutation invalidation rules:
 - Creating borrowing invalidates staff books, borrowings, member policy, member borrowings, and member self-service borrowings for the affected member.
 - Returning borrowing invalidates affected borrowing detail, books, borrowings, member policy, and member self-service borrowings.
 - Updating membership tier invalidates membership tier lists and affected member policy views.
+- Signing out clears the active role session and removes or resets staff/member query caches so previous-user data is not visible after navigation.
 
 ## Security Rules
 

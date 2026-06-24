@@ -20,6 +20,8 @@ The frontend introduces no new persistent library domain store. It uses typed vi
 
 - Must never persist access tokens in localStorage.
 - Must clear on sign out, 401 responses, and session expiration.
+- Sign out must clear role-specific cached server state so protected screens do not briefly show the previous user's data.
+- Staff sign out redirects to `/staff/login`; member sign out redirects to `/member/login`.
 - Staff session cannot access member-only routes unless backend explicitly grants a role.
 - Member session cannot access staff routes.
 
@@ -199,8 +201,11 @@ Migration impact:
 
 - `id`
 - `memberId`
+- `memberDisplayName`
+- `memberNumber`
 - `bookId`
 - `bookTitle`
+- `bookCatalogIdentifier`
 - `borrowedAt`
 - `dueAt`
 - `returnedAt`
@@ -222,6 +227,9 @@ Migration impact:
 
 - UI must display backend status and due date decision.
 - UI must not compute borrowing eligibility independently.
+- Staff-facing borrowing lists and attention rows must use `memberDisplayName`/`memberNumber` and `bookTitle`/`bookCatalogIdentifier` as primary labels when available.
+- Raw `memberId`, `bookId`, and borrowing document id may remain available for links, diagnostics, copy actions, or secondary detail text, but must not be the primary visible row label.
+- The stored borrowing document remains reference-based unless a later migration explicitly adds denormalized historical label snapshots.
 
 ## Entity: Borrowing Eligibility
 
