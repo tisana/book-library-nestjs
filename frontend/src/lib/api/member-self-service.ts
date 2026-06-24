@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { millisecondsUntilNextLocalDay } from '@/app/query-client';
 import { apiClient } from './client';
 import { queryKeys } from './query-keys';
 import type {
@@ -60,6 +61,7 @@ export function useMyBorrowings(query: ListQuery = {}) {
   return useQuery({
     queryKey: queryKeys.memberSelf.borrowings(query),
     queryFn: () => listMyBorrowings(query),
+    refetchInterval: () => millisecondsUntilNextLocalDay(),
   });
 }
 

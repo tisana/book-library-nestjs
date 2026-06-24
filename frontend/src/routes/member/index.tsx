@@ -7,6 +7,8 @@ import {
   QuotaAvailableState,
 } from '@/features/member-home/member-empty-states';
 import { QuotaStatusCard } from '@/features/member-home/quota-status-card';
+import { deriveMemberReminders } from '@/features/member-home/reminders';
+import { RemindersPanel } from '@/features/member-home/reminders-panel';
 import {
   useMyBorrowings,
   useMyPolicyStatus,
@@ -41,6 +43,11 @@ export function MemberHomeRoute() {
   }
 
   const activeBorrowings = borrowings.data ?? [];
+  const reminders = deriveMemberReminders({
+    profile: profile.data,
+    policy: policy.data,
+    borrowings: activeBorrowings,
+  });
   const tierName =
     profile.data.membershipTypeName ??
     profile.data.membershipTypeCode ??
@@ -61,10 +68,13 @@ export function MemberHomeRoute() {
           </StatusBadge>
         }
       />
+      <RemindersPanel reminders={reminders} />
       <QuotaStatusCard policy={policy.data} />
-      <QuotaAvailableState
-        remainingAllowance={policy.data.remainingAllowance}
-      />
+      {policy.data.eligibleByStatus && !policy.data.limitReached ? (
+        <QuotaAvailableState
+          remainingAllowance={policy.data.remainingAllowance}
+        />
+      ) : null}
       {activeBorrowings.length > 0 ? (
         <BorrowedBooksList borrowings={activeBorrowings} />
       ) : (

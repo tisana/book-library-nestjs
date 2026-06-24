@@ -14,6 +14,13 @@ export const queryClient = new QueryClient({
   },
 });
 
+export function millisecondsUntilNextLocalDay(now = new Date()) {
+  const nextLocalDay = new Date(now);
+  nextLocalDay.setHours(24, 0, 0, 0);
+
+  return Math.max(nextLocalDay.getTime() - now.getTime(), 60_000);
+}
+
 export async function invalidateLibraryData() {
   await Promise.all([
     queryClient.invalidateQueries({ queryKey: queryKeys.books.all }),

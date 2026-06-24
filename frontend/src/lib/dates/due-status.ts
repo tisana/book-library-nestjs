@@ -4,6 +4,17 @@ export type DueStatus = 'returned' | 'overdue' | 'due-today' | 'due-soon' | 'ope
 
 const DUE_SOON_DAYS = 3;
 
+export interface DueStateInput {
+  id: string;
+  dueAt: string | Date;
+  returnedAt?: string | Date;
+}
+
+export interface ClassifiedDueState {
+  id: string;
+  status: DueStatus;
+}
+
 export function toDate(value: string | Date) {
   return typeof value === 'string' ? parseISO(value) : value;
 }
@@ -34,6 +45,19 @@ export function getDueStatus(
   }
 
   return 'open';
+}
+
+export function classifyDueStates(
+  items: DueStateInput[],
+  options: { now?: Date } = {},
+): ClassifiedDueState[] {
+  return items.map((item) => ({
+    id: item.id,
+    status: getDueStatus(item.dueAt, {
+      returnedAt: item.returnedAt,
+      now: options.now,
+    }),
+  }));
 }
 
 export function formatLocalDate(value: string | Date) {

@@ -18,10 +18,17 @@ test('member can sign in on mobile and see borrowing status', async ({
   await expect(page.getByText('Gold Member')).toBeVisible();
   await expect(page.getByText('1 of 3 borrowed')).toBeVisible();
   await expect(page.getByText('2 remaining')).toBeVisible();
-  await expect(page.getByText('Clean Code')).toBeVisible();
-  await expect(page.getByText('Due today')).toBeVisible();
-  await expect(page.getByText('Refactoring')).toBeVisible();
-  await expect(page.getByText('Overdue')).toBeVisible();
+  const borrowedBooks = page.getByLabel('Current borrowed books');
+  await expect(
+    borrowedBooks.getByRole('link', { name: 'Clean Code' }),
+  ).toBeVisible();
+  await expect(
+    borrowedBooks.getByText('Due today', { exact: true }),
+  ).toBeVisible();
+  await expect(
+    borrowedBooks.getByRole('link', { name: 'Refactoring' }),
+  ).toBeVisible();
+  await expect(borrowedBooks.getByText('Overdue')).toBeVisible();
 });
 
 async function mockMemberSelfService(page: Page) {
