@@ -6,10 +6,7 @@ import {
   MemberStatus,
   StaffUserStatus,
 } from '../common/enums/library-status.enum';
-import {
-  MemberLoginDto,
-  MemberLoginResponseDto,
-} from './dto/member-auth.dto';
+import { MemberLoginDto, MemberLoginResponseDto } from './dto/member-auth.dto';
 import { MembersService, getMemberId } from '../members/members.service';
 import { LoginDto, LoginResponseDto } from '../staff-users/dto/staff-user.dto';
 import {
@@ -60,10 +57,9 @@ export class AuthService {
   }
 
   async memberLogin(dto: MemberLoginDto): Promise<MemberLoginResponseDto> {
-    const member =
-      await this.membersService?.findByLoginIdentifierWithPassword(
-        dto.loginIdentifier,
-      );
+    const member = await this.membersService?.findByLoginIdentifierWithPassword(
+      dto.loginIdentifier,
+    );
 
     if (
       !member ||
@@ -78,6 +74,7 @@ export class AuthService {
     const memberId = getMemberId(member);
 
     await this.membersService?.touchLastLogin(memberId);
+    const profile = await this.membersService?.findSelfServiceProfile(memberId);
 
     return {
       accessToken: await this.jwtService.signAsync({
@@ -92,6 +89,8 @@ export class AuthService {
         email: member.email,
         membershipStatus: member.status,
         membershipTypeId: member.membershipTypeId.toString(),
+        membershipTypeCode: profile?.membershipTypeCode ?? '',
+        membershipTypeName: profile?.membershipTypeName ?? '',
       },
     };
   }

@@ -120,6 +120,10 @@ describe('AuthService login contract', () => {
       const membersService = {
         findByLoginIdentifierWithPassword: jest.fn().mockResolvedValue(member),
         touchLastLogin: jest.fn().mockResolvedValue(undefined),
+        findSelfServiceProfile: jest.fn().mockResolvedValue({
+          membershipTypeCode: 'GOLD',
+          membershipTypeName: 'Gold Member',
+        }),
       };
       const passwordHasher = {
         verify: jest.fn().mockResolvedValue(true),
@@ -139,9 +143,9 @@ describe('AuthService login contract', () => {
         password: 'correct-password',
       });
 
-      expect(membersService.findByLoginIdentifierWithPassword).toHaveBeenCalledWith(
-        'M-1001',
-      );
+      expect(
+        membersService.findByLoginIdentifierWithPassword,
+      ).toHaveBeenCalledWith('M-1001');
       expect(passwordHasher.verify).toHaveBeenCalledWith(
         member.passwordHash,
         'correct-password',
@@ -151,6 +155,9 @@ describe('AuthService login contract', () => {
         memberNumber: member.memberNumber,
         roleArea: 'member',
       });
+      expect(membersService.findSelfServiceProfile).toHaveBeenCalledWith(
+        member.id,
+      );
       expect(result).toEqual({
         accessToken: 'member-jwt-token',
         member: {
@@ -160,6 +167,8 @@ describe('AuthService login contract', () => {
           email: member.email,
           membershipStatus: member.status,
           membershipTypeId: member.membershipTypeId,
+          membershipTypeCode: 'GOLD',
+          membershipTypeName: 'Gold Member',
         },
       });
     });

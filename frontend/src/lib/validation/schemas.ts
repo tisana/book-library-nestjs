@@ -73,6 +73,8 @@ export const memberSelfServiceProfileSchema = z.object({
   phone: z.string().optional(),
   membershipStatus: z.enum(['active', 'suspended', 'inactive']),
   membershipTypeId: z.string(),
+  membershipTypeCode: z.string().optional(),
+  membershipTypeName: z.string().optional(),
   activeLoanCount: z.number().int().min(0),
 });
 

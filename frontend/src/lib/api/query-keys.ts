@@ -11,7 +11,8 @@ export const queryKeys = {
       ['staff', 'member-policy', memberId] as const,
     memberBorrowings: (memberId: string) =>
       ['staff', 'member-borrowings', memberId] as const,
-    borrowings: (query?: unknown) => ['staff', 'borrowings', query ?? {}] as const,
+    borrowings: (query?: unknown) =>
+      ['staff', 'borrowings', query ?? {}] as const,
     borrowing: (borrowingId: string) =>
       ['staff', 'borrowing', borrowingId] as const,
     overdueBorrowings: (query?: unknown) =>
@@ -37,10 +38,11 @@ export const queryKeys = {
     detail: (borrowingId: string) => ['borrowings', borrowingId] as const,
   },
   memberSelf: {
-    profile: ['member-self', 'profile'] as const,
-    policy: ['member-self', 'policy'] as const,
-    borrowings: ['member-self', 'borrowings'] as const,
+    profile: ['member', 'me'] as const,
+    policy: ['member', 'policy-status'] as const,
+    borrowings: (query?: unknown) =>
+      ['member', 'borrowings', query ?? {}] as const,
     borrowing: (borrowingId: string) =>
-      ['member-self', 'borrowings', borrowingId] as const,
+      ['member', 'borrowing', borrowingId] as const,
   },
 };

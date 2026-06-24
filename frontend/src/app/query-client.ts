@@ -21,8 +21,6 @@ export async function invalidateLibraryData() {
     queryClient.invalidateQueries({ queryKey: queryKeys.borrowings.all }),
     queryClient.invalidateQueries({ queryKey: queryKeys.memberSelf.profile }),
     queryClient.invalidateQueries({ queryKey: queryKeys.memberSelf.policy }),
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.memberSelf.borrowings,
-    }),
+    queryClient.invalidateQueries({ queryKey: ['member', 'borrowings'] }),
   ]);
 }
