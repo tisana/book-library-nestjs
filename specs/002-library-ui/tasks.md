@@ -166,22 +166,57 @@
 
 ---
 
-## Phase 6: Polish & Cross-Cutting Concerns
+## Phase 6: Requirement Amendment - Sign Out and Human-Readable Staff Borrowing Rows
+
+**Goal**: Staff and members can cleanly sign out, and staff borrowing-related screens use member/book display labels instead of raw internal IDs.
+
+**Independent Test**: Sign in as staff and confirm dashboard attention, borrowing, overdue, and borrowing detail screens show member names/member numbers and book titles/catalog identifiers; sign out and confirm protected staff data is cleared. Sign in as a member, sign out, and confirm protected member data is cleared.
+
+### Tests for Sign Out and Staff Borrowing Readability
+
+- [ ] T087 [P] [US1] Add backend borrowing response unit tests for member/book display fields in src/borrowings/borrowings.service.spec.ts
+- [ ] T088 [P] [US1] Add backend e2e test verifying GET /borrowings and GET /borrowings/overdue include memberDisplayName, memberNumber, bookTitle, and bookCatalogIdentifier in test/borrowings.e2e-spec.ts
+- [ ] T089 [P] [US1] Add Playwright staff dashboard, borrowing, and overdue human-readable row test in frontend/tests/e2e/staff-borrowing-display.spec.ts
+- [ ] T090 [P] [US1] Add component tests for borrowing display labels and missing reference fallbacks in frontend/src/features/borrowings/borrowing-display.test.ts
+- [ ] T091 [P] [US1] Add Playwright staff sign-out test in frontend/tests/e2e/staff-sign-out.spec.ts
+- [ ] T092 [P] [US2] Add Playwright member sign-out test in frontend/tests/e2e/member-sign-out.spec.ts
+- [ ] T093 [P] [US1] Add component tests for staff shell sign-out accessibility in frontend/src/components/layout/staff-shell.test.tsx
+- [ ] T094 [P] [US2] Add component tests for member shell sign-out accessibility in frontend/src/components/layout/member-shell.test.tsx
+
+### Implementation for Sign Out and Staff Borrowing Readability
+
+- [ ] T095 [US1] Extend BorrowingResponseDto and BorrowingView with memberDisplayName, memberNumber, and bookCatalogIdentifier in src/borrowings/dto/borrowing.dto.ts and frontend/src/lib/api/types.ts
+- [ ] T096 [US1] Populate memberId and bookId for borrowing reads and map member/book display fields in src/borrowings/borrowings.service.ts
+- [ ] T097 [US1] Create borrowing display label helpers for primary and secondary member/book text in frontend/src/features/borrowings/borrowing-display.ts
+- [ ] T098 [US1] Update staff dashboard attention rows to show book title, member name/member number, catalog identifier, due date, and overdue status in frontend/src/features/staff-dashboard/staff-dashboard.tsx
+- [ ] T099 [US1] Update staff borrowing table columns from raw IDs to Borrowing, Member, Book, Due, and Status labels in frontend/src/routes/staff/borrowings.tsx
+- [ ] T100 [US1] Update staff overdue table columns from raw IDs to Borrowing, Member, Book, Due, and Status labels in frontend/src/routes/staff/borrowings.overdue.tsx
+- [ ] T101 [US1] Update staff borrowing detail screen to show member and book display labels before diagnostic IDs in frontend/src/routes/staff/borrowings.$borrowingId.tsx
+- [ ] T102 [US1] Add shared sign-out helper that clears the auth session and role query cache in frontend/src/lib/auth/sign-out.ts
+- [ ] T103 [US1] Update staff auth logout adapter to use shared cache-clearing sign-out behavior in frontend/src/lib/api/auth.ts
+- [ ] T104 [US2] Update member auth logout adapter to use shared cache-clearing sign-out behavior in frontend/src/lib/api/member-auth.ts
+- [ ] T105 [US1] Add visible accessible staff and member sign-out controls in frontend/src/components/layout/staff-shell.tsx and frontend/src/components/layout/member-shell.tsx
+
+**Checkpoint**: Staff borrowing screens are readable without internal IDs as primary labels, and both role areas can sign out without leaving previous-user data visible.
+
+---
+
+## Phase 7: Polish & Cross-Cutting Concerns
 
 **Purpose**: Final verification, documentation, accessibility, responsiveness, and maintainability cleanup across all stories.
 
-- [ ] T087 [P] Update README.md with frontend setup, environment variables, scripts, and member demo credentials
-- [ ] T088 [P] Update specs/002-library-ui/quickstart.md with final frontend commands and expected local URLs
-- [ ] T089 [P] Add frontend environment example file in frontend/.env.example
-- [ ] T090 Run responsive visual checks for staff dashboard/list screens at 1440x900, 1024x768, and 768x1024 in frontend/tests/e2e/responsive-staff.spec.ts
-- [ ] T091 Run responsive visual checks for member home and borrowings at 390x844 and 430x932 in frontend/tests/e2e/responsive-member.spec.ts
-- [ ] T092 Add performance smoke checks for staff list/detail and member home views using seeded demo data with at least 100 books, 50 members, 25 active borrowings, and 10 overdue borrowings in frontend/tests/e2e/performance-smoke.spec.ts
-- [ ] T093 Add accessibility checks for forms, route guards, dialogs, menus, status badges, and icon-only controls in frontend/tests/e2e/accessibility.spec.ts
-- [ ] T094 Audit frontend token handling, sensitive data exposure, and localStorage token persistence in frontend/src/lib/auth/session.ts, frontend/src/lib/api/client.ts, frontend/src/lib/api/errors.ts, and frontend/src/app/providers.tsx
-- [ ] T095 Run backend verification commands npm run lint, npm run test, npm run test:e2e, and npm run build from package.json
-- [ ] T096 Run frontend verification commands npm run lint, npm run test, npm run test:e2e, and npm run build from frontend/package.json
-- [ ] T097 Record timed staff and member usability validation results for SC-001, SC-002, SC-004, SC-005, and SC-006 in specs/002-library-ui/usability-validation.md
-- [ ] T098 Execute quickstart validation scenarios from specs/002-library-ui/quickstart.md
+- [ ] T106 [P] Update README.md with frontend setup, environment variables, scripts, and member demo credentials
+- [ ] T107 [P] Update specs/002-library-ui/quickstart.md with final frontend commands and expected local URLs
+- [ ] T108 [P] Add frontend environment example file in frontend/.env.example
+- [ ] T109 Run responsive visual checks for staff dashboard/list screens at 1440x900, 1024x768, and 768x1024 in frontend/tests/e2e/responsive-staff.spec.ts
+- [ ] T110 Run responsive visual checks for member home and borrowings at 390x844 and 430x932 in frontend/tests/e2e/responsive-member.spec.ts
+- [ ] T111 Add performance smoke checks for staff list/detail and member home views using seeded demo data with at least 100 books, 50 members, 25 active borrowings, and 10 overdue borrowings in frontend/tests/e2e/performance-smoke.spec.ts
+- [ ] T112 Add accessibility checks for forms, route guards, dialogs, menus, status badges, sign-out controls, and icon-only controls in frontend/tests/e2e/accessibility.spec.ts
+- [ ] T113 Audit frontend token handling, sensitive data exposure, sign-out cache clearing, and localStorage token persistence in frontend/src/lib/auth/session.ts, frontend/src/lib/auth/sign-out.ts, frontend/src/lib/api/client.ts, frontend/src/lib/api/errors.ts, and frontend/src/app/providers.tsx
+- [ ] T114 Run backend verification commands npm run lint, npm run test, npm run test:e2e, and npm run build from package.json
+- [ ] T115 Run frontend verification commands npm run lint, npm run test, npm run test:e2e, and npm run build from frontend/package.json
+- [ ] T116 Record timed staff and member usability validation results for SC-001, SC-002, SC-004, SC-005, SC-006, SC-009, and SC-010 in specs/002-library-ui/usability-validation.md
+- [ ] T117 Execute quickstart validation scenarios from specs/002-library-ui/quickstart.md
 
 ---
 
@@ -194,13 +229,15 @@
 - **User Story 1 (Phase 3)**: Depends on Foundational completion; MVP scope.
 - **User Story 2 (Phase 4)**: Depends on Foundational completion and can be built after or parallel to US1 once shared auth/API shell is ready.
 - **User Story 3 (Phase 5)**: Depends on US2 member home structure and due-status utilities.
-- **Polish (Phase 6)**: Depends on all desired user stories being complete.
+- **Sign Out and Staff Readability Amendment (Phase 6)**: Depends on US1 staff screens, US2 member shell, and shared auth/session foundations.
+- **Polish (Phase 7)**: Depends on all desired user stories and the sign-out/readability amendment being complete.
 
 ### User Story Dependencies
 
 - **US1 Manage Library Back Office**: Independent MVP after foundation.
 - **US2 View Member Borrowing Status on Mobile**: Independent after foundation, but benefits from shared auth and API primitives already used by US1.
 - **US3 Receive Borrowing Reminders and Limit Warnings**: Extends US2 member home and should start after US2 member data and layout are in place.
+- **Sign-out and Staff Borrowing Readability Amendment**: Extends US1 and US2; backend borrowing display fields should land before staff UI display changes, while staff and member sign-out controls can be implemented independently after shared sign-out helper exists.
 
 ### Within Each User Story
 
@@ -220,7 +257,10 @@
 - US2 tests T067-T070 can run in parallel.
 - US2 member login/API tasks T071-T072 can run in parallel with layout task T078 after foundation.
 - US3 tests T079-T081 can run in parallel.
-- Polish documentation tasks T087-T089 can run in parallel.
+- Amendment tests T087-T094 can run in parallel.
+- Staff display UI tasks T098-T101 can proceed in parallel after T095-T097.
+- Staff and member sign-out shell tasks T103-T105 can proceed after T102.
+- Polish documentation tasks T106-T108 can run in parallel.
 
 ---
 
@@ -251,6 +291,15 @@ Task: "T080 [P] [US3] Add component tests for reminder ordering, severity, and c
 Task: "T081 [P] [US3] Add Playwright mobile reminder and quota warning scenarios in frontend/tests/e2e/member-reminders.spec.ts"
 ```
 
+## Parallel Example: Sign Out and Staff Borrowing Readability Amendment
+
+```bash
+Task: "T087 [P] [US1] Add backend borrowing response unit tests for member/book display fields in src/borrowings/borrowings.service.spec.ts"
+Task: "T089 [P] [US1] Add Playwright staff dashboard, borrowing, and overdue human-readable row test in frontend/tests/e2e/staff-borrowing-display.spec.ts"
+Task: "T091 [P] [US1] Add Playwright staff sign-out test in frontend/tests/e2e/staff-sign-out.spec.ts"
+Task: "T092 [P] [US2] Add Playwright member sign-out test in frontend/tests/e2e/member-sign-out.spec.ts"
+```
+
 ---
 
 ## Implementation Strategy
@@ -269,13 +318,15 @@ Task: "T081 [P] [US3] Add Playwright mobile reminder and quota warning scenarios
 2. US1: staff operational back office MVP.
 3. US2: member mobile self-service status.
 4. US3: member reminders and quota warnings.
-5. Polish: responsive, accessibility, documentation, and full verification.
+5. Sign-out and staff borrowing readability amendment.
+6. Polish: responsive, accessibility, documentation, and full verification.
 
 ### Parallel Team Strategy
 
 1. One developer handles backend member auth and member-scoped endpoints T010-T024.
 2. One developer handles frontend shell, design system, API client, and auth T025-T043.
 3. After foundation, staff workflows, member home, and reminder logic can proceed in separate feature folders with coordination around shared API types.
+4. The borrowing display amendment should coordinate backend DTO/service updates with staff route rendering because the frontend depends on the enriched response fields.
 
 ---
 
@@ -286,3 +337,5 @@ Task: "T081 [P] [US3] Add Playwright mobile reminder and quota warning scenarios
 - Member self-service requires backend support before US2 can be safely completed.
 - UI must not duplicate backend borrowing rules; it displays backend decisions and conflict responses.
 - MongoDB document-model decisions must precede persistence changes for member authentication support.
+- Staff borrowing rows must use member/book display labels as primary text whenever those fields are available.
+- Sign-out must clear memory-only session state and role-scoped cached data before redirecting to the relevant login route.
