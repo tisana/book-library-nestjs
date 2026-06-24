@@ -25,6 +25,7 @@ A staff member or librarian can sign in to a browser-based back office, review o
 3. **Given** a member wants to borrow a book, **When** staff selects the member and book for a valid borrowing transaction, **Then** the UI shows the calculated due date, records the active borrowing, reduces available quantity, and shows the member's remaining quota.
 4. **Given** a borrowed book is returned, **When** staff records the return, **Then** the UI marks the borrowing as returned, restores book availability, and preserves the borrowing history.
 5. **Given** a borrowing action is blocked by availability, member status, borrowing limit, or overdue loans, **When** staff attempts the action, **Then** the UI explains the specific reason and shows the next available correction.
+6. **Given** a staff member reviews dashboard attention, borrowing, or overdue screens, **When** borrowing records are displayed, **Then** the UI uses human-readable member and book context instead of raw internal identifiers as the primary row text.
 
 ---
 
@@ -64,6 +65,7 @@ A member can quickly notice due-soon, due-today, overdue, suspended, or quota-re
 ### Edge Cases
 
 - A staff user has a valid account but lacks permission for a requested management action.
+- A staff or member user signs out and another user later opens the same browser session.
 - A staff user attempts to create borrowing for an unavailable book, inactive member, suspended member, member with overdue loans, or member at the borrowing limit.
 - A member has zero current borrowings.
 - A member has multiple books with mixed due states, including due soon, due today, and overdue.
@@ -72,6 +74,7 @@ A member can quickly notice due-soon, due-today, overdue, suspended, or quota-re
 - A member record has a missing or inactive membership tier.
 - Long book titles, author names, member names, and catalog identifiers must not break mobile or desktop layouts.
 - Staff list views return no results after search or filtering.
+- Staff borrowing rows reference deactivated books or members and still need meaningful labels.
 - The system cannot load data, the user's session expires, or a save action fails.
 
 ## Requirements *(mandatory)*
@@ -103,6 +106,8 @@ A member can quickly notice due-soon, due-today, overdue, suspended, or quota-re
 - **FR-023**: The UI MUST make primary member workflows readable and operable on mobile devices with sufficient contrast, clear touch targets, and non-overlapping text.
 - **FR-024**: The UI MUST refresh visible inventory, borrowing, quota, and due status after successful state-changing staff actions without requiring users to manually find the changed record again.
 - **FR-025**: External push notifications, email notifications, SMS notifications, public discovery search, online reservations, and self-service member borrowing creation are outside this feature unless added by a later specification.
+- **FR-026**: Staff and member authenticated areas MUST provide a visible sign-out control that clears the active session, clears role-specific cached data, and redirects to the appropriate sign-in entry point.
+- **FR-027**: Staff dashboard attention lists, borrowing tables, overdue tables, and borrowing detail screens MUST use human-readable member and book labels as primary content, such as member name/member number and book title/catalog identifier, rather than raw internal database IDs.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -128,6 +133,8 @@ A member can quickly notice due-soon, due-today, overdue, suspended, or quota-re
 - **SC-006**: 90% of member test users can identify whether each current borrowing is on time, due soon, due today, or overdue without external assistance.
 - **SC-007**: 100% of member privacy checks confirm that members only see their own membership and borrowing information.
 - **SC-008**: Common list, search, and detail views show useful results, empty states, or error states within 2 seconds under normal expected library usage.
+- **SC-009**: 100% of reviewed staff dashboard, borrowing, overdue, and borrowing-detail rows avoid raw internal IDs as the primary visible label when member/book display data is available.
+- **SC-010**: After sign-out from either role area, protected role screens no longer show the previous user's data and the user is routed back to a sign-in screen.
 
 ## Assumptions
 
