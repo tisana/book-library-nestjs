@@ -16,7 +16,7 @@ This plan amendment adds clean sign-out controls to both staff and member shells
 
 **Primary Dependencies**: React, React DOM, Vite, `@vitejs/plugin-react`, Tailwind CSS, `@tailwindcss/vite`, shadcn/ui generated components, Radix UI primitives, lucide-react, TanStack Query, TanStack Router, TanStack Table, React Hook Form, Zod, date-fns or equivalent lightweight date utility, Vitest, Testing Library, Playwright, and MSW for frontend REST mocking. The sign-out and staff display improvements require no new dependency.
 
-**Storage**: Existing MongoDB remains the source of truth through the backend. Frontend stores no domain data permanently. Access tokens must not be stored in localStorage; use memory-only token handling for v1 unless backend tasks add an HTTP-only cookie session flow. Sign-out clears the memory session and relevant TanStack Query cache; no persistent sign-out store is introduced.
+**Storage**: Existing MongoDB remains the source of truth through the backend. Frontend stores no domain data permanently. Access tokens must not be stored in localStorage; use memory-only token handling for v1 unless backend tasks add an HTTP-only cookie session flow. Sign-out clears the memory session and all TanStack Query cached data with `queryClient.clear()`; no persistent sign-out store is introduced.
 
 **Document Model Design**: Member self-service adds authentication data to the existing Member document instead of creating a relational-style member credentials collection. Store member credential fields on the member aggregate because login identity, membership status, and self-service authorization are read together. Add unique indexes for member login identifiers such as email or member number where used for authentication. Keep borrowings as separate documents referenced by member id because borrowing history grows without a predictable bound and needs independent status/query access. Member self-service `me` endpoints derive identity from the authenticated member token and query member, policy status, and borrowings by indexed member id.
 
@@ -30,7 +30,7 @@ Staff borrowing screens should use an enriched borrowing read model produced by 
 
 **Performance Goals**: Member home renders useful status within 2 seconds under normal expected library usage; staff list/detail screens show useful results, empty states, or errors within 2 seconds; staff can complete borrowing/return workflows within the spec success criteria. Enriched staff borrowing rows must avoid N+1 frontend fetching; backend list/detail responses should provide display labels in the same request.
 
-**Constraints**: UI must not duplicate core borrowing rules. Staff actions remain auditable through backend actor context. Member users may only view their own membership and borrowing data. Back office lists must use pagination/filtering rather than loading all records. Sign-out must clear role-specific session state and redirect without leaking the previous user's data through cached screens. External push, email, and SMS notifications are out of scope.
+**Constraints**: UI must not duplicate core borrowing rules. Staff actions remain auditable through backend actor context. Member users may only view their own membership and borrowing data. Back office lists must use pagination/filtering rather than loading all records. Sign-out must clear memory session state, clear all TanStack Query cached data with `queryClient.clear()`, and redirect without leaking the previous user's data through cached screens. External push, email, and SMS notifications are out of scope.
 
 **Scale/Scope**: One frontend application with two protected role areas, approximately 15 primary screens, integrated with the existing single-library backend. No native mobile app, public catalog, reservations, payment, barcode, RFID, token revocation service, or multi-branch support.
 
@@ -40,7 +40,7 @@ Staff borrowing screens should use an enriched borrowing read model produced by 
 
 - **User-Centered Library Workflow**: PASS. Plan separates staff/librarian and member journeys, adds explicit sign-out, and removes raw ID-heavy borrowing displays from staff workflows.
 - **Correctness Over Cleverness**: PASS. Borrowing availability, due dates, eligibility, and quota remain backend-owned; UI presents backend decisions and backend-provided display context.
-- **Security and Privacy by Default**: PASS with required backend support. Member self-service requires member authentication and member-scoped read endpoints. Sign-out clears memory-only tokens and cached role data.
+- **Security and Privacy by Default**: PASS with required backend support. Member self-service requires member authentication and member-scoped read endpoints. Sign-out clears memory-only tokens and all TanStack Query cached data with `queryClient.clear()`.
 - **Spec-First, Traceable Changes**: PASS. Artifacts map to `specs/002-library-ui/spec.md`; tasks must be regenerated or amended from this plan.
 - **Test the Rules That Matter**: PASS. Playwright, component tests, backend authorization tests, and contract mocks cover staff workflows, member privacy, sign-out, display labels, and blocked states.
 - **Maintainable Architecture**: PASS. Adds targeted shell/display improvements without changing the top-level app structure or introducing microservices.
@@ -138,7 +138,7 @@ Completed design artifacts:
 
 - **User-Centered Library Workflow**: PASS. Routes and UI contracts cover staff back office, member mobile home, reminders, quota states, sign-out, and human-readable borrowing rows.
 - **Correctness Over Cleverness**: PASS. UI contracts require backend-owned decisions for availability, due dates, blocked borrowing, quota, and display context.
-- **Security and Privacy by Default**: PASS. Contracts require member-scoped endpoints, forbid member access to staff endpoints, and require sign-out to clear memory session state and cached role data.
+- **Security and Privacy by Default**: PASS. Contracts require member-scoped endpoints, forbid member access to staff endpoints, and require sign-out to clear memory session state and all TanStack Query cached data with `queryClient.clear()`.
 - **Spec-First, Traceable Changes**: PASS. Generated artifacts are traceable to the UI spec and ready for `/speckit-tasks`.
 - **Test the Rules That Matter**: PASS. Quickstart defines staff, member, blocked-state, privacy, sign-out, human-readable display, and responsive validation scenarios.
 - **Maintainable Architecture**: PASS. Frontend is isolated under `frontend/`; shared concepts are represented through typed API adapters and feature folders.

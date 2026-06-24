@@ -20,7 +20,7 @@ The frontend introduces no new persistent library domain store. It uses typed vi
 
 - Must never persist access tokens in localStorage.
 - Must clear on sign out, 401 responses, and session expiration.
-- Sign out must clear role-specific cached server state so protected screens do not briefly show the previous user's data.
+- Sign out must clear the memory auth session and all TanStack Query cached data with `queryClient.clear()` so protected screens do not briefly show the previous user's data.
 - Staff sign out redirects to `/staff/login`; member sign out redirects to `/member/login`.
 - Staff session cannot access member-only routes unless backend explicitly grants a role.
 - Member session cannot access staff routes.

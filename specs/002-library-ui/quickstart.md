@@ -171,6 +171,7 @@ Expected:
 Expected:
 
 - Sign-out clears memory-only access token state.
+- Sign-out clears all TanStack Query cached data through `queryClient.clear()`.
 - Staff and member query data from the previous session is not visible after sign-out.
 - The sign-out controls have accessible labels and remain usable at phone widths.
 

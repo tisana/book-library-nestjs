@@ -15,7 +15,7 @@ Both authenticated role shells expose sign-out:
 
 - Staff sign-out is visible in the back-office shell on desktop and tablet/mobile navigation.
 - Member sign-out is visible in the mobile header or bottom navigation without crowding the primary Home/Books actions.
-- Sign-out clears session state, clears role-specific cached data, and redirects to the role's login route.
+- Sign-out clears the memory auth session, clears all TanStack Query cached data with `queryClient.clear()`, and redirects to the role's login route.
 
 ## Staff Routes
 
@@ -49,7 +49,7 @@ Both authenticated role shells expose sign-out:
 - Staff users without permission see `/unauthorized` or disabled actions with explanatory text.
 - A 401 response clears the active session and redirects to the relevant login route.
 - A 403 response keeps the session but displays permission-denied state.
-- Manual sign-out clears the active session, clears role data from client cache, and redirects to `/staff/login` or `/member/login`.
+- Manual sign-out clears the memory auth session, clears all TanStack Query cached data with `queryClient.clear()`, and redirects to `/staff/login` or `/member/login`.
 
 ## Staff Display Rules
 
