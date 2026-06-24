@@ -174,8 +174,8 @@
 
 ### Tests for Sign Out and Staff Borrowing Readability
 
-- [ ] T087 [P] [US1] Add backend borrowing response unit tests for member/book display fields in src/borrowings/borrowings.service.spec.ts
-- [ ] T088 [P] [US1] Add backend e2e test verifying GET /borrowings and GET /borrowings/overdue include memberDisplayName, memberNumber, bookTitle, and bookCatalogIdentifier in test/borrowings.e2e-spec.ts
+- [ ] T087 [P] [US1] Add backend borrowing response unit tests for member/book display fields, including inactive referenced documents and missing-reference safe labels, in src/borrowings/borrowings.service.spec.ts
+- [ ] T088 [P] [US1] Add backend e2e test verifying GET /borrowings, GET /borrowings/overdue, and GET /borrowings/:id include memberDisplayName, memberNumber, bookTitle, and bookCatalogIdentifier in test/borrowings.e2e-spec.ts
 - [ ] T089 [P] [US1] Add Playwright staff dashboard, borrowing, and overdue human-readable row test in frontend/tests/e2e/staff-borrowing-display.spec.ts
 - [ ] T090 [P] [US1] Add component tests for borrowing display labels and missing reference fallbacks in frontend/src/features/borrowings/borrowing-display.test.ts
 - [ ] T091 [P] [US1] Add Playwright staff sign-out test in frontend/tests/e2e/staff-sign-out.spec.ts
@@ -185,14 +185,14 @@
 
 ### Implementation for Sign Out and Staff Borrowing Readability
 
-- [ ] T095 [US1] Extend BorrowingResponseDto and BorrowingView with memberDisplayName, memberNumber, and bookCatalogIdentifier in src/borrowings/dto/borrowing.dto.ts and frontend/src/lib/api/types.ts
-- [ ] T096 [US1] Populate memberId and bookId for borrowing reads and map member/book display fields in src/borrowings/borrowings.service.ts
+- [ ] T095 [US1] Extend BorrowingResponseDto Swagger decorators and BorrowingView typing with memberDisplayName, memberNumber, bookTitle, and bookCatalogIdentifier in src/borrowings/dto/borrowing.dto.ts and frontend/src/lib/api/types.ts
+- [ ] T096 [US1] Populate memberId and bookId for borrowing reads, map member/book display fields, and return safe fallback labels when referenced member/book documents are inactive or unavailable in src/borrowings/borrowings.service.ts
 - [ ] T097 [US1] Create borrowing display label helpers for primary and secondary member/book text in frontend/src/features/borrowings/borrowing-display.ts
 - [ ] T098 [US1] Update staff dashboard attention rows to show book title, member name/member number, catalog identifier, due date, and overdue status in frontend/src/features/staff-dashboard/staff-dashboard.tsx
 - [ ] T099 [US1] Update staff borrowing table columns from raw IDs to Borrowing, Member, Book, Due, and Status labels in frontend/src/routes/staff/borrowings.tsx
 - [ ] T100 [US1] Update staff overdue table columns from raw IDs to Borrowing, Member, Book, Due, and Status labels in frontend/src/routes/staff/borrowings.overdue.tsx
 - [ ] T101 [US1] Update staff borrowing detail screen to show member and book display labels before diagnostic IDs in frontend/src/routes/staff/borrowings.$borrowingId.tsx
-- [ ] T102 [US1] Add shared sign-out helper that clears the auth session and role query cache in frontend/src/lib/auth/sign-out.ts
+- [ ] T102 [US1] Add shared sign-out helper that clears the memory auth session, calls `queryClient.clear()`, and supports staff/member login redirects in frontend/src/lib/auth/sign-out.ts
 - [ ] T103 [US1] Update staff auth logout adapter to use shared cache-clearing sign-out behavior in frontend/src/lib/api/auth.ts
 - [ ] T104 [US2] Update member auth logout adapter to use shared cache-clearing sign-out behavior in frontend/src/lib/api/member-auth.ts
 - [ ] T105 [US1] Add visible accessible staff and member sign-out controls in frontend/src/components/layout/staff-shell.tsx and frontend/src/components/layout/member-shell.tsx
@@ -212,8 +212,8 @@
 - [ ] T110 Run responsive visual checks for member home and borrowings at 390x844 and 430x932 in frontend/tests/e2e/responsive-member.spec.ts
 - [ ] T111 Add performance smoke checks for staff list/detail and member home views using seeded demo data with at least 100 books, 50 members, 25 active borrowings, and 10 overdue borrowings in frontend/tests/e2e/performance-smoke.spec.ts
 - [ ] T112 Add accessibility checks for forms, route guards, dialogs, menus, status badges, sign-out controls, and icon-only controls in frontend/tests/e2e/accessibility.spec.ts
-- [ ] T113 Audit frontend token handling, sensitive data exposure, sign-out cache clearing, and localStorage token persistence in frontend/src/lib/auth/session.ts, frontend/src/lib/auth/sign-out.ts, frontend/src/lib/api/client.ts, frontend/src/lib/api/errors.ts, and frontend/src/app/providers.tsx
-- [ ] T114 Run backend verification commands npm run lint, npm run test, npm run test:e2e, and npm run build from package.json
+- [ ] T113 Audit-only verification of frontend token handling, sensitive data exposure, sign-out cache clearing via `queryClient.clear()`, and localStorage token persistence in frontend/src/lib/auth/session.ts, frontend/src/lib/auth/sign-out.ts, frontend/src/lib/api/client.ts, frontend/src/lib/api/errors.ts, and frontend/src/app/providers.tsx; do not add new sign-out implementation here unless defects are found
+- [ ] T114 Run backend verification commands npm run lint, npm run test, npm run test:e2e, npm run build, and verify the generated Swagger/OpenAPI document from src/main.ts includes memberDisplayName, memberNumber, bookTitle, and bookCatalogIdentifier on BorrowingResponseDto
 - [ ] T115 Run frontend verification commands npm run lint, npm run test, npm run test:e2e, and npm run build from frontend/package.json
 - [ ] T116 Record timed staff and member usability validation results for SC-001, SC-002, SC-004, SC-005, SC-006, SC-009, and SC-010 in specs/002-library-ui/usability-validation.md
 - [ ] T117 Execute quickstart validation scenarios from specs/002-library-ui/quickstart.md
@@ -294,7 +294,7 @@ Task: "T081 [P] [US3] Add Playwright mobile reminder and quota warning scenarios
 ## Parallel Example: Sign Out and Staff Borrowing Readability Amendment
 
 ```bash
-Task: "T087 [P] [US1] Add backend borrowing response unit tests for member/book display fields in src/borrowings/borrowings.service.spec.ts"
+Task: "T087 [P] [US1] Add backend borrowing response unit tests for member/book display fields, including inactive referenced documents and missing-reference safe labels, in src/borrowings/borrowings.service.spec.ts"
 Task: "T089 [P] [US1] Add Playwright staff dashboard, borrowing, and overdue human-readable row test in frontend/tests/e2e/staff-borrowing-display.spec.ts"
 Task: "T091 [P] [US1] Add Playwright staff sign-out test in frontend/tests/e2e/staff-sign-out.spec.ts"
 Task: "T092 [P] [US2] Add Playwright member sign-out test in frontend/tests/e2e/member-sign-out.spec.ts"
@@ -338,4 +338,4 @@ Task: "T092 [P] [US2] Add Playwright member sign-out test in frontend/tests/e2e/
 - UI must not duplicate backend borrowing rules; it displays backend decisions and conflict responses.
 - MongoDB document-model decisions must precede persistence changes for member authentication support.
 - Staff borrowing rows must use member/book display labels as primary text whenever those fields are available.
-- Sign-out must clear memory-only session state and role-scoped cached data before redirecting to the relevant login route.
+- Sign-out must clear memory-only session state and all TanStack Query cached data with `queryClient.clear()` before redirecting to the relevant login route.

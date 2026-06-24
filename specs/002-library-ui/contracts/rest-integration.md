@@ -19,7 +19,7 @@ The current `openapi.json` exposes these REST areas:
 | Member borrowings | `/members/{id}/borrowings` | Staff member borrowing tabs |
 | Borrowings | `/borrowings`, `/borrowings/{id}`, `/borrowings/overdue`, `/borrowings/{id}/return` | Staff lending, return, detail, and overdue workflows |
 
-Sign-out in the current bearer-token UI is client-owned. Staff and member sign-out clear the memory auth session and cached role data; no REST endpoint is required unless server-side token revocation or cookie sessions are added later.
+Sign-out in the current bearer-token UI is client-owned. Staff and member sign-out clear the memory auth session, call `queryClient.clear()` to remove all TanStack Query cached data, and redirect to the role login route. No REST endpoint is required unless server-side token revocation or cookie sessions are added later.
 
 ## Required Member-Scoped REST Additions
 
@@ -129,7 +129,7 @@ Mutation invalidation rules:
 - Creating borrowing invalidates staff books, borrowings, member policy, member borrowings, and member self-service borrowings for the affected member.
 - Returning borrowing invalidates affected borrowing detail, books, borrowings, member policy, and member self-service borrowings.
 - Updating membership tier invalidates membership tier lists and affected member policy views.
-- Signing out clears the active role session and removes or resets staff/member query caches so previous-user data is not visible after navigation.
+- Signing out clears the active role session and calls `queryClient.clear()` so previous-user data is not visible after navigation.
 
 ## Security Rules
 
