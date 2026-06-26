@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
-import { Link } from '@tanstack/react-router';
-import { BookMarked, Home, UserRound } from 'lucide-react';
+import { Link, useNavigate } from '@tanstack/react-router';
+import { BookMarked, Home, LogOut } from 'lucide-react';
+import { memberLogout } from '@/lib/api/member-auth';
 
 const memberNavItems = [
   { to: '/member', label: 'Home', icon: Home },
@@ -8,6 +9,12 @@ const memberNavItems = [
 ] as const;
 
 export function MemberShell({ children }: { children: ReactNode }) {
+  const navigate = useNavigate();
+
+  function handleSignOut() {
+    void navigate({ to: memberLogout() });
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
       <header className="sticky top-0 z-10 border-b bg-white/95 px-4 py-3 backdrop-blur">
@@ -16,7 +23,14 @@ export function MemberShell({ children }: { children: ReactNode }) {
             <p className="text-sm font-semibold text-slate-950">Book Library</p>
             <p className="text-xs text-slate-500">Member access</p>
           </div>
-          <UserRound className="size-5 shrink-0 text-cyan-700" aria-hidden />
+          <button
+            className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-md px-3 text-sm font-medium text-slate-700 hover:bg-slate-100"
+            onClick={handleSignOut}
+            type="button"
+          >
+            <LogOut className="size-4" aria-hidden />
+            Sign out
+          </button>
         </div>
       </header>
       <main className="mx-auto min-h-[calc(100vh-8rem)] max-w-md overflow-x-hidden px-4 py-4">

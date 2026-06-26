@@ -174,28 +174,28 @@
 
 ### Tests for Sign Out and Staff Borrowing Readability
 
-- [ ] T087 [P] [US1] Add backend borrowing response unit tests for member/book display fields, including inactive referenced documents and missing-reference safe labels, in src/borrowings/borrowings.service.spec.ts
-- [ ] T088 [P] [US1] Add backend e2e test verifying GET /borrowings, GET /borrowings/overdue, and GET /borrowings/:id include memberDisplayName, memberNumber, bookTitle, and bookCatalogIdentifier in test/borrowings.e2e-spec.ts
-- [ ] T089 [P] [US1] Add Playwright staff dashboard, borrowing, and overdue human-readable row test in frontend/tests/e2e/staff-borrowing-display.spec.ts
-- [ ] T090 [P] [US1] Add component tests for borrowing display labels and missing reference fallbacks in frontend/src/features/borrowings/borrowing-display.test.ts
-- [ ] T091 [P] [US1] Add Playwright staff sign-out test in frontend/tests/e2e/staff-sign-out.spec.ts
-- [ ] T092 [P] [US2] Add Playwright member sign-out test in frontend/tests/e2e/member-sign-out.spec.ts
-- [ ] T093 [P] [US1] Add component tests for staff shell sign-out accessibility in frontend/src/components/layout/staff-shell.test.tsx
-- [ ] T094 [P] [US2] Add component tests for member shell sign-out accessibility in frontend/src/components/layout/member-shell.test.tsx
+- [X] T087 [P] [US1] Add backend borrowing response unit tests for member/book display fields, including inactive referenced documents and missing-reference safe labels, in src/borrowings/borrowings.service.spec.ts
+- [X] T088 [P] [US1] Add backend e2e test verifying GET /borrowings, GET /borrowings/overdue, and GET /borrowings/:id include memberDisplayName, memberNumber, bookTitle, and bookCatalogIdentifier in test/borrowings.e2e-spec.ts
+- [X] T089 [P] [US1] Add Playwright staff dashboard, borrowing, and overdue human-readable row test in frontend/tests/e2e/staff-borrowing-display.spec.ts
+- [X] T090 [P] [US1] Add component tests for borrowing display labels and missing reference fallbacks in frontend/src/features/borrowings/borrowing-display.test.ts
+- [X] T091 [P] [US1] Add Playwright staff sign-out test in frontend/tests/e2e/staff-sign-out.spec.ts
+- [X] T092 [P] [US2] Add Playwright member sign-out test in frontend/tests/e2e/member-sign-out.spec.ts
+- [X] T093 [P] [US1] Add component tests for staff shell sign-out accessibility in frontend/src/components/layout/staff-shell.test.tsx
+- [X] T094 [P] [US2] Add component tests for member shell sign-out accessibility in frontend/src/components/layout/member-shell.test.tsx
 
 ### Implementation for Sign Out and Staff Borrowing Readability
 
-- [ ] T095 [US1] Extend BorrowingResponseDto Swagger decorators and BorrowingView typing with memberDisplayName, memberNumber, bookTitle, and bookCatalogIdentifier in src/borrowings/dto/borrowing.dto.ts and frontend/src/lib/api/types.ts
-- [ ] T096 [US1] Populate memberId and bookId for borrowing reads, map member/book display fields, and return safe fallback labels when referenced member/book documents are inactive or unavailable in src/borrowings/borrowings.service.ts
-- [ ] T097 [US1] Create borrowing display label helpers for primary and secondary member/book text in frontend/src/features/borrowings/borrowing-display.ts
-- [ ] T098 [US1] Update staff dashboard attention rows to show book title, member name/member number, catalog identifier, due date, and overdue status in frontend/src/features/staff-dashboard/staff-dashboard.tsx
-- [ ] T099 [US1] Update staff borrowing table columns from raw IDs to Borrowing, Member, Book, Due, and Status labels in frontend/src/routes/staff/borrowings.tsx
-- [ ] T100 [US1] Update staff overdue table columns from raw IDs to Borrowing, Member, Book, Due, and Status labels in frontend/src/routes/staff/borrowings.overdue.tsx
-- [ ] T101 [US1] Update staff borrowing detail screen to show member and book display labels before diagnostic IDs in frontend/src/routes/staff/borrowings.$borrowingId.tsx
-- [ ] T102 [US1] Add shared sign-out helper that clears the memory auth session, calls `queryClient.clear()`, and supports staff/member login redirects in frontend/src/lib/auth/sign-out.ts
-- [ ] T103 [US1] Update staff auth logout adapter to use shared cache-clearing sign-out behavior in frontend/src/lib/api/auth.ts
-- [ ] T104 [US2] Update member auth logout adapter to use shared cache-clearing sign-out behavior in frontend/src/lib/api/member-auth.ts
-- [ ] T105 [US1] Add visible accessible staff and member sign-out controls in frontend/src/components/layout/staff-shell.tsx and frontend/src/components/layout/member-shell.tsx
+- [X] T095 [US1] Extend BorrowingResponseDto Swagger decorators and BorrowingView typing with memberDisplayName, memberNumber, bookTitle, and bookCatalogIdentifier in src/borrowings/dto/borrowing.dto.ts and frontend/src/lib/api/types.ts
+- [X] T096 [US1] Populate memberId and bookId for borrowing reads, map member/book display fields, and return safe fallback labels when referenced member/book documents are inactive or unavailable in src/borrowings/borrowings.service.ts
+- [X] T097 [US1] Create borrowing display label helpers for primary and secondary member/book text in frontend/src/features/borrowings/borrowing-display.ts
+- [X] T098 [US1] Update staff dashboard attention rows to show book title, member name/member number, catalog identifier, due date, and overdue status in frontend/src/features/staff-dashboard/staff-dashboard.tsx
+- [X] T099 [US1] Update staff borrowing table columns from raw IDs to Borrowing, Member, Book, Due, and Status labels in frontend/src/routes/staff/borrowings.tsx
+- [X] T100 [US1] Update staff overdue table columns from raw IDs to Borrowing, Member, Book, Due, and Status labels in frontend/src/routes/staff/borrowings.overdue.tsx
+- [X] T101 [US1] Update staff borrowing detail screen to show member and book display labels before diagnostic IDs in frontend/src/routes/staff/borrowings.$borrowingId.tsx
+- [X] T102 [US1] Add shared sign-out helper that clears the memory auth session, calls `queryClient.clear()`, and supports staff/member login redirects in frontend/src/lib/auth/sign-out.ts
+- [X] T103 [US1] Update staff auth logout adapter to use shared cache-clearing sign-out behavior in frontend/src/lib/api/auth.ts
+- [X] T104 [US2] Update member auth logout adapter to use shared cache-clearing sign-out behavior in frontend/src/lib/api/member-auth.ts
+- [X] T105 [US1] Add visible accessible staff and member sign-out controls in frontend/src/components/layout/staff-shell.tsx and frontend/src/components/layout/member-shell.tsx
 
 **Checkpoint**: Staff borrowing screens are readable without internal IDs as primary labels, and both role areas can sign out without leaving previous-user data visible.
 

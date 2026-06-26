@@ -1,4 +1,5 @@
 import { authSession } from '@/lib/auth/session';
+import { signOut } from '@/lib/auth/sign-out';
 import { apiClient } from './client';
 import type { LoginResponse, StaffLoginRequest, StaffSessionUser } from './types';
 
@@ -25,5 +26,5 @@ export async function staffLogin(input: StaffLoginRequest) {
 }
 
 export function staffLogout() {
-  authSession.clear('signed-out');
+  return signOut('staff');
 }

@@ -125,8 +125,11 @@ export interface MemberPolicyStatusView {
 export interface BorrowingView {
   id: string;
   memberId: string;
+  memberDisplayName?: string;
+  memberNumber?: string;
   bookId: string;
   bookTitle?: string;
+  bookCatalogIdentifier?: string;
   bookCategoryId: string;
   borrowedAt: string;
   dueAt: string;
