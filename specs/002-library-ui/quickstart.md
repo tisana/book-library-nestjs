@@ -43,6 +43,13 @@ Expected:
 - API docs remain available at `http://localhost:3000/docs`.
 - Seeded staff/admin users can authenticate.
 
+Seeded staff credentials:
+
+| Role | Email | Password |
+| --- | --- | --- |
+| admin | `admin@example.com` | `AdminPass123!` |
+| staff | `staff@example.com` | `StaffPass123!` |
+
 ## Frontend Setup
 
 From the frontend app directory:
@@ -50,15 +57,33 @@ From the frontend app directory:
 ```bash
 cd frontend
 npm install
+copy .env.example .env
 npm run dev
+```
+
+Or from the repository root:
+
+```bash
+npm run frontend:install
+npm run frontend:dev
 ```
 
 Expected:
 
-- Frontend dev server starts.
-- Frontend can reach the backend REST base URL configured for local development.
-- Staff login screen is available.
-- Member login screen is available once member auth support is implemented.
+- Frontend dev server starts at `http://localhost:5173`.
+- Frontend uses `VITE_API_BASE_URL=http://localhost:3000` from `frontend/.env.example` or the default API client value.
+- Staff login screen is available at `http://localhost:5173/staff/login`.
+- Member login screen is available at `http://localhost:5173/member/login`.
+- Use `localhost`, not `127.0.0.1`, for manual browser testing unless backend CORS is explicitly configured for that origin.
+
+Demo member credentials:
+
+| Member | Login identifier | Password |
+| --- | --- | --- |
+| Jane Reader | `M-1001` or `jane.reader@example.test` | `DemoMember#2026` |
+| Max Limit | `M-1002` or `max.limit@example.test` | `DemoMember#2026` |
+| Sam Suspended | `M-1003` or `sam.suspended@example.test` | `DemoMember#2026` |
+| Olivia Overdue | `M-1004` or `olivia.overdue@example.test` | `DemoMember#2026` |
 
 ## Validation Scenario 1: Staff Back Office
 
@@ -150,7 +175,7 @@ Run automated checks against the seeded demo dataset for:
 - Staff list and detail views.
 - Member home on a phone-sized viewport.
 
-Use seeded demo data with at least 100 books, 50 members, 25 active borrowings, 10 overdue borrowings, and member accounts covering no-borrowing, due-soon, due-today, overdue, quota-reached, suspended, and inactive states.
+The automated Playwright performance smoke test uses a deterministic demo-scale mocked dataset with at least 100 books, 50 members, 25 active borrowings, and 10 overdue borrowings. Local manual testing can use the smaller `npm run seed:demo` dataset unless a larger database load test is intentionally prepared.
 
 Expected:
 
@@ -200,3 +225,4 @@ Expected:
 
 - All commands pass.
 - Playwright tests cover staff happy path, blocked borrowing, member mobile home, member privacy, sign-out, human-readable staff borrowing rows, responsive layouts, accessibility, and performance smoke checks.
+- Quickstart validation is complete when staff and member sign-in/sign-out flows work at the URLs above and protected routes redirect to their login screens after sign-out.
