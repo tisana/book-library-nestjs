@@ -100,7 +100,7 @@ export class BorrowingsService {
       await book.save({ session });
       await member.save({ session });
 
-      return this.toResponse(borrowing, borrowedAt, book);
+      return this.toResponse(borrowing, borrowedAt, book, member);
     });
   }
 
@@ -146,7 +146,7 @@ export class BorrowingsService {
       await book.save({ session });
       await member.save({ session });
 
-      return this.toResponse(borrowing, returnedAt, book);
+      return this.toResponse(borrowing, returnedAt, book, member);
     });
   }
 
@@ -158,6 +158,7 @@ export class BorrowingsService {
     const borrowings = await this.borrowingModel
       .find(filter)
       .populate('bookId')
+      .populate('memberId')
       .sort({ dueAt: 1 })
       .skip((query.page - 1) * query.limit)
       .limit(query.limit)
@@ -170,6 +171,7 @@ export class BorrowingsService {
     const borrowing = await this.borrowingModel
       .findOne({ _id: equals(toMongoObjectId(id)) })
       .populate('bookId')
+      .populate('memberId')
       .exec();
 
     if (!borrowing) {
@@ -189,6 +191,7 @@ export class BorrowingsService {
         memberId: equals(toMongoObjectId(memberId, 'memberId')),
       })
       .populate('bookId')
+      .populate('memberId')
       .exec();
 
     if (!borrowing) {
@@ -376,6 +379,7 @@ export class BorrowingsService {
     borrowing: BorrowingDocument,
     now = new Date(),
     book?: BookDocument,
+    member?: MemberDocument,
   ): BorrowingResponseDto {
     const effectiveStatus =
       borrowing.status === LoanState.Active &&
@@ -385,12 +389,16 @@ export class BorrowingsService {
         : borrowing.status;
 
     const resolvedBook = book ?? getPopulatedBook(borrowing.bookId);
+    const resolvedMember = member ?? getPopulatedMember(borrowing.memberId);
 
     return {
       id: borrowing.id ?? borrowing._id.toString(),
-      memberId: borrowing.memberId.toString(),
+      memberId: getReferenceId(borrowing.memberId),
+      memberDisplayName: resolvedMember?.fullName ?? 'Unknown member',
+      memberNumber: resolvedMember?.memberNumber,
       bookId: getReferenceId(borrowing.bookId),
-      bookTitle: resolvedBook?.title,
+      bookTitle: resolvedBook?.title ?? 'Book unavailable',
+      bookCatalogIdentifier: resolvedBook?.catalogIdentifier,
       bookCategoryId: borrowing.bookCategoryId.toString(),
       borrowedAt: borrowing.borrowedAt.toISOString(),
       dueAt: borrowing.dueAt.toISOString(),
@@ -423,6 +431,19 @@ function getPopulatedBook(value: unknown): BookDocument | undefined {
     typeof (value as { title?: unknown }).title === 'string'
   ) {
     return value as BookDocument;
+  }
+
+  return undefined;
+}
+
+function getPopulatedMember(value: unknown): MemberDocument | undefined {
+  if (
+    value &&
+    typeof value === 'object' &&
+    'fullName' in value &&
+    typeof (value as { fullName?: unknown }).fullName === 'string'
+  ) {
+    return value as MemberDocument;
   }
 
   return undefined;

@@ -29,16 +29,16 @@ test('staff can create a borrowing and return it', async ({ page }) => {
   );
   await page.route('http://localhost:3000/borrowings/borrowing-1/return', (route) =>
     route.fulfill({
-      json: { id: 'borrowing-1', memberId: 'member-1', bookId: 'book-1', bookCategoryId: 'cat-1', borrowedAt: '2026-06-01T00:00:00.000Z', dueAt: '2026-06-15T00:00:00.000Z', returnedAt: '2026-06-10T00:00:00.000Z', status: 'returned', borrowedByStaffId: 'staff-1', returnedByStaffId: 'staff-1' },
+      json: { id: 'borrowing-1', memberId: 'member-1', memberDisplayName: 'Jane Reader', memberNumber: 'M-1001', bookId: 'book-1', bookTitle: 'Clean Code', bookCatalogIdentifier: 'BK-1001', bookCategoryId: 'cat-1', borrowedAt: '2026-06-01T00:00:00.000Z', dueAt: '2026-06-15T00:00:00.000Z', returnedAt: '2026-06-10T00:00:00.000Z', status: 'returned', borrowedByStaffId: 'staff-1', returnedByStaffId: 'staff-1' },
     }),
   );
   await page.route('http://localhost:3000/borrowings/borrowing-1', (route) =>
     route.fulfill({
-      json: { id: 'borrowing-1', memberId: 'member-1', bookId: 'book-1', bookCategoryId: 'cat-1', borrowedAt: '2026-06-01T00:00:00.000Z', dueAt: '2026-06-15T00:00:00.000Z', status: 'active', borrowedByStaffId: 'staff-1' },
+      json: { id: 'borrowing-1', memberId: 'member-1', memberDisplayName: 'Jane Reader', memberNumber: 'M-1001', bookId: 'book-1', bookTitle: 'Clean Code', bookCatalogIdentifier: 'BK-1001', bookCategoryId: 'cat-1', borrowedAt: '2026-06-01T00:00:00.000Z', dueAt: '2026-06-15T00:00:00.000Z', status: 'active', borrowedByStaffId: 'staff-1' },
     }),
   );
   await page.route('http://localhost:3000/borrowings**', (route) => {
-    const borrowing = { id: 'borrowing-1', memberId: 'member-1', bookId: 'book-1', bookCategoryId: 'cat-1', borrowedAt: '2026-06-01T00:00:00.000Z', dueAt: '2026-06-15T00:00:00.000Z', status: 'active', borrowedByStaffId: 'staff-1' };
+    const borrowing = { id: 'borrowing-1', memberId: 'member-1', memberDisplayName: 'Jane Reader', memberNumber: 'M-1001', bookId: 'book-1', bookTitle: 'Clean Code', bookCatalogIdentifier: 'BK-1001', bookCategoryId: 'cat-1', borrowedAt: '2026-06-01T00:00:00.000Z', dueAt: '2026-06-15T00:00:00.000Z', status: 'active', borrowedByStaffId: 'staff-1' };
     if (route.request().url().endsWith('/borrowings/borrowing-1/return')) {
       return route.fulfill({
         json: { ...borrowing, returnedAt: '2026-06-10T00:00:00.000Z', status: 'returned', returnedByStaffId: 'staff-1' },
@@ -68,7 +68,7 @@ test('staff can create a borrowing and return it', async ({ page }) => {
   await expect(page.getByText('Borrowing recorded')).toBeVisible();
 
   await page.getByRole('link', { name: 'Borrowings' }).click();
-  await page.getByRole('link', { name: 'borrowing-1' }).click();
+  await page.getByRole('link', { name: 'Clean Code borrowed by Jane Reader' }).click();
   await page.getByRole('button', { name: /record return/i }).click();
   await page.getByRole('button', { name: /^confirm$/i }).click();
   await expect(page.getByText('Return recorded')).toBeVisible();

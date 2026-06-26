@@ -28,6 +28,56 @@ describe('BorrowingsService', () => {
     );
   });
 
+  it('maps populated member and book display fields into borrowing responses', async () => {
+    const borrowing = createBorrowingDocument({
+      memberId: {
+        _id: { toString: () => 'member-1' },
+        fullName: 'Inactive Reader',
+        memberNumber: 'M-1004',
+        status: 'inactive',
+      },
+      bookId: {
+        _id: { toString: () => 'book-1' },
+        title: 'Refactoring',
+        catalogIdentifier: 'BK-1003',
+        status: 'deactivated',
+      },
+    });
+    const query = createFindQuery([borrowing]);
+    const find = jest.fn().mockReturnValue(query);
+    const service = createService({ find });
+
+    await expect(service.findAll({ page: 1, limit: 20 })).resolves.toEqual([
+      expect.objectContaining({
+        memberId: 'member-1',
+        memberDisplayName: 'Inactive Reader',
+        memberNumber: 'M-1004',
+        bookId: 'book-1',
+        bookTitle: 'Refactoring',
+        bookCatalogIdentifier: 'BK-1003',
+      }),
+    ]);
+  });
+
+  it('returns safe display labels when member or book references are unavailable', async () => {
+    const borrowing = createBorrowingDocument({
+      memberId: '665f4d3b8f4c8a001f5f0a12',
+      bookId: '665f4d3b8f4c8a001f5f0a13',
+    });
+    const query = createFindQuery([borrowing]);
+    const find = jest.fn().mockReturnValue(query);
+    const service = createService({ find });
+
+    await expect(service.findAll({ page: 1, limit: 20 })).resolves.toEqual([
+      expect.objectContaining({
+        memberId: '665f4d3b8f4c8a001f5f0a12',
+        memberDisplayName: 'Unknown member',
+        bookId: '665f4d3b8f4c8a001f5f0a13',
+        bookTitle: 'Book unavailable',
+      }),
+    ]);
+  });
+
   it('does not mutate the borrowed date while calculating the due date', () => {
     const service = createService();
     const borrowedAt = new Date('2026-06-01T00:00:00.000Z');
@@ -57,12 +107,8 @@ describe('BorrowingsService', () => {
   });
 
   it('filters current borrowings to unreturned active and overdue records', async () => {
-    const exec = jest.fn().mockResolvedValue([]);
-    const limit = jest.fn().mockReturnValue({ exec });
-    const skip = jest.fn().mockReturnValue({ limit });
-    const sort = jest.fn().mockReturnValue({ skip });
-    const populate = jest.fn().mockReturnValue({ sort });
-    const find = jest.fn().mockReturnValue({ populate });
+    const queryBuilder = createFindQuery([]);
+    const find = jest.fn().mockReturnValue(queryBuilder);
     const service = createService({ find });
     const query = {
       currentOnly: true,
@@ -78,3 +124,32 @@ describe('BorrowingsService', () => {
     });
   });
 });
+
+function createFindQuery(result: unknown[]) {
+  const query = {
+    populate: jest.fn(() => query),
+    sort: jest.fn(() => query),
+    skip: jest.fn(() => query),
+    limit: jest.fn(() => query),
+    exec: jest.fn().mockResolvedValue(result),
+  };
+
+  return query;
+}
+
+function createBorrowingDocument(
+  overrides: Record<string, unknown> = {},
+): Record<string, unknown> {
+  return {
+    id: 'borrowing-1',
+    _id: { toString: () => 'borrowing-1' },
+    memberId: 'member-1',
+    bookId: 'book-1',
+    bookCategoryId: { toString: () => 'category-1' },
+    borrowedAt: new Date('2026-06-01T00:00:00.000Z'),
+    dueAt: new Date('2026-06-15T00:00:00.000Z'),
+    status: LoanState.Active,
+    borrowedByStaffId: 'staff-1',
+    ...overrides,
+  };
+}

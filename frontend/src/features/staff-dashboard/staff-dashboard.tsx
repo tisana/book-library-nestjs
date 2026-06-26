@@ -7,6 +7,12 @@ import { StatusBadge } from '@/components/status-badge';
 import { useBooks } from '@/lib/api/books';
 import { useBorrowings, useOverdueBorrowings } from '@/lib/api/borrowings';
 import { useMembers } from '@/lib/api/members';
+import {
+  getBookDisplay,
+  getBorrowingDisplay,
+  getMemberDisplay,
+} from '@/features/borrowings/borrowing-display';
+import { formatLocalDate } from '@/lib/dates/due-status';
 
 export function StaffDashboard() {
   const books = useBooks();
@@ -62,8 +68,15 @@ export function StaffDashboard() {
           ) : (
             <ul className="flex flex-col gap-2">
               {overdue.data?.slice(0, 5).map((item) => (
-                <li className="flex items-center justify-between rounded-md border p-3" key={item.id}>
-                  <span className="text-sm font-medium">{item.id}</span>
+                <li className="flex items-start justify-between gap-3 rounded-md border p-3" key={item.id}>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-slate-950">
+                      {getBorrowingDisplay(item)}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {getMemberDisplay(item).secondary} · {getBookDisplay(item).secondary} · Due {formatLocalDate(item.dueAt)}
+                    </p>
+                  </div>
                   <StatusBadge tone="danger">Overdue</StatusBadge>
                 </li>
               ))}

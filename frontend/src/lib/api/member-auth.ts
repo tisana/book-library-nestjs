@@ -1,4 +1,5 @@
 import { authSession } from '@/lib/auth/session';
+import { signOut } from '@/lib/auth/sign-out';
 import { apiClient } from './client';
 import type {
   LoginResponse,
@@ -29,5 +30,5 @@ export async function memberLogin(input: MemberLoginRequest) {
 }
 
 export function memberLogout() {
-  authSession.clear('signed-out');
+  return signOut('member');
 }

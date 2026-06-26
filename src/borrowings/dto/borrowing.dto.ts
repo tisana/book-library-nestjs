@@ -63,11 +63,20 @@ export class BorrowingResponseDto {
   @ApiProperty({ example: '665f4d3b8f4c8a001f5f0a12' })
   memberId: string;
 
+  @ApiPropertyOptional({ example: 'Olivia Overdue' })
+  memberDisplayName?: string;
+
+  @ApiPropertyOptional({ example: 'M-1004' })
+  memberNumber?: string;
+
   @ApiProperty({ example: '665f4d3b8f4c8a001f5f0a13' })
   bookId: string;
 
   @ApiPropertyOptional({ example: 'Clean Code' })
   bookTitle?: string;
+
+  @ApiPropertyOptional({ example: 'BK-1003' })
+  bookCatalogIdentifier?: string;
 
   @ApiProperty({ example: '665f4d3b8f4c8a001f5f0a15' })
   bookCategoryId: string;

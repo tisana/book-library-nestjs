@@ -4,6 +4,11 @@ import { ConfirmationDialog } from '@/components/forms';
 import { PageHeader } from '@/components/page-header';
 import { ErrorState, LoadingState } from '@/components/states';
 import { StatusBadge } from '@/components/status-badge';
+import {
+  getBookDisplay,
+  getBorrowingDisplay,
+  getMemberDisplay,
+} from '@/features/borrowings/borrowing-display';
 import { useBorrowing, useReturnBorrowing } from '@/lib/api/borrowings';
 import { toMutationError } from '@/lib/api/errors';
 import { formatLocalDate } from '@/lib/dates/due-status';
@@ -36,11 +41,14 @@ export function StaffBorrowingDetailRoute() {
     }
   }
 
+  const member = getMemberDisplay(borrowing.data);
+  const book = getBookDisplay(borrowing.data);
+
   return (
     <>
       <PageHeader
-        title={`Borrowing ${borrowing.data.id}`}
-        description={`Due ${formatLocalDate(borrowing.data.dueAt)}`}
+        title={getBorrowingDisplay(borrowing.data)}
+        description={`Borrowing ${borrowing.data.id} · Due ${formatLocalDate(borrowing.data.dueAt)}`}
         actions={
           <StatusBadge tone={borrowing.data.status === 'overdue' ? 'danger' : borrowing.data.status === 'returned' ? 'neutral' : 'success'}>
             {borrowing.data.status}
@@ -52,12 +60,18 @@ export function StaffBorrowingDetailRoute() {
           <h2 className="text-base font-semibold">Record details</h2>
           <dl className="mt-3 grid gap-2 text-sm">
             <div className="flex justify-between gap-4">
-              <dt className="text-slate-500">Member ID</dt>
-              <dd>{borrowing.data.memberId}</dd>
+              <dt className="text-slate-500">Member</dt>
+              <dd className="text-right">
+                <span className="block font-medium text-slate-950">{member.primary}</span>
+                <span className="text-xs text-slate-500">{member.secondary}</span>
+              </dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-slate-500">Book ID</dt>
-              <dd>{borrowing.data.bookId}</dd>
+              <dt className="text-slate-500">Book</dt>
+              <dd className="text-right">
+                <span className="block font-medium text-slate-950">{book.primary}</span>
+                <span className="text-xs text-slate-500">{book.secondary}</span>
+              </dd>
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-slate-500">Borrowed</dt>
@@ -66,6 +80,14 @@ export function StaffBorrowingDetailRoute() {
             <div className="flex justify-between gap-4">
               <dt className="text-slate-500">Returned</dt>
               <dd>{borrowing.data.returnedAt ? formatLocalDate(borrowing.data.returnedAt) : 'Not returned'}</dd>
+            </div>
+            <div className="flex justify-between gap-4 border-t pt-2">
+              <dt className="text-slate-500">Member ID</dt>
+              <dd className="text-xs text-slate-500">{borrowing.data.memberId}</dd>
+            </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-slate-500">Book ID</dt>
+              <dd className="text-xs text-slate-500">{borrowing.data.bookId}</dd>
             </div>
           </dl>
         </article>
