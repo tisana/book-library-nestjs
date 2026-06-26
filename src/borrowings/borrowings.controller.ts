@@ -11,6 +11,7 @@ import {
 import {
   ApiBearerAuth,
   ApiForbiddenResponse,
+  ApiOkResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { CurrentUser } from '../auth/current-user.decorator';
@@ -37,6 +38,7 @@ export class BorrowingsController {
   constructor(private readonly borrowingsService: BorrowingsService) {}
 
   @Post()
+  @ApiOkResponse({ type: BorrowingResponseDto })
   create(
     @Body() dto: CreateBorrowingDto,
     @CurrentUser() actor?: AuditActor,
@@ -45,6 +47,7 @@ export class BorrowingsController {
   }
 
   @Get('overdue')
+  @ApiOkResponse({ type: BorrowingResponseDto, isArray: true })
   findOverdue(
     @Query() query: BorrowingQueryDto,
   ): Promise<BorrowingResponseDto[]> {
@@ -52,17 +55,20 @@ export class BorrowingsController {
   }
 
   @Get()
+  @ApiOkResponse({ type: BorrowingResponseDto, isArray: true })
   findAll(@Query() query: BorrowingQueryDto): Promise<BorrowingResponseDto[]> {
     return this.borrowingsService.findAll(query);
   }
 
   @Get(':id')
+  @ApiOkResponse({ type: BorrowingResponseDto })
   findOne(@Param('id') id: string): Promise<BorrowingResponseDto> {
     return this.borrowingsService.findOne(id);
   }
 
   @Post(':id/return')
   @HttpCode(200)
+  @ApiOkResponse({ type: BorrowingResponseDto })
   returnBorrowing(
     @Param('id') id: string,
     @Body() dto: ReturnBorrowingDto,

@@ -205,18 +205,18 @@
 
 **Purpose**: Final verification, documentation, accessibility, responsiveness, and maintainability cleanup across all stories.
 
-- [ ] T106 [P] Update README.md with frontend setup, environment variables, scripts, and member demo credentials
-- [ ] T107 [P] Update specs/002-library-ui/quickstart.md with final frontend commands and expected local URLs
-- [ ] T108 [P] Add frontend environment example file in frontend/.env.example
-- [ ] T109 Run responsive visual checks for staff dashboard/list screens at 1440x900, 1024x768, and 768x1024 in frontend/tests/e2e/responsive-staff.spec.ts
-- [ ] T110 Run responsive visual checks for member home and borrowings at 390x844 and 430x932 in frontend/tests/e2e/responsive-member.spec.ts
-- [ ] T111 Add performance smoke checks for staff list/detail and member home views using seeded demo data with at least 100 books, 50 members, 25 active borrowings, and 10 overdue borrowings in frontend/tests/e2e/performance-smoke.spec.ts
-- [ ] T112 Add accessibility checks for forms, route guards, dialogs, menus, status badges, sign-out controls, and icon-only controls in frontend/tests/e2e/accessibility.spec.ts
-- [ ] T113 Audit-only verification of frontend token handling, sensitive data exposure, sign-out cache clearing via `queryClient.clear()`, and localStorage token persistence in frontend/src/lib/auth/session.ts, frontend/src/lib/auth/sign-out.ts, frontend/src/lib/api/client.ts, frontend/src/lib/api/errors.ts, and frontend/src/app/providers.tsx; do not add new sign-out implementation here unless defects are found
-- [ ] T114 Run backend verification commands npm run lint, npm run test, npm run test:e2e, npm run build, and verify the generated Swagger/OpenAPI document from src/main.ts includes memberDisplayName, memberNumber, bookTitle, and bookCatalogIdentifier on BorrowingResponseDto
-- [ ] T115 Run frontend verification commands npm run lint, npm run test, npm run test:e2e, and npm run build from frontend/package.json
-- [ ] T116 Record timed staff and member usability validation results for SC-001, SC-002, SC-004, SC-005, SC-006, SC-009, and SC-010 in specs/002-library-ui/usability-validation.md
-- [ ] T117 Execute quickstart validation scenarios from specs/002-library-ui/quickstart.md
+- [X] T106 [P] Update README.md with frontend setup, environment variables, scripts, and member demo credentials
+- [X] T107 [P] Update specs/002-library-ui/quickstart.md with final frontend commands and expected local URLs
+- [X] T108 [P] Add frontend environment example file in frontend/.env.example
+- [X] T109 Run responsive visual checks for staff dashboard/list screens at 1440x900, 1024x768, and 768x1024 in frontend/tests/e2e/responsive-staff.spec.ts
+- [X] T110 Run responsive visual checks for member home and borrowings at 390x844 and 430x932 in frontend/tests/e2e/responsive-member.spec.ts
+- [X] T111 Add performance smoke checks for staff list/detail and member home views using seeded demo data with at least 100 books, 50 members, 25 active borrowings, and 10 overdue borrowings in frontend/tests/e2e/performance-smoke.spec.ts
+- [X] T112 Add accessibility checks for forms, route guards, dialogs, menus, status badges, sign-out controls, and icon-only controls in frontend/tests/e2e/accessibility.spec.ts
+- [X] T113 Audit-only verification of frontend token handling, sensitive data exposure, sign-out cache clearing via `queryClient.clear()`, and localStorage token persistence in frontend/src/lib/auth/session.ts, frontend/src/lib/auth/sign-out.ts, frontend/src/lib/api/client.ts, frontend/src/lib/api/errors.ts, and frontend/src/app/providers.tsx; do not add new sign-out implementation here unless defects are found
+- [X] T114 Run backend verification commands npm run lint, npm run test, npm run test:e2e, npm run build, and verify the generated Swagger/OpenAPI document from src/main.ts includes memberDisplayName, memberNumber, bookTitle, and bookCatalogIdentifier on BorrowingResponseDto
+- [X] T115 Run frontend verification commands npm run lint, npm run test, npm run test:e2e, and npm run build from frontend/package.json
+- [X] T116 Record timed staff and member usability validation results for SC-001, SC-002, SC-004, SC-005, SC-006, SC-009, and SC-010 in specs/002-library-ui/usability-validation.md
+- [X] T117 Execute quickstart validation scenarios from specs/002-library-ui/quickstart.md
 
 ---
 
