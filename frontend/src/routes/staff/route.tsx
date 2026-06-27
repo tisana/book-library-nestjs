@@ -2,24 +2,50 @@
 import {
   Outlet,
   createRoute,
+  lazyRouteComponent,
   type AnyRoute,
   useLocation,
 } from '@tanstack/react-router';
 import { StaffShell } from '@/components/layout/staff-shell';
 import { StaffLoginRoute } from '@/routes/public';
-import { StaffDashboard } from '@/features/staff-dashboard/staff-dashboard';
 import { requireStaffSession } from '@/lib/auth/route-guards';
 import { StaffRouteErrorBoundary } from './error-boundary';
-import { StaffBooksRoute } from './books';
-import { StaffBookDetailRoute } from './books.$bookId';
-import { StaffCatalogRoute } from './catalog';
-import { StaffMembershipTypesRoute } from './membership-types';
-import { StaffMembersRoute } from './members';
-import { StaffMemberDetailRoute } from './members.$memberId';
-import { StaffBorrowingsRoute } from './borrowings';
-import { StaffNewBorrowingRoute } from './borrowings.new';
-import { StaffOverdueBorrowingsRoute } from './borrowings.overdue';
-import { StaffBorrowingDetailRoute } from './borrowings.$borrowingId';
+
+const StaffDashboard = lazyRouteComponent(
+  () => import('@/features/staff-dashboard/staff-dashboard'),
+  'StaffDashboard',
+);
+const StaffBooksRoute = lazyRouteComponent(() => import('./books'), 'StaffBooksRoute');
+const StaffBookDetailRoute = lazyRouteComponent(
+  () => import('./books.$bookId'),
+  'StaffBookDetailRoute',
+);
+const StaffCatalogRoute = lazyRouteComponent(() => import('./catalog'), 'StaffCatalogRoute');
+const StaffMembershipTypesRoute = lazyRouteComponent(
+  () => import('./membership-types'),
+  'StaffMembershipTypesRoute',
+);
+const StaffMembersRoute = lazyRouteComponent(() => import('./members'), 'StaffMembersRoute');
+const StaffMemberDetailRoute = lazyRouteComponent(
+  () => import('./members.$memberId'),
+  'StaffMemberDetailRoute',
+);
+const StaffBorrowingsRoute = lazyRouteComponent(
+  () => import('./borrowings'),
+  'StaffBorrowingsRoute',
+);
+const StaffNewBorrowingRoute = lazyRouteComponent(
+  () => import('./borrowings.new'),
+  'StaffNewBorrowingRoute',
+);
+const StaffOverdueBorrowingsRoute = lazyRouteComponent(
+  () => import('./borrowings.overdue'),
+  'StaffOverdueBorrowingsRoute',
+);
+const StaffBorrowingDetailRoute = lazyRouteComponent(
+  () => import('./borrowings.$borrowingId'),
+  'StaffBorrowingDetailRoute',
+);
 
 function StaffRouteLayout() {
   const location = useLocation();

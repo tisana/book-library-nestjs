@@ -1,10 +1,22 @@
 /* eslint-disable react-refresh/only-export-components */
-import { Outlet, createRoute, type AnyRoute } from '@tanstack/react-router';
+import {
+  Outlet,
+  createRoute,
+  lazyRouteComponent,
+  type AnyRoute,
+} from '@tanstack/react-router';
 import { MemberShell } from '@/components/layout/member-shell';
 import { requireMemberSession } from '@/lib/auth/route-guards';
-import { MemberBorrowingDetailRoute } from './borrowings.$borrowingId';
-import { MemberBorrowingsRoute } from './borrowings';
-import { MemberHomeRoute } from './index';
+
+const MemberHomeRoute = lazyRouteComponent(() => import('./index'), 'MemberHomeRoute');
+const MemberBorrowingsRoute = lazyRouteComponent(
+  () => import('./borrowings'),
+  'MemberBorrowingsRoute',
+);
+const MemberBorrowingDetailRoute = lazyRouteComponent(
+  () => import('./borrowings.$borrowingId'),
+  'MemberBorrowingDetailRoute',
+);
 
 function MemberRouteLayout() {
   return (
