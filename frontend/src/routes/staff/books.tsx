@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Plus, Search } from 'lucide-react';
@@ -6,11 +6,16 @@ import { DataTable } from '@/components/data-table/data-table';
 import { FormField, TextInput } from '@/components/forms';
 import { PageHeader } from '@/components/page-header';
 import { StatusBadge } from '@/components/status-badge';
-import { BookForm } from '@/features/books/book-form';
 import { useCatalog } from '@/lib/api/catalog';
 import { useBooks, useCreateBook } from '@/lib/api/books';
 import { toMutationError } from '@/lib/api/errors';
 import type { BookView } from '@/lib/api/types';
+
+const BookForm = lazy(() =>
+  import('@/features/books/book-form').then((module) => ({
+    default: module.BookForm,
+  })),
+);
 
 export function StaffBooksRoute() {
   const [q, setQ] = useState('');
@@ -94,7 +99,9 @@ export function StaffBooksRoute() {
         {showForm ? (
           <section className="max-w-2xl rounded-md border bg-white p-4">
             <h2 className="mb-4 text-base font-semibold">Add book</h2>
-            <BookForm categories={catalog.data ?? []} onSubmit={handleCreate} />
+            <Suspense fallback={<p className="text-sm text-slate-600">Loading form...</p>}>
+              <BookForm categories={catalog.data ?? []} onSubmit={handleCreate} />
+            </Suspense>
           </section>
         ) : null}
         <DataTable
