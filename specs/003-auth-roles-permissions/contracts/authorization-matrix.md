@@ -10,6 +10,8 @@ Permission names are stable product-level identifiers used by guards, tests, and
 | `catalog:manage` | Create, update, deactivate, or restore catalog records |
 | `members:read` | View member records in staff workflows |
 | `members:manage` | Create, update, suspend, or reactivate member records |
+| `membership-types:read` | View membership type and borrowing policy configuration |
+| `membership-types:manage` | Create, update, deactivate, or restore membership type and borrowing policy configuration |
 | `borrowings:read` | View borrowing records in staff workflows |
 | `borrowings:manage` | Create borrowings, return books, and manage borrowing state |
 | `staff-users:read` | View staff/admin user accounts |
@@ -24,7 +26,7 @@ Permission names are stable product-level identifiers used by guards, tests, and
 | Role | Permissions |
 | --- | --- |
 | `member` | `member:self:read` |
-| `staff` | `catalog:read`, `catalog:manage`, `members:read`, `members:manage`, `borrowings:read`, `borrowings:manage` |
+| `staff` | `catalog:read`, `catalog:manage`, `members:read`, `members:manage`, `membership-types:read`, `membership-types:manage`, `borrowings:read`, `borrowings:manage` |
 | `admin` | All staff permissions plus `staff-users:read`, `staff-users:manage`, `roles:read`, `roles:manage`, `security-events:read` |
 
 ## Resource Policies
@@ -35,6 +37,7 @@ Permission names are stable product-level identifiers used by guards, tests, and
 | Member borrowings | `/members/me/borrowings` | `member:self:read`; member id is derived from token only |
 | Staff catalog | `/books`, `/book-categories`, copy management | `catalog:read` for reads, `catalog:manage` for writes |
 | Staff members | `/members` staff routes | `members:read` for reads, `members:manage` for writes |
+| Membership types | `/membership-types` | `membership-types:read` for reads, `membership-types:manage` for writes |
 | Borrowing desk | `/borrowings` staff routes | `borrowings:read` for reads, `borrowings:manage` for state changes |
 | Staff users | `/staff-users` | `staff-users:read` for reads, `staff-users:manage` for writes |
 | Role management | role assignment/update workflows | `roles:read` for review, `roles:manage` for changes |

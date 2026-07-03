@@ -6,6 +6,7 @@ Authentication uses existing account aggregates where credentials are read with 
 
 - Staff/admin credentials and role assignments are owned by `StaffUser`.
 - Member credentials are owned by `Member` because member self-service identity, membership status, and borrowing access are read together.
+- The **Member Authentication Link** is embedded on `Member`; it is not a separate collection.
 - Authorization codes, refresh-token records, clients, and security events are separate documents because they expire, grow independently, or need audit pagination.
 - Optional future IdP link fields are allowed so Keycloak can later become the token issuer without changing library authorization.
 

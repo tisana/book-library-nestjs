@@ -61,7 +61,7 @@ Expected coverage:
 
 ## Manual Acceptance Scenarios
 
-1. Create an administrator through the first-admin setup path or seed script.
+1. Create an administrator through `scripts/bootstrap-admin.ts`; seed scripts are for demo data only.
 2. Sign in as administrator and create a staff account.
 3. Assign staff role and confirm the user can manage catalog/borrowing workflows but cannot manage roles.
 4. Create or configure a member self-service account.

@@ -119,7 +119,7 @@ An administrator can review security-relevant events such as failed sign-in atte
 - **User Account**: Represents a person or login identity allowed to authenticate. Key attributes include account identifier, active/deactivated status, credential status, assigned roles, linked member record when applicable, creation time, and last access information.
 - **Role**: Represents a named access category such as member, staff, or administrator. A role groups permissions for a common library responsibility.
 - **Permission**: Represents an allowed protected capability such as managing catalog records, managing borrowing workflows, managing members, managing staff accounts, managing roles, or viewing security activity.
-- **Member Link**: Represents the association between an authenticated member account and the existing member profile that owns membership and borrowing information.
+- **Member Authentication Link**: Represents the member-owned authentication fields and optional future external identity link embedded on the existing member profile, ensuring self-service access is scoped to the correct member.
 - **Security Activity Event**: Represents security-relevant activity including sign-in attempts, denied access, role changes, and account status changes. Events include actor when known, target when applicable, event type, time, and outcome.
 
 ## Success Criteria *(mandatory)*
