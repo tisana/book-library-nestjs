@@ -16,6 +16,7 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "migrate:up": "ts-node -r tsconfig-paths/register migrations/migrate.ts up",
     "migrate:status": "ts-node -r tsconfig-paths/register migrations/migrate.ts status",
+    "bootstrap:admin": "ts-node -r tsconfig-paths/register scripts/bootstrap-admin.ts",
     "seed:users": "ts-node -r tsconfig-paths/register scripts/seed-sample-users.ts",
     "seed:demo": "ts-node -r tsconfig-paths/register scripts/seed-demo-data.ts",
     "seed:demo:reset": "ts-node -r tsconfig-paths/register scripts/seed-demo-data.ts --reset",

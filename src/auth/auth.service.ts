@@ -6,6 +6,10 @@ import {
   MemberStatus,
   StaffUserStatus,
 } from '../common/enums/library-status.enum';
+import {
+  memberRolePermissions,
+  permissionsForStaffRoles,
+} from '../common/enums/auth-permission.enum';
 import { MemberLoginDto, MemberLoginResponseDto } from './dto/member-auth.dto';
 import { MembersService, getMemberId } from '../members/members.service';
 import { LoginDto, LoginResponseDto } from '../staff-users/dto/staff-user.dto';
@@ -39,6 +43,8 @@ export class AuthService {
     const userId = getStaffUserId(user);
 
     await this.staffUsersService.touchLastLogin(userId);
+    const permissions = permissionsForStaffRoles(user.roles);
+    const scope = permissions.join(' ');
 
     return {
       accessToken: await this.jwtService.signAsync({
@@ -47,11 +53,16 @@ export class AuthService {
         roles: user.roles,
         roleArea: 'staff',
       }),
+      tokenType: 'Bearer',
+      expiresIn: 900,
+      scope,
+      permissions,
       user: {
         id: userId,
         email: user.email,
         displayName: user.displayName,
         roles: user.roles,
+        permissions,
       },
     };
   }
@@ -75,6 +86,7 @@ export class AuthService {
 
     await this.membersService?.touchLastLogin(memberId);
     const profile = await this.membersService?.findSelfServiceProfile(memberId);
+    const permissions = [...memberRolePermissions];
 
     return {
       accessToken: await this.jwtService.signAsync({
@@ -82,6 +94,10 @@ export class AuthService {
         memberNumber: member.memberNumber,
         roleArea: 'member',
       }),
+      tokenType: 'Bearer',
+      expiresIn: 900,
+      scope: permissions.join(' '),
+      permissions,
       member: {
         id: memberId,
         memberNumber: member.memberNumber,

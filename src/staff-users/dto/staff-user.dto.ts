@@ -13,6 +13,7 @@ import {
   StaffRole,
   StaffUserStatus,
 } from '../../common/enums/library-status.enum';
+import { AuthPermission } from '../../common/enums/auth-permission.enum';
 
 export class CreateStaffUserDto {
   @ApiProperty({ example: 'staff@example.com' })
@@ -85,6 +86,14 @@ export class StaffUserResponseDto {
     example: '2026-06-01T10:00:00.000Z',
   })
   lastLoginAt?: Date;
+
+  @ApiPropertyOptional({
+    enum: AuthPermission,
+    enumName: 'AuthPermission',
+    isArray: true,
+    example: [AuthPermission.CatalogRead, AuthPermission.BorrowingsManage],
+  })
+  permissions?: AuthPermission[];
 }
 
 export class LoginDto {
@@ -102,6 +111,25 @@ export class LoginResponseDto {
     description: 'Bearer token used to authenticate staff API requests.',
   })
   accessToken: string;
+
+  @ApiProperty({ example: 'Bearer' })
+  tokenType: 'Bearer';
+
+  @ApiProperty({ example: 900 })
+  expiresIn: number;
+
+  @ApiProperty({
+    example: 'catalog:read catalog:manage borrowings:manage',
+  })
+  scope: string;
+
+  @ApiProperty({
+    enum: AuthPermission,
+    enumName: 'AuthPermission',
+    isArray: true,
+    example: [AuthPermission.CatalogRead, AuthPermission.BorrowingsManage],
+  })
+  permissions: AuthPermission[];
 
   @ApiProperty({ type: StaffUserResponseDto })
   user: StaffUserResponseDto;

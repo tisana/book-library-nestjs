@@ -16,6 +16,7 @@ module.exports = [
       'frontend/node_modules/**',
       'frontend/test-results/**',
       'frontend/playwright-report/**',
+      '**/*.min.js',
     ],
   },
   ...tseslint.configs['flat/recommended'],
