@@ -2,12 +2,12 @@
 
 ## Document Ownership Summary
 
-Revised planning decision: Keycloak owns production credentials, login sessions, OAuth/OIDC clients, authorization codes, refresh tokens, and protocol metadata. MongoDB owns library domain profiles, IdP links, local permission mapping, and security activity summaries.
+Authentication uses existing account aggregates where credentials are read with the account:
 
-- Staff/admin profile and application permissions are owned by `StaffUser`.
-- Member profile and self-service ownership are owned by `Member`.
-- Keycloak subject identifiers are linked into the relevant app document.
-- Security activity events are separate documents because they grow independently and need audit pagination.
+- Staff/admin credentials and role assignments are owned by `StaffUser`.
+- Member credentials are owned by `Member` because member self-service identity, membership status, and borrowing access are read together.
+- Authorization codes, refresh-token records, clients, and security events are separate documents because they expire, grow independently, or need audit pagination.
+- Optional future IdP link fields are allowed so Keycloak can later become the token issuer without changing library authorization.
 
 ## StaffUser
 
@@ -20,20 +20,21 @@ Existing document extended as needed.
 - `displayName`
 - `passwordHash`: selected only for credential verification
 - `roles`: approved role names such as `staff` or `admin`
-- `identityProvider`: `keycloak`
-- `identitySubject`: Keycloak `sub` claim for this staff/admin identity
-- `identityLinkedAt`
 - `status`: `active`, `suspended`, or `inactive`
 - `lastLoginAt`
 - `passwordUpdatedAt`
-- `tokenVersion` or `authVersion`: increments when sessions should be invalidated
+- `authVersion`: increments when sessions should be invalidated
+- `identityProvider`: optional future external IdP name, for example `keycloak`
+- `identitySubject`: optional future external IdP subject
+- `identityLinkedAt`
 - audit fields: `createdBy`, `updatedBy`, `createdAt`, `updatedAt`
 
 **Validation**
 
 - Email must be normalized and unique.
-- Password hash must never be returned in response DTOs and should not be used for new production sign-ins after Keycloak migration.
-- Protected staff access requires active status and a valid Keycloak subject link.
+- Password hash must never be returned in response DTOs.
+- Active sign-in requires active status and valid password verification.
+- Protected staff access requires active status and a token subject that maps to the account.
 - Role assignments must be from the approved role list.
 
 **Indexes**
@@ -57,8 +58,9 @@ Existing document already contains member authentication fields.
 - `passwordUpdatedAt`
 - `lastLoginAt`
 - `authStatus`: `active`, `locked`, or `reset-required`
-- `identityProvider`: `keycloak`
-- `identitySubject`: Keycloak `sub` claim for this member identity
+- `authVersion`: increments when sessions should be invalidated
+- `identityProvider`: optional future external IdP name, for example `keycloak`
+- `identitySubject`: optional future external IdP subject
 - `identityLinkedAt`
 - `status`: membership lifecycle status
 - `membershipTypeId`
@@ -67,7 +69,7 @@ Existing document already contains member authentication fields.
 
 **Validation**
 
-- Member self-service access requires active membership status, active auth status, and a valid Keycloak subject link.
+- Member self-service sign-in requires active membership status, active auth status, configured login identifier, and valid password verification.
 - Suspended/inactive/deleted members cannot retain active member access.
 - Member protected reads must use authenticated member id, not user-submitted member id.
 
@@ -80,19 +82,100 @@ Existing document already contains member authentication fields.
 - `{ status: 1, membershipTypeId: 1 }`
 - `{ authStatus: 1 }`
 
-## Keycloak Realm Configuration
+## AuthClient
 
-Keycloak realm, clients, roles, groups, login policies, authorization code storage, refresh-token storage, and session state are not MongoDB documents in this application. They are managed by Keycloak and exported under `infra/keycloak/realm-export.json` for reproducible local/test environments.
+Represents a first-party client allowed to receive tokens. This keeps the local model OIDC-friendly and provides a migration path if Keycloak later owns clients.
 
-**Required configured objects**
+**Fields**
 
-- Realm for the library application.
-- Public browser client for the frontend using authorization code with PKCE.
-- API audience/client scope for the NestJS resource server.
-- Roles or groups for `member`, `staff`, and `admin`.
-- Optional client scopes for library permission claims.
-- Exact redirect and post-logout redirect URIs.
-- Token lifespans aligned with the security plan.
+- `_id`
+- `clientId`: public identifier
+- `displayName`
+- `type`: `public` for browser SPA or `confidential` for server-side clients
+- `redirectUris`: exact allowed redirect URIs if authorization-code flow is enabled
+- `postLogoutRedirectUris`: exact allowed post-logout redirect URIs
+- `allowedScopes`: approved scopes
+- `status`: `active` or `inactive`
+- `createdAt`, `updatedAt`
+
+**Validation**
+
+- Redirect URIs must be exact registered URIs.
+- Public browser clients must require PKCE with S256 if authorization-code flow is implemented.
+- Inactive clients cannot receive tokens.
+
+**Indexes**
+
+- Unique `{ clientId: 1 }`
+- `{ status: 1 }`
+
+## AuthorizationCode
+
+Optional short-lived, one-time-use document for a local authorization-code-with-PKCE flow. If the initial UI keeps direct login endpoints, this document can be deferred.
+
+**Fields**
+
+- `_id`
+- `codeHash`: hash of the authorization code
+- `clientId`
+- `subjectType`: `staff` or `member`
+- `subjectId`
+- `redirectUri`
+- `codeChallenge`
+- `codeChallengeMethod`: `S256`
+- `scopes`
+- `nonce`
+- `stateHash` when server-side state binding is used
+- `expiresAt`
+- `usedAt`
+- `createdAt`
+
+**Validation**
+
+- Code must expire quickly.
+- Code may be used once.
+- Token exchange must match client id, redirect URI, and PKCE verifier.
+
+**Indexes**
+
+- Unique `{ codeHash: 1 }`
+- TTL `{ expiresAt: 1 }`
+- `{ clientId: 1, subjectId: 1, createdAt: -1 }`
+
+## RefreshTokenFamily
+
+Tracks refresh-token rotation and replay response.
+
+**Fields**
+
+- `_id`
+- `familyId`
+- `clientId`
+- `subjectType`: `staff` or `member`
+- `subjectId`
+- `scopes`
+- `status`: `active`, `revoked`, or `replayed`
+- `currentTokenHash`
+- `previousTokenHash`
+- `issuedAt`
+- `lastRotatedAt`
+- `expiresAt`
+- `revokedAt`
+- `revokedReason`
+- `createdAt`, `updatedAt`
+
+**Validation**
+
+- Store hashes only, never raw refresh tokens.
+- Refresh success rotates to a new hash and invalidates the previous hash.
+- Reuse of an invalidated token marks the family as replayed and revokes active refresh access.
+
+**Indexes**
+
+- Unique `{ familyId: 1 }`
+- Unique sparse `{ currentTokenHash: 1 }`
+- `{ subjectType: 1, subjectId: 1, status: 1 }`
+- TTL `{ expiresAt: 1 }`
 
 ## RoleDefinition
 
@@ -186,12 +269,14 @@ replayed -> revoked
 - Replay detection is terminal for active use.
 - Revocation can be triggered by sign-out, account deactivation, password change, or admin action.
 
+## Future Keycloak Migration
+
+When Keycloak becomes justified, use the existing optional identity link fields to map Keycloak `sub` values to `StaffUser` and `Member`. Keep local role-to-permission mapping and member ownership checks in NestJS. Stop issuing local access/refresh tokens only after the API can validate Keycloak issuer, audience, JWKS, and role/group claims at the same guard boundary.
+
 ## Migration Impact
 
-- Add `identityProvider`, `identitySubject`, and `identityLinkedAt` fields to staff/member account documents.
-- Add unique sparse indexes for identity links.
-- Create a migration or admin linking process from existing staff/member records to Keycloak users.
-- Stop creating new production password hashes in MongoDB after Keycloak cutover; retain legacy hashes only until migration/rollback policy allows removal.
-- Add or update security activity event collection/indexes.
-- Seed or export Keycloak realm/client/role configuration for local development and deployment.
-- Preserve existing staff/member login endpoints only as temporary compatibility wrappers during cutover; final production sign-in should redirect to Keycloak.
+- Add missing `passwordUpdatedAt`, `authVersion`, optional identity link fields, and refresh-token/session documents.
+- Add collections and indexes for auth clients, optional authorization codes, refresh-token families, and security events.
+- Seed one first-party client with exact redirect URIs for local development and deployment if the authorization-code flow is implemented.
+- Seed or define approved roles and permission mappings.
+- Preserve existing staff/member login endpoints only as compatibility wrappers if routes change; the security behavior must still use the new session/token services.

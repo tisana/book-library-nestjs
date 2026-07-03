@@ -8,71 +8,60 @@
 - [OWASP JSON Web Token Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html)
 - [NIST SP 800-63B: Authentication and Authenticator Management](https://pages.nist.gov/800-63-4/sp800-63b.html)
 - [Keycloak Documentation 26.6.4](https://www.keycloak.org/documentation)
+- [Keycloak OIDC Application Security](https://www.keycloak.org/securing-apps/oidc-layers)
 - [Keycloak Server Administration Guide](https://www.keycloak.org/docs/latest/server_admin/)
 - [Auth.js Getting Started](https://authjs.dev/getting-started)
 - [Auth.js OAuth Concepts](https://authjs.dev/concepts/oauth)
 - [Auth.js Session Strategies](https://authjs.dev/concepts/session-strategies)
 
-## Decision: Prefer Keycloak as Production IdP and Authorization Server
+## Decision: Build NestJS-Owned Auth First
 
-Use Keycloak as the production identity provider and OpenID Connect authorization server. The React frontend signs in through Keycloak using authorization code with PKCE. The NestJS API validates Keycloak-issued access tokens against issuer, audience, expiry, and JWKS keys, then maps Keycloak roles/groups/scopes to local library permissions.
+Build a solid NestJS authentication and authorization system as the default implementation for this feature. Keep account lifecycle, credential hashes, short-lived JWT access tokens, refresh-token rotation, role assignment, permission checks, member ownership checks, and security activity in the existing application and MongoDB.
 
-**Rationale**: Keycloak is a dedicated open-source identity and access management server. Its current documentation covers securing applications with OpenID Connect/SAML, server administration, user/role/client management, authorization services, account management, identity provider delegation, LDAP/Active Directory federation, OIDC endpoints, revocation, JWKS, audiences, role mappings, token lifespan configuration, and production server configuration. These are exactly the areas that are expensive and risky to build correctly inside the library app. Delegating protocol and account lifecycle to Keycloak lets this codebase focus on library-specific authorization: member ownership, borrowing workflows, catalog management, and audit correlation.
-
-**Alternatives considered**:
-
-- Custom in-app OAuth2/OIDC server: maximum local control and simpler deployment topology, but highest security and maintenance burden because the app would own protocol correctness, token rotation, key rotation, session lifecycle, password policies, MFA/password-reset expansion, client registration, and security operations.
-- Auth.js as primary auth system: useful for JavaScript app authentication and OAuth sign-in, but it is not a central IdP for this NestJS API plus Vite SPA architecture.
-- Managed commercial IdP: operationally attractive, but the user asked for open-source options and the project can evaluate commercial hosting later.
-
-## Decision: Do Not Use Auth.js as the Primary IdP for This Architecture
-
-Auth.js may be useful if the frontend moves to a server-rendered JavaScript application or if a JavaScript backend-for-frontend is introduced. It is not selected as the central authentication system for the current NestJS API plus Vite SPA.
-
-**Rationale**: Auth.js is a runtime-agnostic JavaScript authentication library with OAuth, magic link, credentials, WebAuthn, many providers, framework integrations, and optional database adapters. Its own docs frame resource protection around checking an application session. That is a good fit for a Next.js/SvelteKit/Qwik/Express app boundary, but this project needs a central IdP/authorization server issuing tokens for a separate NestJS resource server and supporting administrator-managed member/staff roles. Auth.js can consume Keycloak as a provider, but Keycloak is the component that acts as the IdP.
+**Rationale**: The current product is a single library application with one NestJS API, one React frontend, and a simple role model (`member`, `staff`, `admin`). Running Keycloak now would add a second service, separate database, realm/client configuration, backups, upgrades, deployment hardening, local dev complexity, and identity-linking work before the app clearly needs SSO, federation, or MFA. A focused NestJS implementation satisfies the current security requirements with lower operational cost.
 
 **Alternatives considered**:
 
-- Use Auth.js directly in the Vite SPA: rejected because Auth.js needs a server-side integration point and would still leave API authorization, roles, and token validation to NestJS.
-- Add Auth.js through Express inside NestJS: possible but awkward, duplicates existing NestJS auth structure, and does not provide Keycloak-level IdP administration.
-- Use Auth.js with Keycloak provider later: acceptable only if the app adds a BFF or server-rendered frontend; not needed for the current plan.
+- Keycloak as default: strong production IdP choice, but over-sized for the current single-app scope.
+- Auth.js as default: useful for JavaScript application sessions and OAuth provider sign-in, but not a central auth layer for this NestJS API plus Vite SPA.
+- Keep current simple JWT login unchanged: rejected because the spec requires stronger persistent auth, roles, permissions, revocation/session handling, and auditability.
+
+## Decision: Keep Keycloak as an Evaluated Future Option
+
+Design the NestJS auth boundary so Keycloak can replace the login authority later without rewriting library authorization. Future migration should validate Keycloak-issued tokens at the same guard boundary, map Keycloak roles/groups/scopes into the same local permission names, and link Keycloak `sub` values to existing staff/member records.
+
+**Rationale**: Keycloak is a dedicated open-source identity and access management server with OIDC/SAML, admin console, users/roles/clients, JWKS, revocation, token policies, identity provider delegation, LDAP/AD, and account management. Those features become valuable when the product needs SSO, MFA, password reset, federation, multiple apps, or centralized account operations. Keeping the current token/role model OIDC-friendly makes that migration incremental.
+
+**Alternatives considered**:
+
+- Ignore Keycloak entirely: rejected because the user explicitly wants standards-aligned protocol readiness and may need IdP features later.
+- Encode all future authorization in Keycloak Authorization Services: deferred because member ownership and library workflow rules should remain near the protected NestJS services and tests.
+
+## Decision: Do Not Use Auth.js as the Primary Auth System
+
+Do not use Auth.js as the primary auth implementation for this architecture. Reconsider it only if the frontend becomes a server-rendered JavaScript app or if the project adds a backend-for-frontend.
+
+**Rationale**: Auth.js is a runtime-agnostic JavaScript authentication library with OAuth, magic links, credentials, WebAuthn, many providers, framework integrations, and optional database adapters. Its session model is application-centric. This project already has a NestJS API that must enforce protected resources directly, so Auth.js would still leave API authorization, role/permission mapping, and member ownership checks to NestJS while adding another auth layer.
+
+**Alternatives considered**:
+
+- Use Auth.js directly in the Vite SPA: rejected because Auth.js needs a server-side integration point.
+- Add Auth.js through Express inside NestJS: possible but awkward, duplicates NestJS auth structure, and does not solve resource authorization.
+- Use Auth.js with Keycloak provider later: acceptable only with a future BFF/server-rendered frontend.
 
 ## Comparison: Build vs Keycloak vs Auth.js
 
 | Option | Best Fit | Strengths | Costs/Risks | Fit for This Project |
 | --- | --- | --- | --- | --- |
-| Build custom in NestJS | Small app needing tight local control and minimal services | Fits current MongoDB/NestJS model; no separate service; fully customizable member/staff linking | Must own OAuth/OIDC correctness, key rotation, refresh/session lifecycle, password policies, admin account UI, future MFA/password reset, and security patching | Viable fallback, but not preferred for online production security |
-| Keycloak | Dedicated IdP/SSO for browser apps and APIs | OIDC/SAML, admin console, users/roles/clients, JWKS, revocation endpoint, token lifespans, identity provider federation, LDAP/AD, account console, authorization services | Separate Java service, separate supported database, realm/client configuration, deployment/backup/monitoring, theme/customization work, identity linking migration | Preferred production choice |
-| Auth.js | JavaScript app auth/session layer and OAuth client integration | Easy OAuth provider login, framework integrations, HTTP-only cookie sessions, database adapters including MongoDB, supports Keycloak as provider | Not a central IdP for a separate NestJS API; framework-centric; API still needs independent authorization and role/permission enforcement | Not primary; useful only with a future BFF/server-rendered frontend |
+| Build in NestJS | Single app needing clear roles, permissions, and simple deployment | Fits current MongoDB/NestJS model; no separate service; direct member/staff linking; library authorization stays close to domain code | Must implement password policy, token lifecycle, refresh rotation, rate limiting, audit events, and tests carefully | Preferred default now |
+| Keycloak | Dedicated IdP/SSO for multiple apps or advanced identity needs | OIDC/SAML, admin console, users/roles/clients, JWKS, revocation endpoint, token lifespans, federation, LDAP/AD, account console | Separate Java service, separate supported database, realm/client config, deployment/backup/monitoring, theme/customization, identity linking | Future option when scope grows |
+| Auth.js | JavaScript app auth/session layer and OAuth client integration | Easy OAuth provider login, framework integrations, HTTP-only cookie sessions, database adapters including MongoDB, supports Keycloak as provider | Not a central IdP for a separate NestJS API; framework-centric; API still needs independent authorization | Not primary; future BFF option |
 
-## Decision: Keep Library Authorization in NestJS Even With Keycloak
+## Decision: Use OIDC-Friendly JWT Access Tokens
 
-Use Keycloak for identity, authentication, login session, protocol endpoints, and high-level role/group assignment. Use NestJS for resource authorization decisions such as `member can only access own borrowings`, `staff can manage borrowings`, and `admin can manage staff accounts`.
+Issue short-lived signed JWT access tokens with standard-style claims: issuer, subject, audience, issued-at, expiry, token id, role area, and scope/permission claims. Protected endpoints must validate signature, expiry, issuer, audience, account status, token subject, and required permission/ownership.
 
-**Rationale**: Keycloak roles and scopes can identify who the user is and broad access category. The library API still owns domain-specific object checks and audit context. This avoids encoding borrowing/member ownership rules entirely in the IdP and keeps authorization tests near the protected controllers/services.
-
-**Alternatives considered**:
-
-- Encode all permissions in Keycloak Authorization Services: powerful, but increases configuration complexity and moves library-domain rules away from the code paths and tests that enforce borrowing/member behavior.
-- Keep role-only checks in NestJS: rejected because the spec requires clear permissions and member/staff/admin boundaries.
-
-## Decision: Use Authorization Code with PKCE for Browser Sign-In
-
-Use an OAuth2/OIDC-aligned authorization code flow with PKCE for the first-party browser client. Access tokens are issued from the token endpoint, not through URL fragments. The initial implementation supports the first-party web client and keeps external identity-provider federation as a future extension.
-
-**Rationale**: RFC 9700 recommends authorization code responses over implicit-style access-token responses because access tokens are not exposed in URLs, and it requires PKCE for public clients. This aligns with a browser frontend and allows future OIDC federation without changing protected-resource authorization.
-
-**Alternatives considered**:
-
-- Keep direct `/auth/login` bearer-token issuance: simpler, but does not satisfy the requested standards-aligned protocol boundary and resembles the password grant anti-pattern when treated as OAuth.
-- OAuth implicit grant: rejected because RFC 9700 recommends using authorization code responses instead.
-- Resource owner password credentials grant: rejected because RFC 9700 says it must not be used.
-
-## Decision: Use Short-Lived JWT Access Tokens with Restricted Claims
-
-Issue signed JWT access tokens with a short lifetime, issuer, subject, audience, issued-at, expiry, token id, role area, and scope/permission claims. Protected endpoints must validate signature, expiry, issuer, audience, account status, token subject, and required permission/ownership.
-
-**Rationale**: The current app already uses NestJS JWT/passport. OAuth2 access tokens should be least-privilege and audience/scope restricted; RFC 9700 recommends privilege restriction and resource/action restriction to reduce token-leakage impact.
+**Rationale**: The current app already uses NestJS JWT/passport. Keeping claims OIDC-friendly reduces future migration risk if Keycloak becomes the issuer. RFC 9700 recommends least-privilege, audience-restricted, resource/action-restricted access tokens to reduce token-leakage impact.
 
 **Alternatives considered**:
 
@@ -81,7 +70,7 @@ Issue signed JWT access tokens with a short lifetime, issuer, subject, audience,
 
 ## Decision: Rotate Refresh Tokens and Store Only Hashes
 
-If refresh tokens are issued, store only token hashes, bind them to a token family, rotate on every refresh, invalidate reused tokens, and revoke the family on replay detection or account deactivation.
+Store refresh tokens only as hashes, bind them to a token family, rotate on every refresh, invalidate reused tokens, and revoke the family on replay detection or account deactivation.
 
 **Rationale**: RFC 9700 requires public-client refresh tokens to be sender-constrained or rotated. Hashing stored refresh tokens limits damage if the database is exposed.
 
@@ -101,11 +90,11 @@ Store the access token in memory only. Use an HTTP-only, Secure, SameSite cookie
 - Store access and refresh tokens in localStorage: rejected due to XSS and persistence risk.
 - Store access token in sessionStorage: better than localStorage but still exposed to XSS and not sufficient for refresh-token protection.
 
-## Decision: Use RBAC for Administration and Permission Checks Plus Ownership Checks
+## Decision: Use RBAC Role Assignment with Permission Guards and Ownership Checks
 
 Use role assignments for member, staff, and administrator categories, map roles to named permissions, and enforce permissions through a server-side guard. Use explicit ownership checks for member self-service resources so a member can only access their own membership and borrowing records.
 
-**Rationale**: OWASP recommends least privilege, deny by default, permission validation on every request, and authorization tests. It also cautions that pure RBAC is not enough for fine-grained object access, so member ownership must be checked separately.
+**Rationale**: OWASP recommends least privilege, deny by default, permission validation on every request, and authorization tests. Pure RBAC is too coarse for member object ownership, so member ownership must be checked separately.
 
 **Alternatives considered**:
 

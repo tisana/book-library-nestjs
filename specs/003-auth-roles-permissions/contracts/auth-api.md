@@ -1,67 +1,128 @@
-# Contract: Keycloak OIDC Integration and Protected Auth API
+# Contract: Authentication API
 
 ## Goals
 
-- Use Keycloak as the OAuth2/OIDC identity provider and authorization server.
-- Keep NestJS as the protected resource server for library APIs.
-- Validate Keycloak-issued tokens consistently.
+- Provide a solid NestJS-owned authentication system for the current single-library app.
+- Issue short-lived JWT access tokens with OIDC-friendly claims.
+- Rotate refresh tokens and store only hashes.
+- Keep the API guard boundary ready for future Keycloak token validation.
 - Enforce library-specific permissions and member ownership inside NestJS.
 
-## Keycloak OIDC Endpoints
+## Staff Sign-In
 
-The frontend and backend consume the configured Keycloak realm metadata.
+### `POST /auth/login`
 
-Required realm endpoints:
+Authenticates a staff/admin user.
 
-- Authorization endpoint: `/realms/{realm}/protocol/openid-connect/auth`
-- Token endpoint: `/realms/{realm}/protocol/openid-connect/token`
-- Logout endpoint: `/realms/{realm}/protocol/openid-connect/logout`
-- UserInfo endpoint: `/realms/{realm}/protocol/openid-connect/userinfo`
-- Revocation endpoint: `/realms/{realm}/protocol/openid-connect/revoke`
-- JWKS endpoint: `/realms/{realm}/protocol/openid-connect/certs`
+Request fields:
 
-## Browser Sign-In Flow
+- `email`
+- `password`
 
-The frontend signs in through Keycloak using authorization code with PKCE.
+Success response:
 
-Required request properties:
-
-- `response_type=code`
-- configured `client_id`
-- exact configured `redirect_uri`
-- `scope=openid profile email`
-- `state`
-- `nonce`
-- `code_challenge`
-- `code_challenge_method=S256`
+```json
+{
+  "accessToken": "jwt-access-token",
+  "tokenType": "Bearer",
+  "expiresIn": 900,
+  "scope": "catalog:read catalog:manage borrowings:manage",
+  "user": {
+    "id": "staff-user-id",
+    "email": "admin@example.com",
+    "displayName": "Library Admin",
+    "roles": ["admin"],
+    "permissions": ["catalog:manage", "roles:manage"]
+  }
+}
+```
 
 Expected behavior:
 
-- Keycloak authenticates the user and owns credential/session handling.
-- The frontend never receives passwords.
-- The frontend does not store access or refresh tokens in localStorage.
-- Redirect URIs are exact configured values.
+- Verify password using the configured password hasher.
+- Require active staff/admin status.
+- Return a generic sign-in failure for invalid email, invalid password, inactive status, or missing credentials.
+- Set a Secure, HTTP-only, SameSite refresh cookie when refresh continuity is enabled.
+- Record sign-in success/failure without passwords or raw tokens.
 
-## Token Validation in NestJS
+## Member Sign-In
 
-Every protected API request uses a bearer access token issued by Keycloak.
+### `POST /auth/member-login`
 
-NestJS must validate:
+Authenticates a member self-service user.
 
-- signature against Keycloak JWKS
-- `iss`
-- `aud`
-- `exp`
-- `iat` tolerance
-- `sub`
-- role/group/scope claims used for permission mapping
-- linked local staff/member account status
+Request fields:
+
+- `loginIdentifier`
+- `password`
+
+Success response:
+
+```json
+{
+  "accessToken": "jwt-access-token",
+  "tokenType": "Bearer",
+  "expiresIn": 900,
+  "scope": "member:self:read",
+  "member": {
+    "id": "member-id",
+    "memberNumber": "M-1001",
+    "displayName": "Member Name",
+    "email": "member@example.com"
+  }
+}
+```
+
+Expected behavior:
+
+- Verify password using the configured password hasher.
+- Require active member status and active auth status.
+- Derive member self-service identity from the authenticated member record.
+- Return a generic sign-in failure for invalid identifier, invalid password, inactive membership, locked auth status, or missing credentials.
+- Set a Secure, HTTP-only, SameSite refresh cookie when refresh continuity is enabled.
+
+## Token Refresh
+
+### `POST /auth/refresh`
+
+Refreshes the access token using the current refresh cookie.
+
+Expected behavior:
+
+- Validate refresh-token hash against the active token family.
+- Rotate refresh token on every successful refresh.
+- Revoke the token family on replay detection.
+- Deny refresh when the subject account is inactive, suspended, locked, reset-required, or has a newer `authVersion`.
+- Return a new access token with current roles and permissions.
+
+## Revocation and Sign-Out
+
+### `POST /auth/logout`
+
+Revokes the current refresh-token family when present.
+
+Expected behavior:
+
+- Clear refresh cookie.
+- Revoke matching refresh family.
+- Return success even if there is no active refresh token.
+- Record sign-out/token-revocation event without raw token values.
+
+### `POST /auth/logout-all`
+
+Requires authentication.
+
+Expected behavior:
+
+- Increment `authVersion` or revoke all active refresh-token families for the subject.
+- Clear current refresh cookie.
+- Record security activity.
 
 ## Current User
 
 ### `GET /auth/me`
 
-Requires valid Keycloak access token.
+Requires valid access token.
 
 Success response for staff/admin:
 
@@ -70,7 +131,6 @@ Success response for staff/admin:
   "roleArea": "staff",
   "user": {
     "id": "staff-user-id",
-    "identitySubject": "keycloak-sub",
     "email": "admin@example.com",
     "displayName": "Library Admin",
     "roles": ["admin"],
@@ -86,7 +146,6 @@ Success response for member:
   "roleArea": "member",
   "member": {
     "id": "member-id",
-    "identitySubject": "keycloak-sub",
     "memberNumber": "M-1001",
     "displayName": "Member Name",
     "email": "member@example.com"
@@ -95,71 +154,81 @@ Success response for member:
 }
 ```
 
-## Identity Linking
+## Optional OIDC-Friendly Metadata
 
-### `POST /auth/identity-links/staff`
+If the implementation adds a local authorization-code-with-PKCE flow, expose compatible metadata and contracts without making Keycloak a runtime dependency.
 
-Administrator-only endpoint to link an existing staff/admin profile to a Keycloak subject.
+### `GET /.well-known/oauth-authorization-server`
 
-Required permission: `staff-users:manage`
+Returns issuer metadata for the local authorization boundary.
 
-Request fields:
+Required fields:
 
-- `staffUserId`
-- `identityProvider`
-- `identitySubject`
+- `issuer`
+- `token_endpoint`
+- `jwks_uri` when asymmetric signing is enabled
+- `grant_types_supported`
+- `scopes_supported`
 
-### `POST /auth/identity-links/member`
+## Token Validation in NestJS
 
-Staff/admin endpoint to link an existing member profile to a Keycloak subject.
+Every protected API request uses a bearer access token issued by this app in v1.
 
-Required permission: `members:manage`
+NestJS must validate:
 
-Request fields:
-
-- `memberId`
-- `identityProvider`
-- `identitySubject`
+- signature
+- `iss`
+- `aud`
+- `exp`
+- `iat` tolerance
+- `jti`
+- `sub`
+- `role_area`
+- scope/permission claims
+- local staff/member account status
+- `auth_version`
 
 ## Protected Resource Requirements
 
-- Every protected endpoint requires a valid Keycloak access token.
+- Every protected endpoint requires a valid access token.
 - Every protected endpoint declares required permission or ownership policy.
-- Member self-service endpoints derive member id from the linked token subject.
+- Member self-service endpoints derive member id from the token subject.
 - Staff/admin endpoints reject member identities.
 - Admin endpoints require admin permissions, not merely an authenticated staff identity.
 
 ## Error Semantics
 
 - Missing, expired, invalid, wrong-issuer, or wrong-audience token: `401 Unauthorized`.
-- Valid token with no linked local account: `403 Forbidden` or onboarding-specific denial.
 - Authenticated but insufficient permission: `403 Forbidden`.
 - Member token on staff/admin endpoint: `403 Forbidden`.
-- Sign-in failures are handled by Keycloak and must not leak through API logs.
+- Sign-in failure: generic `401 Unauthorized` without revealing account existence or status.
 
 ## Token Claim Mapping
 
-Required or expected Keycloak claims:
+Required access token claims:
 
 - `iss`
 - `sub`
 - `aud`
 - `exp`
 - `iat`
-- `azp`
-- `scope`
-- realm roles, client roles, or groups for `member`, `staff`, and `admin`
+- `jti`
+- `role_area`
+- `scope` or `permissions`
+- `auth_version`
 
-NestJS maps these claims to the permission names documented in [authorization-matrix.md](authorization-matrix.md).
+Future Keycloak migration should map Keycloak `sub`, roles/groups, scopes, issuer, audience, and JWKS validation into this same request context before permission guards run.
 
 ## Security Events
 
-The API records local events for:
+The API records events for:
 
+- sign-in success/failure
 - authorization denied
-- identity link created/changed
-- role/permission mapping changes
+- role assignment changes
 - account status changes
-- protected resource access denied by ownership policy
+- token refresh
+- refresh replay detection
+- revocation/sign-out
 
-Keycloak remains the source for primary login/session events. If the implementation synchronizes Keycloak events into MongoDB, synced records must exclude passwords, raw tokens, token hashes, and full sensitive payloads.
+Events must exclude passwords, raw tokens, token hashes, and full sensitive payloads.

@@ -6,21 +6,21 @@
 
 ## Summary
 
-Replace the publish-risky in-memory/session-light authentication surface with a persistent, standards-aligned authentication and authorization system. Additional research compared building an authorization server inside this app with using open-source IdP/framework options. The revised plan prefers Keycloak as the production identity provider and OAuth2/OIDC authorization server, while keeping the existing NestJS API as the resource server that validates tokens, maps IdP roles/groups to library permissions, and enforces member ownership.
+Replace the publish-risky in-memory/session-light authentication surface with a solid NestJS-owned authentication and authorization system for the current single-library application. The default implementation keeps credentials, account lifecycle, short-lived JWT access tokens, rotated refresh sessions, role assignment, permission mapping, and security activity inside the existing NestJS/MongoDB application.
 
-Auth.js is not selected as the primary auth system for this architecture because it is an application authentication/session framework and OAuth client toolkit rather than a central IdP for a NestJS API plus Vite SPA. A custom in-app OAuth2/OIDC implementation remains a fallback only if operating Keycloak is rejected during implementation planning.
+The design intentionally keeps the token and role model OIDC-friendly: access tokens use issuer, subject, audience, expiry, token id, role area, and scope/permission-style claims; protected resources validate tokens through a narrow auth boundary; application authorization uses clear permission guards and member ownership checks. Keycloak remains an evaluated future option for SSO, MFA, password reset, federation, or multi-application identity, but it is not the default implementation for this feature.
 
 ## Technical Context
 
 **Language/Version**: TypeScript 5.9.x; NestJS 11.x backend; React/Vite/TypeScript frontend from the existing `frontend/` app.
 
-**Primary Dependencies**: Keycloak 26.x as the external IdP/auth server; existing `@nestjs/passport`, `passport-jwt`, `@nestjs/config`, `@nestjs/mongoose`, Mongoose, class-validator, Jest, Supertest, Vitest, Testing Library, Playwright, and MSW. Add or evaluate `jose` for JWKS/JWT validation if `passport-jwt` is insufficient for issuer/audience/key-rotation handling. Existing `@nestjs/jwt` and `bcryptjs` remain only for migration compatibility or local test helpers, not as the long-term production credential/token authority.
+**Primary Dependencies**: Existing `@nestjs/jwt`, `@nestjs/passport`, `passport-jwt`, `bcryptjs`, `@nestjs/config`, `@nestjs/mongoose`, Mongoose, class-validator, Jest, Supertest, Vitest, Testing Library, Playwright, and MSW. Add or evaluate `@nestjs/throttler` for login/token endpoint throttling and `jose` for more standards-friendly JWT/JWK/JWKS handling if current `@nestjs/jwt` support is insufficient. Keycloak is not a runtime dependency in the default path.
 
-**Storage**: Keycloak owns credentials, login sessions, OAuth/OIDC clients, authorization codes, refresh tokens, federation settings, and protocol metadata in its own supported production database. Existing MongoDB remains the source of truth for library domain data, staff/member profile links, local permission mapping, and library security activity summaries.
+**Storage**: Existing MongoDB remains the source of truth. Staff credentials remain in `StaffUser`; member credentials remain embedded in `Member`; bounded authentication documents store OAuth/OIDC-friendly client registrations, authorization codes if the PKCE flow is implemented, refresh-token families, and security activity events.
 
-**Document Model Design**: Add stable IdP linkage to existing `StaffUser` and `Member` documents, such as `identityProvider`, `identitySubject`, and `identityLinkedAt`. Do not store new production passwords or refresh tokens in MongoDB. Keep library permissions as code-owned or Mongo-backed role mapping inside the API, because catalog/member/borrowing/member-ownership policies are application-specific. Security activity events remain separate MongoDB documents for audit pagination and correlation with library entities.
+**Document Model Design**: Keep authentication data close to the account aggregate used during sign-in: staff login data on `StaffUser`, member login data on `Member`. Add separate bounded, independently expiring documents for `AuthClient`, `AuthorizationCode`, `RefreshTokenFamily`, `SecurityActivityEvent`, and optionally `RoleDefinition` if admin screens need data-managed role metadata. Reference staff/member account ids from token and event documents because sessions and events grow independently and must expire or paginate without growing account documents. Include optional future IdP link fields (`identityProvider`, `identitySubject`, `identityLinkedAt`) but do not require them for v1.
 
-**Testing**: Backend Jest unit tests for JWKS/JWT validation, issuer/audience enforcement, IdP role/group mapping, permission mapping, member ownership, and audit event redaction. Backend e2e tests with Supertest for protected resource denial, member ownership, admin-only role/account management, and security activity access using representative Keycloak-issued JWT fixtures. Frontend Vitest/MSW tests for OIDC redirect/session states. Playwright e2e tests against a local Keycloak test realm for staff/admin/member sign-in boundaries and sign-out behavior.
+**Testing**: Backend Jest unit tests for password verification, token issuing, token validation, permission mapping, refresh rotation, replay detection, member ownership, and audit event redaction. Backend e2e tests with Supertest for sign-in, refresh, protected resource denial, member ownership, admin-only role/account management, and security activity access. Frontend Vitest/MSW tests for route guards and sign-in/sign-out states. Playwright e2e tests for staff/admin/member sign-in boundaries and sign-out behavior.
 
 **Target Platform**: Browser-based web application and NestJS REST API deployed online behind HTTPS.
 
@@ -28,9 +28,9 @@ Auth.js is not selected as the primary auth system for this architecture because
 
 **Performance Goals**: Protected API authorization checks add no more than 50 ms p95 overhead under normal library usage. Users complete sign-in in under 30 seconds. Role/permission changes affect protected requests within 1 minute. Security activity list returns the first page within 2 seconds for normal audit volume.
 
-**Constraints**: Browser sign-in must use Keycloak/OpenID Connect authorization code with PKCE. Direct access grants/password grants and implicit flow are out of scope. Access tokens must be short-lived and audience/scope restricted. Browser storage must avoid localStorage for tokens. Server-side authorization in NestJS remains authoritative for library resources; frontend route guards are convenience only. No passwords, tokens, token hashes, full protected payloads, or sensitive request bodies may be logged. Production deployment now includes operating and backing up Keycloak and its database.
+**Constraints**: Server-side authorization in NestJS is authoritative; frontend route guards are convenience only. Access tokens must be short-lived and audience/scope restricted. Refresh tokens must be rotated and stored only as hashes. Browser storage must avoid localStorage for tokens. Passwords must be hashed with an accepted slow password hashing algorithm. Login and token endpoints must be rate-limited. No passwords, tokens, token hashes, full protected payloads, or sensitive request bodies may be logged. If an OAuth2/OIDC browser flow is added in v1, use authorization code with PKCE and do not use implicit or resource-owner-password grants.
 
-**Scale/Scope**: Single-library deployment, Keycloak realm for the library, first-party web client, staff/admin/member roles or groups, explicit permission names for existing catalog/member/borrowing/security workflows, and bounded security audit history. Keycloak can later enable MFA, password reset, social login, LDAP/AD federation, and account self-service without rewriting library resource authorization. Multi-tenant authorization and fine-grained custom role builders are deferred unless later specs add them.
+**Scale/Scope**: Single-library deployment, first-party web client, staff/admin/member roles, explicit permission names for existing catalog/member/borrowing/security workflows, and bounded security audit history. Keycloak, Auth.js, external IdP federation, MFA, password reset, social login, multi-tenant authorization, and fine-grained custom role builders are deferred unless later specs add them.
 
 ## Constitution Check
 
@@ -41,12 +41,12 @@ Auth.js is not selected as the primary auth system for this architecture because
 - **Security and Privacy by Default**: PASS. Authentication is required for protected areas, member access is scoped to the member's own records, secrets are hashed/redacted, and tokens are restricted.
 - **Spec-First, Traceable Changes**: PASS. Artifacts map to `specs/003-auth-roles-permissions/spec.md`.
 - **Test the Rules That Matter**: PASS. Authorization, token lifecycle, refresh replay, member ownership, and audit redaction receive automated tests.
-- **Maintainable Architecture**: PASS. The design delegates standards-heavy identity protocol behavior to Keycloak and keeps application-specific authorization in NestJS.
+- **Maintainable Architecture**: PASS. The design extends existing NestJS modules and MongoDB aggregates without introducing a separate IdP service for the current scope.
 - **Data Integrity and Auditability**: PASS. Role changes, denied access, sign-in outcomes, token revocation, and account status changes are auditable.
-- **Document-Oriented MongoDB Data Modeling**: PASS. MongoDB stores library domain profiles, IdP links, permission mapping, and audit summaries; Keycloak-owned protocol/session state is not duplicated into MongoDB.
+- **Document-Oriented MongoDB Data Modeling**: PASS. Account credentials are embedded in owned account documents; growing session/event records are referenced and indexed separately with TTL.
 - **Usability and Accessibility**: PASS. User-facing denial states and sign-in outcomes remain clear; admin permission review is explicit.
 - **Performance With Practical Limits**: PASS. Indexed subject/client/token/audit lookups avoid full scans and keep auth checks bounded.
-- **Operability and Observability**: PASS. Configuration is environment-based, health of auth configuration is verifiable, and logs exclude sensitive values.
+- **Operability and Observability**: PASS. Configuration is environment-based, auth health is verifiable, and logs exclude sensitive values.
 
 ## Project Structure
 
@@ -76,13 +76,13 @@ src/
 │   ├── auth.controller.ts
 │   ├── auth.module.ts
 │   ├── auth.service.ts
-│   ├── keycloak-jwt.strategy.ts
+│   ├── jwt.strategy.ts
 │   ├── jwt-auth.guard.ts
 │   ├── permission.decorator.ts
 │   ├── permissions.guard.ts
 │   ├── member-auth.guard.ts
 │   ├── password-hasher.service.ts
-│   ├── identity-link.service.ts
+│   ├── token-session.service.ts
 │   └── security-activity.service.ts
 ├── staff-users/
 ├── members/
@@ -108,14 +108,9 @@ frontend/
 
 migrations/
 └── versions/
-
-infra/
-└── keycloak/
-    ├── realm-export.json
-    └── docker-compose.override.example.yml
 ```
 
-**Structure Decision**: Keep the existing NestJS API and React/Vite frontend structure. Add Keycloak realm/client configuration under `infra/keycloak/`, validate Keycloak-issued JWTs in `src/auth`, and replace role-only decorators/guards with permission-level authorization while preserving current role endpoints where they are still useful.
+**Structure Decision**: Keep the existing NestJS API and React/Vite frontend structure. Add auth-owned schemas and services for refresh-token/session records, optional auth clients/authorization codes, permissions, and security activity. Replace role-only decorators/guards with permission-level authorization while preserving current role endpoints where they remain useful.
 
 ## Complexity Tracking
 
@@ -123,7 +118,7 @@ No constitution violations require exceptions.
 
 ## Phase 0: Research
 
-Completed in [research.md](research.md). Key decisions: prefer Keycloak over custom in-app OAuth2/OIDC for production, reject Auth.js as the primary IdP for this NestJS/Vite architecture, use OpenID Connect authorization code with PKCE for browser sign-in, avoid implicit and password grants, validate short-lived audience/scope-restricted JWT access tokens, keep tokens out of localStorage, combine IdP role/group assignments with NestJS permission checks and member ownership checks, use NIST/OWASP password guidance, and log security activity without secrets.
+Completed in [research.md](research.md). Key decisions: build NestJS-owned auth as the default for current scope, keep Keycloak as an evaluated future option, reject Auth.js as the primary auth system for this NestJS/Vite architecture, use short-lived audience/scope-restricted JWT access tokens, rotate refresh tokens with hashed persistence, keep tokens out of localStorage, combine RBAC role assignments with permission checks and member ownership checks, use NIST/OWASP password guidance, and log security activity without secrets.
 
 ## Phase 1: Design & Contracts
 
@@ -138,12 +133,12 @@ Completed design artifacts:
 
 - **User-Centered Library Workflow**: PASS. Contracts define member self-service, staff back office, administrator role/account management, and denial outcomes.
 - **Correctness Over Cleverness**: PASS. Permission checks and ownership checks are explicit and covered by contract tests.
-- **Security and Privacy by Default**: PASS. Keycloak handles standards-heavy credential/session/token lifecycle, while NestJS enforces member/staff/admin resource boundaries.
+- **Security and Privacy by Default**: PASS. Token, password, refresh, storage, and logging choices follow current security guidance and prevent member access to staff/admin workflows.
 - **Spec-First, Traceable Changes**: PASS. Design artifacts trace to the feature spec and are ready for task generation.
 - **Test the Rules That Matter**: PASS. Quickstart requires unit, integration, and e2e coverage for the security-sensitive behavior.
-- **Maintainable Architecture**: PASS. The plan introduces a dedicated IdP intentionally and keeps library authorization local to the API.
+- **Maintainable Architecture**: PASS. The plan extends local auth/staff/member modules and avoids an IdP service until scope justifies it.
 - **Data Integrity and Auditability**: PASS. Account status, role changes, token revocation, replay detection, and denied access are auditable.
-- **Document-Oriented MongoDB Data Modeling**: PASS. Data model documents IdP links, profile ownership, security events, uniqueness, and migration impact without duplicating Keycloak session state.
+- **Document-Oriented MongoDB Data Modeling**: PASS. Data model documents aggregate ownership, references, TTL indexes, uniqueness, future IdP links, and migration impact.
 - **Usability and Accessibility**: PASS. Frontend contracts preserve clear sign-in, sign-out, unauthorized, and forbidden user flows.
 - **Performance With Practical Limits**: PASS. Indexes and short token validation paths keep authorization checks bounded.
 - **Operability and Observability**: PASS. Quickstart includes config, local validation, and sensitive-log checks.
