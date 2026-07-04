@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PasswordHasherService } from './password-hasher.service';
@@ -49,9 +50,14 @@ export class AuthService {
     return {
       accessToken: await this.jwtService.signAsync({
         sub: userId,
+        jti: randomUUID(),
         email: user.email,
         roles: user.roles,
         roleArea: 'staff',
+        role_area: 'staff',
+        scope,
+        permissions,
+        auth_version: user.authVersion ?? 0,
       }),
       tokenType: 'Bearer',
       expiresIn: 900,
@@ -91,8 +97,13 @@ export class AuthService {
     return {
       accessToken: await this.jwtService.signAsync({
         sub: memberId,
+        jti: randomUUID(),
         memberNumber: member.memberNumber,
         roleArea: 'member',
+        role_area: 'member',
+        scope: permissions.join(' '),
+        permissions,
+        auth_version: member.authVersion ?? 0,
       }),
       tokenType: 'Bearer',
       expiresIn: 900,

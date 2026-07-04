@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { UnauthorizedException } from '@nestjs/common';
 
+import { AuthPermission } from '../common/enums/auth-permission.enum';
 import {
   MemberAuthStatus,
   MemberStatus,
@@ -56,19 +57,29 @@ describe('AuthService login contract', () => {
         staffUser.passwordHash,
         'correct-password',
       );
-      expect(jwtService.signAsync).toHaveBeenCalledWith({
-        sub: staffUser.id,
-        email: staffUser.email,
-        roles: staffUser.roles,
-        roleArea: 'staff',
-      });
-      expect(result).toEqual({
+      expect(jwtService.signAsync).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sub: staffUser.id,
+          jti: expect.any(String),
+          email: staffUser.email,
+          roles: staffUser.roles,
+          roleArea: 'staff',
+          role_area: 'staff',
+          auth_version: 0,
+          permissions: expect.arrayContaining([AuthPermission.CatalogRead]),
+        }),
+      );
+      expect(result).toMatchObject({
         accessToken: 'jwt-token',
+        tokenType: 'Bearer',
+        expiresIn: 900,
+        permissions: expect.arrayContaining([AuthPermission.CatalogRead]),
         user: {
           id: staffUser.id,
           email: staffUser.email,
           displayName: staffUser.displayName,
           roles: staffUser.roles,
+          permissions: expect.arrayContaining([AuthPermission.CatalogRead]),
         },
       });
     });
@@ -150,16 +161,27 @@ describe('AuthService login contract', () => {
         member.passwordHash,
         'correct-password',
       );
-      expect(jwtService.signAsync).toHaveBeenCalledWith({
-        sub: member.id,
-        memberNumber: member.memberNumber,
-        roleArea: 'member',
-      });
+      expect(jwtService.signAsync).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sub: member.id,
+          jti: expect.any(String),
+          memberNumber: member.memberNumber,
+          roleArea: 'member',
+          role_area: 'member',
+          scope: AuthPermission.MemberSelfRead,
+          permissions: [AuthPermission.MemberSelfRead],
+          auth_version: 0,
+        }),
+      );
       expect(membersService.findSelfServiceProfile).toHaveBeenCalledWith(
         member.id,
       );
-      expect(result).toEqual({
+      expect(result).toMatchObject({
         accessToken: 'member-jwt-token',
+        tokenType: 'Bearer',
+        expiresIn: 900,
+        scope: AuthPermission.MemberSelfRead,
+        permissions: [AuthPermission.MemberSelfRead],
         member: {
           id: member.id,
           memberNumber: member.memberNumber,

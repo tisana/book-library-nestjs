@@ -22,6 +22,10 @@ export interface MemberDocument extends Document<Types.ObjectId> {
   passwordUpdatedAt?: Date;
   lastLoginAt?: Date;
   authStatus?: MemberAuthStatus;
+  authVersion: number;
+  identityProvider?: string;
+  identitySubject?: string;
+  identityLinkedAt?: Date;
   createdBy?: string;
   updatedBy?: string;
   createdAt: Date;
@@ -32,7 +36,13 @@ export const MemberSchema: Schema<MemberDocument> = new Schema<MemberDocument>(
   {
     memberNumber: { type: String, required: true, unique: true, trim: true },
     fullName: { type: String, required: true, trim: true },
-    email: { type: String, trim: true, lowercase: true, unique: true, sparse: true },
+    email: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      unique: true,
+      sparse: true,
+    },
     phone: { type: String, trim: true },
     membershipTypeId: {
       type: Schema.Types.ObjectId,
@@ -66,8 +76,16 @@ export const MemberSchema: Schema<MemberDocument> = new Schema<MemberDocument>(
       index: true,
     },
     ...auditFieldsSchemaDefinition,
+    authVersion: { type: Number, required: true, min: 0, default: 0 },
+    identityProvider: { type: String, trim: true },
+    identitySubject: { type: String, trim: true },
+    identityLinkedAt: { type: Date },
   },
   { timestamps: true },
 );
 
 MemberSchema.index({ status: 1, membershipTypeId: 1 });
+MemberSchema.index(
+  { identityProvider: 1, identitySubject: 1 },
+  { unique: true, sparse: true },
+);
