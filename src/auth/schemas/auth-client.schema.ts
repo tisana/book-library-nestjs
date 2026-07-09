@@ -48,6 +48,3 @@ export const AuthClientSchema = new Schema<AuthClientDocument>(
   },
   { timestamps: true },
 );
-
-AuthClientSchema.index({ clientId: 1 }, { unique: true });
-AuthClientSchema.index({ status: 1 });

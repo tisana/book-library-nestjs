@@ -63,9 +63,5 @@ export const RefreshTokenFamilySchema = new Schema<RefreshTokenFamilyDocument>(
   { timestamps: true },
 );
 
-RefreshTokenFamilySchema.index(
-  { currentTokenHash: 1 },
-  { unique: true, sparse: true },
-);
 RefreshTokenFamilySchema.index({ subjectType: 1, subjectId: 1, status: 1 });
 RefreshTokenFamilySchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });

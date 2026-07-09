@@ -10,7 +10,8 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors({
-    origin: process.env.FRONTEND_ORIGIN ?? 'http://localhost:5173',
+    origin: getFrontendOrigins(),
+    credentials: true,
   });
   app.useGlobalPipes(
     new ValidationPipe({
@@ -66,5 +67,14 @@ function resolveFrontendStaticRoot(): string | undefined {
 
 const frontendRoutePattern =
   /^\/(?:$|login$|unauthorized$|staff(?:\/.*)?$|member(?:\/.*)?$)/;
+
+function getFrontendOrigins(): string[] {
+  return (
+    process.env.FRONTEND_ORIGIN ?? 'http://localhost:5173,http://127.0.0.1:5173'
+  )
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+}
 
 bootstrap();
