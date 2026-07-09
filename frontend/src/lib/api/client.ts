@@ -67,10 +67,10 @@ export async function apiRequest<TResponse>(
   }
 
   const response = await fetch(`${apiBaseUrl}${path}`, {
+    credentials: 'include',
     ...options,
     headers,
-    body:
-      options.body === undefined ? undefined : JSON.stringify(options.body),
+    body: options.body === undefined ? undefined : JSON.stringify(options.body),
   });
   const payload = await parseResponse(response);
 

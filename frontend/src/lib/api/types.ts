@@ -1,6 +1,21 @@
 export type RoleArea = 'staff' | 'member';
 
 export type StaffRole = 'admin' | 'staff';
+export type AuthPermission =
+  | 'catalog:read'
+  | 'catalog:manage'
+  | 'members:read'
+  | 'members:manage'
+  | 'membership-types:read'
+  | 'membership-types:manage'
+  | 'borrowings:read'
+  | 'borrowings:manage'
+  | 'staff-users:read'
+  | 'staff-users:manage'
+  | 'roles:read'
+  | 'roles:manage'
+  | 'security-events:read'
+  | 'member:self:read';
 export type LibraryStatus = 'active' | 'deactivated';
 export type MemberStatus = 'active' | 'suspended' | 'inactive';
 export type MemberAuthStatus = 'active' | 'locked' | 'reset-required';
@@ -33,6 +48,7 @@ export interface StaffSessionUser {
   email: string;
   displayName: string;
   roles: StaffRole[];
+  permissions: AuthPermission[];
   roleArea: 'staff';
 }
 
@@ -45,16 +61,50 @@ export interface MemberSessionUser {
   membershipTypeId?: string;
   membershipTypeCode?: string;
   membershipTypeName?: string;
+  permissions: AuthPermission[];
   roleArea: 'member';
 }
 
 export type SessionUser = StaffSessionUser | MemberSessionUser;
 
+export interface AuthTokenMetadata {
+  tokenType: 'Bearer';
+  expiresIn: number;
+  scope: string;
+  permissions: AuthPermission[];
+  issuer?: string;
+  audience?: string | string[];
+  authVersion?: number;
+}
+
+export interface RefreshCookieSettings {
+  httpOnly: true;
+  secure: boolean;
+  sameSite: 'strict' | 'lax' | 'none';
+  path: string;
+  maxAgeSeconds?: number;
+}
+
 export interface LoginResponse<TUser extends SessionUser = SessionUser> {
   accessToken: string;
+  tokenType: 'Bearer';
+  expiresIn: number;
+  scope: string;
+  permissions: AuthPermission[];
+  issuer?: string;
+  audience?: string | string[];
+  authVersion?: number;
+  refreshCookie?: RefreshCookieSettings;
   user?: StaffSessionUser;
   member?: MemberSessionUser;
   principal?: TUser;
+}
+
+export interface CurrentAuthResponse {
+  roleArea: RoleArea;
+  user?: StaffSessionUser;
+  member?: MemberSessionUser;
+  permissions?: AuthPermission[];
 }
 
 export interface BookView {

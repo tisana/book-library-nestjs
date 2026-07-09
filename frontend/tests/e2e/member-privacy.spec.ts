@@ -22,6 +22,47 @@ test('member routes only call member-scoped me endpoints', async ({ page }) => {
   ).toBe(false);
 });
 
+test('member browser direct staff route attempts do not load staff data', async ({
+  page,
+}) => {
+  const requestedUrls: string[] = [];
+  await mockMemberSession(page, requestedUrls);
+
+  const staffRoutes = [
+    '/staff',
+    '/staff/books',
+    '/staff/catalog',
+    '/staff/membership-types',
+    '/staff/members',
+    '/staff/borrowings',
+    '/staff/borrowings/new',
+    '/staff/borrowings/overdue',
+  ];
+
+  for (const staffRoute of staffRoutes) {
+    await signInAsMember(page);
+
+    const requestStart = requestedUrls.length;
+    await page.goto(staffRoute);
+
+    await page.waitForURL('**/staff/login');
+    await expect(
+      page.getByRole('heading', { name: 'Staff sign in' }),
+    ).toBeVisible();
+    expect(requestedUrls.slice(requestStart).some(isStaffBackOfficeApi)).toBe(
+      false,
+    );
+  }
+});
+
+async function signInAsMember(page: Page) {
+  await page.goto('/member/login');
+  await page.getByLabel('Login identifier').fill('M-1001');
+  await page.getByLabel('Password').fill('DemoMember#2026');
+  await page.getByRole('button', { name: /sign in/i }).click();
+  await page.waitForURL('**/member');
+}
+
 async function mockMemberSession(page: Page, requestedUrls: string[]) {
   await page.route('http://localhost:3000/**', async (route) => {
     const url = route.request().url();
@@ -94,6 +135,12 @@ async function mockMemberSession(page: Page, requestedUrls: string[]) {
 
     await route.fulfill({ status: 404, json: { message: 'Not mocked' } });
   });
+}
+
+function isStaffBackOfficeApi(url: string) {
+  return /\/(books|book-categories|borrowings|membership-types|staff-users)(\/|\?|$)|\/members(?!\/me\b)(\/|\?|$)/.test(
+    url,
+  );
 }
 
 function borrowing() {

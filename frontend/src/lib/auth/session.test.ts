@@ -1,0 +1,71 @@
+import { QueryClient } from '@tanstack/react-query';
+import { http, HttpResponse } from 'msw';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { queryClient } from '@/app/query-client';
+import { apiBaseUrl } from '@/lib/api/client';
+import type { AuthPermission } from '@/lib/api/types';
+import { refreshStaffSession } from '@/lib/api/auth';
+import { authSession, createAuthSessionStore } from './session';
+import { signOut } from './sign-out';
+import { server } from '@/test/mocks/server';
+
+const staffUser = {
+  id: 'staff-1',
+  email: 'staff@example.com',
+  displayName: 'Staff User',
+  roles: ['staff' as const],
+  roleArea: 'staff' as const,
+  permissions: ['catalog:read'] satisfies AuthPermission[],
+};
+
+describe('auth session store', () => {
+  beforeEach(() => {
+    authSession.clear('signed-out');
+    localStorage.clear();
+  });
+
+  it('keeps access tokens in memory only', () => {
+    const store = createAuthSessionStore();
+    const setItem = vi.spyOn(Storage.prototype, 'setItem');
+
+    store.setSession('memory-token', staffUser, {
+      tokenType: 'Bearer',
+      expiresIn: 900,
+      scope: 'catalog:read',
+      permissions: ['catalog:read'],
+    });
+
+    expect(store.getSnapshot().accessToken).toBe('memory-token');
+    expect(localStorage.length).toBe(0);
+    expect(setItem).not.toHaveBeenCalled();
+  });
+
+  it('updates memory session on refresh and clears query cache during sign-out', async () => {
+    const cachedClient = queryClient as QueryClient;
+    cachedClient.setQueryData(['staff', 'books'], [{ id: 'book-1' }]);
+
+    server.use(
+      http.post(`${apiBaseUrl}/auth/refresh`, () =>
+        HttpResponse.json({
+          accessToken: 'refreshed-token',
+          tokenType: 'Bearer',
+          expiresIn: 900,
+          scope: 'catalog:read',
+          permissions: ['catalog:read'],
+          user: staffUser,
+        }),
+      ),
+      http.post(`${apiBaseUrl}/auth/logout`, () =>
+        HttpResponse.json({ ok: true }),
+      ),
+    );
+
+    await refreshStaffSession();
+    expect(authSession.getSnapshot().accessToken).toBe('refreshed-token');
+    expect(cachedClient.getQueryData(['staff', 'books'])).toBeDefined();
+
+    await expect(signOut('staff')).resolves.toBe('/staff/login');
+    expect(authSession.getSnapshot().accessToken).toBeUndefined();
+    expect(cachedClient.getQueryData(['staff', 'books'])).toBeUndefined();
+  });
+});
