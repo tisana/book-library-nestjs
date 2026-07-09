@@ -11,8 +11,9 @@ const memberNavItems = [
 export function MemberShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
 
-  function handleSignOut() {
-    void navigate({ to: memberLogout() });
+  async function handleSignOut() {
+    const to = await memberLogout();
+    await navigate({ to });
   }
 
   return (

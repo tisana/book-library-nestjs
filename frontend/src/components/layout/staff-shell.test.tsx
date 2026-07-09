@@ -1,8 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { http, HttpResponse } from 'msw';
 import type { ReactNode } from 'react';
+import { waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { StaffShell } from './staff-shell';
+import { apiBaseUrl } from '@/lib/api/client';
+import { server } from '@/test/mocks/server';
 
 const navigateMock = vi.hoisted(() => vi.fn());
 
@@ -20,6 +24,9 @@ describe('StaffShell', () => {
 
   it('renders accessible sign-out controls that route to staff login', async () => {
     const user = userEvent.setup();
+    server.use(
+      http.post(`${apiBaseUrl}/auth/logout`, () => HttpResponse.json({})),
+    );
 
     render(
       <StaffShell>
@@ -34,6 +41,8 @@ describe('StaffShell', () => {
     expect(signOutButtons.length).toBeGreaterThan(0);
     await user.click(signOutButtons[0]);
 
-    expect(navigateMock).toHaveBeenCalledWith({ to: '/staff/login' });
+    await waitFor(() =>
+      expect(navigateMock).toHaveBeenCalledWith({ to: '/staff/login' }),
+    );
   });
 });

@@ -27,8 +27,9 @@ const staffNavItems = [
 export function StaffShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
 
-  function handleSignOut() {
-    void navigate({ to: staffLogout() });
+  async function handleSignOut() {
+    const to = await staffLogout();
+    await navigate({ to });
   }
 
   return (
