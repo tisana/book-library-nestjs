@@ -16,10 +16,10 @@ import {
 } from '@nestjs/swagger';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Roles } from '../auth/roles.decorator';
-import { RolesGuard } from '../auth/roles.guard';
+import { PermissionsGuard } from '../auth/permissions.guard';
+import { RequirePermissions } from '../auth/permissions.decorator';
 import { AuditActor } from '../common/audit/audit-context';
-import { StaffRole } from '../common/enums/library-status.enum';
+import { AuthPermission } from '../common/enums/auth-permission.enum';
 import { BorrowingsService } from './borrowings.service';
 import {
   BorrowingQueryDto,
@@ -31,13 +31,13 @@ import {
 @Controller('borrowings')
 @ApiBearerAuth()
 @ApiUnauthorizedResponse({ description: 'Bearer token is missing or invalid.' })
-@ApiForbiddenResponse({ description: 'Staff or admin role is required.' })
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(StaffRole.Staff, StaffRole.Admin)
+@ApiForbiddenResponse({ description: 'Required permission is missing.' })
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 export class BorrowingsController {
   constructor(private readonly borrowingsService: BorrowingsService) {}
 
   @Post()
+  @RequirePermissions(AuthPermission.BorrowingsManage)
   @ApiOkResponse({ type: BorrowingResponseDto })
   create(
     @Body() dto: CreateBorrowingDto,
@@ -47,6 +47,7 @@ export class BorrowingsController {
   }
 
   @Get('overdue')
+  @RequirePermissions(AuthPermission.BorrowingsRead)
   @ApiOkResponse({ type: BorrowingResponseDto, isArray: true })
   findOverdue(
     @Query() query: BorrowingQueryDto,
@@ -55,18 +56,21 @@ export class BorrowingsController {
   }
 
   @Get()
+  @RequirePermissions(AuthPermission.BorrowingsRead)
   @ApiOkResponse({ type: BorrowingResponseDto, isArray: true })
   findAll(@Query() query: BorrowingQueryDto): Promise<BorrowingResponseDto[]> {
     return this.borrowingsService.findAll(query);
   }
 
   @Get(':id')
+  @RequirePermissions(AuthPermission.BorrowingsRead)
   @ApiOkResponse({ type: BorrowingResponseDto })
   findOne(@Param('id') id: string): Promise<BorrowingResponseDto> {
     return this.borrowingsService.findOne(id);
   }
 
   @Post(':id/return')
+  @RequirePermissions(AuthPermission.BorrowingsManage)
   @HttpCode(200)
   @ApiOkResponse({ type: BorrowingResponseDto })
   returnBorrowing(

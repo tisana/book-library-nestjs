@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   Param,
   Patch,
@@ -19,10 +20,10 @@ import { CurrentMember } from '../auth/current-member.decorator';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { MemberAuthGuard } from '../auth/member-auth.guard';
-import { Roles } from '../auth/roles.decorator';
-import { RolesGuard } from '../auth/roles.guard';
+import { PermissionsGuard } from '../auth/permissions.guard';
+import { RequirePermissions } from '../auth/permissions.decorator';
 import { AuditActor } from '../common/audit/audit-context';
-import { StaffRole } from '../common/enums/library-status.enum';
+import { AuthPermission } from '../common/enums/auth-permission.enum';
 import { BorrowingsService } from '../borrowings/borrowings.service';
 import {
   BorrowingQueryDto,
@@ -45,7 +46,7 @@ import { MembersService } from './members.service';
 @Controller('members')
 @ApiBearerAuth()
 @ApiUnauthorizedResponse({ description: 'Bearer token is missing or invalid.' })
-@ApiForbiddenResponse({ description: 'Required role is missing.' })
+@ApiForbiddenResponse({ description: 'Required permission is missing.' })
 export class MembersController {
   constructor(
     private readonly membersService: MembersService,
@@ -53,8 +54,8 @@ export class MembersController {
   ) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(StaffRole.Staff, StaffRole.Admin)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions(AuthPermission.MembersManage)
   create(
     @Body() dto: CreateMemberDto,
     @CurrentUser() actor?: AuditActor,
@@ -63,8 +64,8 @@ export class MembersController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(StaffRole.Staff, StaffRole.Admin)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions(AuthPermission.MembersRead)
   findAll(@Query() query: MemberQueryDto): Promise<MemberResponseDto[]> {
     return this.membersService.findAll(query);
   }
@@ -97,6 +98,7 @@ export class MembersController {
     @CurrentMember() member: { id: string },
     @Query() query: BorrowingQueryDto,
   ): Promise<BorrowingResponseDto[]> {
+    this.rejectUserSuppliedMemberId(query, member.id);
     return this.borrowingsService.findByMember(member.id, query);
   }
 
@@ -112,8 +114,8 @@ export class MembersController {
   }
 
   @Get(':id/policy-status')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(StaffRole.Staff, StaffRole.Admin)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions(AuthPermission.MembersRead)
   getPolicyStatus(
     @Param('id') id: string,
   ): Promise<MemberPolicyStatusResponseDto> {
@@ -121,8 +123,8 @@ export class MembersController {
   }
 
   @Get(':id/borrowings')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(StaffRole.Staff, StaffRole.Admin)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions(AuthPermission.MembersRead)
   findBorrowings(
     @Param('id') id: string,
     @Query() query: BorrowingQueryDto,
@@ -131,20 +133,29 @@ export class MembersController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(StaffRole.Staff, StaffRole.Admin)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions(AuthPermission.MembersRead)
   findOne(@Param('id') id: string): Promise<MemberResponseDto> {
     return this.membersService.findOne(id);
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(StaffRole.Staff, StaffRole.Admin)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions(AuthPermission.MembersManage)
   update(
     @Param('id') id: string,
     @Body() dto: UpdateMemberDto,
     @CurrentUser() actor?: AuditActor,
   ): Promise<MemberResponseDto> {
     return this.membersService.update(id, dto, actor);
+  }
+
+  private rejectUserSuppliedMemberId(
+    query: BorrowingQueryDto,
+    authenticatedMemberId: string,
+  ): void {
+    if (query.memberId && query.memberId !== authenticatedMemberId) {
+      throw new ForbiddenException('Member id must come from the token');
+    }
   }
 }
