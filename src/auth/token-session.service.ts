@@ -14,11 +14,17 @@ export interface CreateRefreshTokenFamilyInput {
   subjectType: AuthSubjectType;
   subjectId: string;
   scopes: string[];
+  authVersion: number;
   ttlSeconds: number;
 }
 
 export interface RefreshTokenRotationResult {
   familyId: string;
+  clientId: string;
+  subjectType: AuthSubjectType;
+  subjectId: string;
+  scopes: string[];
+  authVersion: number;
   refreshToken: string;
   expiresAt: Date;
 }
@@ -52,6 +58,7 @@ export class TokenSessionService {
       subjectType: input.subjectType,
       subjectId: input.subjectId,
       scopes: input.scopes,
+      authVersion: input.authVersion,
       status: RefreshTokenFamilyStatus.Active,
       currentTokenHash: this.hashRefreshToken(refreshToken),
       issuedAt: now,
@@ -59,7 +66,16 @@ export class TokenSessionService {
       expiresAt,
     });
 
-    return { familyId, refreshToken, expiresAt };
+    return {
+      familyId,
+      clientId: input.clientId,
+      subjectType: input.subjectType,
+      subjectId: input.subjectId,
+      scopes: input.scopes,
+      authVersion: input.authVersion,
+      refreshToken,
+      expiresAt,
+    };
   }
 
   async rotate(refreshToken: string): Promise<RefreshTokenRotationResult> {
@@ -87,9 +103,37 @@ export class TokenSessionService {
 
     return {
       familyId: family.familyId,
+      clientId: family.clientId,
+      subjectType: family.subjectType,
+      subjectId: family.subjectId,
+      scopes: family.scopes,
+      authVersion: family.authVersion ?? 0,
       refreshToken: nextRefreshToken,
       expiresAt: family.expiresAt,
     };
+  }
+
+  async revokeRefreshToken(
+    refreshToken: string | undefined,
+    reason: string,
+  ): Promise<void> {
+    if (!refreshToken) {
+      return;
+    }
+
+    await this.refreshTokenFamilyModel.updateMany(
+      {
+        currentTokenHash: this.hashRefreshToken(refreshToken),
+        status: RefreshTokenFamilyStatus.Active,
+      },
+      {
+        $set: {
+          status: RefreshTokenFamilyStatus.Revoked,
+          revokedAt: new Date(),
+          revokedReason: reason,
+        },
+      },
+    );
   }
 
   async revokeFamily(familyId: string, reason: string): Promise<void> {

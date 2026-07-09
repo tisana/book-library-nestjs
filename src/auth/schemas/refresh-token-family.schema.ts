@@ -20,6 +20,7 @@ export interface RefreshTokenFamilyDocument extends Document<Types.ObjectId> {
   subjectType: AuthSubjectType;
   subjectId: string;
   scopes: string[];
+  authVersion: number;
   status: RefreshTokenFamilyStatus;
   currentTokenHash: string;
   previousTokenHash?: string;
@@ -43,6 +44,7 @@ export const RefreshTokenFamilySchema = new Schema<RefreshTokenFamilyDocument>(
     },
     subjectId: { type: String, required: true, index: true },
     scopes: { type: [String], required: true, default: [] },
+    authVersion: { type: Number, required: true, min: 0, default: 0 },
     status: {
       type: String,
       enum: Object.values(RefreshTokenFamilyStatus),

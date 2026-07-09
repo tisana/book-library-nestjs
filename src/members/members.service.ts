@@ -65,6 +65,7 @@ export class MembersService {
       membershipTypeId: dto.membershipTypeId,
       status: MemberStatus.Active,
       activeLoanCount: dto.activeLoanCount ?? 0,
+      authVersion: 0,
       createdBy: actor?.id,
       updatedBy: actor?.id,
     }).save();
@@ -158,8 +159,9 @@ export class MembersService {
       member.phone = dto.phone;
     }
 
-    if (dto.status !== undefined) {
+    if (dto.status !== undefined && dto.status !== member.status) {
       member.status = dto.status;
+      member.authVersion = (member.authVersion ?? 0) + 1;
     }
 
     if (dto.activeLoanCount !== undefined) {
@@ -264,6 +266,7 @@ export class MembersService {
     );
     member.passwordUpdatedAt = new Date();
     member.authStatus = MemberAuthStatus.Active;
+    member.authVersion = (member.authVersion ?? 0) + 1;
     member.updatedBy = actor?.id;
 
     return this.toResponse(await member.save());
@@ -279,6 +282,13 @@ export class MembersService {
     }
 
     return member;
+  }
+
+  async bumpAuthVersion(id: string): Promise<void> {
+    await this.memberModel.updateOne(
+      { _id: equals(toMongoObjectId(id)) },
+      { $inc: { authVersion: 1 } },
+    );
   }
 
   private toResponse(member: MemberDocument): MemberResponseDto {

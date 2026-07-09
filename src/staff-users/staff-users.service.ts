@@ -53,6 +53,8 @@ export class StaffUsersService {
       passwordHash,
       roles: dto.roles,
       status: StaffUserStatus.Active,
+      authVersion: 0,
+      passwordUpdatedAt: new Date(),
       createdBy: actor?.id,
       updatedBy: actor?.id,
     }).save();
@@ -109,7 +111,16 @@ export class StaffUsersService {
     );
   }
 
-  toResponse(user: Partial<StaffUserDocument> & { id?: string }): StaffUserResponseDto {
+  async bumpAuthVersion(id: string): Promise<void> {
+    await this.staffUserModel.updateOne(
+      { _id: equals(toMongoObjectId(id)) },
+      { $inc: { authVersion: 1 } },
+    );
+  }
+
+  toResponse(
+    user: Partial<StaffUserDocument> & { id?: string },
+  ): StaffUserResponseDto {
     const maybeObjectId = user._id as { toString?: () => string } | undefined;
 
     return {
