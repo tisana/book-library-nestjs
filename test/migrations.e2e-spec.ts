@@ -24,6 +24,25 @@ class FakeMigrationCollection<
     this.indexes.push({ keys, options });
   }
 
+  async updateMany(
+    filter: Record<string, unknown>,
+    update: Record<string, unknown>,
+    options?: Record<string, unknown>,
+  ) {
+    void filter;
+    void options;
+
+    const set = update.$set as Partial<T> | undefined;
+
+    if (set) {
+      for (const record of this.records) {
+        Object.assign(record, set);
+      }
+    }
+
+    return { modifiedCount: this.records.length };
+  }
+
   find(): ReturnType<MigrationCollection<T>['find']> {
     return {
       sort: (sort: Record<string, 1 | -1>) => {

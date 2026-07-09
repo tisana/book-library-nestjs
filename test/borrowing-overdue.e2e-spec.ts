@@ -2,6 +2,7 @@ import { ConflictException, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
+import { PermissionsGuard } from '../src/auth/permissions.guard';
 import { RolesGuard } from '../src/auth/roles.guard';
 import { LoanState } from '../src/common/enums/library-status.enum';
 import { BorrowingsController } from '../src/borrowings/borrowings.controller';
@@ -56,6 +57,8 @@ describe('Borrowing overdue endpoints (e2e)', () => {
       providers: [{ provide: BorrowingsService, useValue: borrowingsService }],
     })
       .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(PermissionsGuard)
       .useValue({ canActivate: () => true })
       .overrideGuard(RolesGuard)
       .useValue({ canActivate: () => true })

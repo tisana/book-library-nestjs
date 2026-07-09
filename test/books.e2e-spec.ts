@@ -6,6 +6,7 @@ import { Test } from '@nestjs/testing';
 
 import { BooksController } from '../src/books/books.controller';
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
+import { PermissionsGuard } from '../src/auth/permissions.guard';
 import { RolesGuard } from '../src/auth/roles.guard';
 import { LibraryItemStatus } from '../src/common/enums/library-status.enum';
 
@@ -30,6 +31,8 @@ describe('Books', () => {
       providers: [{ provide: BooksService, useValue: booksService }],
     })
       .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(PermissionsGuard)
       .useValue({ canActivate: () => true })
       .overrideGuard(RolesGuard)
       .useValue({ canActivate: () => true })

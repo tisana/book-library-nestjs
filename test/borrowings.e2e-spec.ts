@@ -2,6 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
+import { PermissionsGuard } from '../src/auth/permissions.guard';
 import { RolesGuard } from '../src/auth/roles.guard';
 import { BorrowingsController } from '../src/borrowings/borrowings.controller';
 import { BorrowingsService } from '../src/borrowings/borrowings.service';
@@ -45,6 +46,8 @@ describe('Borrowing display fields (e2e)', () => {
       providers: [{ provide: BorrowingsService, useValue: borrowingsService }],
     })
       .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(PermissionsGuard)
       .useValue({ canActivate: () => true })
       .overrideGuard(RolesGuard)
       .useValue({ canActivate: () => true })

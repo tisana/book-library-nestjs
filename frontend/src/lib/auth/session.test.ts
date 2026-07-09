@@ -68,4 +68,27 @@ describe('auth session store', () => {
     expect(authSession.getSnapshot().accessToken).toBeUndefined();
     expect(cachedClient.getQueryData(['staff', 'books'])).toBeUndefined();
   });
+
+  it('clears local session even when server logout cannot be reached', async () => {
+    const cachedClient = queryClient as QueryClient;
+    cachedClient.setQueryData(
+      ['member', 'borrowings'],
+      [{ id: 'borrowing-1' }],
+    );
+    authSession.setSession('member-token', {
+      id: 'member-1',
+      memberNumber: 'M-1001',
+      displayName: 'Member One',
+      roleArea: 'member',
+      permissions: ['member:self:read'],
+    });
+
+    server.use(
+      http.post(`${apiBaseUrl}/auth/logout`, () => HttpResponse.error()),
+    );
+
+    await expect(signOut('member')).resolves.toBe('/member/login');
+    expect(authSession.getSnapshot().accessToken).toBeUndefined();
+    expect(cachedClient.getQueryData(['member', 'borrowings'])).toBeUndefined();
+  });
 });
