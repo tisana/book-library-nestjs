@@ -1,5 +1,8 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
-import { StaffRole, LibraryItemStatus } from '../common/enums/library-status.enum';
+import {
+  StaffRole,
+  LibraryItemStatus,
+} from '../common/enums/library-status.enum';
 import { BookCategoriesService } from './book-categories.service';
 import { Model } from 'mongoose';
 import { BookCategoryDocument } from './schemas/book-category.schema';
@@ -25,18 +28,20 @@ describe('BookCategoriesService', () => {
 
     it('creates active categories with normalized unique code, loan period, and audit actor', async () => {
       const createdDocuments: any[] = [];
-      const model: MockCategoryModel = jest.fn().mockImplementation((document) => {
-        createdDocuments.push(document);
+      const model: MockCategoryModel = jest
+        .fn()
+        .mockImplementation((document) => {
+          createdDocuments.push(document);
 
-        return {
-          save: jest.fn().mockResolvedValue({
-            id: 'category-id',
-            ...document,
-            createdAt: new Date('2026-05-30T00:00:00.000Z'),
-            updatedAt: new Date('2026-05-30T00:00:00.000Z'),
-          }),
-        };
-      });
+          return {
+            save: jest.fn().mockResolvedValue({
+              id: 'category-id',
+              ...document,
+              createdAt: new Date('2026-05-30T00:00:00.000Z'),
+              updatedAt: new Date('2026-05-30T00:00:00.000Z'),
+            }),
+          };
+        });
       model.exists = jest.fn().mockResolvedValue(null);
       const service = new BookCategoriesService(asModel(model));
 

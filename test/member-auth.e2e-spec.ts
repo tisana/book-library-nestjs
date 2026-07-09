@@ -7,13 +7,22 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 
+import { AuthController } from '../src/auth/auth.controller';
+import { AuthService } from '../src/auth/auth.service';
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
 import { MemberAuthGuard } from '../src/auth/member-auth.guard';
-import { RolesGuard } from '../src/auth/roles.guard';
+import { PermissionsGuard } from '../src/auth/permissions.guard';
+import { PermissionsService } from '../src/auth/permissions.service';
+import { AuthPermission } from '../src/common/enums/auth-permission.enum';
 import { StaffRole } from '../src/common/enums/library-status.enum';
 import { BorrowingsService } from '../src/borrowings/borrowings.service';
 import { MembersController } from '../src/members/members.controller';
 import { MembersService } from '../src/members/members.service';
+
+function setCookieHeader(headers: request.Response['headers']): string {
+  const value = headers['set-cookie'];
+  return Array.isArray(value) ? value.join(';') : (value ?? '').toString();
+}
 
 describe('Member self-service authorization (e2e)', () => {
   let app: INestApplication;
@@ -34,6 +43,7 @@ describe('Member self-service authorization (e2e)', () => {
       id: 'member-1',
       memberNumber: 'M-1001',
       roleArea: 'member',
+      permissions: [AuthPermission.MemberSelfRead],
     },
     'staff-token': {
       id: 'staff-1',
@@ -41,6 +51,7 @@ describe('Member self-service authorization (e2e)', () => {
       displayName: 'Staff User',
       roles: [StaffRole.Staff],
       roleArea: 'staff',
+      permissions: [],
     },
   };
   const jwtGuard: CanActivate = {
@@ -80,7 +91,8 @@ describe('Member self-service authorization (e2e)', () => {
       controllers: [MembersController],
       providers: [
         MemberAuthGuard,
-        RolesGuard,
+        PermissionsGuard,
+        PermissionsService,
         { provide: MembersService, useValue: membersService },
         { provide: BorrowingsService, useValue: borrowingsService },
       ],
@@ -120,5 +132,112 @@ describe('Member self-service authorization (e2e)', () => {
       .get('/members/me')
       .set('Authorization', 'Bearer staff-token')
       .expect(403);
+  });
+});
+
+describe('Member authentication endpoints (e2e)', () => {
+  let app: INestApplication;
+
+  beforeEach(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      controllers: [AuthController],
+      providers: [
+        {
+          provide: AuthService,
+          useValue: {
+            createMemberSession: jest.fn(async () => ({
+              refreshToken: 'member-refresh-token',
+              response: {
+                accessToken: 'member-access-token',
+                tokenType: 'Bearer',
+                expiresIn: 900,
+                scope: 'member:self:read',
+                permissions: ['member:self:read'],
+                member: {
+                  id: 'member-1',
+                  memberNumber: 'M-1001',
+                  displayName: 'Jane Reader',
+                  email: 'jane.reader@example.test',
+                },
+              },
+            })),
+            refresh: jest.fn(async () => ({
+              refreshToken: 'rotated-member-refresh-token',
+              response: {
+                accessToken: 'member-access-token-2',
+                tokenType: 'Bearer',
+                expiresIn: 900,
+                scope: 'member:self:read',
+                permissions: ['member:self:read'],
+                member: {
+                  id: 'member-1',
+                  memberNumber: 'M-1001',
+                  displayName: 'Jane Reader',
+                  email: 'jane.reader@example.test',
+                },
+              },
+            })),
+            getRefreshCookieTtlSeconds: jest.fn().mockReturnValue(3600),
+            getRefreshCookieOptions: jest.fn().mockReturnValue({
+              httpOnly: true,
+              secure: false,
+              sameSite: 'lax',
+              path: '/auth',
+              maxAge: 3600000,
+            }),
+            getClearRefreshCookieOptions: jest.fn().mockReturnValue({
+              httpOnly: true,
+              secure: false,
+              sameSite: 'lax',
+              path: '/auth',
+              maxAge: 0,
+            }),
+          },
+        },
+      ],
+    }).compile();
+
+    app = moduleFixture.createNestApplication();
+    await app.init();
+  });
+
+  afterEach(async () => {
+    await app.close();
+  });
+
+  it('returns member token metadata and sets a refresh cookie', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/auth/member-login')
+      .send({ loginIdentifier: 'M-1001', password: 'MemberPass123!' })
+      .expect(200);
+
+    expect(response.body).toMatchObject({
+      accessToken: 'member-access-token',
+      tokenType: 'Bearer',
+      scope: 'member:self:read',
+      permissions: ['member:self:read'],
+      member: {
+        id: 'member-1',
+        memberNumber: 'M-1001',
+      },
+    });
+    expect(setCookieHeader(response.headers)).toContain(
+      'book_library_refresh=member-refresh-token',
+    );
+  });
+
+  it('rotates member refresh cookies on refresh', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/auth/refresh')
+      .set('Cookie', ['book_library_refresh=member-refresh-token'])
+      .expect(200);
+
+    expect(response.body).toMatchObject({
+      accessToken: 'member-access-token-2',
+      tokenType: 'Bearer',
+    });
+    expect(setCookieHeader(response.headers)).toContain(
+      'book_library_refresh=rotated-member-refresh-token',
+    );
   });
 });

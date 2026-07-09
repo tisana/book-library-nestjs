@@ -11,13 +11,16 @@ import { migration as migration000 } from '../migrations/versions/000-migration-
 import { migration as migration001 } from '../migrations/versions/001-library-core';
 import { migration as migration002 } from '../migrations/versions/002-member-auth';
 
-class FakeMigrationCollection<T extends { version?: string }>
-  implements MigrationCollection<T>
-{
+class FakeMigrationCollection<
+  T extends { version?: string },
+> implements MigrationCollection<T> {
   private readonly records: T[] = [];
   readonly indexes: Array<Record<string, unknown>> = [];
 
-  async createIndex(keys: Record<string, 1 | -1>, options?: Record<string, unknown>) {
+  async createIndex(
+    keys: Record<string, 1 | -1>,
+    options?: Record<string, unknown>,
+  ) {
     this.indexes.push({ keys, options });
   }
 

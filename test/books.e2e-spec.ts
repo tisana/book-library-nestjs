@@ -27,9 +27,7 @@ describe('Books', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [BooksController],
-      providers: [
-        { provide: BooksService, useValue: booksService },
-      ],
+      providers: [{ provide: BooksService, useValue: booksService }],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue({ canActivate: () => true })

@@ -17,7 +17,10 @@ import {
   BookCategoryModelName,
 } from '../src/book-categories/schemas/book-category.schema';
 import { BookDocument, BookModelName } from '../src/books/schemas/book.schema';
-import { MemberDocument, MemberModelName } from '../src/members/schemas/member.schema';
+import {
+  MemberDocument,
+  MemberModelName,
+} from '../src/members/schemas/member.schema';
 import {
   MembershipTypeDocument,
   MembershipTypeModelName,
@@ -51,10 +54,7 @@ describe('Borrowing transaction consistency (e2e)', () => {
     });
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        MongooseModule.forRoot(replSet.getUri()),
-        BorrowingsModule,
-      ],
+      imports: [MongooseModule.forRoot(replSet.getUri()), BorrowingsModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -137,7 +137,9 @@ describe('Borrowing transaction consistency (e2e)', () => {
       });
     }
 
-    await expect(bookModel.findById(book._id).lean().exec()).resolves.toMatchObject({
+    await expect(
+      bookModel.findById(book._id).lean().exec(),
+    ).resolves.toMatchObject({
       availableQuantity: 1,
     });
     await expect(
@@ -145,8 +147,8 @@ describe('Borrowing transaction consistency (e2e)', () => {
     ).resolves.toMatchObject({
       activeLoanCount: 0,
     });
-    await expect(borrowingModel.countDocuments({ status: LoanState.Returned })).resolves.toBe(
-      100,
-    );
+    await expect(
+      borrowingModel.countDocuments({ status: LoanState.Returned }),
+    ).resolves.toBe(100);
   });
 });

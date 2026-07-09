@@ -61,6 +61,7 @@ describe('TokenSessionService', () => {
       subjectType: AuthSubjectType.Staff,
       subjectId: 'staff-user-id',
       scopes: ['catalog:read'],
+      authVersion: 0,
       ttlSeconds: 60,
     });
 
@@ -75,6 +76,7 @@ describe('TokenSessionService', () => {
       subjectType: AuthSubjectType.Staff,
       subjectId: 'staff-user-id',
       scopes: ['catalog:read'],
+      authVersion: 0,
       ttlSeconds: 60,
     });
 
@@ -95,6 +97,7 @@ describe('TokenSessionService', () => {
       subjectType: AuthSubjectType.Staff,
       subjectId: 'staff-user-id',
       scopes: ['catalog:read'],
+      authVersion: 0,
       ttlSeconds: 60,
     });
 

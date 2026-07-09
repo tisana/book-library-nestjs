@@ -10,7 +10,10 @@ import * as request from 'supertest';
 
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
 import { MemberAuthGuard } from '../src/auth/member-auth.guard';
+import { PermissionsGuard } from '../src/auth/permissions.guard';
+import { PermissionsService } from '../src/auth/permissions.service';
 import { RolesGuard } from '../src/auth/roles.guard';
+import { AuthPermission } from '../src/common/enums/auth-permission.enum';
 import { BorrowingsService } from '../src/borrowings/borrowings.service';
 import { MembersController } from '../src/members/members.controller';
 import { MembersService } from '../src/members/members.service';
@@ -37,16 +40,38 @@ describe('Member self-service ownership (e2e)', () => {
       }>();
       const token = httpRequest.headers.authorization?.replace('Bearer ', '');
 
+      if (token === 'member-token') {
+        httpRequest.user = {
+          id: 'member-1',
+          memberNumber: 'M-1001',
+          roleArea: 'member',
+          permissions: [AuthPermission.MemberSelfRead],
+        };
+        return true;
+      }
+
+      if (token === 'member-token-without-self-read') {
+        httpRequest.user = {
+          id: 'member-1',
+          memberNumber: 'M-1001',
+          roleArea: 'member',
+          permissions: [],
+        };
+        return true;
+      }
+
+      if (token === 'staff-token') {
+        httpRequest.user = {
+          id: 'staff-1',
+          roleArea: 'staff',
+          permissions: [AuthPermission.MemberSelfRead],
+        };
+        return true;
+      }
+
       if (token !== 'member-token') {
         throw new UnauthorizedException();
       }
-
-      httpRequest.user = {
-        id: 'member-1',
-        memberNumber: 'M-1001',
-        roleArea: 'member',
-      };
-      return true;
     },
   };
 
@@ -71,6 +96,8 @@ describe('Member self-service ownership (e2e)', () => {
       controllers: [MembersController],
       providers: [
         MemberAuthGuard,
+        PermissionsGuard,
+        PermissionsService,
         RolesGuard,
         { provide: MembersService, useValue: membersService },
         { provide: BorrowingsService, useValue: borrowingsService },
@@ -91,7 +118,7 @@ describe('Member self-service ownership (e2e)', () => {
   });
 
   afterEach(async () => {
-    await app.close();
+    await app?.close();
   });
 
   it('derives profile, policy, and borrowing list ownership from the member token', async () => {
@@ -104,9 +131,7 @@ describe('Member self-service ownership (e2e)', () => {
       .set('Authorization', 'Bearer member-token')
       .expect(200);
     await request(app.getHttpServer())
-      .get(
-        '/members/me/borrowings?memberId=665f4d3b8f4c8a001f5f0a12&currentOnly=true',
-      )
+      .get('/members/me/borrowings?currentOnly=true')
       .set('Authorization', 'Bearer member-token')
       .expect(200);
 
@@ -117,10 +142,18 @@ describe('Member self-service ownership (e2e)', () => {
     expect(borrowingsService.findByMember).toHaveBeenCalledWith(
       'member-1',
       expect.objectContaining({
-        memberId: '665f4d3b8f4c8a001f5f0a12',
         currentOnly: true,
       }),
     );
+  });
+
+  it('rejects user-supplied member ids on self-service borrowing queries', async () => {
+    await request(app.getHttpServer())
+      .get('/members/me/borrowings?memberId=665f4d3b8f4c8a001f5f0a12')
+      .set('Authorization', 'Bearer member-token')
+      .expect(403);
+
+    expect(borrowingsService.findByMember).not.toHaveBeenCalled();
   });
 
   it('checks borrowing detail ownership through the authenticated member id', async () => {
@@ -133,5 +166,16 @@ describe('Member self-service ownership (e2e)', () => {
       'borrowing-2',
       'member-1',
     );
+  });
+
+  it('rejects member self-service without member role area and member:self:read', async () => {
+    await request(app.getHttpServer())
+      .get('/members/me')
+      .set('Authorization', 'Bearer member-token-without-self-read')
+      .expect(403);
+    await request(app.getHttpServer())
+      .get('/members/me')
+      .set('Authorization', 'Bearer staff-token')
+      .expect(403);
   });
 });

@@ -8,6 +8,7 @@ import {
   StaffRole,
   StaffUserStatus,
 } from '../common/enums/library-status.enum';
+import { AuthSubjectType } from './schemas/refresh-token-family.schema';
 
 function loadAuthService(): any | undefined {
   try {
@@ -56,6 +57,9 @@ describe('AuthService login contract', () => {
       expect(passwordHasher.verify).toHaveBeenCalledWith(
         staffUser.passwordHash,
         'correct-password',
+      );
+      expect(staffUsersService.touchLastLogin).toHaveBeenCalledWith(
+        staffUser.id,
       );
       expect(jwtService.signAsync).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -117,6 +121,57 @@ describe('AuthService login contract', () => {
       expect(jwtService.signAsync).not.toHaveBeenCalled();
     });
 
+    it('creates a staff refresh session with hashed-token family metadata', async () => {
+      const staffUser = {
+        id: 'staff-user-id',
+        email: 'staff@example.com',
+        displayName: 'Staff User',
+        passwordHash: 'hashed-password',
+        roles: [StaffRole.Staff],
+        status: StaffUserStatus.Active,
+        authVersion: 4,
+      };
+      const tokenSessionService = {
+        createFamily: jest.fn().mockResolvedValue({
+          refreshToken: 'refresh-token',
+        }),
+        getRefreshCookieOptions: jest.fn(),
+        getClearRefreshCookieOptions: jest.fn(),
+      };
+      const service = new AuthService(
+        {
+          findByEmailWithPassword: jest.fn().mockResolvedValue(staffUser),
+          touchLastLogin: jest.fn().mockResolvedValue(undefined),
+        },
+        undefined,
+        { verify: jest.fn().mockResolvedValue(true) },
+        { signAsync: jest.fn().mockResolvedValue('jwt-token') },
+        {
+          get: jest.fn((key: string) =>
+            key === 'auth.refreshTokenTtlSeconds' ? 3600 : 900,
+          ),
+        },
+        tokenSessionService as any,
+        { record: jest.fn().mockResolvedValue(undefined) } as any,
+      );
+
+      const result = await service.createStaffSession({
+        email: staffUser.email,
+        password: 'correct-password',
+      });
+
+      expect(result.refreshToken).toBe('refresh-token');
+      expect(tokenSessionService.createFamily).toHaveBeenCalledWith(
+        expect.objectContaining({
+          clientId: 'book-library-web',
+          subjectType: AuthSubjectType.Staff,
+          subjectId: staffUser.id,
+          authVersion: 4,
+          ttlSeconds: 3600,
+        }),
+      );
+    });
+
     it('returns a member JWT and redacted member profile for valid member credentials', async () => {
       const member = {
         id: 'member-id',
@@ -161,6 +216,7 @@ describe('AuthService login contract', () => {
         member.passwordHash,
         'correct-password',
       );
+      expect(membersService.touchLastLogin).toHaveBeenCalledWith(member.id);
       expect(jwtService.signAsync).toHaveBeenCalledWith(
         expect.objectContaining({
           sub: member.id,
@@ -227,6 +283,37 @@ describe('AuthService login contract', () => {
         }),
       ).rejects.toBeInstanceOf(UnauthorizedException);
       expect(jwtService.signAsync).not.toHaveBeenCalled();
+    });
+
+    it('rejects refresh when account authVersion is newer than the session', async () => {
+      const staffUsersService = {
+        findActiveById: jest.fn().mockResolvedValue({
+          id: 'staff-user-id',
+          email: 'staff@example.com',
+          displayName: 'Staff User',
+          roles: [StaffRole.Staff],
+          authVersion: 2,
+        }),
+      };
+      const service = new AuthService(
+        staffUsersService,
+        undefined,
+        { verify: jest.fn() },
+        { signAsync: jest.fn() },
+        { get: jest.fn().mockReturnValue(900) },
+        {
+          rotate: jest.fn().mockResolvedValue({
+            subjectType: AuthSubjectType.Staff,
+            subjectId: 'staff-user-id',
+            authVersion: 1,
+            refreshToken: 'next-refresh-token',
+          }),
+        } as any,
+      );
+
+      await expect(service.refresh('refresh-token')).rejects.toBeInstanceOf(
+        UnauthorizedException,
+      );
     });
   });
 });
