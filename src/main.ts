@@ -59,7 +59,9 @@ function resolveFrontendStaticRoot(): string | undefined {
     join(process.cwd(), 'frontend', 'dist'),
   ].filter(Boolean) as string[];
 
-  return candidates.find((candidate) => existsSync(join(candidate, 'index.html')));
+  return candidates.find((candidate) =>
+    existsSync(join(candidate, 'index.html')),
+  );
 }
 
 const frontendRoutePattern =
