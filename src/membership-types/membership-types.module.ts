@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { PermissionsGuard } from '../auth/permissions.guard';
+import { PermissionsService } from '../auth/permissions.service';
 import { MembershipTypesController } from './membership-types.controller';
 import { MembershipTypesService } from './membership-types.service';
 import {
@@ -14,7 +16,7 @@ import {
     ]),
   ],
   controllers: [MembershipTypesController],
-  providers: [MembershipTypesService],
+  providers: [MembershipTypesService, PermissionsGuard, PermissionsService],
   exports: [MembershipTypesService],
 })
 export class MembershipTypesModule {}

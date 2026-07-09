@@ -15,10 +15,10 @@ import {
 } from '@nestjs/swagger';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Roles } from '../auth/roles.decorator';
-import { RolesGuard } from '../auth/roles.guard';
+import { PermissionsGuard } from '../auth/permissions.guard';
+import { RequirePermissions } from '../auth/permissions.decorator';
 import { AuditActor } from '../common/audit/audit-context';
-import { StaffRole } from '../common/enums/library-status.enum';
+import { AuthPermission } from '../common/enums/auth-permission.enum';
 import {
   BookQueryDto,
   BookResponseDto,
@@ -30,23 +30,25 @@ import { BooksService } from './books.service';
 @Controller('books')
 @ApiBearerAuth()
 @ApiUnauthorizedResponse({ description: 'Bearer token is missing or invalid.' })
-@ApiForbiddenResponse({ description: 'Staff or admin role is required.' })
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(StaffRole.Staff, StaffRole.Admin)
+@ApiForbiddenResponse({ description: 'Required permission is missing.' })
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
   @Get()
+  @RequirePermissions(AuthPermission.CatalogRead)
   findAll(@Query() query: BookQueryDto): Promise<BookResponseDto[]> {
     return this.booksService.findAll(query);
   }
 
   @Get(':id')
+  @RequirePermissions(AuthPermission.CatalogRead)
   findOne(@Param('id') id: string): Promise<BookResponseDto> {
     return this.booksService.findOne(id);
   }
 
   @Post()
+  @RequirePermissions(AuthPermission.CatalogManage)
   create(
     @Body() dto: CreateBookDto,
     @CurrentUser() actor?: AuditActor,
@@ -55,6 +57,7 @@ export class BooksController {
   }
 
   @Patch(':id')
+  @RequirePermissions(AuthPermission.CatalogManage)
   update(
     @Param('id') id: string,
     @Body() dto: UpdateBookDto,

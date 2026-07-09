@@ -15,10 +15,10 @@ import {
 } from '@nestjs/swagger';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Roles } from '../auth/roles.decorator';
-import { RolesGuard } from '../auth/roles.guard';
+import { PermissionsGuard } from '../auth/permissions.guard';
+import { RequirePermissions } from '../auth/permissions.decorator';
 import { AuditActor } from '../common/audit/audit-context';
-import { StaffRole } from '../common/enums/library-status.enum';
+import { AuthPermission } from '../common/enums/auth-permission.enum';
 import {
   CreateMembershipTypeDto,
   MembershipTypeQueryDto,
@@ -30,15 +30,15 @@ import { MembershipTypesService } from './membership-types.service';
 @Controller('membership-types')
 @ApiBearerAuth()
 @ApiUnauthorizedResponse({ description: 'Bearer token is missing or invalid.' })
-@ApiForbiddenResponse({ description: 'Staff or admin role is required.' })
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(StaffRole.Staff, StaffRole.Admin)
+@ApiForbiddenResponse({ description: 'Required permission is missing.' })
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 export class MembershipTypesController {
   constructor(
     private readonly membershipTypesService: MembershipTypesService,
   ) {}
 
   @Post()
+  @RequirePermissions(AuthPermission.MembershipTypesManage)
   create(
     @Body() dto: CreateMembershipTypeDto,
     @CurrentUser() actor?: AuditActor,
@@ -47,6 +47,7 @@ export class MembershipTypesController {
   }
 
   @Get()
+  @RequirePermissions(AuthPermission.MembershipTypesRead)
   findAll(
     @Query() query: MembershipTypeQueryDto,
   ): Promise<MembershipTypeResponseDto[]> {
@@ -54,6 +55,7 @@ export class MembershipTypesController {
   }
 
   @Patch(':id')
+  @RequirePermissions(AuthPermission.MembershipTypesManage)
   update(
     @Param('id') id: string,
     @Body() dto: UpdateMembershipTypeDto,
