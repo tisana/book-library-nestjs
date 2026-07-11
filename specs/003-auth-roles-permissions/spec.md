@@ -65,6 +65,7 @@ An administrator assigns clear roles to staff users so library workers receive o
 2. **Given** a staff user without administrator permissions, **When** they try to manage users, roles, or permissions, **Then** the system denies the action.
 3. **Given** a staff user with catalog permissions, **When** they manage books and copies, **Then** the system allows catalog actions but blocks unrelated admin-only actions.
 4. **Given** a staff user changes roles, **When** they next use a protected workflow, **Then** the system applies the updated permissions.
+5. **Given** legacy staff and member records claim the same normalized sign-in identifier, **When** an administrator reviews identifier conflicts, **Then** they can identify the affected account contexts and resolve the conflict by assigning a unique identifier without viewing or changing either account's password.
 
 ---
 
@@ -88,6 +89,7 @@ An administrator can review security-relevant events such as failed sign-in atte
 - A user with no assigned role must authenticate only if the account is valid, then receive no protected access until a role is assigned.
 - A member who is also employed by the library must use an explicit staff/admin role assignment before accessing back office workflows.
 - A sign-in identifier that matches more than one account context must not authenticate until the ambiguity is resolved, and the user-facing failure message must remain generic.
+- Concurrent staff and member account updates that attempt to claim the same normalized identifier must result in exactly one successful claim.
 - Deleted or suspended member records must not leave behind active member access.
 - Role changes must not require manual server restarts or in-memory updates to take effect.
 - Security-related errors must avoid exposing passwords, secrets, full protected payloads, or unrelated member borrowing history.
@@ -121,9 +123,10 @@ An administrator can review security-relevant events such as failed sign-in atte
 - **FR-022**: System MUST support a first administrator setup path so the system can be initialized without relying on hard-coded production credentials.
 - **FR-023**: System MUST allow member authentication to be linked to the existing member record so member self-service access is scoped to the correct person.
 - **FR-024**: System MUST keep role and permission names understandable to administrators and aligned with library workflows rather than internal implementation labels.
-- **FR-025**: System MUST provide a single sign-in page for staff, administrators, and members.
+- **FR-025**: System MUST provide a single sign-in page for staff, administrators, and members that supports keyboard-only operation, accessible labels, announced validation and authentication errors, deterministic focus after failure, and a loading state that prevents duplicate submission.
 - **FR-026**: System MUST route signed-in users to their landing area from authenticated role area and permissions rather than from a user-selected login type.
-- **FR-027**: System MUST prevent ambiguous account identifiers from authenticating across staff/admin and member contexts until an administrator resolves the duplicate or conflicting identifier.
+- **FR-027**: System MUST atomically reserve each normalized sign-in identifier across staff/admin and member contexts, reject concurrent or subsequent conflicting claims, fail closed for legacy ambiguity, and allow only an administrator to resolve an existing conflict by assigning a unique identifier.
+- **FR-028**: System MUST expose a deployment readiness endpoint that reports failure when MongoDB is unavailable or mandatory authentication configuration is invalid without exposing secrets or protected configuration values.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -131,6 +134,7 @@ An administrator can review security-relevant events such as failed sign-in atte
 - **Role**: Represents a named access category such as member, staff, or administrator. A role groups permissions for a common library responsibility.
 - **Permission**: Represents an allowed protected capability such as managing catalog records, managing borrowing workflows, managing members, managing staff accounts, managing roles, or viewing security activity.
 - **Member Authentication Link**: Represents the member-owned authentication fields and optional future external identity link embedded on the existing member profile, ensuring self-service access is scoped to the correct member.
+- **Authentication Identifier Reservation**: Represents the unique normalized identifier claimed by exactly one staff or member account context so MongoDB can enforce cross-collection sign-in uniqueness without introducing a global user account table.
 - **Security Activity Event**: Represents security-relevant activity including sign-in attempts, denied access, role changes, and account status changes. Events include actor when known, target when applicable, event type, time, and outcome.
 
 ## Success Criteria *(mandatory)*
@@ -142,14 +146,18 @@ An administrator can review security-relevant events such as failed sign-in atte
 - **SC-003**: Administrators can create a staff account, assign a role, and confirm access in under 5 minutes during acceptance testing.
 - **SC-004**: Role changes take effect for protected workflows within 1 minute without an application restart.
 - **SC-005**: 100% of security-sensitive events defined in this spec are recorded without passwords, tokens, or full sensitive payloads.
-- **SC-006**: At least 95% of legitimate users can complete sign-in on the first attempt when using correct credentials during usability testing.
+- **SC-006**: At least 19 of 20 representative users can complete shared sign-in on the first attempt with correct credentials and reach their authorized landing area within 30 seconds during moderated usability testing.
 - **SC-007**: Protected workflow access decisions are consistent across direct requests and normal UI navigation in all acceptance tests.
 - **SC-008**: 100% of staff/admin/member sign-in acceptance tests begin from the shared sign-in page and land on the correct area based on authenticated permissions.
+- **SC-009**: The deployment readiness endpoint returns a non-success response within 5 seconds when MongoDB is unavailable or mandatory authentication configuration is invalid.
+- **SC-010**: Shared sign-in is fully operable using only a keyboard, exposes accessible names for every field and action, announces validation and authentication errors, and prevents duplicate submission in automated accessibility tests.
+- **SC-011**: Permission evaluation adds no more than 50 ms p95 latency across 500 warmed protected requests in the documented verification environment.
+- **SC-012**: The first page of 50 security activity events returns within 2 seconds with 10,000 stored events in the documented verification environment.
 
 ## Assumptions
 
 - The application has no public library portal requirement in this feature; all member, staff, and admin areas are protected.
-- Email, username, or member number may be used as an account identifier, but identifiers used by the shared sign-in flow must be unique enough to avoid cross-context ambiguity.
+- Email, username, or member number may be used as an account identifier, but every normalized identifier used by shared sign-in is reserved to exactly one staff or member account context.
 - Member self-service accounts should link to existing member records rather than creating a separate duplicate member identity.
 - Staff and administrator users may be separate from member profiles unless a person needs both member and staff access.
 - Administrator users are trusted to manage staff accounts and role assignment.

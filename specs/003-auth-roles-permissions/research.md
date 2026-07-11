@@ -51,14 +51,15 @@ Do not use Auth.js as the primary auth implementation for this architecture. Rec
 
 ## Decision: Use a Shared Sign-In Entry Point
 
-Use one user-facing sign-in page and one primary sign-in contract for staff, administrators, and members. Keep staff/admin credentials on `StaffUser` and member credentials on `Member`; the auth service resolves the submitted identifier to exactly one eligible account context before password verification and token issuing. If the identifier matches more than one staff/member context, fail closed with the same generic sign-in failure used for invalid credentials.
+Use one user-facing sign-in page and one primary sign-in contract for staff, administrators, and members. Keep staff/admin credentials on `StaffUser` and member credentials on `Member`; store normalized identifier ownership in a small credential-free `AuthIdentifier` registry with a unique index so cross-collection uniqueness is atomic. The auth service resolves an active reservation to exactly one eligible account context before password verification and token issuing. Legacy conflicts fail closed with the same generic sign-in failure used for invalid credentials until an administrator assigns a unique replacement identifier.
 
-**Rationale**: The product has distinct library authorization rules after authentication, but users should not have to choose a role before proving identity. Routing from returned `roleArea` and permissions is simpler for users, easier to test, and avoids UI-selected role confusion. Failing closed on ambiguous identifiers prevents accidental cross-context privilege confusion when a staff user is also a member or when emails/member identifiers overlap.
+**Rationale**: The product has distinct library authorization rules after authentication, but users should not have to choose a role before proving identity. Routing from returned `roleArea` and permissions is simpler for users, easier to test, and avoids UI-selected role confusion. A read-before-write check across `StaffUser` and `Member` is race-prone because MongoDB cannot enforce one unique index across two collections; the reservation registry provides a single atomic uniqueness boundary without becoming a global user profile or credential table. Failing closed on legacy ambiguity prevents accidental cross-context privilege confusion.
 
 **Alternatives considered**:
 
 - Keep separate staff and member login pages: rejected because it pushes authorization context selection onto the user and conflicts with the clarified shared login UX.
 - Merge staff and member identities into one new user collection now: deferred because existing `StaffUser` and `Member` aggregates already own different lifecycle rules and member self-service scoping.
+- Check both account collections before every identifier save: rejected because concurrent writes can pass both checks and create an ambiguous identifier.
 - Try both login endpoints from the frontend: rejected because it leaks implementation shape into the UI and makes ambiguous identifier handling harder to audit consistently.
 
 ## Comparison: Build vs Keycloak vs Auth.js

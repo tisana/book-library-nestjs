@@ -8,7 +8,7 @@
 
 Replace the publish-risky in-memory/session-light authentication surface with a solid NestJS-owned authentication and authorization system for the current single-library application. The default implementation keeps credentials, account lifecycle, short-lived JWT access tokens, rotated refresh sessions, role assignment, permission mapping, and security activity inside the existing NestJS/MongoDB application.
 
-The user-facing sign-in experience is a single shared entry point for staff, administrators, and members. Authentication resolves the account context from the submitted identifier, rejects ambiguous cross-context identifiers with a generic failure, and routes authenticated users from returned role area and permissions rather than from a user-selected login type.
+The user-facing sign-in experience is a single shared entry point for staff, administrators, and members. Authentication resolves the account context from an atomically reserved normalized identifier, rejects legacy ambiguity with a generic failure, and routes authenticated users from returned role area and permissions rather than from a user-selected login type.
 
 The design intentionally keeps the token and role model OIDC-friendly: access tokens use issuer, subject, audience, expiry, token id, role area, and scope/permission-style claims; protected resources validate tokens through a narrow auth boundary; application authorization uses clear permission guards and member ownership checks. Keycloak remains an evaluated future option for SSO, MFA, password reset, federation, or multi-application identity, but it is not the default implementation for this feature.
 
@@ -18,21 +18,21 @@ The design intentionally keeps the token and role model OIDC-friendly: access to
 
 **Primary Dependencies**: Existing `@nestjs/jwt`, `@nestjs/passport`, `passport-jwt`, `bcryptjs`, `@nestjs/config`, `@nestjs/mongoose`, Mongoose, class-validator, Jest, Supertest, Vitest, Testing Library, Playwright, and MSW. Add `@nestjs/throttler` for login and refresh endpoint throttling. Add or evaluate `jose` for more standards-friendly JWT/JWK/JWKS handling if current `@nestjs/jwt` support is insufficient. Keycloak is not a runtime dependency in the default path.
 
-**Storage**: Existing MongoDB remains the source of truth. Staff credentials remain in `StaffUser`; member credentials remain embedded in `Member`; bounded authentication documents store OAuth/OIDC-friendly client registrations, authorization codes if the PKCE flow is implemented, refresh-token families, and security activity events.
+**Storage**: Existing MongoDB remains the source of truth. Staff credentials remain in `StaffUser`; member credentials remain embedded in `Member`; a small `AuthIdentifier` registry atomically enforces normalized sign-in identifier ownership across both aggregates; bounded authentication documents store OAuth/OIDC-friendly client registrations, authorization codes if the PKCE flow is implemented, refresh-token families, and security activity events.
 
-**Document Model Design**: Keep authentication data close to the account aggregate used during sign-in: staff login data on `StaffUser`, member login data on `Member`. A shared sign-in resolver normalizes the submitted identifier and checks staff/member account aggregates, but it does not introduce a separate user table in v1. Add separate bounded, independently expiring documents for `AuthClient`, `AuthorizationCode`, `RefreshTokenFamily`, `SecurityActivityEvent`, and optionally `RoleDefinition` if admin screens need data-managed role metadata. Reference staff/member account ids from token and event documents because sessions and events grow independently and must expire or paginate without growing account documents. Include optional future IdP link fields (`identityProvider`, `identitySubject`, `identityLinkedAt`) but do not require them for v1.
+**Document Model Design**: Keep credentials and lifecycle data on their owning account aggregates: staff login data on `StaffUser`, member login data on `Member`. Add an `AuthIdentifier` reservation document with a unique normalized identifier and a reference to exactly one staff or member subject. Account create/update operations reserve or release identifiers in a MongoDB transaction when transactions are available; deployments without transaction support must use the unique reservation insert as the commit point and compensate failed aggregate writes. The registry is not a global user table and stores no credentials, roles, profile data, or tokens. Add separate bounded, independently expiring documents for `AuthClient`, `AuthorizationCode`, `RefreshTokenFamily`, `SecurityActivityEvent`, and optionally `RoleDefinition`. Include optional future IdP link fields (`identityProvider`, `identitySubject`, `identityLinkedAt`) but do not require them for v1.
 
-**Testing**: Backend Jest unit tests for shared sign-in resolution, ambiguous identifier rejection, password verification, token issuing, token validation, permission mapping, refresh rotation, replay detection, member ownership, and audit event redaction. Backend e2e tests with Supertest for staff/admin/member sign-in through the shared contract, refresh, protected resource denial, member ownership, admin-only role/account management, and security activity access. Frontend Vitest/MSW tests for shared sign-in routing, route guards, and sign-in/sign-out states. Playwright e2e tests for staff/admin/member shared sign-in boundaries and sign-out behavior.
+**Testing**: Backend Jest unit tests for identifier reservation, concurrent collision rejection, shared sign-in resolution, legacy ambiguity rejection, password verification, token issuing, token validation, permission mapping, refresh rotation, replay detection, member ownership, and audit redaction. Backend e2e tests with Supertest cover staff/admin/member shared sign-in, application restart persistence, exhaustive route-permission allow/deny/unauthenticated cases, history preservation, readiness, role propagation, admin-only conflict resolution, and security activity. Frontend Vitest/MSW and Playwright tests cover shared sign-in routing, keyboard and screen-reader semantics, focus/error/loading states, route guards, sign-out, and staff/admin/member boundaries. A repeatable verification script measures authorization and security-activity performance; moderated usability results are recorded separately from automated tests.
 
 **Target Platform**: Browser-based web application and NestJS REST API deployed online behind HTTPS.
 
 **Project Type**: Full-stack web application in one repository: NestJS API under `src/`, React/Vite frontend under `frontend/`.
 
-**Performance Goals**: Protected API authorization checks add no more than 50 ms p95 overhead under normal library usage. Users complete sign-in in under 30 seconds. Role/permission changes affect protected requests within 1 minute. Security activity list returns the first page within 2 seconds for normal audit volume.
+**Performance Goals**: Permission evaluation adds no more than 50 ms p95 across 500 warmed protected requests in the documented verification environment. At least 19 of 20 representative users complete valid shared sign-in and reach the authorized landing area within 30 seconds. Role/permission changes affect the next protected request and always within 1 minute. The first page of 50 security events returns within 2 seconds with 10,000 stored events. Readiness reports MongoDB or mandatory auth-configuration failure within 5 seconds.
 
-**Constraints**: Server-side authorization in NestJS is authoritative; frontend route guards are convenience only. The frontend must use one shared sign-in page and choose landing pages only from authenticated role area and permissions. Access tokens must be short-lived and audience/scope restricted. Refresh tokens must be rotated and stored only as hashes. Browser storage must avoid localStorage for tokens. Passwords must be hashed with an accepted slow password hashing algorithm. Login and token endpoints must be rate-limited. No passwords, tokens, token hashes, full protected payloads, or sensitive request bodies may be logged. If an OAuth2/OIDC browser flow is added in v1, use authorization code with PKCE and do not use implicit or resource-owner-password grants.
+**Constraints**: Server-side authorization in NestJS is authoritative; frontend route guards are convenience only. The frontend must use one keyboard-accessible shared sign-in page and choose landing pages only from authenticated role area and permissions. Cross-context identifier uniqueness must rely on the unique `AuthIdentifier` reservation, not a race-prone read-before-write check. Access tokens must be short-lived and audience/scope restricted. Refresh tokens must be rotated and stored only as hashes. Browser storage must avoid localStorage for tokens. Passwords must be hashed with an accepted slow password hashing algorithm. Login and token endpoints must be rate-limited. Readiness responses and logs must not expose secrets. If an OAuth2/OIDC browser flow is added in v1, use authorization code with PKCE and do not use implicit or resource-owner-password grants.
 
-**Scale/Scope**: Single-library deployment, first-party web client, staff/admin/member roles, shared sign-in entry point, explicit permission names for existing catalog/member/borrowing/security workflows, and bounded security audit history. Keycloak, Auth.js, external IdP federation, MFA, password reset, social login, multi-tenant authorization, and fine-grained custom role builders are deferred unless later specs add them.
+**Scale/Scope**: Single-library deployment, first-party web client, staff/admin/member roles, shared sign-in entry point, unique identifier reservations, explicit permission names for existing catalog/member/borrowing/security workflows, up to 10,000 security events in the verification dataset, and bounded audit history. Keycloak, Auth.js, external IdP federation, MFA, password reset, social login, multi-tenant authorization, and fine-grained custom role builders are deferred unless later specs add them.
 
 ## Constitution Check
 
@@ -78,6 +78,7 @@ src/
 │   ├── auth.controller.ts
 │   ├── auth.module.ts
 │   ├── auth.service.ts
+│   ├── auth-identifier.service.ts
 │   ├── jwt.strategy.ts
 │   ├── jwt-auth.guard.ts
 │   ├── permission.decorator.ts
@@ -95,6 +96,10 @@ src/
 
 test/
 ├── auth.e2e-spec.ts
+├── auth-persistence.e2e-spec.ts
+├── auth-history-preservation.e2e-spec.ts
+├── authorization-matrix.e2e-spec.ts
+├── health.e2e-spec.ts
 ├── authorization.e2e-spec.ts
 ├── member-auth.e2e-spec.ts
 └── utils/
@@ -110,9 +115,12 @@ frontend/
 
 migrations/
 └── versions/
+
+scripts/
+└── verify-auth-performance.ts
 ```
 
-**Structure Decision**: Keep the existing NestJS API and React/Vite frontend structure. Add auth-owned schemas and services for refresh-token/session records, optional auth clients/authorization codes, permissions, and security activity. Replace role-only decorators/guards with permission-level authorization while preserving current role-specific API endpoints only as compatibility wrappers where useful. The frontend should converge on one shared sign-in page and route users by returned role area and permissions.
+**Structure Decision**: Keep the existing NestJS API and React/Vite frontend structure. Add auth-owned schemas and services for unique identifier reservations, refresh-token/session records, optional auth clients/authorization codes, permissions, and security activity. Extend the existing health module with separate liveness and readiness endpoints. Replace role-only decorators/guards with permission-level authorization while preserving current role-specific API endpoints only as compatibility wrappers. The frontend converges on one accessible shared sign-in page and routes users by returned role area and permissions.
 
 ## Complexity Tracking
 
@@ -120,7 +128,7 @@ No constitution violations require exceptions.
 
 ## Phase 0: Research
 
-Completed in [research.md](research.md). Key decisions: build NestJS-owned auth as the default for current scope, keep Keycloak as an evaluated future option, reject Auth.js as the primary auth system for this NestJS/Vite architecture, use one shared sign-in entry point backed by existing staff/member aggregates, reject ambiguous account identifiers, use short-lived audience/scope-restricted JWT access tokens, rotate refresh tokens with hashed persistence, keep tokens out of localStorage, combine RBAC role assignments with permission checks and member ownership checks, use NIST/OWASP password guidance, and log security activity without secrets.
+Completed in [research.md](research.md). Key decisions: build NestJS-owned auth as the default for current scope, keep Keycloak as an evaluated future option, reject Auth.js as the primary auth system for this NestJS/Vite architecture, use one shared sign-in entry point backed by existing staff/member aggregates and an atomic credential-free identifier registry, reject legacy ambiguous identifiers, use short-lived audience/scope-restricted JWT access tokens, rotate refresh tokens with hashed persistence, keep tokens out of localStorage, combine RBAC role assignments with permission checks and member ownership checks, use NIST/OWASP password guidance, and log security activity without secrets.
 
 ## Phase 1: Design & Contracts
 

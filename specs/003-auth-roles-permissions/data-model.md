@@ -7,6 +7,7 @@ Authentication uses existing account aggregates where credentials are read with 
 - Staff/admin credentials and role assignments are owned by `StaffUser`.
 - Member credentials are owned by `Member` because member self-service identity, membership status, and borrowing access are read together.
 - The **Member Authentication Link** is embedded on `Member`; it is not a separate collection.
+- Normalized sign-in identifier ownership is stored in `AuthIdentifier`, a credential-free uniqueness registry referencing exactly one staff or member account context.
 - Authorization codes, refresh-token records, clients, and security events are separate documents because they expire, grow independently, or need audit pagination.
 - Optional future IdP link fields are allowed so Keycloak can later become the token issuer without changing library authorization.
 - The shared sign-in flow resolves a submitted identifier against staff/admin and member account aggregates, but v1 does not introduce a separate global user collection.
@@ -34,7 +35,7 @@ Existing document extended as needed.
 **Validation**
 
 - Email must be normalized and unique.
-- Email participates in shared sign-in identifier resolution and must not be allowed to collide with an active member sign-in identifier without administrative resolution.
+- Email must have an active `AuthIdentifier` reservation before it becomes usable for shared sign-in.
 - Password hash must never be returned in response DTOs.
 - Active sign-in requires active status and valid password verification.
 - Protected staff access requires active status and a token subject that maps to the account.
@@ -73,7 +74,7 @@ Existing document already contains member authentication fields.
 **Validation**
 
 - Member self-service sign-in requires active membership status, active auth status, configured login identifier, and valid password verification.
-- Member sign-in identifiers participate in shared sign-in resolution and must not be allowed to collide with an active staff/admin login identifier without administrative resolution.
+- Every enabled member sign-in identifier must have an active `AuthIdentifier` reservation before it becomes usable for shared sign-in.
 - Suspended/inactive/deleted members cannot retain active member access.
 - Member protected reads must use authenticated member id, not user-submitted member id.
 
@@ -85,6 +86,45 @@ Existing document already contains member authentication fields.
 - Sparse unique `{ identityProvider: 1, identitySubject: 1 }`
 - `{ status: 1, membershipTypeId: 1 }`
 - `{ authStatus: 1 }`
+
+## AuthIdentifier
+
+Provides atomic normalized identifier ownership across the separate `StaffUser` and `Member` collections without becoming a global user table.
+
+**Fields**
+
+- `_id`
+- `normalizedIdentifier`: canonical lower-cased/trimmed sign-in identifier
+- `identifierType`: `email`, `member-number`, or `login-identifier`
+- `subjectType`: `staff` or `member`
+- `subjectId`: owning account id
+- `status`: `active`, `released`, or `conflict`
+- `conflictingSubjects`: present only for a legacy conflict; safe `{ subjectType, subjectId }` references requiring administrator resolution
+- `releasedAt`
+- audit fields: `createdBy`, `updatedBy`, `createdAt`, `updatedAt`
+
+**Validation and Write Strategy**
+
+- Exactly one active account context may own a normalized identifier.
+- Account creation or identifier change reserves the new identifier before enabling it for sign-in.
+- In transaction-capable deployments, reservation, aggregate update, and old-identifier release occur in one MongoDB transaction.
+- Without transaction support, the unique reservation insert is the commit point; a failed aggregate update must release the new reservation, and the old reservation remains active until the aggregate update succeeds.
+- Concurrent staff/member claims for the same identifier must yield one successful unique insert and one conflict response.
+- Released identifiers are not accepted for sign-in and may be reclaimed only through the account-management workflow.
+- The registry stores no password hashes, roles, profile attributes, token values, or borrowing data.
+
+**Indexes**
+
+- Unique `{ normalizedIdentifier: 1 }`
+- `{ subjectType: 1, subjectId: 1, status: 1 }`
+- `{ status: 1, updatedAt: -1 }`
+
+**Administrator Conflict Resolution**
+
+- Migration records one `conflict` reservation containing safe subject references for administrator review without activating either conflicting account for that identifier.
+- Conflict review exposes account ids, subject types, normalized identifier, and safe display labels only.
+- Resolution requires assigning a unique identifier to at least one affected account through existing account-management permissions.
+- Resolution and failed attempts are recorded as security activity without passwords or conflicting credential data.
 
 ## AuthClient
 
@@ -276,13 +316,17 @@ replayed -> revoked
 
 ## Future Keycloak Migration
 
-When Keycloak becomes justified, use the existing optional identity link fields to map Keycloak `sub` values to `StaffUser` and `Member`. Keep local role-to-permission mapping and member ownership checks in NestJS. Stop issuing local access/refresh tokens only after the API can validate Keycloak issuer, audience, JWKS, and role/group claims at the same guard boundary.
+When Keycloak becomes justified, use the existing optional identity link fields to map Keycloak `sub` values to `StaffUser` and `Member`. `AuthIdentifier` remains a local account-link and migration aid but is no longer the login authority after external subjects are fully linked. Keep local role-to-permission mapping and member ownership checks in NestJS. Stop issuing local access/refresh tokens only after the API can validate Keycloak issuer, audience, JWKS, and role/group claims at the same guard boundary.
 
 ## Migration Impact
 
 - Add missing `passwordUpdatedAt`, `authVersion`, optional identity link fields, and refresh-token/session documents.
+- Create `AuthIdentifier` with a unique normalized-identifier index and backfill reservations from staff/member identifiers.
+- Abort automatic activation for duplicate legacy identifiers, emit a conflict report for administrator resolution, and never choose a winning account silently.
+- Preserve borrowing records, staff action history, and security events during backfill, account identifier correction, role changes, deactivation, and rollback.
+- Rollback removes only identifier reservations created by this migration after verifying account aggregates still own their original identifiers; it must not delete or rewrite account, borrowing, or audit history.
 - Add collections and indexes for auth clients, optional authorization codes, refresh-token families, and security events.
 - Seed one first-party client with exact redirect URIs for local development and deployment if the authorization-code flow is implemented.
 - Seed or define approved roles and permission mappings.
-- Add a shared sign-in resolver that reuses existing staff/member account aggregates and rejects cross-context identifier ambiguity.
+- Add a shared sign-in resolver that resolves active reservations to existing staff/member account aggregates and rejects missing, released, or legacy-ambiguous identifiers generically.
 - Preserve existing staff/member login endpoints only as compatibility wrappers if routes change; the frontend sign-in experience must use the shared flow and the security behavior must still use the new session/token services.

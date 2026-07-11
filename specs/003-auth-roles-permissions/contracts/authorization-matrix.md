@@ -19,6 +19,8 @@ Permission names are stable product-level identifiers used by guards, tests, and
 | `roles:read` | View role-to-permission mapping |
 | `roles:manage` | Assign or remove elevated roles |
 | `security-events:read` | View security activity |
+| `auth-identifiers:read` | Review legacy cross-context sign-in identifier conflicts |
+| `auth-identifiers:manage` | Resolve identifier conflicts by assigning unique identifiers |
 | `member:self:read` | View the authenticated member's own profile, membership, quota, and borrowings |
 
 ## Built-In Role Mapping
@@ -27,7 +29,7 @@ Permission names are stable product-level identifiers used by guards, tests, and
 | --- | --- |
 | `member` | `member:self:read` |
 | `staff` | `catalog:read`, `catalog:manage`, `members:read`, `members:manage`, `membership-types:read`, `membership-types:manage`, `borrowings:read`, `borrowings:manage` |
-| `admin` | All staff permissions plus `staff-users:read`, `staff-users:manage`, `roles:read`, `roles:manage`, `security-events:read` |
+| `admin` | All staff permissions plus `staff-users:read`, `staff-users:manage`, `roles:read`, `roles:manage`, `security-events:read`, `auth-identifiers:read`, `auth-identifiers:manage` |
 
 ## Resource Policies
 
@@ -42,6 +44,7 @@ Permission names are stable product-level identifiers used by guards, tests, and
 | Staff users | `/staff-users` | `staff-users:read` for reads, `staff-users:manage` for writes |
 | Role management | role assignment/update workflows | `roles:read` for review, `roles:manage` for changes |
 | Security activity | security event list/detail | `security-events:read` |
+| Identifier conflicts | `/auth/identifier-conflicts` review/resolve | `auth-identifiers:read` for review, `auth-identifiers:manage` for resolution |
 
 ## Denial Rules
 
@@ -57,4 +60,5 @@ Permission names are stable product-level identifiers used by guards, tests, and
 - Every member self-service endpoint has a horizontal access-control test.
 - Every admin-only route rejects regular staff and member tokens.
 - Every protected route rejects unauthenticated requests.
+- Authorization coverage is implemented as a data-driven matrix recording HTTP method, route, required permission, allowed role, and denied role for every protected controller action.
 - Authorization tests call endpoints directly, not only through frontend navigation.

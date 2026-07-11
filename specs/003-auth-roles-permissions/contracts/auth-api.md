@@ -60,8 +60,8 @@ Success response for member:
 Expected behavior:
 
 - Normalize the submitted identifier before lookup and audit correlation.
-- Resolve the identifier to exactly one staff/admin or member account context.
-- Reject identifiers that match multiple account contexts with a generic sign-in failure.
+- Resolve an active `AuthIdentifier` reservation to exactly one staff/admin or member account context.
+- Reject missing, released, conflict-marked, or legacy-ambiguous identifiers with the same generic sign-in failure.
 - Verify password using the configured password hasher.
 - Require active staff/admin status for staff/admin accounts.
 - Require active member status and active auth status.
@@ -70,6 +70,36 @@ Expected behavior:
 - Set a Secure, HTTP-only, SameSite refresh cookie when refresh continuity is enabled.
 - Record sign-in success/failure without passwords, raw tokens, or conflicting account ids.
 - Return `roleArea` and permissions so the frontend can route staff/admin users to staff/admin areas and members to member self-service.
+
+## Identifier Conflict Administration
+
+### `GET /auth/identifier-conflicts`
+
+Requires `auth-identifiers:read`.
+
+Expected behavior:
+
+- Return paginated legacy `AuthIdentifier` conflict records with normalized identifier, safe subject references, and safe account display labels.
+- Exclude passwords, password hashes, token data, borrowing history, and unrelated profile fields.
+- Reject regular staff and member identities.
+
+### `POST /auth/identifier-conflicts/:id/resolve`
+
+Requires `auth-identifiers:manage`.
+
+Request fields:
+
+- `subjectType`: affected account context to update
+- `subjectId`: affected account id
+- `newIdentifier`: unique replacement identifier
+
+Expected behavior:
+
+- Normalize and atomically reserve the replacement identifier.
+- Update the selected account aggregate and release or activate the conflict reservation in the same transaction when supported.
+- Reject a replacement already reserved by another account.
+- Never activate either conflicting account silently or modify passwords.
+- Record success and failure as redacted security activity.
 
 ## Compatibility Sign-In Wrappers
 
