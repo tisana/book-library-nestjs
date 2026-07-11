@@ -8,6 +8,12 @@
 
 **Input**: User description: "I want to have better authentication and authorize system where I can better handling user and roles. The current in-memory solution is not secure enough to publish the application online. The authentication should be able to have clear roles and permission to access system. Eg. member should not able to access library back office or admin system."
 
+## Clarifications
+
+### Session 2026-07-09
+
+- Q: Should staff and member users use separate login pages or one shared sign-in entry point? → A: Use one shared sign-in page; route after authentication by role area and permissions.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Sign in with a persistent account (Priority: P1)
@@ -20,10 +26,11 @@ A library user signs in with a real account whose identity and role survive appl
 
 **Acceptance Scenarios**:
 
-1. **Given** an active staff account exists, **When** the staff user signs in with valid credentials, **Then** the system authenticates the user and identifies their assigned role.
-2. **Given** an active member account exists, **When** the member signs in with valid credentials, **Then** the system authenticates the member and identifies them as a member user.
-3. **Given** a user enters invalid credentials, **When** they attempt to sign in, **Then** the system denies access without revealing whether the account identifier or secret was wrong.
-4. **Given** the application restarts, **When** a previously created active account signs in again, **Then** the account, role assignments, and access scope are still available.
+1. **Given** a visitor opens the sign-in experience, **When** they are not authenticated, **Then** the system presents one shared sign-in page instead of asking them to choose staff or member mode.
+2. **Given** an active staff account exists, **When** the staff user signs in with valid credentials, **Then** the system authenticates the user, identifies their assigned role, and routes them to the appropriate staff or administrator landing page.
+3. **Given** an active member account exists, **When** the member signs in with valid credentials, **Then** the system authenticates the member, identifies them as a member user, and routes them to member self-service.
+4. **Given** a user enters invalid credentials, **When** they attempt to sign in, **Then** the system denies access without revealing whether the account identifier or secret was wrong.
+5. **Given** the application restarts, **When** a previously created active account signs in again, **Then** the account, role assignments, and access scope are still available.
 
 ---
 
@@ -80,6 +87,7 @@ An administrator can review security-relevant events such as failed sign-in atte
 - A deactivated user must not be able to sign in or continue using protected areas.
 - A user with no assigned role must authenticate only if the account is valid, then receive no protected access until a role is assigned.
 - A member who is also employed by the library must use an explicit staff/admin role assignment before accessing back office workflows.
+- A sign-in identifier that matches more than one account context must not authenticate until the ambiguity is resolved, and the user-facing failure message must remain generic.
 - Deleted or suspended member records must not leave behind active member access.
 - Role changes must not require manual server restarts or in-memory updates to take effect.
 - Security-related errors must avoid exposing passwords, secrets, full protected payloads, or unrelated member borrowing history.
@@ -113,6 +121,9 @@ An administrator can review security-relevant events such as failed sign-in atte
 - **FR-022**: System MUST support a first administrator setup path so the system can be initialized without relying on hard-coded production credentials.
 - **FR-023**: System MUST allow member authentication to be linked to the existing member record so member self-service access is scoped to the correct person.
 - **FR-024**: System MUST keep role and permission names understandable to administrators and aligned with library workflows rather than internal implementation labels.
+- **FR-025**: System MUST provide a single sign-in page for staff, administrators, and members.
+- **FR-026**: System MUST route signed-in users to their landing area from authenticated role area and permissions rather than from a user-selected login type.
+- **FR-027**: System MUST prevent ambiguous account identifiers from authenticating across staff/admin and member contexts until an administrator resolves the duplicate or conflicting identifier.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -133,11 +144,12 @@ An administrator can review security-relevant events such as failed sign-in atte
 - **SC-005**: 100% of security-sensitive events defined in this spec are recorded without passwords, tokens, or full sensitive payloads.
 - **SC-006**: At least 95% of legitimate users can complete sign-in on the first attempt when using correct credentials during usability testing.
 - **SC-007**: Protected workflow access decisions are consistent across direct requests and normal UI navigation in all acceptance tests.
+- **SC-008**: 100% of staff/admin/member sign-in acceptance tests begin from the shared sign-in page and land on the correct area based on authenticated permissions.
 
 ## Assumptions
 
 - The application has no public library portal requirement in this feature; all member, staff, and admin areas are protected.
-- Email, username, or member number may be used as an account identifier, but the exact identifier format can be selected during planning based on existing data.
+- Email, username, or member number may be used as an account identifier, but identifiers used by the shared sign-in flow must be unique enough to avoid cross-context ambiguity.
 - Member self-service accounts should link to existing member records rather than creating a separate duplicate member identity.
 - Staff and administrator users may be separate from member profiles unless a person needs both member and staff access.
 - Administrator users are trusted to manage staff accounts and role assignment.

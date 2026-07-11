@@ -49,6 +49,18 @@ Do not use Auth.js as the primary auth implementation for this architecture. Rec
 - Add Auth.js through Express inside NestJS: possible but awkward, duplicates NestJS auth structure, and does not solve resource authorization.
 - Use Auth.js with Keycloak provider later: acceptable only with a future BFF/server-rendered frontend.
 
+## Decision: Use a Shared Sign-In Entry Point
+
+Use one user-facing sign-in page and one primary sign-in contract for staff, administrators, and members. Keep staff/admin credentials on `StaffUser` and member credentials on `Member`; the auth service resolves the submitted identifier to exactly one eligible account context before password verification and token issuing. If the identifier matches more than one staff/member context, fail closed with the same generic sign-in failure used for invalid credentials.
+
+**Rationale**: The product has distinct library authorization rules after authentication, but users should not have to choose a role before proving identity. Routing from returned `roleArea` and permissions is simpler for users, easier to test, and avoids UI-selected role confusion. Failing closed on ambiguous identifiers prevents accidental cross-context privilege confusion when a staff user is also a member or when emails/member identifiers overlap.
+
+**Alternatives considered**:
+
+- Keep separate staff and member login pages: rejected because it pushes authorization context selection onto the user and conflicts with the clarified shared login UX.
+- Merge staff and member identities into one new user collection now: deferred because existing `StaffUser` and `Member` aggregates already own different lifecycle rules and member self-service scoping.
+- Try both login endpoints from the frontend: rejected because it leaks implementation shape into the UI and makes ambiguous identifier handling harder to audit consistently.
+
 ## Comparison: Build vs Keycloak vs Auth.js
 
 | Option | Best Fit | Strengths | Costs/Risks | Fit for This Project |

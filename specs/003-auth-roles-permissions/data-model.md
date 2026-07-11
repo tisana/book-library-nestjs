@@ -9,6 +9,7 @@ Authentication uses existing account aggregates where credentials are read with 
 - The **Member Authentication Link** is embedded on `Member`; it is not a separate collection.
 - Authorization codes, refresh-token records, clients, and security events are separate documents because they expire, grow independently, or need audit pagination.
 - Optional future IdP link fields are allowed so Keycloak can later become the token issuer without changing library authorization.
+- The shared sign-in flow resolves a submitted identifier against staff/admin and member account aggregates, but v1 does not introduce a separate global user collection.
 
 ## StaffUser
 
@@ -33,6 +34,7 @@ Existing document extended as needed.
 **Validation**
 
 - Email must be normalized and unique.
+- Email participates in shared sign-in identifier resolution and must not be allowed to collide with an active member sign-in identifier without administrative resolution.
 - Password hash must never be returned in response DTOs.
 - Active sign-in requires active status and valid password verification.
 - Protected staff access requires active status and a token subject that maps to the account.
@@ -71,6 +73,7 @@ Existing document already contains member authentication fields.
 **Validation**
 
 - Member self-service sign-in requires active membership status, active auth status, configured login identifier, and valid password verification.
+- Member sign-in identifiers participate in shared sign-in resolution and must not be allowed to collide with an active staff/admin login identifier without administrative resolution.
 - Suspended/inactive/deleted members cannot retain active member access.
 - Member protected reads must use authenticated member id, not user-submitted member id.
 
@@ -227,6 +230,7 @@ Append-only security event record for audit review.
 
 - Do not store passwords, raw tokens, token hashes, full request bodies, or protected response bodies.
 - Failed sign-in may include normalized identifier only when needed for audit and rate-limit correlation.
+- Ambiguous shared sign-in resolution must be recorded as a sign-in failure reason category without revealing the conflicting account ids to the user.
 
 **Indexes**
 
@@ -280,4 +284,5 @@ When Keycloak becomes justified, use the existing optional identity link fields 
 - Add collections and indexes for auth clients, optional authorization codes, refresh-token families, and security events.
 - Seed one first-party client with exact redirect URIs for local development and deployment if the authorization-code flow is implemented.
 - Seed or define approved roles and permission mappings.
-- Preserve existing staff/member login endpoints only as compatibility wrappers if routes change; the security behavior must still use the new session/token services.
+- Add a shared sign-in resolver that reuses existing staff/member account aggregates and rejects cross-context identifier ambiguity.
+- Preserve existing staff/member login endpoints only as compatibility wrappers if routes change; the frontend sign-in experience must use the shared flow and the security behavior must still use the new session/token services.

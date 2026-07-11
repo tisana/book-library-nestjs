@@ -7,19 +7,20 @@
 - Rotate refresh tokens and store only hashes.
 - Keep the API guard boundary ready for future Keycloak token validation.
 - Enforce library-specific permissions and member ownership inside NestJS.
+- Support one shared sign-in entry point for staff, administrators, and members.
 
-## Staff Sign-In
+## Shared Sign-In
 
 ### `POST /auth/login`
 
-Authenticates a staff/admin user.
+Authenticates a staff/admin or member user from a shared sign-in request.
 
 Request fields:
 
-- `email`
+- `identifier`: staff email, member login identifier, member number, or another approved normalized account identifier
 - `password`
 
-Success response:
+Success response for staff/admin:
 
 ```json
 {
@@ -27,6 +28,7 @@ Success response:
   "tokenType": "Bearer",
   "expiresIn": 900,
   "scope": "catalog:read catalog:manage borrowings:manage",
+  "roleArea": "staff",
   "user": {
     "id": "staff-user-id",
     "email": "admin@example.com",
@@ -37,26 +39,7 @@ Success response:
 }
 ```
 
-Expected behavior:
-
-- Verify password using the configured password hasher.
-- Require active staff/admin status.
-- Return a generic sign-in failure for invalid email, invalid password, inactive status, or missing credentials.
-- Set a Secure, HTTP-only, SameSite refresh cookie when refresh continuity is enabled.
-- Record sign-in success/failure without passwords or raw tokens.
-
-## Member Sign-In
-
-### `POST /auth/member-login`
-
-Authenticates a member self-service user.
-
-Request fields:
-
-- `loginIdentifier`
-- `password`
-
-Success response:
+Success response for member:
 
 ```json
 {
@@ -64,6 +47,7 @@ Success response:
   "tokenType": "Bearer",
   "expiresIn": 900,
   "scope": "member:self:read",
+  "roleArea": "member",
   "member": {
     "id": "member-id",
     "memberNumber": "M-1001",
@@ -75,11 +59,39 @@ Success response:
 
 Expected behavior:
 
+- Normalize the submitted identifier before lookup and audit correlation.
+- Resolve the identifier to exactly one staff/admin or member account context.
+- Reject identifiers that match multiple account contexts with a generic sign-in failure.
 - Verify password using the configured password hasher.
+- Require active staff/admin status for staff/admin accounts.
 - Require active member status and active auth status.
-- Derive member self-service identity from the authenticated member record.
-- Return a generic sign-in failure for invalid identifier, invalid password, inactive membership, locked auth status, or missing credentials.
+- Derive member self-service identity from the authenticated member record when `roleArea` is `member`.
+- Return a generic sign-in failure for unknown identifier, ambiguous identifier, invalid password, inactive staff/admin status, inactive membership, locked auth status, or missing credentials.
 - Set a Secure, HTTP-only, SameSite refresh cookie when refresh continuity is enabled.
+- Record sign-in success/failure without passwords, raw tokens, or conflicting account ids.
+- Return `roleArea` and permissions so the frontend can route staff/admin users to staff/admin areas and members to member self-service.
+
+## Compatibility Sign-In Wrappers
+
+### `POST /auth/staff-login`
+
+Optional compatibility wrapper for existing staff/admin clients.
+
+Expected behavior:
+
+- Accept legacy staff/admin request shapes when needed.
+- Delegate to the same credential verification, token issuing, refresh cookie, permission mapping, throttling, and audit behavior as shared sign-in.
+- Do not become the primary frontend sign-in flow.
+
+### `POST /auth/member-login`
+
+Optional compatibility wrapper for existing member clients.
+
+Expected behavior:
+
+- Accept legacy member request shapes when needed.
+- Delegate to the same credential verification, token issuing, refresh cookie, permission mapping, throttling, and audit behavior as shared sign-in.
+- Do not become the primary frontend sign-in flow.
 
 ## Token Refresh
 

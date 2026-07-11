@@ -32,9 +32,9 @@ npm run test:e2e
 
 Expected coverage:
 
-- Staff/admin sign-in succeeds for an active account with valid credentials.
-- Member sign-in succeeds for an active member with active auth status and valid credentials.
-- Sign-in failure is generic for unknown account, wrong password, inactive account, suspended member, locked member, or missing credentials.
+- Staff/admin sign-in succeeds through the shared sign-in contract for an active account with valid credentials.
+- Member sign-in succeeds through the shared sign-in contract for an active member with active auth status and valid credentials.
+- Sign-in failure is generic for unknown account, ambiguous identifier, wrong password, inactive account, suspended member, locked member, or missing credentials.
 - Access token succeeds only with configured issuer, audience, signature, expiry, subject, role area, and auth version.
 - Access token rejects wrong issuer, audience, expiry, signature, role area, or stale auth version.
 - Refresh token rotates on every successful refresh.
@@ -53,22 +53,25 @@ npm run frontend:test:e2e
 
 Expected coverage:
 
-- Unauthenticated users are routed to sign-in before protected member/staff areas.
+- Unauthenticated users are routed to the shared sign-in page before protected member/staff areas.
+- Shared sign-in routes staff/admin users to the appropriate staff/admin landing area from returned role area and permissions.
+- Shared sign-in routes member users to member self-service from returned role area and permissions.
 - Signed-in members can open member self-service and cannot open staff/admin screens.
 - Signed-in staff can open assigned staff workflows and cannot open admin-only screens without permissions.
 - Signed-in administrators can manage staff accounts/roles and review security activity.
-- Sign-out clears memory session state, clears frontend cached data, revokes refresh state, and redirects to the correct sign-in route.
+- Sign-out clears memory session state, clears frontend cached data, revokes refresh state, and redirects to the shared sign-in route.
 
 ## Manual Acceptance Scenarios
 
 1. Create an administrator through `scripts/bootstrap-admin.ts`; seed scripts are for demo data only.
-2. Sign in as administrator and create a staff account.
+2. Sign in through the shared sign-in page as administrator and create a staff account.
 3. Assign staff role and confirm the user can manage catalog/borrowing workflows but cannot manage roles.
 4. Create or configure a member self-service account.
-5. Sign in as member and confirm only the member's own membership and borrowing data is visible.
+5. Sign in through the same shared sign-in page as member and confirm only the member's own membership and borrowing data is visible.
 6. Try direct URLs or direct requests from the member session to staff/admin workflows and confirm denial.
 7. Suspend the member or staff account and confirm refresh/sign-in no longer succeeds.
-8. Review security activity and confirm sign-in, denied access, role change, refresh replay, sign-out, and account-status events are visible without secrets.
+8. Configure or seed a duplicate cross-context sign-in identifier and confirm sign-in fails generically until the identifier ambiguity is resolved.
+9. Review security activity and confirm sign-in, ambiguous sign-in failure, denied access, role change, refresh replay, sign-out, and account-status events are visible without secrets.
 
 ## Future Keycloak Readiness Check
 
