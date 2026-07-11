@@ -98,8 +98,13 @@ Provides atomic normalized identifier ownership across the separate `StaffUser` 
 - `identifierType`: `email`, `member-number`, or `login-identifier`
 - `subjectType`: `staff` or `member`
 - `subjectId`: owning account id
-- `status`: `active`, `released`, or `conflict`
+- `status`: `pending`, `active`, `released`, or `conflict`
 - `conflictingSubjects`: present only for a legacy conflict; safe `{ subjectType, subjectId }` references requiring administrator resolution
+- `operationId`: unique idempotency key for a reservation mutation
+- `pendingAction`: `claim`, `replace`, `release`, or `resolve-conflict` while status is `pending`
+- `leaseExpiresAt`: reconciliation eligibility time for an incomplete pending operation
+- `previousSubjectType`: optional ownership snapshot used by recovery
+- `previousSubjectId`: optional ownership snapshot used by recovery
 - `releasedAt`
 - audit fields: `createdBy`, `updatedBy`, `createdAt`, `updatedAt`
 
@@ -109,6 +114,10 @@ Provides atomic normalized identifier ownership across the separate `StaffUser` 
 - Account creation or identifier change reserves the new identifier before enabling it for sign-in.
 - In transaction-capable deployments, reservation, aggregate update, and old-identifier release occur in one MongoDB transaction.
 - Without transaction support, the unique reservation insert is the commit point; a failed aggregate update must release the new reservation, and the old reservation remains active until the aggregate update succeeds.
+- A pending reservation blocks sign-in and competing claims; it must never be removed automatically by a TTL index.
+- Reservation mutations are idempotent by `operationId`.
+- After a pending lease expires, reconciliation compares the reservation with its account aggregate: finalize `active` when the aggregate contains the new identifier, otherwise restore previous active ownership or mark the reservation `released`.
+- Reconciliation must be safe to repeat and must record a redacted security event.
 - Concurrent staff/member claims for the same identifier must yield one successful unique insert and one conflict response.
 - Released identifiers are not accepted for sign-in and may be reclaimed only through the account-management workflow.
 - The registry stores no password hashes, roles, profile attributes, token values, or borrowing data.
@@ -118,12 +127,17 @@ Provides atomic normalized identifier ownership across the separate `StaffUser` 
 - Unique `{ normalizedIdentifier: 1 }`
 - `{ subjectType: 1, subjectId: 1, status: 1 }`
 - `{ status: 1, updatedAt: -1 }`
+- Sparse unique `{ operationId: 1 }`
+- `{ status: 1, leaseExpiresAt: 1 }` for reconciliation scans; this is not a TTL index
 
 **Administrator Conflict Resolution**
 
 - Migration records one `conflict` reservation containing safe subject references for administrator review without activating either conflicting account for that identifier.
 - Conflict review exposes account ids, subject types, normalized identifier, and safe display labels only.
-- Resolution requires assigning a unique identifier to at least one affected account through existing account-management permissions.
+- Resolution must account for every conflicting subject, may retain the original identifier for at most one explicitly selected subject, and must assign unique replacements to every other subject.
+- If no subject retains the original identifier, the original conflict reservation becomes `released`.
+- The system must validate and reserve every replacement before changing account aggregates, complete all changes atomically or leave the conflict unchanged, and return the original result when the same `operationId` is retried.
+- The system must never choose a retained subject automatically.
 - Resolution and failed attempts are recorded as security activity without passwords or conflicting credential data.
 
 ## AuthClient
@@ -251,7 +265,7 @@ Append-only security event record for audit review.
 **Fields**
 
 - `_id`
-- `eventType`: `sign-in-success`, `sign-in-failure`, `authorization-denied`, `role-changed`, `account-status-changed`, `token-refreshed`, `refresh-replay-detected`, `token-revoked`, `sign-out`
+- `eventType`: `sign-in-success`, `sign-in-failure`, `authorization-denied`, `role-changed`, `account-status-changed`, `identifier-conflict-detected`, `identifier-conflict-resolved`, `identifier-reservation-recovered`, `token-refreshed`, `refresh-replay-detected`, `token-revoked`, `sign-out`
 - `actorType`: `staff`, `member`, `system`, or `unknown`
 - `actorId`
 - `targetType`
@@ -271,6 +285,8 @@ Append-only security event record for audit review.
 - Do not store passwords, raw tokens, token hashes, full request bodies, or protected response bodies.
 - Failed sign-in may include normalized identifier only when needed for audit and rate-limit correlation.
 - Ambiguous shared sign-in resolution must be recorded as a sign-in failure reason category without revealing the conflicting account ids to the user.
+- Identifier conflict events store only a normalized-identifier hash, safe subject references, conflict count, outcome, and reason category; raw conflicting identifiers are excluded.
+- Identifier reservation recovery records the operation id, resulting state, outcome, and reason category without raw identifiers.
 
 **Indexes**
 
@@ -313,6 +329,22 @@ replayed -> revoked
 
 - Replay detection is terminal for active use.
 - Revocation can be triggered by sign-out, account deactivation, password change, or admin action.
+
+### Authentication Identifier Reservation
+
+```text
+none -> pending -> active
+pending -> released
+active -> released
+none -> conflict
+conflict -> pending -> active
+conflict -> pending -> released
+```
+
+- `pending` is never accepted for sign-in and blocks competing claims.
+- Conflict resolution transitions through `pending` and changes every affected reservation/aggregate as one idempotent operation.
+- Lease expiry triggers reconciliation, not deletion.
+- Reconciliation finalizes the state represented by the account aggregate or restores the previous ownership snapshot.
 
 ## Future Keycloak Migration
 

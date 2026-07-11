@@ -54,11 +54,21 @@ Permission names are stable product-level identifiers used by guards, tests, and
 - Deny direct object access when the requested member id does not match the token subject.
 - Deny access when the account is suspended, inactive, locked, reset-required, or token version is stale.
 
+## Explicit Public Routes
+
+| Route | Policy |
+| --- | --- |
+| `GET /health` | Public liveness signal containing no database or configuration details |
+| `GET /health/ready` | Public readiness signal containing only status and generic dependency categories |
+
+All other routes deny by default unless explicitly declared public. Public-route metadata must be explicit and covered by guard regression tests.
+
 ## Required Tests
 
 - Every permission has at least one allow and one deny test.
 - Every member self-service endpoint has a horizontal access-control test.
 - Every admin-only route rejects regular staff and member tokens.
 - Every protected route rejects unauthenticated requests.
+- Both health routes succeed or report dependency failure without credentials and never expose connection strings, secrets, stack traces, host details, or account data.
 - Authorization coverage is implemented as a data-driven matrix recording HTTP method, route, required permission, allowed role, and denied role for every protected controller action.
 - Authorization tests call endpoints directly, not only through frontend navigation.

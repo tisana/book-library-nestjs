@@ -126,7 +126,7 @@ An administrator can review security-relevant events such as failed sign-in atte
 - **FR-025**: System MUST provide a single sign-in page for staff, administrators, and members that supports keyboard-only operation, accessible labels, announced validation and authentication errors, deterministic focus after failure, and a loading state that prevents duplicate submission.
 - **FR-026**: System MUST route signed-in users to their landing area from authenticated role area and permissions rather than from a user-selected login type.
 - **FR-027**: System MUST atomically reserve each normalized sign-in identifier across staff/admin and member contexts, reject concurrent or subsequent conflicting claims, fail closed for legacy ambiguity, and allow only an administrator to resolve an existing conflict by assigning a unique identifier.
-- **FR-028**: System MUST expose a deployment readiness endpoint that reports failure when MongoDB is unavailable or mandatory authentication configuration is invalid without exposing secrets or protected configuration values.
+- **FR-028**: System MUST reject production startup when mandatory static authentication configuration is missing or unsafe. After successful startup, it MUST expose a public deployment readiness endpoint that reports runtime dependency failure when MongoDB or initialized authentication infrastructure becomes unavailable, without exposing secrets or protected configuration values.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -146,10 +146,10 @@ An administrator can review security-relevant events such as failed sign-in atte
 - **SC-003**: Administrators can create a staff account, assign a role, and confirm access in under 5 minutes during acceptance testing.
 - **SC-004**: Role changes take effect for protected workflows within 1 minute without an application restart.
 - **SC-005**: 100% of security-sensitive events defined in this spec are recorded without passwords, tokens, or full sensitive payloads.
-- **SC-006**: At least 19 of 20 representative users can complete shared sign-in on the first attempt with correct credentials and reach their authorized landing area within 30 seconds during moderated usability testing.
+- **SC-006**: At least 19 of 20 first-time participants, comprising 8 members, 8 staff users, and 4 administrators, can complete shared sign-in on the first attempt with correct credentials and reach their authorized landing area within 30 seconds during moderated usability testing.
 - **SC-007**: Protected workflow access decisions are consistent across direct requests and normal UI navigation in all acceptance tests.
 - **SC-008**: 100% of staff/admin/member sign-in acceptance tests begin from the shared sign-in page and land on the correct area based on authenticated permissions.
-- **SC-009**: The deployment readiness endpoint returns a non-success response within 5 seconds when MongoDB is unavailable or mandatory authentication configuration is invalid.
+- **SC-009**: Invalid mandatory production authentication configuration prevents startup with a redacted diagnostic. After successful startup, the public deployment readiness endpoint returns a non-success response within 5 seconds when MongoDB or initialized authentication infrastructure becomes unavailable.
 - **SC-010**: Shared sign-in is fully operable using only a keyboard, exposes accessible names for every field and action, announces validation and authentication errors, and prevents duplicate submission in automated accessibility tests.
 - **SC-011**: Permission evaluation adds no more than 50 ms p95 latency across 500 warmed protected requests in the documented verification environment.
 - **SC-012**: The first page of 50 security activity events returns within 2 seconds with 10,000 stored events in the documented verification environment.

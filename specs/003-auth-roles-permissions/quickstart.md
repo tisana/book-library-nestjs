@@ -48,8 +48,9 @@ Expected coverage:
 - A data-driven authorization matrix verifies allow, permission-deny, member-deny, and unauthenticated outcomes for every protected controller action.
 - Security events exclude passwords, raw tokens, token hashes, and full sensitive payloads.
 - Account role, status, and identifier changes preserve borrowing records, staff action history, actor references, and security events.
-- `/health` remains a liveness signal and `/health/ready` fails within 5 seconds when MongoDB or mandatory auth configuration is unavailable.
-- The documented performance environment verifies permission evaluation at no more than 50 ms p95 over 500 warmed requests and the first 50 of 10,000 security events within 2 seconds.
+- Invalid mandatory production auth configuration prevents startup with a redacted diagnostic; after successful startup, public `/health/ready` fails within 5 seconds when MongoDB or initialized auth infrastructure becomes unavailable.
+- Public `/health` and `/health/ready` require no credentials and expose no connection strings, secrets, stack traces, host details, or account data.
+- The performance run uses a production build, dedicated seeded MongoDB, disabled access logging, 100 warm-up requests, 500 measured requests at concurrency 10, nearest-rank p95, and an equivalent public baseline handler. Results are written to `specs/003-auth-roles-permissions/evidence/auth-performance.md` with runtime and hardware metadata.
 
 ## Frontend Verification
 
@@ -84,11 +85,13 @@ Expected coverage:
 
 ## Shared Sign-In Usability Protocol
 
-- Recruit at least 20 representative staff, administrator, and member users who have not used the shared sign-in page before.
+- Product owner or QA prepares the moderated script, consent language, timing instructions, failure definitions, and anonymized result template in `specs/003-auth-roles-permissions/evidence/shared-sign-in-usability.md`.
+- Recruit exactly 20 first-time participants comprising 8 members, 8 staff users, and 4 administrators.
 - Give each participant valid credentials and their normal landing-area goal without telling them which account context the system will resolve.
 - Record first-attempt completion, elapsed time to the authorized landing area, keyboard-only completion when applicable, and any validation or navigation confusion.
 - Pass when at least 19 of 20 participants complete sign-in correctly on the first attempt within 30 seconds.
 - Record only aggregate results and non-sensitive observations; do not record credentials, tokens, or full account identifiers.
+- Missing participants leave SC-006 unverified and block production acceptance unless an explicit specification change defers the criterion.
 
 ## Future Keycloak Readiness Check
 
@@ -108,3 +111,5 @@ These checks do not require Keycloak for v1. They verify that a future IdP can r
 - Confirm logs and security activity redact passwords, raw tokens, token hashes, and request bodies.
 - Confirm HTTPS and Secure cookies are enabled outside local development.
 - Confirm `/health/ready` is used for deployment readiness and `/health` is used only for process liveness.
+- Confirm invalid static auth configuration is tested as startup rejection, not as a runtime readiness response.
+- Confirm expired pending identifier leases are reconciled idempotently and are never TTL-deleted.

@@ -89,16 +89,19 @@ Requires `auth-identifiers:manage`.
 
 Request fields:
 
-- `subjectType`: affected account context to update
-- `subjectId`: affected account id
-- `newIdentifier`: unique replacement identifier
+- `retainedSubject`: optional `{ subjectType, subjectId }` allowed to keep the original identifier
+- `reassignments`: array of `{ subjectType, subjectId, newIdentifier }` entries for every other conflicting subject
+- `operationId`: client-generated idempotency key
 
 Expected behavior:
 
-- Normalize and atomically reserve the replacement identifier.
-- Update the selected account aggregate and release or activate the conflict reservation in the same transaction when supported.
-- Reject a replacement already reserved by another account.
-- Never activate either conflicting account silently or modify passwords.
+- Require every conflicting subject to be retained or reassigned, and allow at most one explicitly selected retained subject.
+- Normalize and reserve every replacement before changing account aggregates.
+- If one subject is retained, activate the original reservation for that subject after all replacements succeed; if none is retained, release the original reservation.
+- Complete replacement reservations, aggregate updates, and original-reservation transition atomically, or leave the conflict unchanged.
+- Reject replacements already reserved by another account and never choose a retained subject automatically.
+- Return the original result when the same `operationId` is retried.
+- Never modify passwords.
 - Record success and failure as redacted security activity.
 
 ## Compatibility Sign-In Wrappers
