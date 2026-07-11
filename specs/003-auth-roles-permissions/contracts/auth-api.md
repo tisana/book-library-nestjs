@@ -98,11 +98,23 @@ Expected behavior:
 - Require every conflicting subject to be retained or reassigned, and allow at most one explicitly selected retained subject.
 - Normalize and reserve every replacement before changing account aggregates.
 - If one subject is retained, activate the original reservation for that subject after all replacements succeed; if none is retained, release the original reservation.
-- Complete replacement reservations, aggregate updates, and original-reservation transition atomically, or leave the conflict unchanged.
+- In transaction-capable deployments, complete replacement reservations, aggregate updates, and the original-reservation transition atomically.
+- Without transactions, create one durable `AuthIdentifierOperation`, move all affected reservations to `pending`, apply assignments idempotently, and keep the original conflict blocked until the saga completes or is safely compensated.
 - Reject replacements already reserved by another account and never choose a retained subject automatically.
 - Return the original result when the same `operationId` is retried.
 - Never modify passwords.
 - Record success and failure as redacted security activity.
+
+### `GET /auth/identifier-operations/:operationId`
+
+Requires `auth-identifiers:read` and administrator role area.
+
+Expected behavior:
+
+- Return a redacted operation status of `pending`, `applying`, `completed`, `compensating`, or `failed`.
+- Include only safe subject references, current step category, completion time, and redacted result/reason category.
+- Return the stored completion result for idempotent client recovery.
+- Exclude raw identifiers, passwords, token data, lease-owner infrastructure details, and internal stack traces.
 
 ## Compatibility Sign-In Wrappers
 

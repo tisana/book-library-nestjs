@@ -45,6 +45,7 @@ Permission names are stable product-level identifiers used by guards, tests, and
 | Role management | role assignment/update workflows | `roles:read` for review, `roles:manage` for changes |
 | Security activity | security event list/detail | `security-events:read` |
 | Identifier conflicts | `/auth/identifier-conflicts` review/resolve | `auth-identifiers:read` for review, `auth-identifiers:manage` for resolution |
+| Identifier operation status | `/auth/identifier-operations/:operationId` | `auth-identifiers:read`; administrator role area only |
 
 ## Denial Rules
 

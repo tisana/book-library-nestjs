@@ -11,6 +11,12 @@
   - `ACCESS_TOKEN_TTL_SECONDS`
   - `REFRESH_TOKEN_TTL_SECONDS`
   - `AUTH_COOKIE_SECRET`
+  - `AUTH_AUDIT_CORRELATION_SECRET`
+  - `AUTH_AUDIT_CORRELATION_KEY_VERSION`
+  - `AUTH_AUDIT_CORRELATION_PREVIOUS_KEYS` (optional version-to-secret rotation map)
+  - `AUTH_IDENTIFIER_LEASE_SECONDS` (default `300`, range `30`-`3600`)
+  - `AUTH_IDENTIFIER_RECONCILIATION_INTERVAL_SECONDS` (default `60`)
+  - `AUTH_IDENTIFIER_RECONCILIATION_BATCH_SIZE` (default `100`)
 
 ## Setup
 
@@ -38,6 +44,8 @@ Expected coverage:
 - Staff/member accounts, roles, and sign-in scope remain available after closing and recreating the Nest application against the same test database.
 - Sign-in failure is generic for unknown account, ambiguous identifier, wrong password, inactive account, suspended member, locked member, or missing credentials.
 - Concurrent staff/member claims for one normalized identifier produce exactly one reservation; legacy conflicts remain blocked until administrator resolution.
+- Multi-reservation changes use one `AuthIdentifierOperation`; transactionless execution remains blocked in `pending` until its idempotent saga completes, compensates, or is reconciled.
+- Startup and scheduled reconciliation use atomic leases so multiple application instances cannot process the same operation concurrently.
 - Access token succeeds only with configured issuer, audience, signature, expiry, subject, role area, and auth version.
 - Access token rejects wrong issuer, audience, expiry, signature, role area, or stale auth version.
 - Refresh token rotates on every successful refresh.
@@ -50,7 +58,8 @@ Expected coverage:
 - Account role, status, and identifier changes preserve borrowing records, staff action history, actor references, and security events.
 - Invalid mandatory production auth configuration prevents startup with a redacted diagnostic; after successful startup, public `/health/ready` fails within 5 seconds when MongoDB or initialized auth infrastructure becomes unavailable.
 - Public `/health` and `/health/ready` require no credentials and expose no connection strings, secrets, stack traces, host details, or account data.
-- The performance run uses a production build, dedicated seeded MongoDB, disabled access logging, 100 warm-up requests, 500 measured requests at concurrency 10, nearest-rank p95, and an equivalent public baseline handler. Results are written to `specs/003-auth-roles-permissions/evidence/auth-performance.md` with runtime and hardware metadata.
+- The performance run uses a production build, dedicated seeded MongoDB, disabled access logging, 100 warm-up requests, 500 measured requests at concurrency 10, nearest-rank p95, and equivalent unprotected/protected handlers from a test-only benchmark module. Results are written to `specs/003-auth-roles-permissions/evidence/auth-performance.md` with runtime and hardware metadata.
+- Production `AppModule` does not import or expose test-only benchmark handlers.
 
 ## Frontend Verification
 
@@ -107,9 +116,12 @@ These checks do not require Keycloak for v1. They verify that a future IdP can r
 - Confirm no production deployment uses `development-only-secret`.
 - Confirm refresh-token and authorization-code TTL indexes exist when their collections are enabled.
 - Confirm the unique `AuthIdentifier.normalizedIdentifier` index exists and migration conflict reports contain no secrets.
+- Confirm unique `AuthIdentifierOperation.operationId`, operation lease indexes, and non-unique reservation `pendingOperationId`/`lastOperationId` indexes exist.
 - Confirm token issuer and audience match deployed configuration.
 - Confirm logs and security activity redact passwords, raw tokens, token hashes, and request bodies.
 - Confirm HTTPS and Secure cookies are enabled outside local development.
 - Confirm `/health/ready` is used for deployment readiness and `/health` is used only for process liveness.
 - Confirm invalid static auth configuration is tested as startup rejection, not as a runtime readiness response.
-- Confirm expired pending identifier leases are reconciled idempotently and are never TTL-deleted.
+- Confirm audit identifier correlation uses versioned HMAC-SHA-256 with `AUTH_AUDIT_CORRELATION_SECRET`; ordinary hashes and raw identifiers are absent.
+- Confirm expired operation leases are claimed atomically, reconciled idempotently in bounded batches, and are never TTL-deleted.
+- Confirm benchmark routes are absent from the normal production application route graph.
