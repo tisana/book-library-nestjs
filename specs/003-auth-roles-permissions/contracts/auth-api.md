@@ -80,6 +80,7 @@ Requires `auth-identifiers:read`.
 Expected behavior:
 
 - Return paginated legacy `AuthIdentifier` conflict records with normalized identifier, safe subject references, and safe account display labels.
+- Include `resolutionStatus` as `reviewable` or `manual-repair-required` without returning oversized assignment payloads.
 - Exclude passwords, password hashes, token data, borrowing history, and unrelated profile fields.
 - Reject regular staff and member identities.
 
@@ -100,8 +101,10 @@ Expected behavior:
 - If one subject is retained, activate the original reservation for that subject after all replacements succeed; if none is retained, release the original reservation.
 - In transaction-capable deployments, complete replacement reservations, aggregate updates, and the original-reservation transition atomically.
 - Without transactions, create one durable `AuthIdentifierOperation`, move all affected reservations to `pending`, apply assignments idempotently, and keep the original conflict blocked until the saga completes or is safely compensated.
+- Pending replacement reservations store normalized identifiers and are referenced by operation assignments; HMAC correlation values are never used to reconstruct identifiers.
 - Reject replacements already reserved by another account and never choose a retained subject automatically.
-- Return the original result when the same `operationId` is retried.
+- Reject operations above `AUTH_IDENTIFIER_MAX_OPERATION_ASSIGNMENTS` with `422 Unprocessable Entity`; oversized legacy conflicts remain blocked with `manual-repair-required` status.
+- While a terminal operation is retained, return its original redacted result and original HTTP status when the same `operationId` is retried, whether the terminal outcome is `completed` or `failed-terminal`; never re-execute it. After terminal expiry, require a new operation id.
 - Never modify passwords.
 - Record success and failure as redacted security activity.
 
@@ -111,9 +114,11 @@ Requires `auth-identifiers:read` and administrator role area.
 
 Expected behavior:
 
-- Return a redacted operation status of `pending`, `applying`, `completed`, `compensating`, or `failed`.
+- Return a redacted operation status of `pending`, `applying`, `compensating`, `finalizing`, `failed-retryable`, `completed`, or `failed-terminal`.
+- Treat only `completed` and `failed-terminal` as terminal. `failed-retryable` remains eligible for reconciliation and must not be presented as expired or permanently failed.
 - Include only safe subject references, current step category, completion time, and redacted result/reason category.
-- Return the stored completion result for idempotent client recovery.
+- Return the stored redacted terminal result and original HTTP status for idempotent client recovery from either `completed` or `failed-terminal`.
+- Guarantee completion-result replay only during `AUTH_IDENTIFIER_OPERATION_RETENTION_DAYS`; after terminal expiry return `404 Not Found` and require a new operation id.
 - Exclude raw identifiers, passwords, token data, lease-owner infrastructure details, and internal stack traces.
 
 ## Compatibility Sign-In Wrappers
@@ -284,8 +289,10 @@ The API records events for:
 - authorization denied
 - role assignment changes
 - account status changes
+- identifier conflict detection, resolution, and reservation recovery
+- authorized offline-repair resume, including original and resuming actor references
 - token refresh
 - refresh replay detection
 - revocation/sign-out
 
-Events must exclude passwords, raw tokens, token hashes, and full sensitive payloads.
+Events must exclude passwords, raw tokens, token hashes, raw or normalized sign-in identifiers, and full sensitive payloads. Identifier correlation uses the versioned HMAC contract.

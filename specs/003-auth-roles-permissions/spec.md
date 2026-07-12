@@ -107,13 +107,13 @@ An administrator can review security-relevant events such as failed sign-in atte
 - **FR-006**: System MUST limit member accounts to their own membership profile, borrowing status, borrowing history, due status, and account information.
 - **FR-007**: System MUST allow administrators to create, deactivate, and update staff/admin user accounts.
 - **FR-008**: System MUST allow administrators to assign and remove approved roles for staff/admin users.
-- **FR-009**: System MUST define named permissions for protected workflows, including catalog management, member management, borrowing/return management, staff account management, role management, and security activity review.
+- **FR-009**: System MUST define named permissions for catalog management, member management, borrowing/return management, staff account management, role management, identifier-conflict review and resolution, and security activity review.
 - **FR-010**: System MUST map each role to a clear set of permissions that can be reviewed by an administrator.
 - **FR-011**: System MUST reject protected actions when the signed-in user lacks the required permission, even when the request bypasses the user interface.
 - **FR-012**: System MUST store user secrets securely and never store or display recoverable passwords.
 - **FR-013**: System MUST provide sign-in failure messages that do not reveal whether a specific account exists.
 - **FR-014**: System MUST support account deactivation so a user can be prevented from signing in without removing historical audit context.
-- **FR-015**: System MUST record security-relevant events, including successful sign-in, failed sign-in, sign-out when available, denied authorization, account deactivation, and role changes.
+- **FR-015**: System MUST record successful and failed sign-in, sign-out, denied authorization, account deactivation, role changes, identifier-conflict detection and resolution, identifier-operation recovery, refresh replay, and token revocation.
 - **FR-016**: System MUST ensure security event records include enough context for audit review while excluding passwords, tokens, sensitive request bodies, and raw sign-in identifiers; identifier correlation MUST use versioned HMAC-SHA-256 with a dedicated audit-correlation secret rather than an ordinary hash.
 - **FR-017**: System MUST provide administrator-only access to view security activity.
 - **FR-018**: System MUST protect role and permission management so only administrators can grant, remove, or change elevated access.
