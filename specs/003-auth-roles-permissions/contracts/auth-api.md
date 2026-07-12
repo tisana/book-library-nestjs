@@ -281,6 +281,29 @@ Required access token claims:
 
 Future Keycloak migration should map Keycloak `sub`, roles/groups, scopes, issuer, audience, and JWKS validation into this same request context before permission guards run.
 
+## Audit-Correlation Key Rotation Preflight CLI
+
+Command: `npm run auth:key-rotation:preflight`
+
+This is a local deployment-operator command, not an HTTP endpoint. It reads exactly one JSON object from stdin:
+
+```json
+{
+  "candidateCurrentVersion": 4,
+  "candidatePreviousVersions": [2, 3]
+}
+```
+
+Validation and behavior:
+
+- Accept positive integer versions only; previous versions must be unique and must not contain the candidate current version.
+- Reject unknown fields and any field/value intended to carry key secrets.
+- Query referenced versions through `AuthIdentifierRepairKeyPolicyService` and perform no database or configuration writes.
+- Exit `0` with `{ "status": "ok", "requiredPreviousVersions": [...], "requiredPreviousCount": n, "maxPreviousKeys": 2 }` when rotation is allowed.
+- Exit `2` with the same redacted metadata plus `"reason": "repair-key-rotation-blocked"` when more than two previous versions are required.
+- Exit `1` with a generic redacted validation/runtime reason for malformed input or unavailable infrastructure.
+- Never output key values, connection strings, account data, identifiers, stack traces, or repair document ids.
+
 ## Security Events
 
 The API records events for:

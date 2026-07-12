@@ -94,6 +94,8 @@ An administrator can review security-relevant events such as failed sign-in atte
 - Role changes must not require manual server restarts or in-memory updates to take effect.
 - Security-related errors must avoid exposing passwords, secrets, full protected payloads, or unrelated member borrowing history.
 - Repeated failed sign-in attempts should be slowed or blocked enough to reduce automated guessing without locking out normal users too aggressively.
+- A referenced audit-correlation key version must not be retired while an identifier repair is non-terminal or still cleaning activation gates; if configuration removes it anyway, readiness must fail closed without mutating repair data until the key is restored.
+- An audit-correlation key rotation that would require more than two previous key versions must be rejected before configuration changes, without accepting or displaying key secrets.
 
 ## Requirements *(mandatory)*
 
@@ -127,6 +129,7 @@ An administrator can review security-relevant events such as failed sign-in atte
 - **FR-026**: System MUST route signed-in users to their landing area from authenticated role area and permissions rather than from a user-selected login type.
 - **FR-027**: System MUST reserve each normalized sign-in identifier across staff/admin and member contexts, reject concurrent or subsequent conflicting claims, fail closed for legacy ambiguity, and allow only an administrator to resolve conflicts. Multi-document changes MUST use a MongoDB transaction when available or a durable idempotent operation saga that never enables an ambiguous identifier.
 - **FR-028**: System MUST reject production startup when mandatory static authentication configuration is missing or unsafe. After successful startup, it MUST expose a public deployment readiness endpoint that reports runtime dependency failure when MongoDB or initialized authentication infrastructure becomes unavailable, without exposing secrets or protected configuration values.
+- **FR-029**: System MUST retain every audit-correlation key version referenced by a non-terminal or cleanup-pending identifier repair, fail deployment readiness without mutating repair state when a referenced version is unavailable, and provide a production-safe operator preflight that rejects an audit-key rotation requiring more than two previous versions before configuration changes while accepting and returning only key-version metadata.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -153,6 +156,7 @@ An administrator can review security-relevant events such as failed sign-in atte
 - **SC-010**: Shared sign-in is fully operable using only a keyboard, exposes accessible names for every field and action, announces validation and authentication errors, and prevents duplicate submission in automated accessibility tests.
 - **SC-011**: The complete authentication-and-authorization boundary adds no more than 50 ms p95 latency compared with an equivalent unprotected baseline across 500 measured requests in the documented verification environment.
 - **SC-012**: The first page of 50 security activity events returns within 2 seconds with 10,000 stored events in the documented verification environment.
+- **SC-013**: In 100% of rotation acceptance tests, the operator preflight exits successfully when at most two previous versions are required, exits nonzero with `repair-key-rotation-blocked` when more than two are required, accepts no key secrets, changes no configuration or repair data, and reports only required version numbers and count; removing a referenced version makes readiness non-success within 5 seconds until restoration.
 
 ## Assumptions
 
@@ -163,3 +167,4 @@ An administrator can review security-relevant events such as failed sign-in atte
 - Administrator users are trusted to manage staff accounts and role assignment.
 - Password reset and external single sign-on are not required for the first version unless added in a later spec.
 - Existing borrowing, catalog, and member-management workflows remain governed by their current business rules; this feature adds authentication and authorization boundaries around them.
+- Deployment operators can run a local preflight command with database/configuration access before changing audit-correlation key versions; this command is not a public HTTP endpoint and does not replace deployment-platform access controls.
