@@ -9,7 +9,7 @@ Authentication uses existing account aggregates where credentials are read with 
 - The **Member Authentication Link** is embedded on `Member`; it is not a separate collection.
 - Normalized sign-in identifier ownership is stored in `AuthIdentifier`, a credential-free uniqueness registry referencing exactly one staff or member account context.
 - Multi-reservation mutations are coordinated by `AuthIdentifierOperation`, which provides one idempotency and recovery boundary for all affected reservations and account aggregates.
-- Authorization codes, refresh-token records, clients, and security events are separate documents because they expire, grow independently, or need audit pagination.
+- Authorization codes, refresh-token families, exchanged-token replay markers, clients, and security events are separate documents because they expire, grow independently, or need audit pagination.
 - Optional future IdP link fields are allowed so Keycloak can later become the token issuer without changing library authorization.
 - The shared sign-in flow resolves a submitted identifier against staff/admin and member account aggregates, but v1 does not introduce a separate global user collection.
 
@@ -195,8 +195,8 @@ Coordinates one identifier mutation that may affect several reservations and acc
 
 **Offline Repair Key Policy, Authorization, and Batching**
 
-- `AuthIdentifierRepairKeyPolicyService` is the single owner of indexed required-version queries, missing-key readiness evaluation, worker allow/deny decisions, and rotation preflight. Reconciliation, health readiness, and `AuthIdentifierRepairService` consume this service rather than implementing independent key-policy queries.
-- Rotation preflight computes the candidate previous-key map after promoting the current key and unions it with versions referenced by `pending`, `applying`, `compensating`, `finalizing`, `failed-retryable`, or cleanup-pending repairs. If more than two previous versions are required, it rejects the rotation as `repair-key-rotation-blocked` before configuration changes and returns only required version numbers and count.
+- `AuthIdentifierRepairKeyPolicyService` is the single owner of indexed required-version queries across repair operations and unexpired throttle buckets, missing-key readiness evaluation, worker/request allow/deny decisions, and rotation preflight. Reconciliation, health readiness, `AuthIdentifierRepairService`, and `AuthThrottleService` consume this service rather than implementing independent key-policy queries.
+- Rotation preflight computes the candidate previous-key map after promoting the current key and unions it with versions referenced by `pending`, `applying`, `compensating`, `finalizing`, `failed-retryable`, cleanup-pending repairs, or unexpired throttle buckets. If more than two previous versions are required, it rejects the rotation as `repair-key-rotation-blocked` before configuration changes and returns only required version numbers/count plus fixed non-sensitive status, reason, and configured-capacity fields.
 - The local `auth:key-rotation:preflight` command passes validated `{ candidateCurrentVersion, candidatePreviousVersions }` metadata to the policy service. It rejects non-positive/duplicate versions, a current version repeated as previous, unknown fields, and any secret-like fields; it performs no writes and returns deterministic redacted status, required previous versions, count, and maximum.
 - `AuthIdentifierRepairAuthorizationService` owns token and current-account authorization revalidation. `AuthIdentifierRepairService` owns manifest verification, parent/batch state transitions, compensation, activation gates, parent completion, audit, and cleanup. The CLI is a thin adapter for stdin token/input parsing, confirmation, service invocation, redacted output, and exit codes.
 - The CLI accepts a short-lived access token only through standard input and never accepts an actor-id override or logs the token. Before dry-run data access and before every mutating batch or parent-completion transaction, the service validates signature, issuer, audience, expiry, active account status, `authVersion`, administrator role area, and `auth-identifiers:manage`.
@@ -204,7 +204,7 @@ Coordinates one identifier mutation that may affect several reservations and acc
 - Dry run creates one parent `offline-repair` operation in `pending`. It canonicalizes `{ conflictId, retainedSubject, reassignments }` as UTF-8 RFC 8785 JSON after identifier normalization and sorting reassignments by `subjectType` then `subjectId`. It derives a 32-byte key with HKDF-SHA-256 using the audit-correlation secret as IKM, UTF-8 salt `book-library/auth-identifier-repair-manifest/v1`, info `key-version:<manifestKeyVersion>`, and output length 32; it then stores `manifestHash = base64url(HMAC-SHA-256(derivedKey, canonicalJson))` and `manifestKeyVersion`. Published deterministic test vectors define canonical bytes, derived key, and final HMAC.
 - Deterministic vector: key version `7`; IKM base64url `AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8`; canonical UTF-8 JSON `{"conflictId":"conflict-001","reassignments":[{"newIdentifier":"member.new@example.com","subjectId":"member-001","subjectType":"member"}],"retainedSubject":{"subjectId":"staff-001","subjectType":"staff"}}`; derived key base64url `mWdLVTX6hitMZ4E7rjsVHqUliKHvF1nNhlt1uNYGOn4`; manifest HMAC base64url `Zdp_WIBI_lfYpBPJhebXfWQxwyvuOqsiX4EJOF72fok`.
 - Confirmed apply recomputes the HMAC with the persisted current or previous key version, uses constant-time comparison, and atomically moves the parent from `pending` to `applying` before creating batches. A mapping difference fails closed and requires a new repair id and dry run.
-- A key version cannot be removed while any `pending`, `applying`, `compensating`, `finalizing`, `failed-retryable`, or cleanup-pending repair references it. Startup reconciliation and `/health/ready` report `repair-key-required` if a referenced version is unavailable; workers leave data unchanged until the key is restored. No key rebinding is allowed.
+- A key version cannot be removed while any `pending`, `applying`, `compensating`, `finalizing`, `failed-retryable`, or cleanup-pending repair or unexpired throttle bucket references it. Startup reconciliation and `/health/ready` report `repair-key-required` or `throttle-key-required` when the corresponding referenced version is unavailable; workers and affected authentication requests leave data unchanged until the key is restored. No key rebinding is allowed.
 - Each `AuthIdentifierRepairBatch` contains no more than `AUTH_IDENTIFIER_MAX_OPERATION_ASSIGNMENTS`, creates replacement reservations as `pending`, updates account aggregates idempotently, and records its checkpoint. The original conflict and all replacement reservations remain blocked while preparation is incomplete.
 - After every batch is prepared, bounded activation passes mark replacement reservations `active` with `activationGateOperationId` still referencing the parent. Sign-in remains blocked because the parent is not completed.
 - When every batch is `activated`, the service atomically moves the parent from `applying` to `finalizing`. One bounded transaction then resolves or releases the single original conflict reservation, inserts the parent's terminal security event, and moves the parent from `finalizing` to `completed` with `cleanupStatus: pending`. This one-document parent transition logically unlocks every gated reservation without an unbounded transaction.
@@ -319,10 +319,9 @@ Tracks refresh-token rotation and replay response.
 - `scopes`
 - `status`: `active`, `revoked`, or `replayed`
 - `currentTokenHash`
-- `previousTokenHash`
 - `issuedAt`
 - `lastRotatedAt`
-- `expiresAt`
+- `expiresAt`: immutable absolute family expiry, no later than 30 days after `issuedAt`
 - `revokedAt`
 - `revokedReason`
 - `createdAt`, `updatedAt`
@@ -330,8 +329,12 @@ Tracks refresh-token rotation and replay response.
 **Validation**
 
 - Store hashes only, never raw refresh tokens.
-- Refresh success rotates to a new hash and invalidates the previous hash.
-- Reuse of an invalidated token marks the family as replayed and revokes active refresh access.
+- Access credentials expire no later than 15 minutes after issuance.
+- Family creation sets one absolute expiry no later than 30 days after sign-in; rotation never changes `issuedAt` or `expiresAt`.
+- Before rotating, insert a unique `RefreshTokenReplayMarker` for the presented current hash with the same family expiry. Only after marker persistence succeeds may an atomic compare-and-swap replace `currentTokenHash` and `lastRotatedAt` on the still-active, unexpired family.
+- Marker persistence failure leaves the family current hash unchanged and returns no new credential. Compare-and-swap failure returns no new credential and follows the replay check.
+- A presented hash that does not match an active current hash but matches any unexpired replay marker marks the family `replayed`, revokes active refresh access, and returns the same generic denial used for invalid, expired, inactive-account, and stale-authorization outcomes.
+- The refresh cookie lifetime is the positive time remaining until family `expiresAt`, never a restarted full lifetime.
 
 **Indexes**
 
@@ -339,6 +342,66 @@ Tracks refresh-token rotation and replay response.
 - Unique sparse `{ currentTokenHash: 1 }`
 - `{ subjectType: 1, subjectId: 1, status: 1 }`
 - TTL `{ expiresAt: 1 }`
+
+## RefreshTokenReplayMarker
+
+Retains a one-way reference to every successfully presented current refresh credential so reuse remains detectable through the full absolute family lifetime.
+
+**Fields**
+
+- `_id`
+- `tokenHash`: one-way hash of an exchanged refresh credential
+- `familyId`: owning `RefreshTokenFamily.familyId`
+- `exchangedAt`
+- `expiresAt`: copied immutable family expiry
+- `createdAt`, `updatedAt`
+
+**Validation and behavior**
+
+- Store no raw refresh credential, cookie header, source address, account identifier, role, or profile data.
+- `tokenHash` is globally unique so concurrent attempts to exchange the same credential cannot both advance the family.
+- Insert the marker before the family compare-and-swap. A duplicate marker means the credential has already entered exchange and triggers fail-closed family replay handling; it is not treated as an idempotent second success.
+- A marker remains available until the owning family absolute expiry, including after later rotations or family revocation, so replay of any generation can still identify and revoke the family.
+- TTL deletion after `expiresAt` is cleanup only; expired family credentials remain invalid even if physical marker deletion is delayed.
+
+**Indexes**
+
+- Unique `{ tokenHash: 1 }`
+- `{ familyId: 1, expiresAt: 1 }`
+- TTL `{ expiresAt: 1 }`
+
+## AuthThrottleBucket
+
+Short-lived shared counter for sign-in and refresh abuse boundaries across compatibility routes and application instances.
+
+**Fields**
+
+- `_id`
+- `dimension`: `sign-in-identifier-failure`, `sign-in-source`, `refresh-family`, or `refresh-source`
+- `keyVersion`: audit-correlation key version used for the purpose-separated bucket HMAC
+- `bucketKey`: purpose-separated HMAC output; never a raw identifier, address, cookie, family id, or token
+- `count`
+- `windowStartedAt`
+- `expiresAt`
+- `createdAt`, `updatedAt`
+
+**Validation and behavior**
+
+- Atomically create, increment, or roll an expired window for the unique dimension/key-version/key tuple.
+- Shared and compatibility sign-in routes use the same `sign-in-identifier-failure` and `sign-in-source` buckets.
+- Count all sign-in attempts against the source bucket. Count unknown, ambiguous, invalid-password, inactive, suspended, locked, and missing-credential failures against the identifier-correlation bucket whenever the request contains a normalizable identifier; malformed requests without one count only against the source bucket.
+- Count refresh attempts against both family and source buckets before issuing a new token.
+- Default limits/windows are 5/900 seconds for identifier failures, 20/900 seconds for sign-in source attempts, and 30/300 seconds for each refresh dimension.
+- Return one generic retry-later outcome when either applicable bucket exceeds its limit; delete or roll expired buckets so access recovers without administrator action.
+- Derive candidate keys under the current and every configured previous audit-correlation version; continue the matching unexpired bucket with its original `keyVersion`, create under the current version only when none exists, and fail closed without writes if an unexpired bucket references an unavailable key.
+- Parse `AUTH_TRUSTED_PROXY_CIDRS` as a JSON array of validated IPv4/IPv6 CIDRs. With an empty array use the direct peer and ignore forwarding headers; otherwise use right-to-left `proxy-addr` resolution to the first untrusted address. Production validation rejects malformed entries and all-address CIDRs.
+
+**Indexes**
+
+- Unique `{ dimension: 1, keyVersion: 1, bucketKey: 1 }`
+- TTL `{ expiresAt: 1 }`
+- `{ dimension: 1, expiresAt: 1 }`
+- `{ keyVersion: 1, expiresAt: 1 }` for indexed rotation/readiness required-version queries
 
 ## RoleDefinition
 
@@ -371,7 +434,7 @@ Append-only security event record for audit review.
 
 - `_id`
 - `eventId`: optional deterministic idempotency key for operation terminal events
-- `eventType`: `sign-in-success`, `sign-in-failure`, `authorization-denied`, `role-changed`, `account-status-changed`, `identifier-conflict-detected`, `identifier-conflict-resolved`, `identifier-reservation-recovered`, `identifier-repair-resumed`, `token-refreshed`, `refresh-replay-detected`, `token-revoked`, `sign-out`
+- `eventType`: `sign-in-success`, `sign-in-failure`, `authorization-denied`, `browser-session-origin-denied`, `role-changed`, `account-status-changed`, `identifier-conflict-detected`, `identifier-conflict-resolved`, `identifier-reservation-recovered`, `identifier-repair-resumed`, `token-refreshed`, `refresh-replay-detected`, `token-revoked`, `sign-out`
 - `actorType`: `staff`, `member`, `system`, or `unknown`
 - `actorId`
 - `targetType`
@@ -392,10 +455,11 @@ Append-only security event record for audit review.
 **Validation**
 
 - Do not store passwords, raw tokens, token hashes, full request bodies, or protected response bodies.
-- Failed sign-in and rate-limit correlation must use versioned HMAC-SHA-256 identifier correlation; raw or normalized sign-in identifiers are never stored in security activity.
+- Failed sign-in and rate-limit correlation must use versioned HMAC-SHA-256 identifier correlation; raw or normalized sign-in identifiers are never stored in security activity. A failed event may set an opaque `subjectType`/`subjectId` only after resolution safely produced exactly one account context; unknown, missing, released, conflict-marked, or ambiguous identifiers omit the subject reference.
 - Ambiguous shared sign-in resolution must be recorded as a sign-in failure reason category without revealing the conflicting account ids to the user.
 - Identifier conflict events store only `HMAC-SHA-256(normalizedIdentifier, AUTH_AUDIT_CORRELATION_SECRET)`, `correlationKeyVersion`, safe subject references, conflict count, outcome, and reason category; raw conflicting identifiers and ordinary unkeyed hashes are excluded. New events use `AUTH_AUDIT_CORRELATION_KEY_VERSION`; optional previous version-to-secret mappings remain available only for authorized correlation during rotation.
 - Identifier reservation recovery records the operation id, resulting state, outcome, and reason category without raw identifiers.
+- Browser-session origin denial records only a route category and one safe reason category (`missing`, `opaque`, `multiple`, `malformed`, or `untrusted`); it never stores the supplied origin/header, cookie, token, or account reference and is appended without reading authentication state.
 - Operation terminal events use the operation's deterministic `terminalEventId` as `eventId`; duplicate inserts are idempotent and cannot create duplicate permanent audit records.
 
 **Indexes**
@@ -440,6 +504,7 @@ replayed -> revoked
 
 - Replay detection is terminal for active use.
 - Revocation can be triggered by sign-out, account deactivation, password change, or admin action.
+- Current-session sign-out revokes the matched family when present and returns the same completion outcome when no valid family is present. All-session sign-out revokes every active family for the subject and advances account authorization version so existing access credentials fail subsequent protected requests.
 
 ### Authentication Identifier Reservation
 
@@ -468,12 +533,14 @@ When Keycloak becomes justified, use the existing optional identity link fields 
 - Add missing `passwordUpdatedAt`, `authVersion`, optional identity link fields, and refresh-token/session documents.
 - Create `AuthIdentifier` with a unique normalized-identifier index and backfill reservations from staff/member identifiers.
 - Create `AuthIdentifierOperation` with unique operation ids, cleanup state, terminal-event, lease/reconciliation indexes, and the partial compound repair-key-policy index used by readiness, workers, and rotation preflight.
+- Create `AuthThrottleBucket` with unique dimension/key-version/key, key-version/expiry, dimension/expiry, and TTL indexes; no backfill is required because buckets are ephemeral and are created on demand.
 - Create `AuthIdentifierRepairBatch` with unique parent-operation/batch-number checkpoints, parent/status access, and post-cleanup TTL indexes; add `AuthIdentifier.activationGateOperationId` lookup support.
 - Add terminal-operation TTL retention only after permanent audit and required gate cleanup, and quarantine oversized legacy conflicts as `manual-repair-required` without enabling authentication.
 - Abort automatic activation for duplicate legacy identifiers, emit a conflict report for administrator resolution, and never choose a winning account silently.
 - Preserve borrowing records, staff action history, and security events during backfill, account identifier correction, role changes, deactivation, and rollback.
 - Rollback removes only identifier reservations created by this migration after verifying account aggregates still own their original identifiers; it must not delete or rewrite account, borrowing, or audit history.
-- Add collections and indexes for auth clients, optional authorization codes, refresh-token families, and security events.
+- Add collections and indexes for auth clients, optional authorization codes, refresh-token families, refresh-token replay markers, and security events.
+- Backfill each existing `previousTokenHash` into a unique replay marker using its family id and absolute expiry before removing the field; preserve every active current hash and original family expiry. If a legacy previous hash conflicts across families, fail migration and quarantine the affected families rather than choosing one silently.
 - Seed one first-party client with exact redirect URIs for local development and deployment if the authorization-code flow is implemented.
 - Seed or define approved roles and permission mappings.
 - Add a shared sign-in resolver that resolves active reservations to existing staff/member account aggregates and rejects missing, released, or legacy-ambiguous identifiers generically.

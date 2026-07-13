@@ -8,8 +8,8 @@
   - `JWT_ISSUER`
   - `JWT_AUDIENCE`
   - `JWT_SECRET` or asymmetric signing keys
-  - `ACCESS_TOKEN_TTL_SECONDS`
-  - `REFRESH_TOKEN_TTL_SECONDS`
+  - `ACCESS_TOKEN_TTL_SECONDS` (default and maximum `900`)
+  - `REFRESH_TOKEN_TTL_SECONDS` (default and maximum `2592000`; must exceed access-token lifetime and never slides after sign-in)
   - `AUTH_COOKIE_SECRET`
   - `AUTH_AUDIT_CORRELATION_SECRET`
   - `AUTH_AUDIT_CORRELATION_KEY_VERSION`
@@ -19,6 +19,13 @@
   - `AUTH_IDENTIFIER_RECONCILIATION_BATCH_SIZE` (default `100`)
   - `AUTH_IDENTIFIER_OPERATION_RETENTION_DAYS` (default `90`, range `7`-`365`)
   - `AUTH_IDENTIFIER_MAX_OPERATION_ASSIGNMENTS` (default `20`, range `2`-`100`)
+  - `AUTH_SIGNIN_IDENTIFIER_FAILURE_LIMIT` (default `5`)
+  - `AUTH_SIGNIN_SOURCE_LIMIT` (default `20`)
+  - `AUTH_SIGNIN_WINDOW_SECONDS` (default `900`)
+  - `AUTH_REFRESH_THROTTLE_LIMIT` (default `30` for both family and source)
+  - `AUTH_REFRESH_THROTTLE_WINDOW_SECONDS` (default `300`)
+  - `AUTH_TRUSTED_PROXY_CIDRS` (default `[]`; JSON array of explicit trusted proxy IPv4/IPv6 CIDRs; forwarding headers remain untrusted when empty)
+  - `AUTH_TRUSTED_BROWSER_ORIGINS` (JSON array of exact origins; outside production defaults to `["http://localhost:5173","http://127.0.0.1:5173"]`; production has no default, requires at least one HTTPS origin, and rejects wildcard, `null`, credentials, path/query/fragment values, duplicates, and non-HTTPS entries)
 
 ## Setup
 
@@ -47,14 +54,23 @@ Expected coverage:
 - Member sign-in succeeds through the shared sign-in contract for an active member with active auth status and valid credentials.
 - Staff/member accounts, roles, and sign-in scope remain available after closing and recreating the Nest application against the same test database.
 - Sign-in failure is generic for unknown account, ambiguous identifier, wrong password, inactive account, suspended member, locked member, or missing credentials.
+- Failed sign-in security activity includes an opaque account reference only after exact-one account resolution; unknown or ambiguous attempts contain only versioned correlation and never the submitted or normalized identifier.
+- Shared and compatibility sign-in routes share counters: the sixth generic unknown/ambiguous/password/status/credential failure with one normalizable identifier and the twenty-first trusted-source attempt in 15 minutes return the same generic retry-later response; malformed requests without a normalizable identifier count only by source. Refresh returns that response on the thirty-first family or trusted-source attempt in 5 minutes, and all windows recover automatically.
+- Concurrent application instances enforce the same throttle boundaries through `AuthThrottleService`; audit-key rotation continues unexpired buckets under their stored key version, missing referenced key material fails closed, and throttle state retains no raw identifier, source address, cookie, family id, or token.
+- Direct requests ignore forwarding headers. Trusted proxy tests configure explicit CIDRs, resolve right-to-left to the first untrusted address, and reject malformed or all-address production entries before startup.
 - Concurrent staff/member claims for one normalized identifier produce exactly one reservation; legacy conflicts remain blocked until administrator resolution.
 - Multi-reservation changes use one `AuthIdentifierOperation`; transactionless execution remains blocked in `pending` until its idempotent saga completes, compensates, or is reconciled.
 - Operation assignments recover identifiers through pending reservation references; HMAC values are never reversed.
 - Startup and scheduled reconciliation use atomic leases so multiple application instances cannot process the same operation concurrently.
-- Access token succeeds only with configured issuer, audience, signature, expiry, subject, role area, and auth version.
+- Access token succeeds only with configured issuer, audience, signature, expiry no later than 900 seconds after issuance, subject, role area, and auth version.
 - Access token rejects wrong issuer, audience, expiry, signature, role area, or stale auth version.
-- Refresh token rotates on every successful refresh.
-- Reused refresh token revokes the family and records a replay event.
+- Refresh token rotates on every successful refresh without changing the family's absolute expiry, which is no later than 30 days after sign-in; the replacement cookie lifetime equals only the family lifetime remaining.
+- Every exchanged token leaves a unique hash-only replay marker until family expiry. Reusing the immediately previous or any older exchanged token, or concurrently exchanging one token twice, revokes the family and records one replay outcome without exposing which validation rule failed.
+- Marker persistence occurs before the family compare-and-swap; marker-write failure, compare-and-swap loss, and process interruption return no new credentials and never create two active successors.
+- Shared/compatibility sign-in, refresh, logout, and logout-all accept each exact configured browser origin and reject missing, `null`, multiple, malformed, wildcard-derived, and untrusted origins with the same generic `403` before cookie parsing, throttle increment, session lookup/mutation, or `Set-Cookie`; each rejection appends one redacted event with route and safe reason categories but no supplied origin/header or cookie.
+- Credentialed CORS returns only the matched configured origin and uses the same allowlist as the session guard; passing CORS configuration alone does not bypass the guard.
+- Production set/clear cookie tests require `HttpOnly`, `Secure`, `SameSite=Strict`, path `/auth`, no `Domain`, and identical scope/security attributes. Refresh credentials never appear in response bodies.
+- Current-session sign-out revokes the matching family when present and returns the same success when no valid cookie exists. All-session sign-out revokes every family, advances account authorization version, and makes older access credentials fail the next protected request.
 - Member token cannot access staff/admin routes.
 - Staff token without admin permissions cannot manage users, roles, or security events.
 - Member self-service derives member id from token and blocks horizontal access.
@@ -82,7 +98,8 @@ Expected coverage:
 - Signed-in members can open member self-service and cannot open staff/admin screens.
 - Signed-in staff can open assigned staff workflows and cannot open admin-only screens without permissions.
 - Signed-in administrators can manage staff accounts/roles and review security activity.
-- Sign-out clears memory session state, clears frontend cached data, revokes refresh state, and redirects to the shared sign-in route.
+- Access credentials exist only in runtime memory and are absent from localStorage, sessionStorage, IndexedDB, persisted application state, logs, and error output.
+- Current-session and all-session sign-out clear memory session state, clear frontend cached data, revoke the intended refresh state, and redirect to the shared sign-in route even when current-session sign-out begins with no valid refresh cookie.
 
 ## Manual Acceptance Scenarios
 
@@ -97,6 +114,8 @@ Expected coverage:
 9. Review the conflict as an administrator, assign a unique replacement identifier, and confirm the corrected account can sign in without changing its password.
 10. For an oversized `manual-repair-required` conflict, supply a short-lived administrator access token through standard input and run the thin offline repair CLI in dry-run mode. Confirm that `AuthIdentifierRepairAuthorizationService` validates authorization before data access and every mutating batch, `AuthIdentifierRepairKeyPolicyService` validates referenced-key availability, and `AuthIdentifierRepairService` canonicalizes the normalized mapping, records the deterministic salted HKDF/HMAC manifest, transitions the parent through `pending`, `applying`, and `finalizing`, prepares bounded resumable `AuthIdentifierRepairBatch` documents, activates reservations behind the parent repair gate, and requires confirmation before the bounded parent-completion transaction unlocks authentication. Resume with a fresh authorized token and confirm original/resuming actor attribution.
 11. Review security activity and confirm sign-in, ambiguous sign-in failure, conflict resolution/recovery, authorized repair resume with original/resuming actors, denied access, role change, refresh replay, sign-out, and account-status events are visible without secrets.
+12. Repeat shared sign-in, refresh, current-session sign-out, and all-session sign-out with one trusted exact origin and with missing, `null`, malformed, and untrusted origins. Confirm only the trusted request reaches authentication/session handling; every rejection has no cookie, authentication, or throttle side effect and appends only one redacted route/reason security event.
+13. Rotate a refresh credential at least three times, replay the first exchanged credential, and confirm the family is revoked. Verify the newest cookie never outlives the original family expiry.
 
 ## Shared Sign-In Usability Protocol
 
@@ -120,21 +139,22 @@ These checks do not require Keycloak for v1. They verify that a future IdP can r
 ## Operational Checks
 
 - Confirm no production deployment uses `development-only-secret`.
-- Confirm refresh-token and authorization-code TTL indexes exist when their collections are enabled.
+- Confirm refresh-family, refresh replay-marker, and authorization-code TTL indexes exist when their collections are enabled; replay markers have unique token-hash and family/expiry indexes.
 - Confirm the unique `AuthIdentifier.normalizedIdentifier` index exists and migration conflict reports contain no secrets.
 - Confirm unique `AuthIdentifierOperation.operationId`, operation lease indexes, and non-unique reservation `pendingOperationId`/`lastOperationId` indexes exist.
 - Confirm terminal operation TTL exists, non-terminal operations omit `expiresAt`, and completion-result replay ends after the configured retention window.
 - Confirm token issuer and audience match deployed configuration.
 - Confirm logs and security activity redact passwords, raw tokens, token hashes, and request bodies.
-- Confirm HTTPS and Secure cookies are enabled outside local development.
+- Confirm production refresh cookies are host-only with no `Domain`, `HttpOnly`, `Secure`, `SameSite=Strict`, path `/auth`, and a `Max-Age` bounded by family expiry remaining; clear-cookie attributes match.
+- Confirm `AUTH_TRUSTED_BROWSER_ORIGINS` parses only exact canonical HTTPS production origins, drives both credentialed CORS and `AuthBrowserOriginGuard`, and rejects invalid configuration at startup with redacted diagnostics.
 - Confirm `/health/ready` is used for deployment readiness and `/health` is used only for process liveness.
 - Confirm invalid static auth configuration is tested as startup rejection, not as a runtime readiness response.
 - Confirm audit identifier correlation uses versioned HMAC-SHA-256 with `AUTH_AUDIT_CORRELATION_SECRET`; ordinary hashes and raw identifiers are absent.
-- Confirm previous correlation keys parse as a JSON object with unique positive integer versions, at least 32 decoded bytes per secret, no current-version entry, and no more than two keys. A key referenced by a non-terminal or cleanup-pending repair cannot be retired; removing it produces redacted `repair-key-required` readiness and no data mutation until restored.
-- Before rotation, pipe JSON version metadata such as `{"candidateCurrentVersion":4,"candidatePreviousVersions":[2,3]}` to `npm run auth:key-rotation:preflight`; confirm it exits `0` when at most two previous versions are required, exits `2` with `repair-key-rotation-blocked` when more are required, rejects secret-bearing or unknown fields with exit `1`, reports only required version numbers/count, and changes no configuration or repair data.
+- Confirm previous correlation keys parse as a JSON object with unique positive integer versions, at least 32 decoded bytes per secret, no current-version entry, and no more than two keys. A key referenced by a non-terminal/cleanup-pending repair or unexpired throttle bucket cannot be retired; removing it produces redacted `repair-key-required` or `throttle-key-required` readiness and no data mutation until restored.
+- Before rotation, pipe JSON version metadata such as `{"candidateCurrentVersion":4,"candidatePreviousVersions":[2,3]}` to `npm run auth:key-rotation:preflight`; confirm it includes versions required by repairs and unexpired throttle buckets, exits `0` when at most two previous versions are required, exits `2` with `repair-key-rotation-blocked` when more are required, rejects secret-bearing or unknown fields with exit `1`, reports only required version numbers/count plus fixed status, reason, and configured-capacity fields, and changes no configuration, repair, or throttle data.
 - Confirm expired operation leases are claimed atomically, reconciled idempotently in bounded batches, and are never TTL-deleted.
 - Confirm requests above the assignment limit return `422`, oversized migration conflicts remain blocked as `manual-repair-required`, and offline repair validates the stdin token before dry-run data access and each mutating batch, rejects actor overrides, detects changed manifests, preserves original/resuming actor audit, resumes uniquely indexed batches, blocks gated authentication until explicit parent finalization/completion, cleans gates before parent TTL eligibility, and produces one redacted idempotent parent audit event.
 - Confirm RFC 8785 canonical bytes and HKDF-SHA-256 output match published vectors using salt `book-library/auth-identifier-repair-manifest/v1`, versioned info, and 32-byte output.
-- Confirm failed sign-in security events contain only versioned HMAC identifier correlation, never raw or normalized identifiers.
+- Confirm failed sign-in security events contain an opaque account reference only after exact-one account resolution; unresolved or ambiguous attempts contain only versioned HMAC identifier correlation, and no event contains raw or normalized identifiers.
 - Confirm retained `completed` and `failed-terminal` operation retries replay the original redacted result and HTTP status without re-execution, while expired operations require a new operation id.
 - Confirm benchmark routes are absent from the normal production application route graph.

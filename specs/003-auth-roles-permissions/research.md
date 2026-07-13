@@ -83,25 +83,42 @@ Issue short-lived signed JWT access tokens with standard-style claims: issuer, s
 
 ## Decision: Rotate Refresh Tokens and Store Only Hashes
 
-Store refresh tokens only as hashes, bind them to a token family, rotate on every refresh, invalidate reused tokens, and revoke the family on replay detection or account deactivation.
+Store refresh tokens only as hashes, bind them to a token family with an absolute lifetime of at most 30 days, rotate on every refresh without extending that lifetime, and retain a one-way replay marker for every exchanged token until the family expires. Insert the replay marker before the atomic compare-and-swap from the current hash to the next hash. A request presenting any retained exchanged-token hash revokes the family before returning the same generic refresh denial used for expiry, account status, or invalid credentials.
 
-**Rationale**: RFC 9700 requires public-client refresh tokens to be sender-constrained or rotated. Hashing stored refresh tokens limits damage if the database is exposed.
+**Rationale**: [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700.html#section-4.14.2) requires public-client refresh tokens to be sender-constrained or rotated and describes revoking the active grant when an invalidated token is replayed. Retaining only the immediately previous hash would stop detecting older exchanged credentials after another rotation. One-way markers preserve full-family replay detection without retaining raw credentials, while marker-before-CAS ordering closes the race between a successful rotation and concurrent replay without requiring an unbounded hash array.
 
 **Alternatives considered**:
 
 - No refresh tokens and force full reauthentication: secure but poor usability for staff workflows.
 - Static refresh tokens: rejected because theft can remain useful until expiry and replay is harder to detect.
+- Keep only `previousTokenHash` on the family: rejected because replay of a token older than one rotation would become indistinguishable from an arbitrary invalid credential and would not revoke the active family.
+- Extend family expiry after each rotation: rejected because a stolen continuously used refresh credential could create an unbounded session.
 
 ## Decision: Keep Tokens Out of Browser localStorage
 
-Store the access token in memory only. Use an HTTP-only, Secure, SameSite cookie for refresh/session continuity when the frontend and API are same-site. Sign-out clears in-memory state, clears frontend server-state cache, and revokes the refresh-token family.
+Issue access tokens with a maximum 15-minute lifetime and store them in frontend memory only. Use an HTTP-only, Secure in production, host-only, `SameSite=Strict` cookie limited to `/auth` for refresh continuity; set its lifetime to the family expiry remaining at issuance or rotation rather than restarting the 30-day clock. Omit the `Domain` attribute. Current-session sign-out revokes the matching family when present and succeeds generically when absent; all-session sign-out revokes every family and invalidates current access credentials through the account authorization version. Both clear the refresh cookie with matching attributes, and the frontend clears memory and server-state caches.
 
-**Rationale**: OWASP notes that browser localStorage persists across restarts and is exposed to XSS. HTTP-only cookies reduce JavaScript token exposure, while SameSite and CSRF defenses are required for cookie-backed token flows.
+**Rationale**: The [OWASP HTML5 Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/HTML5_Security_Cheat_Sheet.html#storage-apis) advises against storing session identifiers in local storage because scripts can read them. The [OWASP Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html#cookies) recommends `Secure`, `HttpOnly`, and `SameSite` cookie protections. Memory-only access tokens limit persistence after browser compromise, while an absolute refresh-family expiry bounds continuity even under regular rotation.
 
 **Alternatives considered**:
 
 - Store access and refresh tokens in localStorage: rejected due to XSS and persistence risk.
 - Store access token in sessionStorage: better than localStorage but still exposed to XSS and not sufficient for refresh-token protection.
+- Use `SameSite=Lax`: rejected for this same-site authentication flow because the contract requires the stricter cross-site exclusion and no state-changing authentication endpoint depends on cross-site navigation.
+- Use a parent-domain cookie: rejected because sibling subdomains do not need the refresh credential and a host-only cookie reduces overwrite and disclosure scope.
+
+## Decision: Enforce a Trusted Browser Origin Before Session Access
+
+Use one `AUTH_TRUSTED_BROWSER_ORIGINS` JSON array as the source of truth for both credentialed CORS responses and server-side browser-session origin enforcement. When omitted outside production, default to `http://localhost:5173` and `http://127.0.0.1:5173`; production has no default and requires at least one entry. Each entry must be an exact `http` or `https` origin containing only scheme, host, and effective port; reject credentials, paths, queries, fragments, `null`, wildcards, regexes, duplicate canonical origins, and non-HTTPS production entries. Before parsing a refresh cookie or issuing, rotating, revoking, or clearing refresh state, a dedicated guard requires one exact configured `Origin`; missing, opaque, multiple, malformed, or untrusted values receive a generic forbidden response with no session lookup, cookie emission, throttle change, or authentication-state mutation. Append one redacted security-denial event containing only route and safe reason categories, never the supplied origin/header or cookie. Apply the guard to shared and compatibility sign-in, refresh, current-session sign-out, and all-session sign-out. CORS preflight handling uses the same allowlist but is not treated as the authorization check.
+
+**Rationale**: The [OWASP CSRF Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#using-standard-headers-to-verify-origin) recommends strong source-origin verification and blocking when neither trusted source header is available. It also warns that credentialed CORS must use a small exact allowlist rather than wildcard or broad subdomain matching. `SameSite=Strict` remains defense in depth; explicit origin enforcement covers login CSRF and ensures rejection occurs before session state is touched.
+
+**Alternatives considered**:
+
+- Rely on CORS alone: rejected because CORS controls whether browsers expose responses; it is not the server-side authorization decision and does not by itself guarantee no session mutation.
+- Rely on `SameSite` alone: rejected because same-site sibling origins and future deployment changes can still create request-forgery risk.
+- Fall back to `Referer` or accept missing/`null` origins: rejected by the explicit fail-closed browser contract; supported clients send `Origin` on these state-changing requests.
+- Allow wildcard or suffix-based origins: rejected because compromised or attacker-controlled subdomains could become trusted.
 
 ## Decision: Use RBAC Role Assignment with Permission Guards and Ownership Checks
 
@@ -116,7 +133,7 @@ Use role assignments for member, staff, and administrator categories, map roles 
 
 ## Decision: Follow NIST/OWASP Password and Sign-In Guidance
 
-Require strong password handling, allow long passwords, block known weak/compromised choices where practical, avoid arbitrary periodic rotation, rate-limit failed attempts, return generic failure messages, and hash passwords with an accepted slow password hashing algorithm.
+Require strong password handling, allow long passwords, block known weak/compromised choices where practical, avoid arbitrary periodic rotation, rate-limit failed attempts, return generic failure messages, and hash passwords with an accepted slow password hashing algorithm. Shared and compatibility sign-in entry points use common counters: five generic failures per versioned identifier correlation and twenty attempts per trusted network source in fifteen minutes. Unknown, ambiguous, invalid-password, inactive, suspended, locked, and missing-credential outcomes count whenever the request has a normalizable identifier; malformed requests without one count only by source. Refresh uses thirty attempts per session family and trusted source in five minutes. Limits are configurable, but acceptance tests use these defaults and all windows recover automatically.
 
 **Rationale**: NIST SP 800-63B requires minimum password length, blocklist comparison, rate limiting, and secure password processing. OWASP recommends proper password strength controls, secure storage, and generic authentication failure behavior.
 
@@ -124,6 +141,20 @@ Require strong password handling, allow long passwords, block known weak/comprom
 
 - Composition-only password rules: rejected because NIST discourages arbitrary composition requirements.
 - Detailed login failure messages: rejected because they can leak account existence or status.
+
+## Decision: Use Shared Privacy-Preserving Throttle Buckets
+
+Store short-lived throttle buckets in MongoDB so all sign-in entry points and application instances enforce the same boundaries. Use purpose-separated HMAC keys for normalized identifier correlation, trusted network source, and refresh-family dimensions; store the audit-correlation `keyVersion` but no raw identifier, address, cookie, or token. For each request, derive candidate bucket keys under the current and configured previous versions, continue an existing unexpired bucket, and create a current-version bucket only when none exists. Count every sign-in request against the trusted-source bucket, count every generic sign-in failure with a normalizable identifier against the identifier bucket, and count refresh attempts against both trusted-source and family buckets. Enforce all dimensions directly through `AuthThrottleService`; do not add a second framework throttling guard. Resolve source identity with `proxy-addr`: trust only direct peers in the validated `AUTH_TRUSTED_PROXY_CIDRS` JSON allowlist, scan right-to-left to the first untrusted address, and ignore forwarding headers when the list is empty or the direct peer is untrusted.
+
+**Rationale**: Process-local counters can be bypassed by switching compatibility routes, application instances, or restarts. Identifier-only limits permit distributed guessing and can enable targeted account denial; source-only limits can be bypassed by distributed clients. Short-lived indexed buckets provide consistent enforcement and automatic recovery while limiting retained personal data.
+
+**Alternatives considered**:
+
+- Default in-memory throttler storage: rejected for production because counters diverge across application instances and reset on restart.
+- Generic `@nestjs/throttler` guards plus controller checks: rejected because failure-only identifier counting requires post-authentication outcomes and two enforcement paths could double count.
+- Identifier-only lockout: rejected because an attacker could deny service to a known account and unknown identifiers would avoid meaningful source control.
+- Trust all forwarding headers: rejected because client-supplied source values can evade or create throttle identities.
+- Hop-count-only proxy trust: rejected because topology changes can silently trust a client-controlled address; explicit proxy CIDRs are reviewable and fail closed.
 
 ## Decision: Persist Security Activity Events Separately
 
@@ -135,3 +166,16 @@ Record sign-in success/failure, denied authorization, role assignment changes, a
 
 - Only application logs: rejected because logs may rotate, are harder to query in the admin UI, and risk leaking sensitive request data.
 - Embed events on account documents: rejected because events grow without a predictable bound.
+
+Failed sign-in events may include an opaque internal account reference only when identifier resolution safely produced exactly one account context. Unknown, missing, released, conflict-marked, or ambiguous identifiers record only versioned HMAC correlation and a generic reason category; raw and normalized submitted identifiers are never stored or displayed.
+
+## Decision: Keep Rotation Preflight Metadata-Only
+
+Accept only candidate current and previous key-version numbers. Compute required versions from both non-terminal/cleanup-pending repairs and unexpired throttle buckets so active rate-limit windows survive rotation. Return required version numbers and count plus the fixed non-sensitive fields `status`, `reason`, and `maxPreviousKeys`; reject unknown or secret-bearing input, emit no infrastructure, repair-record, or throttle-bucket details, and perform no writes.
+
+**Rationale**: Operators need deterministic allowed/blocked diagnostics before changing configuration, but key material and repair details are unnecessary and would enlarge the secret-exposure surface.
+
+**Alternatives considered**:
+
+- Return only an exit code: rejected because operators need actionable version-capacity diagnostics.
+- Return repair document ids or key values: rejected because neither is required to decide rotation and both expose sensitive operational context.

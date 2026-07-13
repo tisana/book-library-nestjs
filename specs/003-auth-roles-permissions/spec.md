@@ -4,7 +4,7 @@
 
 **Created**: 2026-07-02
 
-**Status**: Draft
+**Status**: Approved
 
 **Input**: User description: "I want to have better authentication and authorize system where I can better handling user and roles. The current in-memory solution is not secure enough to publish the application online. The authentication should be able to have clear roles and permission to access system. Eg. member should not able to access library back office or admin system."
 
@@ -13,6 +13,15 @@
 ### Session 2026-07-09
 
 - Q: Should staff and member users use separate login pages or one shared sign-in entry point? → A: Use one shared sign-in page; route after authentication by role area and permissions.
+
+### Session 2026-07-13
+
+- Q: What identifier context may a failed sign-in security event expose? → A: Show an opaque account reference only when the attempt safely resolves to exactly one account; otherwise show only versioned audit correlation. Never expose the submitted or normalized sign-in identifier.
+- Q: What default throttling boundaries must acceptance tests enforce? → A: Shared and compatibility sign-in routes share limits of five generic failures per identifier correlation and twenty total attempts per trusted network source in fifteen minutes; every unknown, ambiguous, invalid-password, inactive, suspended, locked, or missing-credential outcome with a normalizable identifier counts, while a malformed request without one counts only against its source. Refresh is limited to thirty attempts per session family and trusted network source in five minutes. Excess requests receive the same generic retry-later outcome until the applicable window expires.
+- Q: Which non-sensitive fields may audit-key rotation preflight return? → A: In addition to required key-version numbers and count, it may return fixed status, reason, and configured-capacity fields; it must not return secrets, identifiers, repair records, or infrastructure details.
+- Q: How do active throttle windows survive audit-correlation key rotation? → A: Every throttle bucket records its correlation key version; requests look for an unexpired bucket under the current and configured previous versions, continue the existing bucket until expiry, and create a current-version bucket only when none exists. A referenced version remains configured until both repair and throttle references no longer require it.
+- Q: How is a trusted network source established behind a proxy? → A: Configure an explicit JSON array of trusted proxy IPv4/IPv6 CIDRs. With an empty array, use the direct peer and ignore forwarding headers. With trusted proxies, resolve right-to-left and stop at the first untrusted address; reject malformed CIDRs and all-address production entries during startup.
+- Q: What browser session security contract must every sign-in path follow? → A: Issue an access credential that expires within 15 minutes and a single-use rotating refresh credential whose family expires no later than 30 days after sign-in and is never extended by rotation. Keep the access credential out of persistent browser storage and keep the refresh credential out of scripts and response bodies. In production, refresh continuity uses an HTTPS-only, HTTP-only, host-only cookie restricted to authentication paths with strict same-site behavior. Every browser request that issues, uses, or clears that cookie must come from an exact configured trusted origin; reject missing, opaque, wildcard, or untrusted origins before reading or changing session state.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -31,6 +40,10 @@ A library user signs in with a real account whose identity and role survive appl
 3. **Given** an active member account exists, **When** the member signs in with valid credentials, **Then** the system authenticates the member, identifies them as a member user, and routes them to member self-service.
 4. **Given** a user enters invalid credentials, **When** they attempt to sign in, **Then** the system denies access without revealing whether the account identifier or secret was wrong.
 5. **Given** the application restarts, **When** a previously created active account signs in again, **Then** the account, role assignments, and access scope are still available.
+6. **Given** a user signs in through the browser, **When** the session is established, **Then** the short-lived access credential is available only to the active browser session and the refresh credential is unavailable to scripts, response bodies, and persistent browser storage.
+7. **Given** a browser request would issue, refresh, or clear a session, **When** its origin is missing, opaque, wildcard-derived, or not explicitly trusted, **Then** the request is rejected before any refresh credential is read and before session state changes.
+8. **Given** a refresh credential has already been exchanged, **When** it is presented again, **Then** the entire related session family is revoked, the attempt is recorded, and no new access is granted.
+9. **Given** a signed-in user, **When** they sign out from the current session or choose to sign out from all sessions, **Then** the applicable server-side sessions are revoked and browser-held authentication state is cleared.
 
 ---
 
@@ -79,7 +92,7 @@ An administrator can review security-relevant events such as failed sign-in atte
 
 **Acceptance Scenarios**:
 
-1. **Given** a failed sign-in attempt, **When** an authorized administrator reviews security activity, **Then** the event is listed with time, account identifier if known, and outcome.
+1. **Given** a failed sign-in attempt, **When** an authorized administrator reviews security activity, **Then** the event is listed with time and outcome plus an opaque account reference only when the attempt safely resolved to exactly one account, or otherwise only versioned audit correlation, without the submitted or normalized sign-in identifier.
 2. **Given** a user attempts an action outside their permissions, **When** an authorized administrator reviews security activity, **Then** the denied action is listed with actor, action, time, and reason category.
 3. **Given** an administrator changes a user's roles, **When** security activity is reviewed, **Then** the change records who performed it, who was changed, and when it happened.
 
@@ -93,9 +106,15 @@ An administrator can review security-relevant events such as failed sign-in atte
 - Deleted or suspended member records must not leave behind active member access.
 - Role changes must not require manual server restarts or in-memory updates to take effect.
 - Security-related errors must avoid exposing passwords, secrets, full protected payloads, or unrelated member borrowing history.
-- Repeated failed sign-in attempts should be slowed or blocked enough to reduce automated guessing without locking out normal users too aggressively.
-- A referenced audit-correlation key version must not be retired while an identifier repair is non-terminal or still cleaning activation gates; if configuration removes it anyway, readiness must fail closed without mutating repair data until the key is restored.
+- Shared and compatibility sign-in routes must use the same throttling counters so changing routes cannot bypass the limit. By default, the sixth generic failure for one normalizable identifier correlation or the twenty-first total attempt from one trusted network source within fifteen minutes must receive a generic retry-later outcome; unknown, ambiguous, invalid-password, inactive, suspended, locked, and missing-credential failures all count, while malformed requests without a normalizable identifier count only against their source. Normal attempts may resume when the applicable window expires without administrator action.
+- By default, the thirty-first refresh attempt for one session family or trusted network source within five minutes must receive a generic retry-later outcome, and normal refresh attempts may resume when the window expires.
+- Network-source throttling must use the direct peer unless it belongs to an explicitly configured trusted-proxy CIDR. Trusted proxy chains are evaluated right-to-left to the first untrusted address; untrusted or malformed forwarding data must not create or evade a throttle identity.
+- A referenced audit-correlation key version must not be retired while an identifier repair is non-terminal or still cleaning activation gates, or while an unexpired throttle bucket references it. If configuration removes it anyway, readiness and affected authentication requests must fail closed without mutating repair or throttle data until the key is restored.
 - An audit-correlation key rotation that would require more than two previous key versions must be rejected before configuration changes, without accepting or displaying key secrets.
+- Browser session requests from an untrusted, missing, or opaque origin must not issue, rotate, revoke, or clear a refresh credential, even when a valid cookie is attached.
+- A permissive wildcard origin must never be treated as trusted for credential-bearing browser requests, and a trusted origin match must include the complete scheme, host, and port.
+- Reuse of an already exchanged refresh credential must revoke its full session family without revealing whether replay detection, expiry, account status, or another validation rule caused the denial.
+- Signing out without an active or valid refresh credential must still clear browser authentication state and return the same non-disclosing completion outcome as ordinary current-session sign-out.
 
 ## Requirements *(mandatory)*
 
@@ -129,7 +148,11 @@ An administrator can review security-relevant events such as failed sign-in atte
 - **FR-026**: System MUST route signed-in users to their landing area from authenticated role area and permissions rather than from a user-selected login type.
 - **FR-027**: System MUST reserve each normalized sign-in identifier across staff/admin and member contexts, reject concurrent or subsequent conflicting claims, fail closed for legacy ambiguity, and allow only an administrator to resolve conflicts. Multi-document changes MUST use a MongoDB transaction when available or a durable idempotent operation saga that never enables an ambiguous identifier.
 - **FR-028**: System MUST reject production startup when mandatory static authentication configuration is missing or unsafe. After successful startup, it MUST expose a public deployment readiness endpoint that reports runtime dependency failure when MongoDB or initialized authentication infrastructure becomes unavailable, without exposing secrets or protected configuration values.
-- **FR-029**: System MUST retain every audit-correlation key version referenced by a non-terminal or cleanup-pending identifier repair, fail deployment readiness without mutating repair state when a referenced version is unavailable, and provide a production-safe operator preflight that rejects an audit-key rotation requiring more than two previous versions before configuration changes while accepting and returning only key-version metadata.
+- **FR-029**: System MUST retain every audit-correlation key version referenced by a non-terminal or cleanup-pending identifier repair or an unexpired authentication throttle bucket, fail deployment readiness without mutating repair or throttle state when a referenced version is unavailable, and provide a production-safe operator preflight that rejects an audit-key rotation requiring more than two previous versions before configuration changes. The preflight MUST accept only candidate key-version metadata and MUST return only required version numbers and count plus fixed non-sensitive status, reason, and configured-capacity fields.
+- **FR-030**: System MUST apply configurable throttling with default boundaries shared across all sign-in entry points: five generic failures per normalizable identifier correlation and twenty total attempts per trusted network source in fifteen minutes, plus thirty refresh attempts per session family and trusted network source in five minutes. Unknown, ambiguous, invalid-password, inactive, suspended, locked, and missing-credential outcomes MUST count against the identifier boundary when the request contains a normalizable identifier; malformed requests without one MUST count only against the source boundary. Network source MUST resolve from the direct peer unless the peer belongs to a validated configured trusted-proxy CIDR, in which case the chain MUST resolve right-to-left to the first untrusted address. Requests above either applicable boundary MUST receive a generic retry-later outcome, MUST NOT reveal account existence, and MUST be eligible to proceed again when the applicable window expires without administrator action.
+- **FR-031**: System MUST use access credentials that expire within 15 minutes and single-use rotating refresh credentials whose family expires no later than 30 days after sign-in and whose expiry is never extended by rotation. The system MUST store only non-recoverable refresh-credential representations server-side and revoke the complete session family when a previously exchanged refresh credential is reused. Refresh denial MUST remain generic across replay, expiry, account status, and invalid-credential outcomes.
+- **FR-032**: System MUST keep browser access credentials out of persistent browser storage and MUST keep refresh credentials out of scripts and response bodies. In production, refresh continuity MUST use an HTTPS-only, HTTP-only, host-only cookie restricted to authentication paths with strict same-site behavior. Every browser request that issues, uses, or clears this cookie MUST match an explicitly configured trusted origin by complete scheme, host, and port; missing, opaque, wildcard-derived, and untrusted origins MUST be rejected before refresh credentials are read or session state is changed.
+- **FR-033**: System MUST support current-session and all-session sign-out. Current-session sign-out MUST revoke the applicable session family when present, all-session sign-out MUST revoke every active refresh session for the authenticated account, and both MUST clear browser-held authentication state. Current-session sign-out MUST return the same non-disclosing completion outcome when no valid session is present.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -156,7 +179,9 @@ An administrator can review security-relevant events such as failed sign-in atte
 - **SC-010**: Shared sign-in is fully operable using only a keyboard, exposes accessible names for every field and action, announces validation and authentication errors, and prevents duplicate submission in automated accessibility tests.
 - **SC-011**: The complete authentication-and-authorization boundary adds no more than 50 ms p95 latency compared with an equivalent unprotected baseline across 500 measured requests in the documented verification environment.
 - **SC-012**: The first page of 50 security activity events returns within 2 seconds with 10,000 stored events in the documented verification environment.
-- **SC-013**: In 100% of rotation acceptance tests, the operator preflight exits successfully when at most two previous versions are required, exits nonzero with `repair-key-rotation-blocked` when more than two are required, accepts no key secrets, changes no configuration or repair data, and reports only required version numbers and count; removing a referenced version makes readiness non-success within 5 seconds until restoration.
+- **SC-013**: In 100% of rotation acceptance tests, the operator preflight includes versions referenced by non-terminal/cleanup-pending repairs and unexpired throttle buckets, exits successfully when at most two previous versions are required, exits nonzero with `repair-key-rotation-blocked` when more than two are required, accepts no key secrets, changes no configuration, repair, or throttle data, and reports only required version numbers and count plus fixed non-sensitive status, reason, and configured-capacity fields; removing any referenced version makes readiness non-success within 5 seconds until restoration.
+- **SC-014**: In 100% of throttling acceptance tests using default settings, the sixth generic failure for one normalizable identifier correlation, the twenty-first sign-in attempt from one trusted network source, and the thirty-first refresh attempt for one session family or trusted network source are denied with the same generic retry-later outcome; every defined generic failure category counts, malformed identifier requests count only by source, switching between shared and compatibility sign-in routes or rotating the audit-correlation key does not bypass an active window, untrusted forwarding data does not alter source identity, and normal requests become eligible again no later than the end of the applicable fifteen-minute or five-minute window.
+- **SC-015**: In 100% of browser-session security tests, access credentials expire within 15 minutes and are absent from persistent browser storage; refresh credentials remain unavailable to scripts and response bodies, cannot extend a session family beyond 30 days from sign-in, and are invalidated when successfully exchanged; reuse revokes the full session family; current-session and all-session sign-out revoke the intended sessions; and every missing, opaque, wildcard-derived, or untrusted origin is rejected before session state changes.
 
 ## Assumptions
 
@@ -168,3 +193,5 @@ An administrator can review security-relevant events such as failed sign-in atte
 - Password reset and external single sign-on are not required for the first version unless added in a later spec.
 - Existing borrowing, catalog, and member-management workflows remain governed by their current business rules; this feature adds authentication and authorization boundaries around them.
 - Deployment operators can run a local preflight command with database/configuration access before changing audit-correlation key versions; this command is not a public HTTP endpoint and does not replace deployment-platform access controls.
+- Deployments behind proxies provide an explicit allowlist of trusted proxy CIDRs; direct deployments leave the allowlist empty and do not trust forwarding headers.
+- Production browser clients and the authentication service are deployed on origins that can be enumerated exactly; wildcard credential-bearing origins and cross-site browser session continuity are outside this feature's security contract.

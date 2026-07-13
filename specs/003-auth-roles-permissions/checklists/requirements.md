@@ -32,3 +32,5 @@
 ## Notes
 
 - Validation completed with no open clarification markers.
+- Revalidated 2026-07-13 after refining failed-sign-in audit privacy, deterministic throttling boundaries, and rotation-preflight output metadata.
+- Revalidated 2026-07-13 after defining measurable access/refresh lifetimes, refresh rotation and replay revocation, browser credential storage boundaries, exact trusted-origin enforcement, and current/all-session sign-out behavior.
