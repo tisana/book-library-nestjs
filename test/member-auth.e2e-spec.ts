@@ -8,7 +8,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 
 import { AuthController } from '../src/auth/auth.controller';
+import { AuthBrowserOriginGuard } from '../src/auth/auth-browser-origin.guard';
+import { AuthEndpointThrottleGuard } from '../src/auth/auth-endpoint-throttle.guard';
 import { AuthService } from '../src/auth/auth.service';
+import { AuthThrottleService } from '../src/auth/auth-throttle.service';
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
 import { MemberAuthGuard } from '../src/auth/member-auth.guard';
 import { PermissionsGuard } from '../src/auth/permissions.guard';
@@ -194,20 +197,34 @@ describe('Member authentication endpoints (e2e)', () => {
             }),
           },
         },
+        {
+          provide: AuthThrottleService,
+          useValue: {
+            consumeSignInIdentifierFailure: jest
+              .fn()
+              .mockResolvedValue({ allowed: true }),
+          },
+        },
       ],
-    }).compile();
+    })
+      .overrideGuard(AuthBrowserOriginGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(AuthEndpointThrottleGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
   });
 
   afterEach(async () => {
-    await app.close();
+    await app?.close();
   });
 
   it('returns member token metadata and sets a refresh cookie', async () => {
     const response = await request(app.getHttpServer())
       .post('/auth/member-login')
+      .set('Origin', 'http://localhost:5173')
       .send({ loginIdentifier: 'M-1001', password: 'MemberPass123!' })
       .expect(200);
 
@@ -229,6 +246,7 @@ describe('Member authentication endpoints (e2e)', () => {
   it('rotates member refresh cookies on refresh', async () => {
     const response = await request(app.getHttpServer())
       .post('/auth/refresh')
+      .set('Origin', 'http://localhost:5173')
       .set('Cookie', ['book_library_refresh=member-refresh-token'])
       .expect(200);
 

@@ -6,11 +6,35 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { ConfigService } from '@nestjs/config';
+// proxy-addr publishes a TypeScript `export =` declaration.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+import proxyaddr = require('proxy-addr');
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const configService = app.get(ConfigService);
+  const trustedProxyCidrs =
+    configService.get<string[]>('auth.trustedProxyCidrs') ?? [];
+  const trustedBrowserOrigins = new Set(
+    configService.get<string[]>('auth.trustedBrowserOrigins') ?? [],
+  );
+
+  app.set(
+    'trust proxy',
+    trustedProxyCidrs.length > 0
+      ? proxyaddr.compile(trustedProxyCidrs)
+      : () => false,
+  );
   app.enableCors({
-    origin: getFrontendOrigins(),
+    origin(origin, callback) {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      callback(null, trustedBrowserOrigins.has(origin));
+    },
     credentials: true,
   });
   app.useGlobalPipes(
@@ -67,14 +91,5 @@ function resolveFrontendStaticRoot(): string | undefined {
 
 const frontendRoutePattern =
   /^\/(?:$|login$|unauthorized$|staff(?:\/.*)?$|member(?:\/.*)?$)/;
-
-function getFrontendOrigins(): string[] {
-  return (
-    process.env.FRONTEND_ORIGIN ?? 'http://localhost:5173,http://127.0.0.1:5173'
-  )
-    .split(',')
-    .map((origin) => origin.trim())
-    .filter(Boolean);
-}
 
 bootstrap();

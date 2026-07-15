@@ -1,16 +1,41 @@
 import {
+  Body,
   CanActivate,
+  Controller,
   ExecutionContext,
+  HttpException,
+  Inject,
   INestApplication,
+  Post,
+  Req,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import mongoose, { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 
 import { AuthController } from '../src/auth/auth.controller';
+import { AuthBrowserOriginGuard } from '../src/auth/auth-browser-origin.guard';
+import { AuthEndpointThrottleGuard } from '../src/auth/auth-endpoint-throttle.guard';
+import {
+  AuthSourceIdentityService,
+  AuthSourceRequest,
+} from '../src/auth/auth-source-identity.service';
 import { AuthService } from '../src/auth/auth.service';
+import {
+  AuthThrottleDecision,
+  AuthThrottleService,
+  GenericSignInFailureCategory,
+} from '../src/auth/auth-throttle.service';
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
 import { RolesGuard } from '../src/auth/roles.guard';
+import {
+  AuthThrottleBucketDocument,
+  AuthThrottleBucketModelName,
+  AuthThrottleBucketSchema,
+} from '../src/auth/schemas/auth-throttle-bucket.schema';
 import { StaffRole } from '../src/common/enums/library-status.enum';
 import { StaffUsersController } from '../src/staff-users/staff-users.controller';
 import { StaffUsersService } from '../src/staff-users/staff-users.service';
@@ -24,6 +49,8 @@ function setCookieHeader(headers: request.Response['headers']): string {
   const value = headers['set-cookie'];
   return Array.isArray(value) ? value.join(';') : (value ?? '').toString();
 }
+
+const trustedBrowserOrigin = 'http://localhost:5173';
 
 describe('Authentication and staff-users authorization (e2e)', () => {
   let app: INestApplication;
@@ -161,10 +188,22 @@ describe('Authentication and staff-users authorization (e2e)', () => {
             create: jest.fn(),
           },
         },
+        {
+          provide: AuthThrottleService,
+          useValue: {
+            consumeSignInIdentifierFailure: jest
+              .fn()
+              .mockResolvedValue({ allowed: true }),
+          },
+        },
       ],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue(jwtGuard)
+      .overrideGuard(AuthBrowserOriginGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(AuthEndpointThrottleGuard)
+      .useValue({ canActivate: () => true })
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -172,12 +211,13 @@ describe('Authentication and staff-users authorization (e2e)', () => {
   });
 
   afterEach(async () => {
-    await app.close();
+    await app?.close();
   });
 
   it('logs in an active staff user and returns a bearer token response', async () => {
     const response = await request(app.getHttpServer())
       .post('/auth/login')
+      .set('Origin', trustedBrowserOrigin)
       .send({
         email: staffTestUser.email,
         password: staffTestUser.password,
@@ -202,6 +242,7 @@ describe('Authentication and staff-users authorization (e2e)', () => {
   it('refreshes the access token from the refresh cookie and rotates the cookie', async () => {
     const response = await request(app.getHttpServer())
       .post('/auth/refresh')
+      .set('Origin', trustedBrowserOrigin)
       .set('Cookie', ['book_library_refresh=staff-refresh'])
       .expect(200);
 
@@ -217,6 +258,7 @@ describe('Authentication and staff-users authorization (e2e)', () => {
   it('clears refresh cookie on logout and logout-all', async () => {
     await request(app.getHttpServer())
       .post('/auth/logout')
+      .set('Origin', trustedBrowserOrigin)
       .set('Cookie', ['book_library_refresh=staff-refresh'])
       .expect(200)
       .expect(({ headers }) => {
@@ -225,6 +267,7 @@ describe('Authentication and staff-users authorization (e2e)', () => {
 
     await request(app.getHttpServer())
       .post('/auth/logout-all')
+      .set('Origin', trustedBrowserOrigin)
       .set('Authorization', 'Bearer staff-token')
       .expect(200);
   });
@@ -232,6 +275,7 @@ describe('Authentication and staff-users authorization (e2e)', () => {
   it('rejects staff-users access without an admin role', async () => {
     const loginResponse = await request(app.getHttpServer())
       .post('/auth/login')
+      .set('Origin', trustedBrowserOrigin)
       .send({
         email: staffTestUser.email,
         password: staffTestUser.password,
@@ -247,6 +291,7 @@ describe('Authentication and staff-users authorization (e2e)', () => {
   it('allows admin role access to staff-users management routes', async () => {
     const loginResponse = await request(app.getHttpServer())
       .post('/auth/login')
+      .set('Origin', trustedBrowserOrigin)
       .send({
         email: adminTestUser.email,
         password: adminTestUser.password,
@@ -257,5 +302,297 @@ describe('Authentication and staff-users authorization (e2e)', () => {
       .get('/staff-users')
       .set('Authorization', authHeader(loginResponse.body))
       .expect(200);
+  });
+});
+
+const throttleHarnessService = Symbol('throttle-harness-service');
+const throttleHarnessSource = Symbol('throttle-harness-source');
+
+@Controller('_test/auth-throttle')
+class AuthThrottleHarnessController {
+  constructor(
+    @Inject(throttleHarnessService)
+    private readonly throttle: AuthThrottleService,
+    @Inject(throttleHarnessSource)
+    private readonly source: AuthSourceIdentityService,
+  ) {}
+
+  @Post('login/:entryPoint')
+  async signIn(
+    @Req() req: AuthSourceRequest,
+    @Body()
+    body: {
+      normalizedIdentifier?: string;
+      failureCategory?: GenericSignInFailureCategory;
+    },
+  ): Promise<AuthThrottleDecision> {
+    return this.respond(
+      await this.throttle.consumeSignInAttempt({
+        sourceIdentity: this.source.resolve(req),
+        normalizedIdentifier: body?.normalizedIdentifier,
+        failureCategory: body?.failureCategory,
+      }),
+    );
+  }
+
+  @Post('refresh')
+  async refresh(
+    @Req() req: AuthSourceRequest,
+    @Body() body: { familyId?: string },
+  ): Promise<AuthThrottleDecision> {
+    return this.respond(
+      await this.throttle.consumeRefreshAttempt({
+        sourceIdentity: this.source.resolve(req),
+        familyId: body?.familyId,
+      }),
+    );
+  }
+
+  private respond(decision: AuthThrottleDecision): AuthThrottleDecision {
+    if (!decision.allowed) {
+      throw new HttpException(
+        { statusCode: 429, message: 'Authentication temporarily unavailable' },
+        429,
+      );
+    }
+
+    return decision;
+  }
+}
+
+class MutableThrottleConfig {
+  readonly auth = {
+    auditCorrelationKeyVersion: 1,
+    auditCorrelationSecret: Buffer.alloc(32, 1).toString('base64url'),
+    auditCorrelationPreviousKeys: {} as Record<string, string>,
+    signInIdentifierFailureLimit: 5,
+    signInSourceLimit: 20,
+    signInWindowSeconds: 900,
+    refreshThrottleLimit: 30,
+    refreshThrottleWindowSeconds: 300,
+    trustedProxyCidrs: [] as string[],
+  };
+
+  get(path: string): unknown {
+    return path.split('.').reduce<unknown>((value, key) => {
+      if (!value || typeof value !== 'object') {
+        return undefined;
+      }
+
+      return (value as Record<string, unknown>)[key];
+    }, { auth: this.auth });
+  }
+}
+
+describe('Authentication throttling persistence (e2e)', () => {
+  let mongoServer: MongoMemoryServer;
+  let connection: Connection;
+  let bucketModel: Model<AuthThrottleBucketDocument>;
+  let config: MutableThrottleConfig;
+  let firstService: AuthThrottleService;
+  let secondService: AuthThrottleService;
+  let firstApp: INestApplication;
+  let secondApp: INestApplication;
+
+  async function createHarness(
+    throttle: AuthThrottleService,
+  ): Promise<INestApplication> {
+    const module = await Test.createTestingModule({
+      controllers: [AuthThrottleHarnessController],
+      providers: [
+        { provide: throttleHarnessService, useValue: throttle },
+        {
+          provide: throttleHarnessSource,
+          useValue: new AuthSourceIdentityService(
+            config as unknown as ConfigService,
+          ),
+        },
+      ],
+    }).compile();
+    const app = module.createNestApplication();
+    await app.init();
+    return app;
+  }
+
+  beforeAll(async () => {
+    mongoServer = await MongoMemoryServer.create();
+    connection = mongoose.createConnection(mongoServer.getUri());
+    await connection.asPromise();
+    bucketModel = connection.model<AuthThrottleBucketDocument>(
+      AuthThrottleBucketModelName,
+      AuthThrottleBucketSchema,
+    );
+    await bucketModel.createIndexes();
+  });
+
+  beforeEach(async () => {
+    await bucketModel.deleteMany({});
+    config = new MutableThrottleConfig();
+    firstService = new AuthThrottleService(
+      bucketModel,
+      config as unknown as ConfigService,
+    );
+    secondService = new AuthThrottleService(
+      bucketModel,
+      config as unknown as ConfigService,
+    );
+    firstApp = await createHarness(firstService);
+    secondApp = await createHarness(secondService);
+  });
+
+  afterEach(async () => {
+    await Promise.all([firstApp.close(), secondApp.close()]);
+  });
+
+  afterAll(async () => {
+    await connection.close();
+    await mongoServer.stop();
+  });
+
+  it('shares the sixth identifier failure across shared and compatibility routes', async () => {
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const app = attempt % 2 ? firstApp : secondApp;
+      const entryPoint = attempt % 2 ? 'shared' : 'compatibility';
+      await request(app.getHttpServer())
+        .post(`/_test/auth-throttle/login/${entryPoint}`)
+        .send({
+          normalizedIdentifier: 'reader@example.com',
+          failureCategory: 'invalid-password',
+        })
+        .expect(201);
+    }
+
+    const response = await request(firstApp.getHttpServer())
+      .post('/_test/auth-throttle/login/shared')
+      .send({
+        normalizedIdentifier: 'reader@example.com',
+        failureCategory: 'unknown',
+      })
+      .expect(429);
+
+    expect(response.body).toEqual({
+      statusCode: 429,
+      message: 'Authentication temporarily unavailable',
+    });
+  });
+
+  it('atomically shares source and refresh boundaries across application instances', async () => {
+    const signInResponses = await Promise.all(
+      Array.from({ length: 21 }, (_, index) =>
+        request((index % 2 ? firstApp : secondApp).getHttpServer())
+          .post('/_test/auth-throttle/login/shared')
+          .send(),
+      ),
+    );
+    expect(signInResponses.filter(({ status }) => status === 429)).toHaveLength(
+      1,
+    );
+
+    await bucketModel.deleteMany({});
+    const refreshResponses: request.Response[] = [];
+    for (let index = 0; index < 31; index += 1) {
+      refreshResponses.push(
+        await request((index % 2 ? firstApp : secondApp).getHttpServer())
+          .post('/_test/auth-throttle/refresh')
+          .send({ familyId: 'private-family-id' }),
+      );
+    }
+    expect(refreshResponses.filter(({ status }) => status === 429)).toHaveLength(
+      1,
+    );
+  });
+
+  it('counts an unresolved refresh cookie by source without a family bucket', async () => {
+    await request(firstApp.getHttpServer())
+      .post('/_test/auth-throttle/refresh')
+      .send({})
+      .expect(201);
+
+    const documents = await bucketModel.find().lean().exec();
+    expect(documents).toHaveLength(1);
+    expect(documents[0]).toMatchObject({
+      dimension: 'refresh-source',
+      count: 1,
+    });
+  });
+
+  it('preserves active windows through key rotation and fails closed without writes', async () => {
+    const now = new Date('2026-07-15T00:00:00.000Z');
+    await firstService.consumeSignInIdentifierFailure(
+      'private.reader@example.com',
+      'invalid-password',
+      now,
+    );
+    config.auth.auditCorrelationKeyVersion = 2;
+    config.auth.auditCorrelationSecret = Buffer.alloc(32, 2).toString(
+      'base64url',
+    );
+    config.auth.auditCorrelationPreviousKeys = {
+      1: Buffer.alloc(32, 1).toString('base64url'),
+    };
+    await secondService.consumeSignInIdentifierFailure(
+      'private.reader@example.com',
+      'invalid-password',
+      now,
+    );
+
+    const before = await bucketModel.find().lean().exec();
+    expect(before).toHaveLength(1);
+    expect(before[0]).toMatchObject({ keyVersion: 1, count: 2 });
+
+    config.auth.auditCorrelationPreviousKeys = {};
+    await expect(
+      firstService.consumeSignInIdentifierFailure(
+        'private.reader@example.com',
+        'invalid-password',
+        now,
+      ),
+    ).resolves.toEqual({
+      allowed: false,
+      reason: 'throttle-key-required',
+    });
+    const after = await bucketModel.find().lean().exec();
+    expect(after).toEqual(before);
+  });
+
+  it('recovers expired windows and persists only HMAC correlation values', async () => {
+    const startedAt = new Date('2026-07-15T00:00:00.000Z');
+    const source = '203.0.113.91';
+    const identifier = 'private.reader@example.com';
+    const familyId = 'private-family-id';
+    await firstService.consumeSignInAttempt(
+      {
+        sourceIdentity: source,
+        normalizedIdentifier: identifier,
+        failureCategory: 'missing-credential',
+      },
+      startedAt,
+    );
+    await firstService.consumeRefreshAttempt(
+      { sourceIdentity: source, familyId },
+      startedAt,
+    );
+    await firstService.consumeSignInAttempt(
+      { sourceIdentity: source },
+      new Date(startedAt.getTime() + 900_001),
+    );
+    await firstService.consumeRefreshAttempt(
+      { sourceIdentity: source, familyId },
+      new Date(startedAt.getTime() + 300_001),
+    );
+
+    const documents = await bucketModel.find().lean().exec();
+    expect(
+      documents.find(
+        ({ dimension }) => dimension === 'sign-in-source',
+      )?.count,
+    ).toBe(1);
+    expect(
+      documents.find(({ dimension }) => dimension === 'refresh-family')?.count,
+    ).toBe(1);
+    const persisted = JSON.stringify(documents);
+    for (const rawValue of [source, identifier, familyId, 'private-token']) {
+      expect(persisted).not.toContain(rawValue);
+    }
   });
 });

@@ -13,6 +13,8 @@ export enum AuthPermission {
   StaffUsersManage = 'staff-users:manage',
   RolesRead = 'roles:read',
   RolesManage = 'roles:manage',
+  AuthIdentifiersRead = 'auth-identifiers:read',
+  AuthIdentifiersManage = 'auth-identifiers:manage',
   SecurityEventsRead = 'security-events:read',
   MemberSelfRead = 'member:self:read',
 }
@@ -71,6 +73,8 @@ export const staffRolePermissions: Record<
     AuthPermission.StaffUsersManage,
     AuthPermission.RolesRead,
     AuthPermission.RolesManage,
+    AuthPermission.AuthIdentifiersRead,
+    AuthPermission.AuthIdentifiersManage,
     AuthPermission.SecurityEventsRead,
   ],
 };

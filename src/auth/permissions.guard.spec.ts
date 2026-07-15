@@ -61,6 +61,20 @@ describe('PermissionsGuard and permission mapping', () => {
     ).toThrow(ForbiddenException);
   });
 
+  it('bypasses permission checks only for explicit public metadata', () => {
+    jest
+      .spyOn(reflector, 'getAllAndOverride')
+      .mockImplementation((key: string) => key === 'auth:public');
+    const normalizeContext = jest.spyOn(
+      permissionsService,
+      'normalizeRequestContext',
+    );
+    const guard = new PermissionsGuard(reflector, permissionsService);
+
+    expect(guard.canActivate(createExecutionContext())).toBe(true);
+    expect(normalizeContext).not.toHaveBeenCalled();
+  });
+
   it('rejects member tokens from staff permissions', () => {
     jest
       .spyOn(reflector, 'getAllAndOverride')

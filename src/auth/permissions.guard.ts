@@ -8,6 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { AuthPermission } from '../common/enums/auth-permission.enum';
 import { PERMISSIONS_KEY } from './permissions.decorator';
 import { PermissionsService } from './permissions.service';
+import { IS_PUBLIC_KEY } from './public.decorator';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -17,6 +18,14 @@ export class PermissionsGuard implements CanActivate {
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic === true) {
+      return true;
+    }
+
     const requiredPermissions =
       this.reflector.getAllAndOverride<AuthPermission[]>(PERMISSIONS_KEY, [
         context.getHandler(),

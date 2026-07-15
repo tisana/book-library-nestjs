@@ -11,6 +11,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { PasswordHasherService } from './password-hasher.service';
 import { MemberAuthGuard } from './member-auth.guard';
 import { RolesGuard } from './roles.guard';
+import { JwtAuthGuard } from './jwt-auth.guard';
 import {
   AuthClientModelName,
   AuthClientSchema,
@@ -27,6 +28,33 @@ import { PermissionsGuard } from './permissions.guard';
 import { PermissionsService } from './permissions.service';
 import { TokenSessionService } from './token-session.service';
 import { SecurityActivityService } from './security-activity.service';
+import {
+  AuthIdentifierModelName,
+  AuthIdentifierSchema,
+} from './schemas/auth-identifier.schema';
+import {
+  AuthIdentifierOperationModelName,
+  AuthIdentifierOperationSchema,
+} from './schemas/auth-identifier-operation.schema';
+import {
+  AuthIdentifierRepairBatchModelName,
+  AuthIdentifierRepairBatchSchema,
+} from './schemas/auth-identifier-repair-batch.schema';
+import {
+  RefreshTokenReplayMarkerModelName,
+  RefreshTokenReplayMarkerSchema,
+} from './schemas/refresh-token-replay-marker.schema';
+import {
+  AuthThrottleBucketModelName,
+  AuthThrottleBucketSchema,
+} from './schemas/auth-throttle-bucket.schema';
+import { AuthIdentifierService } from './auth-identifier.service';
+import { AuthIdentifierRepairKeyPolicyService } from './auth-identifier-repair-key-policy.service';
+import { AuthBrowserOriginGuard } from './auth-browser-origin.guard';
+import { AuthThrottleService } from './auth-throttle.service';
+import { AuthSourceIdentityService } from './auth-source-identity.service';
+import { AuthIdentifierReconciliationService } from './auth-identifier-reconciliation.service';
+import { AuthEndpointThrottleGuard } from './auth-endpoint-throttle.guard';
 
 @Module({
   imports: [
@@ -37,6 +65,23 @@ import { SecurityActivityService } from './security-activity.service';
     MongooseModule.forFeature([
       { name: AuthClientModelName, schema: AuthClientSchema },
       { name: RefreshTokenFamilyModelName, schema: RefreshTokenFamilySchema },
+      {
+        name: RefreshTokenReplayMarkerModelName,
+        schema: RefreshTokenReplayMarkerSchema,
+      },
+      { name: AuthIdentifierModelName, schema: AuthIdentifierSchema },
+      {
+        name: AuthIdentifierOperationModelName,
+        schema: AuthIdentifierOperationSchema,
+      },
+      {
+        name: AuthIdentifierRepairBatchModelName,
+        schema: AuthIdentifierRepairBatchSchema,
+      },
+      {
+        name: AuthThrottleBucketModelName,
+        schema: AuthThrottleBucketSchema,
+      },
       {
         name: SecurityActivityEventModelName,
         schema: SecurityActivityEventSchema,
@@ -66,6 +111,7 @@ import { SecurityActivityService } from './security-activity.service';
   providers: [
     AuthService,
     JwtStrategy,
+    JwtAuthGuard,
     PasswordHasherService,
     RolesGuard,
     MemberAuthGuard,
@@ -73,6 +119,13 @@ import { SecurityActivityService } from './security-activity.service';
     PermissionsGuard,
     TokenSessionService,
     SecurityActivityService,
+    AuthIdentifierService,
+    AuthIdentifierRepairKeyPolicyService,
+    AuthBrowserOriginGuard,
+    AuthThrottleService,
+    AuthSourceIdentityService,
+    AuthIdentifierReconciliationService,
+    AuthEndpointThrottleGuard,
   ],
   exports: [
     AuthService,
@@ -84,6 +137,14 @@ import { SecurityActivityService } from './security-activity.service';
     PermissionsGuard,
     TokenSessionService,
     SecurityActivityService,
+    AuthIdentifierService,
+    AuthIdentifierRepairKeyPolicyService,
+    AuthBrowserOriginGuard,
+    AuthThrottleService,
+    AuthSourceIdentityService,
+    AuthIdentifierReconciliationService,
+    AuthEndpointThrottleGuard,
+    JwtAuthGuard,
   ],
 })
 export class AuthModule {}

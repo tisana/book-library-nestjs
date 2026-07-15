@@ -1,6 +1,7 @@
 import { Document, Schema, Types } from 'mongoose';
 
 export const SecurityActivityEventModelName = 'SecurityActivityEvent';
+export const SecurityActivityEventCollectionName = 'security_activity_events';
 
 export enum SecurityActivityEventType {
   SignInSuccess = 'sign-in-success',
@@ -8,6 +9,10 @@ export enum SecurityActivityEventType {
   AuthorizationDenied = 'authorization-denied',
   RoleChanged = 'role-changed',
   AccountStatusChanged = 'account-status-changed',
+  IdentifierConflictDetected = 'identifier-conflict-detected',
+  IdentifierConflictResolved = 'identifier-conflict-resolved',
+  IdentifierReservationRecovered = 'identifier-reservation-recovered',
+  IdentifierRepairResumed = 'identifier-repair-resumed',
   TokenRefreshed = 'token-refreshed',
   RefreshReplayDetected = 'refresh-replay-detected',
   TokenRevoked = 'token-revoked',
@@ -29,6 +34,7 @@ export enum SecurityActivityOutcome {
 
 export interface SecurityActivityEventDocument extends Document<Types.ObjectId> {
   _id: Types.ObjectId;
+  eventId?: string;
   eventType: SecurityActivityEventType;
   actorType: SecurityActivityActorType;
   actorId?: string;
@@ -39,6 +45,9 @@ export interface SecurityActivityEventDocument extends Document<Types.ObjectId> 
   subjectId?: string;
   outcome: SecurityActivityOutcome;
   reasonCategory?: string;
+  identifierCorrelationHash?: string;
+  correlationKeyVersion?: number;
+  operationId?: string;
   requestId?: string;
   ipHash?: string;
   userAgentHash?: string;
@@ -49,6 +58,7 @@ export interface SecurityActivityEventDocument extends Document<Types.ObjectId> 
 export const SecurityActivityEventSchema =
   new Schema<SecurityActivityEventDocument>(
     {
+      eventId: { type: String, trim: true },
       eventType: {
         type: String,
         enum: Object.values(SecurityActivityEventType),
@@ -74,20 +84,57 @@ export const SecurityActivityEventSchema =
         required: true,
       },
       reasonCategory: { type: String },
+      identifierCorrelationHash: { type: String },
+      correlationKeyVersion: { type: Number, min: 1 },
+      operationId: { type: String, trim: true },
       requestId: { type: String },
       ipHash: { type: String },
       userAgentHash: { type: String },
       context: { type: Schema.Types.Mixed },
       createdAt: { type: Date, required: true, default: Date.now },
     },
-    { versionKey: false },
+    {
+      versionKey: false,
+      autoIndex: false,
+      collection: SecurityActivityEventCollectionName,
+    },
   );
 
-SecurityActivityEventSchema.index({ createdAt: -1 });
-SecurityActivityEventSchema.index({ eventType: 1, createdAt: -1 });
-SecurityActivityEventSchema.index({ actorType: 1, actorId: 1, createdAt: -1 });
-SecurityActivityEventSchema.index({
-  subjectType: 1,
-  subjectId: 1,
-  createdAt: -1,
-});
+SecurityActivityEventSchema.pre(
+  'validate',
+  function validateIdentifierCorrelationMetadata() {
+    const hasHash = Boolean(this.identifierCorrelationHash);
+    const hasVersion = this.correlationKeyVersion !== undefined;
+    if (hasHash !== hasVersion) {
+      this.invalidate(
+        'correlationKeyVersion',
+        'Identifier correlation hash and key version must be stored together',
+      );
+    }
+  },
+);
+
+SecurityActivityEventSchema.index(
+  { eventId: 1 },
+  { unique: true, sparse: true, name: 'uq_security_activity_event_id' },
+);
+SecurityActivityEventSchema.index(
+  { createdAt: -1 },
+  { name: 'ix_security_activity_created' },
+);
+SecurityActivityEventSchema.index(
+  { eventType: 1, createdAt: -1 },
+  { name: 'ix_security_activity_type_created' },
+);
+SecurityActivityEventSchema.index(
+  { actorType: 1, actorId: 1, createdAt: -1 },
+  { name: 'ix_security_activity_actor_created' },
+);
+SecurityActivityEventSchema.index(
+  {
+    subjectType: 1,
+    subjectId: 1,
+    createdAt: -1,
+  },
+  { name: 'ix_security_activity_subject_created' },
+);

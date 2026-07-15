@@ -2,6 +2,7 @@ import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { APP_FILTER } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './auth/auth.module';
 import { BooksController } from './books/books.controller';
 import { BooksModule } from './books/books.module';
@@ -33,6 +34,7 @@ import { StaffUsersModule } from './staff-users/staff-users.module';
         serverSelectionTimeoutMS: 5000,
       }),
     }),
+    ScheduleModule.forRoot(),
     AuthModule,
     StaffUsersModule,
     HealthModule,

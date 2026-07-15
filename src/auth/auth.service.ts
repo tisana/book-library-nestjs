@@ -34,11 +34,13 @@ export const refreshCookieName = 'book_library_refresh';
 export interface StaffAuthSessionResult {
   response: LoginResponseDto;
   refreshToken: string;
+  refreshExpiresAt: Date;
 }
 
 export interface MemberAuthSessionResult {
   response: MemberLoginResponseDto;
   refreshToken: string;
+  refreshExpiresAt: Date;
 }
 
 @Injectable()
@@ -73,7 +75,7 @@ export class AuthService {
   async createStaffSession(dto: LoginDto): Promise<StaffAuthSessionResult> {
     const staffAuth = await this.authenticateStaff(dto);
     const response = await this.buildStaffLoginResponse(staffAuth);
-    const refreshToken = await this.createRefreshToken({
+    const refreshSession = await this.createRefreshToken({
       subjectType: AuthSubjectType.Staff,
       subjectId: staffAuth.userId,
       scopes: staffAuth.permissions,
@@ -89,7 +91,7 @@ export class AuthService {
       outcome: SecurityActivityOutcome.Success,
     });
 
-    return { response, refreshToken };
+    return { response, ...refreshSession };
   }
 
   async memberLogin(dto: MemberLoginDto): Promise<MemberLoginResponseDto> {
@@ -113,7 +115,7 @@ export class AuthService {
   ): Promise<MemberAuthSessionResult> {
     const memberAuth = await this.authenticateMember(dto);
     const response = await this.buildMemberLoginResponse(memberAuth);
-    const refreshToken = await this.createRefreshToken({
+    const refreshSession = await this.createRefreshToken({
       subjectType: AuthSubjectType.Member,
       subjectId: memberAuth.memberId,
       scopes: response.permissions,
@@ -129,12 +131,13 @@ export class AuthService {
       outcome: SecurityActivityOutcome.Success,
     });
 
-    return { response, refreshToken };
+    return { response, ...refreshSession };
   }
 
   async refresh(refreshToken: string): Promise<{
     response: LoginResponseDto | MemberLoginResponseDto;
     refreshToken: string;
+    refreshExpiresAt: Date;
   }> {
     if (!this.tokenSessionService) {
       throw new UnauthorizedException('Refresh sessions are unavailable');
@@ -178,7 +181,11 @@ export class AuthService {
         outcome: SecurityActivityOutcome.Success,
       });
 
-      return { response, refreshToken: rotated.refreshToken };
+      return {
+        response,
+        refreshToken: rotated.refreshToken,
+        refreshExpiresAt: rotated.expiresAt,
+      };
     }
 
     const user = await this.staffUsersService.findActiveById(rotated.subjectId);
@@ -206,7 +213,11 @@ export class AuthService {
       outcome: SecurityActivityOutcome.Success,
     });
 
-    return { response, refreshToken: rotated.refreshToken };
+    return {
+      response,
+      refreshToken: rotated.refreshToken,
+      refreshExpiresAt: rotated.expiresAt,
+    };
   }
 
   async logout(refreshToken?: string): Promise<void> {
@@ -260,9 +271,9 @@ export class AuthService {
     return this.configService?.get<number>('auth.refreshTokenTtlSeconds') ?? 0;
   }
 
-  getRefreshCookieOptions() {
+  getRefreshCookieOptions(expiresAt?: Date) {
     return this.getRequiredTokenSessionService().getRefreshCookieOptions(
-      this.getRefreshCookieTtlSeconds(),
+      expiresAt ?? this.getRefreshCookieTtlSeconds(),
     );
   }
 
@@ -435,7 +446,7 @@ export class AuthService {
     subjectId: string;
     scopes: AuthPermission[];
     authVersion: number;
-  }): Promise<string> {
+  }): Promise<{ refreshToken: string; refreshExpiresAt: Date }> {
     if (!this.tokenSessionService) {
       throw new UnauthorizedException('Refresh sessions are unavailable');
     }
@@ -449,7 +460,10 @@ export class AuthService {
       ttlSeconds: this.getRefreshCookieTtlSeconds(),
     });
 
-    return session.refreshToken;
+    return {
+      refreshToken: session.refreshToken,
+      refreshExpiresAt: session.expiresAt,
+    };
   }
 
   private getRequiredTokenSessionService(): TokenSessionService {

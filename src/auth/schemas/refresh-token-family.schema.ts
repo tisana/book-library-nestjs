@@ -1,6 +1,7 @@
 import { Document, Schema, Types } from 'mongoose';
 
 export const RefreshTokenFamilyModelName = 'RefreshTokenFamily';
+export const RefreshTokenFamilyCollectionName = 'refresh_token_families';
 
 export enum RefreshTokenFamilyStatus {
   Active = 'active',
@@ -22,8 +23,10 @@ export interface RefreshTokenFamilyDocument extends Document<Types.ObjectId> {
   scopes: string[];
   authVersion: number;
   status: RefreshTokenFamilyStatus;
-  currentTokenHash: string;
+  currentTokenHash?: string;
+  /** @deprecated Cleared by migration 003 and not persisted by this schema. */
   previousTokenHash?: string;
+  lastRotationOperationId?: string;
   issuedAt: Date;
   lastRotatedAt: Date;
   expiresAt: Date;
@@ -35,14 +38,14 @@ export interface RefreshTokenFamilyDocument extends Document<Types.ObjectId> {
 
 export const RefreshTokenFamilySchema = new Schema<RefreshTokenFamilyDocument>(
   {
-    familyId: { type: String, required: true, unique: true, index: true },
-    clientId: { type: String, required: true, trim: true, index: true },
+    familyId: { type: String, required: true },
+    clientId: { type: String, required: true, trim: true },
     subjectType: {
       type: String,
       enum: Object.values(AuthSubjectType),
       required: true,
     },
-    subjectId: { type: String, required: true, index: true },
+    subjectId: { type: String, required: true },
     scopes: { type: [String], required: true, default: [] },
     authVersion: { type: Number, required: true, min: 0, default: 0 },
     status: {
@@ -50,18 +53,44 @@ export const RefreshTokenFamilySchema = new Schema<RefreshTokenFamilyDocument>(
       enum: Object.values(RefreshTokenFamilyStatus),
       required: true,
       default: RefreshTokenFamilyStatus.Active,
-      index: true,
     },
-    currentTokenHash: { type: String, required: true, unique: true },
-    previousTokenHash: { type: String },
+    currentTokenHash: {
+      type: String,
+      required: function requireActiveFamilyHash() {
+        return this.status === RefreshTokenFamilyStatus.Active;
+      },
+    },
+    lastRotationOperationId: { type: String, trim: true },
     issuedAt: { type: Date, required: true },
     lastRotatedAt: { type: Date, required: true },
     expiresAt: { type: Date, required: true },
     revokedAt: { type: Date },
     revokedReason: { type: String, trim: true },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    autoIndex: false,
+    collection: RefreshTokenFamilyCollectionName,
+  },
 );
 
-RefreshTokenFamilySchema.index({ subjectType: 1, subjectId: 1, status: 1 });
-RefreshTokenFamilySchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+RefreshTokenFamilySchema.index(
+  { familyId: 1 },
+  { unique: true, name: 'uq_refresh_token_family_id' },
+);
+RefreshTokenFamilySchema.index(
+  { currentTokenHash: 1 },
+  { unique: true, sparse: true, name: 'uq_refresh_token_family_current_hash' },
+);
+RefreshTokenFamilySchema.index(
+  { subjectType: 1, subjectId: 1, status: 1 },
+  { name: 'ix_refresh_token_family_subject_status' },
+);
+RefreshTokenFamilySchema.index(
+  { lastRotationOperationId: 1 },
+  { sparse: true, name: 'ix_refresh_token_family_last_rotation' },
+);
+RefreshTokenFamilySchema.index(
+  { expiresAt: 1 },
+  { expireAfterSeconds: 0, name: 'ttl_refresh_token_family' },
+);
