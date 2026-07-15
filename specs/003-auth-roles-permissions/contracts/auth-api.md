@@ -25,7 +25,7 @@ Boundary contract:
 - `AUTH_TRUSTED_BROWSER_ORIGINS` is a JSON array and the single source of truth for credentialed CORS and session-origin decisions. Outside production, omission defaults to `["http://localhost:5173","http://127.0.0.1:5173"]`; production has no default and requires at least one exact HTTPS origin.
 - Each configured value contains only scheme, host, and effective port. Reject credentials, paths other than `/`, query strings, fragments, `null`, wildcards, regexes, duplicate canonical origins, non-HTTP(S) schemes, and production HTTP origins at startup.
 - Require exactly one syntactically valid `Origin` header and compare its canonical complete origin with the configured set. Do not use suffix matching or `Referer` fallback. Missing, opaque/`null`, multiple, malformed, and untrusted values are denied.
-- Origin denial returns `403 Forbidden` with one generic browser-session-denied body, no `Set-Cookie`, and no cookie parsing, throttle increment, credential/session lookup, or authentication-state mutation. It appends exactly one redacted security-denial event containing only route and safe reason categories, never the supplied origin/header or cookie.
+- Origin denial returns `403 Forbidden` with one generic browser-session-denied body, no `Set-Cookie`, and no cookie parsing, throttle increment, credential/session lookup, authentication-state mutation, or persistent security-event write. Operational visibility is limited to fixed-cardinality route/reason telemetry sampled to at most one redacted warning per dimension per minute per application instance, carrying a suppressed count forward and never including the supplied origin/header, cookie, token, or account reference.
 - CORS preflight uses the same exact allowlist and credentialed responses include the matched origin rather than `*`; CORS is transport policy and does not replace the server-side origin guard.
 - Successful production refresh-cookie writes use `HttpOnly`, `Secure`, `SameSite=Strict`, path `/auth`, no `Domain`, and `Max-Age` no greater than the family lifetime remaining. Clear operations use the same path and security attributes with an expired lifetime.
 - Access credentials expire no later than 900 seconds after issuance and are returned only in the response body for memory-only client use. Refresh credentials are returned only in the protected cookie, never in a response body or script-readable store.
@@ -198,9 +198,12 @@ Expected behavior:
 
 - Validate refresh-token hash against the active token family.
 - Reject families whose immutable absolute expiry has passed; rotation never extends family expiry.
-- Before changing the family current hash, persist a unique hash-only replay marker for the presented credential through family expiry.
-- Rotate the current hash with an atomic active/unexpired compare-and-swap only after marker persistence. Return no credential when marker persistence or compare-and-swap fails.
-- Revoke the token family when any retained exchanged-token marker matches, including tokens older than the immediately previous generation and concurrent duplicate exchanges.
+- Before changing the family current hash, persist a unique hash-only replay marker in `pending` state with a unique rotation operation id, 30-second lease, and family expiry.
+- Rotate the current hash with an atomic active/unexpired compare-and-swap that also records the marker operation id. Commit the marker for that same operation id before returning a replacement credential.
+- Return the generic denial without family mutation when another unexpired pending lease owns the credential. After lease expiry, take over pending work only while the family still references the presented hash. If the family records the pending operation id, finalize the marker and revoke the orphaned family; revoke on any other marker/family inconsistency.
+- Each application instance reconciles at most 100 expired pending markers every 60 seconds, finalizing and revoking orphaned or inconsistent rotations while leaving pre-CAS work available for request takeover.
+- Revoke the token family when any retained committed marker matches, including tokens older than the immediately previous generation. Concurrent exchanges permit at most one family compare-and-swap and never create two active successors.
+- Before this contract is enabled after migration, revoke every active legacy family, clear its legacy current/previous hashes, preserve its absolute expiry and audit history, and require reauthentication; do not backfill partial replay history.
 - Deny refresh when the subject account is inactive, suspended, locked, reset-required, or has a newer `authVersion`.
 - Return a new access token with current roles and permissions, `expiresIn` no greater than 900, and a refresh cookie whose lifetime is the family expiry remaining.
 - Return the same generic `401 Unauthorized` response for malformed, invalid, expired, revoked, replayed, inactive-account, and stale-authorization refresh outcomes.
@@ -369,6 +372,5 @@ The API records events for:
 - token refresh
 - refresh replay detection
 - revocation/sign-out
-- browser-session origin denial with route and safe reason categories only
 
 Events must exclude passwords, raw tokens, token hashes, raw or normalized sign-in identifiers, and full sensitive payloads. Identifier correlation uses the versioned HMAC contract. Failed sign-in events include an opaque account reference only after exact-one account resolution; unresolved or ambiguous attempts include correlation only.

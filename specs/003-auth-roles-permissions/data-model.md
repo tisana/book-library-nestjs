@@ -9,7 +9,7 @@ Authentication uses existing account aggregates where credentials are read with 
 - The **Member Authentication Link** is embedded on `Member`; it is not a separate collection.
 - Normalized sign-in identifier ownership is stored in `AuthIdentifier`, a credential-free uniqueness registry referencing exactly one staff or member account context.
 - Multi-reservation mutations are coordinated by `AuthIdentifierOperation`, which provides one idempotency and recovery boundary for all affected reservations and account aggregates.
-- Authorization codes, refresh-token families, exchanged-token replay markers, clients, and security events are separate documents because they expire, grow independently, or need audit pagination.
+- Authorization codes, refresh-token families, recoverable rotation replay markers, clients, and security events are separate documents because they expire, grow independently, or need audit pagination.
 - Optional future IdP link fields are allowed so Keycloak can later become the token issuer without changing library authorization.
 - The shared sign-in flow resolves a submitted identifier against staff/admin and member account aggregates, but v1 does not introduce a separate global user collection.
 
@@ -319,6 +319,7 @@ Tracks refresh-token rotation and replay response.
 - `scopes`
 - `status`: `active`, `revoked`, or `replayed`
 - `currentTokenHash`
+- `lastRotationOperationId`: operation id recorded by the most recent successful family compare-and-swap
 - `issuedAt`
 - `lastRotatedAt`
 - `expiresAt`: immutable absolute family expiry, no later than 30 days after `issuedAt`
@@ -329,11 +330,14 @@ Tracks refresh-token rotation and replay response.
 **Validation**
 
 - Store hashes only, never raw refresh tokens.
+- `currentTokenHash` is required only while `status` is `active`; revoked or replayed legacy families may omit it after secure migration cleanup.
 - Access credentials expire no later than 15 minutes after issuance.
 - Family creation sets one absolute expiry no later than 30 days after sign-in; rotation never changes `issuedAt` or `expiresAt`.
-- Before rotating, insert a unique `RefreshTokenReplayMarker` for the presented current hash with the same family expiry. Only after marker persistence succeeds may an atomic compare-and-swap replace `currentTokenHash` and `lastRotatedAt` on the still-active, unexpired family.
-- Marker persistence failure leaves the family current hash unchanged and returns no new credential. Compare-and-swap failure returns no new credential and follows the replay check.
-- A presented hash that does not match an active current hash but matches any unexpired replay marker marks the family `replayed`, revokes active refresh access, and returns the same generic denial used for invalid, expired, inactive-account, and stale-authorization outcomes.
+- Before rotating, insert a unique `RefreshTokenReplayMarker` for the presented current hash in `pending` state with a unique `rotationOperationId`, 30-second lease, and the same family expiry. Only the current lease owner may attempt the family update.
+- The atomic family compare-and-swap requires the still-active, unexpired family and presented `currentTokenHash`, then replaces the current hash and records the marker's `rotationOperationId` in `lastRotationOperationId`. The marker must transition from `pending` to `committed` for the same operation id before any replacement credential is returned.
+- Marker insertion failure leaves the family current hash unchanged and returns no new credential. A request encountering an unexpired pending lease returns the generic denial without changing the family. After lease expiry, pending work may be taken over with a new operation id only when the family still contains the presented current hash.
+- If a pending marker's operation id equals `lastRotationOperationId`, the family compare-and-swap committed but marker finalization or response delivery was interrupted; reconciliation commits the marker, revokes the now-orphaned family, and returns no credential. Any other pending marker/family mismatch is an invariant failure that revokes the family. These recovery paths use the generic refresh denial.
+- A presented hash that matches a committed unexpired replay marker marks the family `replayed`, revokes active refresh access, and returns the same generic denial used for recovery, invalid, expired, inactive-account, and stale-authorization outcomes.
 - The refresh cookie lifetime is the positive time remaining until family `expiresAt`, never a restarted full lifetime.
 
 **Indexes**
@@ -341,18 +345,22 @@ Tracks refresh-token rotation and replay response.
 - Unique `{ familyId: 1 }`
 - Unique sparse `{ currentTokenHash: 1 }`
 - `{ subjectType: 1, subjectId: 1, status: 1 }`
+- Sparse `{ lastRotationOperationId: 1 }`
 - TTL `{ expiresAt: 1 }`
 
 ## RefreshTokenReplayMarker
 
-Retains a one-way reference to every successfully presented current refresh credential so reuse remains detectable through the full absolute family lifetime.
+Coordinates each refresh rotation and retains a one-way reference to every committed exchange so reuse remains detectable through the full absolute family lifetime.
 
 **Fields**
 
 - `_id`
-- `tokenHash`: one-way hash of an exchanged refresh credential
+- `tokenHash`: one-way hash of the presented refresh credential
 - `familyId`: owning `RefreshTokenFamily.familyId`
-- `exchangedAt`
+- `status`: `pending` or `committed`
+- `rotationOperationId`: unique id for the current rotation attempt or lease takeover
+- `leaseExpiresAt`: 30-second ownership lease while `pending`; absent after commitment
+- `committedAt`: set only after the family compare-and-swap records the same operation id
 - `expiresAt`: copied immutable family expiry
 - `createdAt`, `updatedAt`
 
@@ -360,14 +368,19 @@ Retains a one-way reference to every successfully presented current refresh cred
 
 - Store no raw refresh credential, cookie header, source address, account identifier, role, or profile data.
 - `tokenHash` is globally unique so concurrent attempts to exchange the same credential cannot both advance the family.
-- Insert the marker before the family compare-and-swap. A duplicate marker means the credential has already entered exchange and triggers fail-closed family replay handling; it is not treated as an idempotent second success.
+- `pending` does not claim that an exchange completed. The lease owner must include `rotationOperationId` in the family compare-and-swap and must commit the marker for that same id before returning credentials.
+- A duplicate committed marker is replay and triggers fail-closed family revocation. A duplicate pending marker follows lease and family-state recovery rules; it is never treated as an idempotent second success and never returns the earlier replacement credential.
+- An expired pending marker may be atomically taken over only if the family still references `tokenHash`. A marker whose operation id already appears on the family represents an orphaned committed rotation and is finalized then revoked; any other mismatch is revoked as an invariant failure.
+- Each application instance scans at most 100 expired pending markers every 60 seconds. It finalizes and revokes orphaned/inconsistent rotations; a pre-CAS marker whose family still references `tokenHash` remains pending for request-time takeover.
 - A marker remains available until the owning family absolute expiry, including after later rotations or family revocation, so replay of any generation can still identify and revoke the family.
 - TTL deletion after `expiresAt` is cleanup only; expired family credentials remain invalid even if physical marker deletion is delayed.
 
 **Indexes**
 
 - Unique `{ tokenHash: 1 }`
+- Unique `{ rotationOperationId: 1 }`
 - `{ familyId: 1, expiresAt: 1 }`
+- `{ status: 1, leaseExpiresAt: 1 }`
 - TTL `{ expiresAt: 1 }`
 
 ## AuthThrottleBucket
@@ -434,7 +447,7 @@ Append-only security event record for audit review.
 
 - `_id`
 - `eventId`: optional deterministic idempotency key for operation terminal events
-- `eventType`: `sign-in-success`, `sign-in-failure`, `authorization-denied`, `browser-session-origin-denied`, `role-changed`, `account-status-changed`, `identifier-conflict-detected`, `identifier-conflict-resolved`, `identifier-reservation-recovered`, `identifier-repair-resumed`, `token-refreshed`, `refresh-replay-detected`, `token-revoked`, `sign-out`
+- `eventType`: `sign-in-success`, `sign-in-failure`, `authorization-denied`, `role-changed`, `account-status-changed`, `identifier-conflict-detected`, `identifier-conflict-resolved`, `identifier-reservation-recovered`, `identifier-repair-resumed`, `token-refreshed`, `refresh-replay-detected`, `token-revoked`, `sign-out`
 - `actorType`: `staff`, `member`, `system`, or `unknown`
 - `actorId`
 - `targetType`
@@ -459,7 +472,6 @@ Append-only security event record for audit review.
 - Ambiguous shared sign-in resolution must be recorded as a sign-in failure reason category without revealing the conflicting account ids to the user.
 - Identifier conflict events store only `HMAC-SHA-256(normalizedIdentifier, AUTH_AUDIT_CORRELATION_SECRET)`, `correlationKeyVersion`, safe subject references, conflict count, outcome, and reason category; raw conflicting identifiers and ordinary unkeyed hashes are excluded. New events use `AUTH_AUDIT_CORRELATION_KEY_VERSION`; optional previous version-to-secret mappings remain available only for authorized correlation during rotation.
 - Identifier reservation recovery records the operation id, resulting state, outcome, and reason category without raw identifiers.
-- Browser-session origin denial records only a route category and one safe reason category (`missing`, `opaque`, `multiple`, `malformed`, or `untrusted`); it never stores the supplied origin/header, cookie, token, or account reference and is appended without reading authentication state.
 - Operation terminal events use the operation's deterministic `terminalEventId` as `eventId`; duplicate inserts are idempotent and cannot create duplicate permanent audit records.
 
 **Indexes**
@@ -540,7 +552,7 @@ When Keycloak becomes justified, use the existing optional identity link fields 
 - Preserve borrowing records, staff action history, and security events during backfill, account identifier correction, role changes, deactivation, and rollback.
 - Rollback removes only identifier reservations created by this migration after verifying account aggregates still own their original identifiers; it must not delete or rewrite account, borrowing, or audit history.
 - Add collections and indexes for auth clients, optional authorization codes, refresh-token families, refresh-token replay markers, and security events.
-- Backfill each existing `previousTokenHash` into a unique replay marker using its family id and absolute expiry before removing the field; preserve every active current hash and original family expiry. If a legacy previous hash conflicts across families, fail migration and quarantine the affected families rather than choosing one silently.
+- Before enabling upgraded refresh handling, revoke every active refresh family present at migration start with reason `security-upgrade-reauth`, set `revokedAt`, clear `currentTokenHash` and `previousTokenHash` from every legacy family, and preserve each document's absolute expiry and existing audit history. Do not synthesize replay markers from the incomplete `previousTokenHash` history. The migration is intentionally session-invalidating and rollback must not restore or reactivate legacy token hashes; affected users sign in again under the complete pending/committed marker contract.
 - Seed one first-party client with exact redirect URIs for local development and deployment if the authorization-code flow is implemented.
 - Seed or define approved roles and permission mappings.
 - Add a shared sign-in resolver that resolves active reservations to existing staff/member account aggregates and rejects missing, released, or legacy-ambiguous identifiers generically.
