@@ -171,7 +171,7 @@
 - [x] T091 [P] [US2] Add horizontal member ownership e2e tests for /members/me and member borrowing details in test/member-self-service.e2e-spec.ts
 - [x] T092 [P] [US2] Add frontend route-guard tests for member-vs-staff/admin navigation denial in frontend/src/lib/auth/route-guards.test.ts
 - [x] T093 [P] [US2] Add Playwright e2e coverage for member denial from staff/admin screens and direct route attempts in frontend/tests/e2e/member-privacy.spec.ts
-- [ ] T094 [P] [US2] Add a data-driven allow, permission-deny, member-deny, ownership-deny, and unauthenticated test for every protected controller action in test/authorization-matrix.e2e-spec.ts
+- [x] T094 [P] [US2] Add a data-driven allow, permission-deny, member-deny, ownership-deny, and unauthenticated test for every protected controller action in test/authorization-matrix.e2e-spec.ts
 
 ### Implementation for User Story 2
 
