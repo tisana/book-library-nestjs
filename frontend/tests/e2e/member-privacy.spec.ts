@@ -45,10 +45,7 @@ test('member browser direct staff route attempts do not load staff data', async 
     const requestStart = requestedUrls.length;
     await page.goto(staffRoute);
 
-    await page.waitForURL('**/staff/login');
-    await expect(
-      page.getByRole('heading', { name: 'Staff sign in' }),
-    ).toBeVisible();
+    await expect(page).toHaveURL(/\/(?:unauthorized|login)$/);
     expect(requestedUrls.slice(requestStart).some(isStaffBackOfficeApi)).toBe(
       false,
     );
@@ -64,11 +61,11 @@ async function signInAsMember(page: Page) {
 }
 
 async function mockMemberSession(page: Page, requestedUrls: string[]) {
-  await page.route('http://localhost:3000/**', async (route) => {
+  await page.route('http://*:3000/**', async (route) => {
     const url = route.request().url();
     requestedUrls.push(url);
 
-    if (url.endsWith('/auth/member-login')) {
+    if (url.endsWith('/auth/login')) {
       await route.fulfill({
         json: {
           accessToken: 'member-token',

@@ -37,8 +37,7 @@ describe('Browser session security boundary (e2e)', () => {
   let app: INestApplication;
 
   const authService = {
-    createStaffSession: jest.fn(),
-    createMemberSession: jest.fn(),
+    createSharedSession: jest.fn(),
     refresh: jest.fn(),
     logout: jest.fn(),
     logoutAll: jest.fn(),
@@ -103,36 +102,44 @@ describe('Browser session security boundary (e2e)', () => {
     });
     throttleService.consumeRefreshAttempt.mockResolvedValue({ allowed: true });
     tokenSessionService.resolveFamilyId.mockResolvedValue('family-1');
-    authService.createStaffSession.mockResolvedValue({
-      response: {
-        accessToken: 'staff-access',
-        tokenType: 'Bearer',
-        expiresIn: 900,
-        scope: '',
-        permissions: [],
-        user: {
-          id: 'staff-1',
-          email: 'staff@example.com',
-          displayName: 'Staff',
-          roles: ['staff'],
-          permissions: [],
-        },
-      },
-      refreshToken: 'staff-refresh',
-      refreshExpiresAt: familyExpiry,
-    });
-    authService.createMemberSession.mockResolvedValue({
-      response: {
-        accessToken: 'member-access',
-        tokenType: 'Bearer',
-        expiresIn: 900,
-        scope: '',
-        permissions: [],
-        member: { id: 'member-1', memberNumber: 'M-1' },
-      },
-      refreshToken: 'member-refresh',
-      refreshExpiresAt: familyExpiry,
-    });
+    authService.createSharedSession.mockImplementation(
+      ({ identifier }: { identifier: string }) =>
+        Promise.resolve(
+          identifier === 'M-1'
+            ? {
+                response: {
+                  accessToken: 'member-access',
+                  tokenType: 'Bearer',
+                  expiresIn: 900,
+                  scope: 'member:self:read',
+                  permissions: ['member:self:read'],
+                  roleArea: 'member',
+                  member: { id: 'member-1', memberNumber: 'M-1' },
+                },
+                refreshToken: 'member-refresh',
+                refreshExpiresAt: familyExpiry,
+              }
+            : {
+                response: {
+                  accessToken: 'staff-access',
+                  tokenType: 'Bearer',
+                  expiresIn: 900,
+                  scope: '',
+                  permissions: [],
+                  roleArea: 'staff',
+                  user: {
+                    id: 'staff-1',
+                    email: 'staff@example.com',
+                    displayName: 'Staff',
+                    roles: ['staff'],
+                    permissions: [],
+                  },
+                },
+                refreshToken: 'staff-refresh',
+                refreshExpiresAt: familyExpiry,
+              },
+        ),
+    );
     authService.refresh.mockResolvedValue({
       response: {
         accessToken: 'rotated-access',
@@ -159,7 +166,7 @@ describe('Browser session security boundary (e2e)', () => {
       const staff = await request(app.getHttpServer())
         .post('/auth/login')
         .set('Origin', origin)
-        .send({ email: 'staff@example.com', password: 'secret' })
+        .send({ identifier: 'staff@example.com', password: 'secret' })
         .expect(200);
       const member = await request(app.getHttpServer())
         .post('/auth/member-login')
@@ -195,7 +202,7 @@ describe('Browser session security boundary (e2e)', () => {
     async (_label, origin) => {
       const call = request(app.getHttpServer())
         .post('/auth/login')
-        .send({ email: 'staff@example.com', password: 'secret' });
+        .send({ identifier: 'staff@example.com', password: 'secret' });
 
       if (origin) {
         call.set('Origin', origin);
@@ -205,7 +212,7 @@ describe('Browser session security boundary (e2e)', () => {
       expect(response.body.message).toBe('Browser session request denied');
       expect(response.headers['set-cookie']).toBeUndefined();
       expect(throttleService.consumeSignInAttempt).not.toHaveBeenCalled();
-      expect(authService.createStaffSession).not.toHaveBeenCalled();
+      expect(authService.createSharedSession).not.toHaveBeenCalled();
       expect(authService.logout).not.toHaveBeenCalled();
     },
   );

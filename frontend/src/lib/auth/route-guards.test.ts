@@ -26,8 +26,8 @@ describe('route guards', () => {
   });
 
   it('redirects unauthenticated users to the matching login page', () => {
-    expectRedirect(() => requireStaffSession(), '/staff/login');
-    expectRedirect(() => requireMemberSession(), '/member/login');
+    expectRedirect(() => requireStaffSession(), '/login');
+    expectRedirect(() => requireMemberSession(), '/login');
   });
 
   it('denies member sessions from staff/admin routes', () => {

@@ -148,14 +148,16 @@ describe('Member authentication endpoints (e2e)', () => {
         {
           provide: AuthService,
           useValue: {
-            createMemberSession: jest.fn(async () => ({
+            createSharedSession: jest.fn(async () => ({
               refreshToken: 'member-refresh-token',
+              refreshExpiresAt: new Date(Date.now() + 3_600_000),
               response: {
                 accessToken: 'member-access-token',
                 tokenType: 'Bearer',
                 expiresIn: 900,
                 scope: 'member:self:read',
                 permissions: ['member:self:read'],
+                roleArea: 'member',
                 member: {
                   id: 'member-1',
                   memberNumber: 'M-1001',

@@ -13,9 +13,7 @@ export function requireRoleArea(roleArea: RoleArea) {
   const session = authSession.getSnapshot();
 
   if (!session.accessToken) {
-    throw redirect({
-      to: roleArea === 'staff' ? '/staff/login' : '/member/login',
-    });
+    throw redirect({ to: '/login' });
   }
 
   if (session.roleArea !== roleArea) {

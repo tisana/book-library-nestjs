@@ -15,6 +15,8 @@ export type AuthPermission =
   | 'roles:read'
   | 'roles:manage'
   | 'security-events:read'
+  | 'auth-identifiers:read'
+  | 'auth-identifiers:manage'
   | 'member:self:read';
 export type LibraryStatus = 'active' | 'deactivated';
 export type MemberStatus = 'active' | 'suspended' | 'inactive';
@@ -40,6 +42,11 @@ export interface StaffLoginRequest {
 
 export interface MemberLoginRequest {
   loginIdentifier: string;
+  password: string;
+}
+
+export interface SharedLoginRequest {
+  identifier: string;
   password: string;
 }
 
@@ -99,6 +106,20 @@ export interface LoginResponse<TUser extends SessionUser = SessionUser> {
   member?: MemberSessionUser;
   principal?: TUser;
 }
+
+export interface StaffLoginResponse extends LoginResponse<StaffSessionUser> {
+  roleArea: 'staff';
+  user: StaffSessionUser;
+  member?: never;
+}
+
+export interface MemberLoginResponse extends LoginResponse<MemberSessionUser> {
+  roleArea: 'member';
+  member: MemberSessionUser;
+  user?: never;
+}
+
+export type SharedLoginResponse = StaffLoginResponse | MemberLoginResponse;
 
 export interface CurrentAuthResponse {
   roleArea: RoleArea;

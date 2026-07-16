@@ -9,22 +9,28 @@ test('member can sign out and protected member data is cleared', async ({
   await page.getByLabel('Login identifier').fill('M-1001');
   await page.getByLabel('Password').fill('DemoMember#2026');
   await page.getByRole('button', { name: /sign in/i }).click();
-  await expect(page.getByRole('heading', { name: 'Jane Reader' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Jane Reader' }),
+  ).toBeVisible();
 
   await page.getByRole('button', { name: /sign out/i }).click();
-  await expect(page).toHaveURL(/\/member\/login$/);
-  await expect(page.getByRole('heading', { name: 'Member sign in' })).toBeVisible();
+  await expect(page).toHaveURL(/\/login$/);
+  await expect(
+    page.getByRole('heading', { name: 'Sign in to Book Library' }),
+  ).toBeVisible();
 
   await page.goto('/member');
-  await expect(page).toHaveURL(/\/member\/login$/);
+  await expect(page).toHaveURL(/\/login$/);
   await expect(page.getByText('Jane Reader')).not.toBeVisible();
 });
 
 async function mockMemberApi(page: Page) {
-  await page.route('http://localhost:3000/auth/member-login', (route) =>
+  await page.route('http://*:3000/auth/login', (route) =>
     route.fulfill({
       json: {
         accessToken: 'member-token',
+        roleArea: 'member',
+        permissions: ['member:self:read'],
         member: {
           id: 'member-1',
           memberNumber: 'M-1001',
@@ -34,11 +40,12 @@ async function mockMemberApi(page: Page) {
           membershipTypeId: 'tier-1',
           membershipTypeName: 'Gold Member',
           membershipTypeCode: 'GOLD',
+          permissions: ['member:self:read'],
         },
       },
     }),
   );
-  await page.route('http://localhost:3000/members/me', (route) =>
+  await page.route('http://*:3000/members/me', (route) =>
     route.fulfill({
       json: {
         id: 'member-1',
@@ -53,7 +60,7 @@ async function mockMemberApi(page: Page) {
       },
     }),
   );
-  await page.route('http://localhost:3000/members/me/policy-status', (route) =>
+  await page.route('http://*:3000/members/me/policy-status', (route) =>
     route.fulfill({
       json: {
         memberId: 'member-1',
@@ -68,7 +75,7 @@ async function mockMemberApi(page: Page) {
       },
     }),
   );
-  await page.route('http://localhost:3000/members/me/borrowings**', (route) =>
+  await page.route('http://*:3000/members/me/borrowings**', (route) =>
     route.fulfill({ json: [] }),
   );
 }

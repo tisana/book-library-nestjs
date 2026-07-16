@@ -1,5 +1,6 @@
 import { authSession } from '@/lib/auth/session';
 import { signOut } from '@/lib/auth/sign-out';
+import { login } from './auth';
 import { apiClient } from './client';
 import type {
   AuthTokenMetadata,
@@ -36,20 +37,14 @@ function normalizeMemberUser(response: LoginResponse<MemberSessionUser>) {
 }
 
 export async function memberLogin(input: MemberLoginRequest) {
-  const response = await apiClient.post<LoginResponse<MemberSessionUser>>(
-    '/auth/member-login',
-    input,
-    { auth: false },
-  );
-  const memberUser = normalizeMemberUser(response);
-
-  authSession.setSession(
-    response.accessToken,
-    memberUser,
-    tokenMetadata(response),
-  );
-
-  return memberUser;
+  const user = await login({
+    identifier: input.loginIdentifier,
+    password: input.password,
+  });
+  if (user.roleArea !== 'member') {
+    throw new Error('Member login did not return a member session.');
+  }
+  return user;
 }
 
 export async function refreshMemberSession() {

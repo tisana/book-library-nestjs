@@ -156,7 +156,7 @@ export class TokenSessionService implements OnModuleInit, OnModuleDestroy {
               lastRotationOperationId: prepared.operationId,
             },
           },
-          { new: true },
+          { returnDocument: 'after' },
         )
         .exec();
     } catch {
@@ -461,7 +461,7 @@ export class TokenSessionService implements OnModuleInit, OnModuleDestroy {
             leaseExpiresAt: new Date(now.getTime() + rotationLeaseMs),
           },
         },
-        { new: true },
+        { returnDocument: 'after' },
       )
       .exec();
 
@@ -528,7 +528,7 @@ export class TokenSessionService implements OnModuleInit, OnModuleDestroy {
           },
           $unset: { leaseExpiresAt: 1 },
         },
-        { new: true },
+        { returnDocument: 'after' },
       )
       .exec();
   }

@@ -1,6 +1,6 @@
 import type { Page, Route } from '@playwright/test';
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_URL_PATTERN = /http:\/\/(?:localhost|127\.0\.0\.1):3000\/.*$/;
 
 export interface MockBook {
   id: string;
@@ -143,7 +143,7 @@ export async function mockStaffApi(page: Page, options: StaffMockOptions = {}) {
     options.overdueBorrowings ??
     borrowings.filter((borrowing) => borrowing.status === 'overdue');
 
-  await page.route(`${API_BASE_URL}/**`, async (route) => {
+  await page.route(API_URL_PATTERN, async (route) => {
     const request = route.request();
     const url = new URL(request.url());
     const path = url.pathname;
@@ -151,12 +151,18 @@ export async function mockStaffApi(page: Page, options: StaffMockOptions = {}) {
     if (path === '/auth/login') {
       return fulfillJson(route, {
         accessToken: 'staff-token',
+        tokenType: 'Bearer',
+        expiresIn: 900,
+        scope: 'catalog:read',
+        permissions: ['catalog:read'],
+        roleArea: 'staff',
         user: {
           id: 'staff-1',
           email: 'staff@example.test',
           displayName: 'Staff User',
           roles: ['staff'],
           roleArea: 'staff',
+          permissions: ['catalog:read'],
         },
       });
     }
@@ -171,17 +177,22 @@ export async function mockStaffApi(page: Page, options: StaffMockOptions = {}) {
         maxActiveLoans: 3,
         activeLoanCount: member?.activeLoanCount ?? 0,
         remainingAllowance: Math.max(0, 3 - (member?.activeLoanCount ?? 0)),
-        eligibleByStatus: member?.status === undefined || member.status === 'active',
+        eligibleByStatus:
+          member?.status === undefined || member.status === 'active',
         withinLimit: (member?.activeLoanCount ?? 0) < 3,
         limitReached: (member?.activeLoanCount ?? 0) >= 3,
       });
     }
 
-    const memberBorrowingsMatch = path.match(/^\/members\/([^/]+)\/borrowings$/);
+    const memberBorrowingsMatch = path.match(
+      /^\/members\/([^/]+)\/borrowings$/,
+    );
     if (memberBorrowingsMatch) {
       return fulfillJson(
         route,
-        borrowings.filter((borrowing) => borrowing.memberId === memberBorrowingsMatch[1]),
+        borrowings.filter(
+          (borrowing) => borrowing.memberId === memberBorrowingsMatch[1],
+        ),
       );
     }
 
@@ -199,7 +210,10 @@ export async function mockStaffApi(page: Page, options: StaffMockOptions = {}) {
 
     const bookMatch = path.match(/^\/books\/([^/]+)$/);
     if (bookMatch) {
-      return fulfillJson(route, books.find((book) => book.id === bookMatch[1]) ?? books[0]);
+      return fulfillJson(
+        route,
+        books.find((book) => book.id === bookMatch[1]) ?? books[0],
+      );
     }
 
     if (path === '/books') {
@@ -237,7 +251,8 @@ export async function mockStaffApi(page: Page, options: StaffMockOptions = {}) {
     const borrowingReturnMatch = path.match(/^\/borrowings\/([^/]+)\/return$/);
     if (borrowingReturnMatch) {
       const borrowing =
-        borrowings.find((item) => item.id === borrowingReturnMatch[1]) ?? borrowings[0];
+        borrowings.find((item) => item.id === borrowingReturnMatch[1]) ??
+        borrowings[0];
       return fulfillJson(route, {
         ...borrowing,
         returnedAt: '2026-06-18T00:00:00.000Z',
@@ -250,32 +265,48 @@ export async function mockStaffApi(page: Page, options: StaffMockOptions = {}) {
     if (borrowingMatch) {
       return fulfillJson(
         route,
-        borrowings.find((borrowing) => borrowing.id === borrowingMatch[1]) ?? borrowings[0],
+        borrowings.find((borrowing) => borrowing.id === borrowingMatch[1]) ??
+          borrowings[0],
       );
     }
 
     if (path === '/borrowings') {
-      return fulfillJson(route, request.method() === 'POST' ? borrowings[0] : borrowings);
+      return fulfillJson(
+        route,
+        request.method() === 'POST' ? borrowings[0] : borrowings,
+      );
     }
 
-    return fulfillJson(route, { message: `No mock registered for ${path}` }, 404);
+    return fulfillJson(
+      route,
+      { message: `No mock registered for ${path}` },
+      404,
+    );
   });
 }
 
-export async function mockMemberApi(page: Page, options: MemberMockOptions = {}) {
+export async function mockMemberApi(
+  page: Page,
+  options: MemberMockOptions = {},
+) {
   const borrowings = options.borrowings ?? defaultBorrowings.slice(0, 2);
   const activeLoanCount = options.activeLoanCount ?? borrowings.length;
   const maxActiveLoans = options.maxActiveLoans ?? 3;
   const membershipStatus = options.membershipStatus ?? 'active';
   const displayName = options.displayName ?? 'Jane Reader';
 
-  await page.route(`${API_BASE_URL}/**`, async (route) => {
+  await page.route(API_URL_PATTERN, async (route) => {
     const url = new URL(route.request().url());
     const path = url.pathname;
 
-    if (path === '/auth/member-login') {
+    if (path === '/auth/login') {
       return fulfillJson(route, {
         accessToken: 'member-token',
+        tokenType: 'Bearer',
+        expiresIn: 900,
+        scope: 'member:self:read',
+        permissions: ['member:self:read'],
+        roleArea: 'member',
         member: {
           id: 'member-1',
           memberNumber: 'M-1001',
@@ -285,6 +316,7 @@ export async function mockMemberApi(page: Page, options: MemberMockOptions = {})
           membershipTypeId: 'tier-1',
           membershipTypeName: 'Gold Member',
           membershipTypeCode: 'GOLD',
+          permissions: ['member:self:read'],
         },
       });
     }
@@ -317,12 +349,15 @@ export async function mockMemberApi(page: Page, options: MemberMockOptions = {})
       });
     }
 
-    const borrowingDetailMatch = path.match(/^\/members\/me\/borrowings\/([^/]+)$/);
+    const borrowingDetailMatch = path.match(
+      /^\/members\/me\/borrowings\/([^/]+)$/,
+    );
     if (borrowingDetailMatch) {
       return fulfillJson(
         route,
-        borrowings.find((borrowing) => borrowing.id === borrowingDetailMatch[1]) ??
-          borrowings[0],
+        borrowings.find(
+          (borrowing) => borrowing.id === borrowingDetailMatch[1],
+        ) ?? borrowings[0],
       );
     }
 
@@ -330,7 +365,11 @@ export async function mockMemberApi(page: Page, options: MemberMockOptions = {})
       return fulfillJson(route, borrowings);
     }
 
-    return fulfillJson(route, { message: `No mock registered for ${path}` }, 404);
+    return fulfillJson(
+      route,
+      { message: `No mock registered for ${path}` },
+      404,
+    );
   });
 }
 
@@ -377,19 +416,25 @@ export function createPerformanceDataset() {
     };
   });
 
-  const activeBorrowings = Array.from({ length: 25 }, (_, index): MockBorrowing => {
-    const number = index + 1;
-    const book = books[index];
-    const member = members[index % members.length];
-    return createBorrowing(number, member, book, 'active');
-  });
+  const activeBorrowings = Array.from(
+    { length: 25 },
+    (_, index): MockBorrowing => {
+      const number = index + 1;
+      const book = books[index];
+      const member = members[index % members.length];
+      return createBorrowing(number, member, book, 'active');
+    },
+  );
 
-  const overdueBorrowings = Array.from({ length: 10 }, (_, index): MockBorrowing => {
-    const number = index + 26;
-    const book = books[index + 25];
-    const member = members[(index + 25) % members.length];
-    return createBorrowing(number, member, book, 'overdue');
-  });
+  const overdueBorrowings = Array.from(
+    { length: 10 },
+    (_, index): MockBorrowing => {
+      const number = index + 26;
+      const book = books[index + 25];
+      const member = members[(index + 25) % members.length];
+      return createBorrowing(number, member, book, 'overdue');
+    },
+  );
 
   return {
     books,

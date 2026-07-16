@@ -114,19 +114,43 @@ describe('Authentication and staff-users authorization (e2e)', () => {
         {
           provide: AuthService,
           useValue: {
-            createStaffSession: jest.fn(
-              async ({ email }: { email: string }) => {
-                const isAdmin = email === adminTestUser.email;
+            createSharedSession: jest.fn(
+              async ({ identifier }: { identifier: string }) => {
+                if (identifier === 'ambiguous@example.test') {
+                  throw new UnauthorizedException('Invalid credentials');
+                }
+                if (identifier === 'M-1001') {
+                  return {
+                    refreshToken: 'member-refresh',
+                    refreshExpiresAt: new Date(Date.now() + 3_600_000),
+                    response: {
+                      accessToken: 'member-token',
+                      tokenType: 'Bearer',
+                      expiresIn: 900,
+                      scope: 'member:self:read',
+                      permissions: ['member:self:read'],
+                      roleArea: 'member',
+                      member: {
+                        id: 'member-1',
+                        memberNumber: 'M-1001',
+                        displayName: 'Member One',
+                      },
+                    },
+                  };
+                }
+                const isAdmin = identifier === adminTestUser.email;
                 const fixture = isAdmin ? adminTestUser : staffTestUser;
 
                 return {
                   refreshToken: isAdmin ? 'admin-refresh' : 'staff-refresh',
+                  refreshExpiresAt: new Date(Date.now() + 3_600_000),
                   response: {
                     accessToken: isAdmin ? 'admin-token' : 'staff-token',
                     tokenType: 'Bearer',
                     expiresIn: 900,
                     scope: 'catalog:read',
                     permissions: ['catalog:read'],
+                    roleArea: 'staff',
                     user: {
                       id: isAdmin ? 'admin-user-id' : 'staff-user-id',
                       email: fixture.email,
@@ -219,7 +243,7 @@ describe('Authentication and staff-users authorization (e2e)', () => {
       .post('/auth/login')
       .set('Origin', trustedBrowserOrigin)
       .send({
-        email: staffTestUser.email,
+        identifier: staffTestUser.email,
         password: staffTestUser.password,
       })
       .expect(200);
@@ -237,6 +261,58 @@ describe('Authentication and staff-users authorization (e2e)', () => {
     );
     expect(response.body.user).not.toHaveProperty('password');
     expect(response.body.user).not.toHaveProperty('passwordHash');
+  });
+
+  it('uses the shared endpoint for administrators and members', async () => {
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .set('Origin', trustedBrowserOrigin)
+      .send({
+        identifier: adminTestUser.email,
+        password: adminTestUser.password,
+      })
+      .expect(200)
+      .expect(({ body }) => {
+        expect(body).toMatchObject({
+          roleArea: 'staff',
+          user: { roles: expect.arrayContaining([StaffRole.Admin]) },
+        });
+      });
+
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .set('Origin', trustedBrowserOrigin)
+      .send({ identifier: 'M-1001', password: 'MemberPass123!' })
+      .expect(200)
+      .expect(({ body }) => {
+        expect(body).toMatchObject({
+          roleArea: 'member',
+          member: { memberNumber: 'M-1001' },
+        });
+      });
+  });
+
+  it('keeps compatibility wrappers aligned and denies ambiguity generically', async () => {
+    await request(app.getHttpServer())
+      .post('/auth/staff-login')
+      .set('Origin', trustedBrowserOrigin)
+      .send({ email: staffTestUser.email, password: staffTestUser.password })
+      .expect(200)
+      .expect(({ body }) => expect(body.roleArea).toBe('staff'));
+
+    await request(app.getHttpServer())
+      .post('/auth/member-login')
+      .set('Origin', trustedBrowserOrigin)
+      .send({ loginIdentifier: 'M-1001', password: 'MemberPass123!' })
+      .expect(200)
+      .expect(({ body }) => expect(body.roleArea).toBe('member'));
+
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .set('Origin', trustedBrowserOrigin)
+      .send({ identifier: 'ambiguous@example.test', password: 'password' })
+      .expect(401)
+      .expect(({ body }) => expect(body.message).toBe('Invalid credentials'));
   });
 
   it('refreshes the access token from the refresh cookie and rotates the cookie', async () => {
@@ -277,7 +353,7 @@ describe('Authentication and staff-users authorization (e2e)', () => {
       .post('/auth/login')
       .set('Origin', trustedBrowserOrigin)
       .send({
-        email: staffTestUser.email,
+        identifier: staffTestUser.email,
         password: staffTestUser.password,
       })
       .expect(200);
@@ -293,7 +369,7 @@ describe('Authentication and staff-users authorization (e2e)', () => {
       .post('/auth/login')
       .set('Origin', trustedBrowserOrigin)
       .send({
-        email: adminTestUser.email,
+        identifier: adminTestUser.email,
         password: adminTestUser.password,
       })
       .expect(200);
@@ -374,13 +450,16 @@ class MutableThrottleConfig {
   };
 
   get(path: string): unknown {
-    return path.split('.').reduce<unknown>((value, key) => {
-      if (!value || typeof value !== 'object') {
-        return undefined;
-      }
+    return path.split('.').reduce<unknown>(
+      (value, key) => {
+        if (!value || typeof value !== 'object') {
+          return undefined;
+        }
 
-      return (value as Record<string, unknown>)[key];
-    }, { auth: this.auth });
+        return (value as Record<string, unknown>)[key];
+      },
+      { auth: this.auth },
+    );
   }
 }
 
@@ -497,9 +576,9 @@ describe('Authentication throttling persistence (e2e)', () => {
           .send({ familyId: 'private-family-id' }),
       );
     }
-    expect(refreshResponses.filter(({ status }) => status === 429)).toHaveLength(
-      1,
-    );
+    expect(
+      refreshResponses.filter(({ status }) => status === 429),
+    ).toHaveLength(1);
   });
 
   it('counts an unresolved refresh cookie by source without a family bucket', async () => {
@@ -583,9 +662,7 @@ describe('Authentication throttling persistence (e2e)', () => {
 
     const documents = await bucketModel.find().lean().exec();
     expect(
-      documents.find(
-        ({ dimension }) => dimension === 'sign-in-source',
-      )?.count,
+      documents.find(({ dimension }) => dimension === 'sign-in-source')?.count,
     ).toBe(1);
     expect(
       documents.find(({ dimension }) => dimension === 'refresh-family')?.count,

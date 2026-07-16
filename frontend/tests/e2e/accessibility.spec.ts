@@ -13,14 +13,20 @@ test('staff forms, route guards, dialogs, status badges, and sign-out controls a
   await mockStaffApi(page);
 
   await page.goto('/staff/borrowings');
-  await expect(page).toHaveURL(/\/staff\/login$/);
-  await expect(page.getByRole('heading', { name: 'Staff sign in' })).toBeVisible();
+  await expect(page).toHaveURL(/\/login$/);
+  await expect(
+    page.getByRole('heading', { name: 'Sign in to Book Library' }),
+  ).toBeVisible();
   await expect(page.getByLabel('Email')).toBeVisible();
   await expect(page.getByLabel('Password')).toBeVisible();
 
   await loginAsStaff(page);
-  await expect(page.getByRole('navigation', { name: 'Staff navigation' })).toBeVisible();
-  await expect(page.getByRole('button', { name: /sign out/i }).first()).toBeVisible();
+  await expect(
+    page.getByRole('navigation', { name: 'Staff navigation' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: /sign out/i }).first(),
+  ).toBeVisible();
 
   await page.getByRole('link', { name: 'New borrowing' }).first().click();
   await expect(page.getByLabel('Member')).toBeVisible();
@@ -28,10 +34,14 @@ test('staff forms, route guards, dialogs, status badges, and sign-out controls a
   await page.getByLabel('Member').selectOption('member-1');
   await page.getByLabel('Book').selectOption('book-1');
   await expect(page.getByText('Eligible to borrow')).toBeVisible();
-  await expect(page.getByRole('button', { name: /record borrowing/i })).toBeEnabled();
+  await expect(
+    page.getByRole('button', { name: /record borrowing/i }),
+  ).toBeEnabled();
 
   await page.getByRole('link', { name: 'Borrowings' }).click();
-  await page.getByRole('link', { name: 'Clean Code borrowed by Jane Reader' }).click();
+  await page
+    .getByRole('link', { name: 'Clean Code borrowed by Jane Reader' })
+    .click();
   await expect(page.getByText('active', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: /record return/i }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
@@ -49,21 +59,33 @@ test('member forms, route guards, navigation, status badges, and sign-out contro
   await mockMemberApi(page);
 
   await page.goto('/member/borrowings');
-  await expect(page).toHaveURL(/\/member\/login$/);
-  await expect(page.getByRole('heading', { name: 'Member sign in' })).toBeVisible();
+  await expect(page).toHaveURL(/\/login$/);
+  await expect(
+    page.getByRole('heading', { name: 'Sign in to Book Library' }),
+  ).toBeVisible();
   await expect(page.getByLabel('Login identifier')).toBeVisible();
   await expect(page.getByLabel('Password')).toBeVisible();
 
   await loginAsMember(page);
-  await expect(page.getByRole('navigation', { name: 'Member navigation' })).toBeVisible();
+  await expect(
+    page.getByRole('navigation', { name: 'Member navigation' }),
+  ).toBeVisible();
   await expect(page.getByRole('button', { name: /sign out/i })).toBeVisible();
   const borrowedBooks = page.getByLabel('Current borrowed books');
-  await expect(borrowedBooks.getByText('Due today', { exact: true })).toBeVisible();
-  await expect(borrowedBooks.getByText('Overdue', { exact: true })).toBeVisible();
+  await expect(
+    borrowedBooks.getByText('Due today', { exact: true }),
+  ).toBeVisible();
+  await expect(
+    borrowedBooks.getByText('Overdue', { exact: true }),
+  ).toBeVisible();
 
   await page.getByRole('link', { name: 'Books' }).click();
-  await expect(page.getByRole('heading', { name: 'My borrowed books' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'My borrowed books' }),
+  ).toBeVisible();
   await page.getByRole('link', { name: 'Clean Code' }).click();
   await expect(page.getByRole('heading', { name: 'Clean Code' })).toBeVisible();
-  await expect(page.getByText('Bring this book to the library desk')).toBeVisible();
+  await expect(
+    page.getByText('Bring this book to the library desk'),
+  ).toBeVisible();
 });

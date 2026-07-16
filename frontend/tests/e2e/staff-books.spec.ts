@@ -4,16 +4,16 @@ test('staff can create and update a book from the collection screen', async ({
   page,
 }) => {
   await mockStaffLogin(page);
-  await page.route('http://localhost:3000/members**', (route) =>
+  await page.route('http://*:3000/members**', (route) =>
     route.fulfill({ json: [] }),
   );
-  await page.route('http://localhost:3000/borrowings/overdue**', (route) =>
+  await page.route('http://*:3000/borrowings/overdue**', (route) =>
     route.fulfill({ json: [] }),
   );
-  await page.route('http://localhost:3000/borrowings**', (route) =>
+  await page.route('http://*:3000/borrowings**', (route) =>
     route.fulfill({ json: [] }),
   );
-  await page.route('http://localhost:3000/book-categories**', (route) =>
+  await page.route('http://*:3000/book-categories**', (route) =>
     route.fulfill({
       json: [
         {
@@ -26,7 +26,7 @@ test('staff can create and update a book from the collection screen', async ({
       ],
     }),
   );
-  await page.route('http://localhost:3000/books**', async (route) => {
+  await page.route('http://*:3000/books**', async (route) => {
     if (route.request().url().endsWith('/books/book-1')) {
       await route.fulfill({
         json: {
@@ -97,7 +97,7 @@ test('staff can create and update a book from the collection screen', async ({
 });
 
 async function mockStaffLogin(page: Page) {
-  await page.route('http://localhost:3000/auth/login', (route) =>
+  await page.route('http://*:3000/auth/login', (route) =>
     route.fulfill({
       json: {
         accessToken: 'staff-token',

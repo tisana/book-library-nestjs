@@ -36,7 +36,7 @@ describe('MemberShell', () => {
     await user.click(screen.getByRole('button', { name: /sign out/i }));
 
     await waitFor(() =>
-      expect(navigateMock).toHaveBeenCalledWith({ to: '/member/login' }),
+      expect(navigateMock).toHaveBeenCalledWith({ to: '/login' }),
     );
   });
 });

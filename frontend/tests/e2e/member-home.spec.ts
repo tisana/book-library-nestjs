@@ -32,7 +32,7 @@ test('member can sign in on mobile and see borrowing status', async ({
 });
 
 async function mockMemberSelfService(page: Page) {
-  await page.route('http://localhost:3000/auth/member-login', (route) =>
+  await page.route('http://*:3000/auth/login', (route) =>
     route.fulfill({
       json: {
         accessToken: 'member-token',
@@ -49,7 +49,7 @@ async function mockMemberSelfService(page: Page) {
       },
     }),
   );
-  await page.route('http://localhost:3000/members/me', (route) =>
+  await page.route('http://*:3000/members/me', (route) =>
     route.fulfill({
       json: {
         id: 'member-1',
@@ -64,7 +64,7 @@ async function mockMemberSelfService(page: Page) {
       },
     }),
   );
-  await page.route('http://localhost:3000/members/me/policy-status', (route) =>
+  await page.route('http://*:3000/members/me/policy-status', (route) =>
     route.fulfill({
       json: {
         memberId: 'member-1',
@@ -79,7 +79,7 @@ async function mockMemberSelfService(page: Page) {
       },
     }),
   );
-  await page.route('http://localhost:3000/members/me/borrowings**', (route) =>
+  await page.route('http://*:3000/members/me/borrowings**', (route) =>
     route.fulfill({
       json: route.request().url().includes('currentOnly=true')
         ? [

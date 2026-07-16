@@ -1,7 +1,9 @@
-import { randomUUID } from 'node:crypto';
+import { createHmac, randomUUID } from 'node:crypto';
 import { Injectable, Optional, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { PasswordHasherService } from './password-hasher.service';
 import {
   MemberAuthStatus,
@@ -28,6 +30,24 @@ import {
   SecurityActivityOutcome,
 } from './schemas/security-activity-event.schema';
 import { AuthPermission } from '../common/enums/auth-permission.enum';
+import {
+  SharedLoginDto,
+  SharedLoginResponseDto,
+  SharedMemberLoginResponseDto,
+  SharedStaffLoginResponseDto,
+} from './dto/shared-login.dto';
+import {
+  AuthIdentifierDocument,
+  AuthIdentifierModelName,
+  AuthIdentifierStatus,
+  AuthIdentifierSubjectType,
+} from './schemas/auth-identifier.schema';
+import {
+  AuthIdentifierOperationDocument,
+  AuthIdentifierOperationModelName,
+  AuthIdentifierOperationStatus,
+} from './schemas/auth-identifier-operation.schema';
+import { AuthIdentifierRepairKeyPolicyService } from './auth-identifier-repair-key-policy.service';
 
 export const refreshCookieName = 'book_library_refresh';
 
@@ -43,6 +63,12 @@ export interface MemberAuthSessionResult {
   refreshExpiresAt: Date;
 }
 
+export interface SharedAuthSessionResult {
+  response: SharedLoginResponseDto;
+  refreshToken: string;
+  refreshExpiresAt: Date;
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -54,7 +80,77 @@ export class AuthService {
     @Optional() private readonly tokenSessionService?: TokenSessionService,
     @Optional()
     private readonly securityActivityService?: SecurityActivityService,
+    @Optional()
+    @InjectModel(AuthIdentifierModelName)
+    private readonly authIdentifierModel?: Model<AuthIdentifierDocument>,
+    @Optional()
+    @InjectModel(AuthIdentifierOperationModelName)
+    private readonly authIdentifierOperationModel?: Model<AuthIdentifierOperationDocument>,
+    @Optional()
+    private readonly identifierKeyPolicy?: AuthIdentifierRepairKeyPolicyService,
   ) {}
+
+  async createSharedSession(
+    dto: SharedLoginDto,
+  ): Promise<SharedAuthSessionResult> {
+    const identifier = this.normalizeSharedIdentifier(dto.identifier);
+    const password = typeof dto.password === 'string' ? dto.password : '';
+    const reservation = await this.resolveSharedIdentifier(identifier);
+
+    if (!reservation) {
+      await this.denySharedSignIn(identifier, 'unresolved-identifier');
+    }
+
+    await this.assertActivationGateCompleted(reservation, identifier);
+
+    if (reservation.subjectType === AuthIdentifierSubjectType.Staff) {
+      const staffAuth = await this.authenticateReservedStaff(
+        identifier,
+        password,
+        reservation.subjectId,
+      );
+      const response = await this.buildStaffLoginResponse(staffAuth);
+      const refreshSession = await this.createRefreshToken({
+        subjectType: AuthSubjectType.Staff,
+        subjectId: staffAuth.userId,
+        scopes: staffAuth.permissions,
+        authVersion: staffAuth.authVersion,
+      });
+
+      await this.recordSecurityActivity({
+        eventType: SecurityActivityEventType.SignInSuccess,
+        actorType: SecurityActivityActorType.Staff,
+        actorId: staffAuth.userId,
+        subjectType: 'staff',
+        subjectId: staffAuth.userId,
+        outcome: SecurityActivityOutcome.Success,
+      });
+      return { response, ...refreshSession };
+    }
+
+    const memberAuth = await this.authenticateReservedMember(
+      identifier,
+      password,
+      reservation.subjectId,
+    );
+    const response = await this.buildMemberLoginResponse(memberAuth);
+    const refreshSession = await this.createRefreshToken({
+      subjectType: AuthSubjectType.Member,
+      subjectId: memberAuth.memberId,
+      scopes: memberAuth.permissions,
+      authVersion: memberAuth.authVersion,
+    });
+
+    await this.recordSecurityActivity({
+      eventType: SecurityActivityEventType.SignInSuccess,
+      actorType: SecurityActivityActorType.Member,
+      actorId: memberAuth.memberId,
+      subjectType: 'member',
+      subjectId: memberAuth.memberId,
+      outcome: SecurityActivityOutcome.Success,
+    });
+    return { response, ...refreshSession };
+  }
 
   async login(dto: LoginDto): Promise<LoginResponseDto> {
     const staffAuth = await this.authenticateStaff(dto);
@@ -326,7 +422,7 @@ export class AuthService {
     permissions: AuthPermission[];
     scope: string;
     authVersion: number;
-  }): Promise<LoginResponseDto> {
+  }): Promise<SharedStaffLoginResponseDto> {
     const user = staffAuth.user;
 
     if (!user) {
@@ -349,6 +445,7 @@ export class AuthService {
       expiresIn: this.getAccessTokenTtlSeconds(),
       scope: staffAuth.scope,
       permissions: staffAuth.permissions,
+      roleArea: 'staff',
       user: {
         id: staffAuth.userId,
         email: user.email,
@@ -401,7 +498,7 @@ export class AuthService {
     memberId: string;
     permissions: AuthPermission[];
     authVersion: number;
-  }): Promise<MemberLoginResponseDto> {
+  }): Promise<SharedMemberLoginResponseDto> {
     const member = memberAuth.member;
 
     if (!member) {
@@ -428,6 +525,7 @@ export class AuthService {
       expiresIn: this.getAccessTokenTtlSeconds(),
       scope,
       permissions: memberAuth.permissions,
+      roleArea: 'member',
       member: {
         id: memberAuth.memberId,
         memberNumber: member.memberNumber,
@@ -472,6 +570,176 @@ export class AuthService {
     }
 
     return this.tokenSessionService;
+  }
+
+  private normalizeSharedIdentifier(value: unknown): string {
+    if (typeof value !== 'string') {
+      return '';
+    }
+    return value.trim().toLowerCase();
+  }
+
+  private async resolveSharedIdentifier(
+    normalizedIdentifier: string,
+  ): Promise<AuthIdentifierDocument | null> {
+    if (!normalizedIdentifier || !this.authIdentifierModel) {
+      return null;
+    }
+
+    const reservation = await this.authIdentifierModel
+      .findOne({ normalizedIdentifier })
+      .exec();
+    if (
+      !reservation ||
+      reservation.status !== AuthIdentifierStatus.Active ||
+      !reservation.subjectType ||
+      !reservation.subjectId
+    ) {
+      const reason =
+        reservation?.status === AuthIdentifierStatus.Conflict
+          ? 'legacy-ambiguous-identifier'
+          : 'unresolved-identifier';
+      await this.denySharedSignIn(normalizedIdentifier, reason);
+    }
+
+    return reservation;
+  }
+
+  private async assertActivationGateCompleted(
+    reservation: AuthIdentifierDocument,
+    normalizedIdentifier: string,
+  ): Promise<void> {
+    if (!reservation.activationGateOperationId) {
+      return;
+    }
+
+    const operation = await this.authIdentifierOperationModel
+      ?.findOne({ operationId: reservation.activationGateOperationId })
+      .select({ status: 1 })
+      .exec();
+    if (operation?.status !== AuthIdentifierOperationStatus.Completed) {
+      await this.denySharedSignIn(
+        normalizedIdentifier,
+        'activation-gate-incomplete',
+      );
+    }
+  }
+
+  private async authenticateReservedStaff(
+    normalizedIdentifier: string,
+    password: string,
+    reservedSubjectId: string,
+  ) {
+    const user =
+      await this.staffUsersService.findByEmailWithPassword(
+        normalizedIdentifier,
+      );
+    const matchesReservation =
+      user && getStaffUserId(user) === reservedSubjectId;
+    if (
+      !matchesReservation ||
+      user.status !== StaffUserStatus.Active ||
+      !(await this.passwordHasher.verify(user.passwordHash, password))
+    ) {
+      await this.denySharedSignIn(normalizedIdentifier, 'invalid-credentials', {
+        subjectType: 'staff',
+        subjectId: reservedSubjectId,
+      });
+    }
+
+    const userId = getStaffUserId(user);
+    await this.staffUsersService.touchLastLogin(userId);
+    const permissions = permissionsForStaffRoles(user.roles);
+    return {
+      user,
+      userId,
+      permissions,
+      scope: permissions.join(' '),
+      authVersion: user.authVersion ?? 0,
+    };
+  }
+
+  private async authenticateReservedMember(
+    normalizedIdentifier: string,
+    password: string,
+    reservedSubjectId: string,
+  ) {
+    const member =
+      await this.membersService?.findByLoginIdentifierWithPassword(
+        normalizedIdentifier,
+      );
+    const matchesReservation =
+      member && getMemberId(member) === reservedSubjectId;
+    if (
+      !matchesReservation ||
+      member.status !== MemberStatus.Active ||
+      member.authStatus !== MemberAuthStatus.Active ||
+      !member.passwordHash ||
+      !(await this.passwordHasher.verify(member.passwordHash, password))
+    ) {
+      await this.denySharedSignIn(normalizedIdentifier, 'invalid-credentials', {
+        subjectType: 'member',
+        subjectId: reservedSubjectId,
+      });
+    }
+
+    const memberId = getMemberId(member);
+    await this.membersService?.touchLastLogin(memberId);
+    return {
+      member,
+      memberId,
+      permissions: [...memberRolePermissions],
+      authVersion: member.authVersion ?? 0,
+    };
+  }
+
+  private async denySharedSignIn(
+    normalizedIdentifier: string,
+    reasonCategory: string,
+    subject?: { subjectType: 'staff' | 'member'; subjectId: string },
+  ): Promise<never> {
+    const correlation = this.identifierCorrelation(normalizedIdentifier);
+    await this.recordSecurityActivity({
+      eventType: SecurityActivityEventType.SignInFailure,
+      actorType: SecurityActivityActorType.Unknown,
+      ...(subject
+        ? { subjectType: subject.subjectType, subjectId: subject.subjectId }
+        : {}),
+      outcome: SecurityActivityOutcome.Failure,
+      reasonCategory,
+      identifierCorrelationHash: correlation?.hash,
+      correlationKeyVersion: correlation?.version,
+    });
+    throw new UnauthorizedException('Invalid credentials');
+  }
+
+  private identifierCorrelation(
+    normalizedIdentifier: string,
+  ): { hash: string; version: number } | undefined {
+    if (!normalizedIdentifier || !this.identifierKeyPolicy) {
+      return undefined;
+    }
+    const version =
+      this.configService?.get<number>('auth.auditCorrelationKeyVersion') ??
+      this.configService?.get<number>(
+        'auth.auditCorrelationKeyRing.currentVersion',
+      );
+    const material = version
+      ? this.identifierKeyPolicy.getKeyMaterial(version)
+      : undefined;
+    if (!version || !material) {
+      return undefined;
+    }
+    const key = Buffer.isBuffer(material)
+      ? material
+      : Buffer.from(material, 'base64url');
+    return {
+      hash: createHmac('sha256', key)
+        .update('book-library/auth-sign-in/v1\0', 'utf8')
+        .update(normalizedIdentifier, 'utf8')
+        .digest('base64url'),
+      version,
+    };
   }
 
   private async recordSecurityActivity(

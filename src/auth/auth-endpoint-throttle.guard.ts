@@ -62,7 +62,7 @@ export class AuthEndpointThrottleGuard implements CanActivate {
 
     if (route === 'login' || route === 'member-login') {
       const normalizedIdentifier = this.normalizedIdentifier(request.body);
-      const missingCredential = this.hasMissingCredential(request.body, route);
+      const missingCredential = this.hasMissingCredential(request.body);
       const decision = await this.throttleService
         .consumeSignInAttempt({
           sourceIdentity,
@@ -113,6 +113,7 @@ export class AuthEndpointThrottleGuard implements CanActivate {
     }
 
     const value =
+      (body as { identifier?: unknown }).identifier ??
       (body as { email?: unknown }).email ??
       (body as { loginIdentifier?: unknown }).loginIdentifier;
 
@@ -124,18 +125,17 @@ export class AuthEndpointThrottleGuard implements CanActivate {
     return normalized || undefined;
   }
 
-  private hasMissingCredential(
-    body: unknown,
-    route: 'login' | 'member-login',
-  ): boolean {
+  private hasMissingCredential(body: unknown): boolean {
     if (!body || typeof body !== 'object' || Array.isArray(body)) {
       return true;
     }
 
     const payload = body as Record<string, unknown>;
-    const identifierKey = route === 'login' ? 'email' : 'loginIdentifier';
+    const identifier =
+      payload.identifier ?? payload.email ?? payload.loginIdentifier;
     return (
-      typeof payload[identifierKey] !== 'string' ||
+      typeof identifier !== 'string' ||
+      identifier.trim().length === 0 ||
       typeof payload.password !== 'string' ||
       payload.password.length === 0
     );

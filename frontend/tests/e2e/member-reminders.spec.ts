@@ -69,7 +69,9 @@ test('member sees inactive account reminder with no current borrowings', async (
 
   await expect(page.getByText('Membership inactive')).toBeVisible();
   await expect(
-    page.getByText('Ask library staff to reactivate your membership before borrowing.'),
+    page.getByText(
+      'Ask library staff to reactivate your membership before borrowing.',
+    ),
   ).toBeVisible();
   await expect(page.getByText('No current borrowed books')).toBeVisible();
 });
@@ -100,7 +102,7 @@ async function mockMemberScenario(
     borrowings: BorrowingScenario[];
   },
 ) {
-  await page.route('http://localhost:3000/auth/member-login', (route) =>
+  await page.route('http://*:3000/auth/login', (route) =>
     route.fulfill({
       json: {
         accessToken: 'member-token',
@@ -117,7 +119,7 @@ async function mockMemberScenario(
       },
     }),
   );
-  await page.route('http://localhost:3000/members/me', (route) =>
+  await page.route('http://*:3000/members/me', (route) =>
     route.fulfill({
       json: {
         id: 'member-1',
@@ -132,7 +134,7 @@ async function mockMemberScenario(
       },
     }),
   );
-  await page.route('http://localhost:3000/members/me/policy-status', (route) =>
+  await page.route('http://*:3000/members/me/policy-status', (route) =>
     route.fulfill({
       json: {
         memberId: 'member-1',
@@ -147,7 +149,7 @@ async function mockMemberScenario(
       },
     }),
   );
-  await page.route('http://localhost:3000/members/me/borrowings**', (route) =>
+  await page.route('http://*:3000/members/me/borrowings**', (route) =>
     route.fulfill({
       json: route.request().url().includes('currentOnly=true')
         ? scenario.borrowings.map((borrowing, index) => ({

@@ -36,12 +36,16 @@ test('staff borrowing screens show human-readable member and book labels', async
   await page.getByLabel('Password').fill('Password#2026');
   await page.getByRole('button', { name: /sign in/i }).click();
 
-  await expect(page.getByText('Refactoring borrowed by Olivia Overdue')).toBeVisible();
+  await expect(
+    page.getByText('Refactoring borrowed by Olivia Overdue'),
+  ).toBeVisible();
   await expect(page.getByText('M-1004')).toBeVisible();
   await expect(page.getByText(/M-1004 .* BK-1003/)).toBeVisible();
 
   await page.getByRole('link', { name: 'Borrowings' }).click();
-  await expect(page.getByRole('columnheader', { name: 'Member' })).toBeVisible();
+  await expect(
+    page.getByRole('columnheader', { name: 'Member' }),
+  ).toBeVisible();
   await expect(page.getByRole('columnheader', { name: 'Book' })).toBeVisible();
   await expect(page.getByText('Jane Reader', { exact: true })).toBeVisible();
   await expect(page.getByText('Clean Code', { exact: true })).toBeVisible();
@@ -55,7 +59,7 @@ test('staff borrowing screens show human-readable member and book labels', async
 });
 
 async function mockStaffApi(page: Page) {
-  await page.route('http://localhost:3000/auth/login', (route) =>
+  await page.route('http://*:3000/auth/login', (route) =>
     route.fulfill({
       json: {
         accessToken: 'staff-token',
@@ -69,7 +73,7 @@ async function mockStaffApi(page: Page) {
       },
     }),
   );
-  await page.route('http://localhost:3000/books**', (route) =>
+  await page.route('http://*:3000/books**', (route) =>
     route.fulfill({
       json: [
         {
@@ -85,7 +89,7 @@ async function mockStaffApi(page: Page) {
       ],
     }),
   );
-  await page.route('http://localhost:3000/members**', (route) =>
+  await page.route('http://*:3000/members**', (route) =>
     route.fulfill({
       json: [
         {
@@ -99,10 +103,10 @@ async function mockStaffApi(page: Page) {
       ],
     }),
   );
-  await page.route('http://localhost:3000/borrowings/overdue**', (route) =>
+  await page.route('http://*:3000/borrowings/overdue**', (route) =>
     route.fulfill({ json: [overdueBorrowing] }),
   );
-  await page.route('http://localhost:3000/borrowings**', (route) =>
+  await page.route('http://*:3000/borrowings**', (route) =>
     route.fulfill({ json: [activeBorrowing, overdueBorrowing] }),
   );
 }

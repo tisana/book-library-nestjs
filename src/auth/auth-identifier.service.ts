@@ -577,7 +577,6 @@ export class AuthIdentifierService {
     session?: ClientSession,
   ): Promise<IdentifierReservationDocument> {
     const options: Record<string, unknown> = {
-      new: true,
       returnDocument: 'after',
       session,
     };
@@ -836,7 +835,7 @@ export class AuthIdentifierService {
             updatedAt: new Date(),
           },
         },
-        { new: true, returnDocument: 'after', session },
+        { returnDocument: 'after', session },
       ),
     );
     if (!updated) {
@@ -887,7 +886,7 @@ export class AuthIdentifierService {
       this.operationModel.findOneAndUpdate(
         { operationId: input.operationId, status: 'finalizing' },
         { $set: terminalSet },
-        { new: true, returnDocument: 'after', session },
+        { returnDocument: 'after', session },
       ),
     );
     if (!updated) {
@@ -957,7 +956,7 @@ export class AuthIdentifierService {
       this.operationModel.findOneAndUpdate(
         { operationId, status: from },
         { $set: { status: to, updatedAt: new Date() } },
-        { new: true, returnDocument: 'after', session },
+        { returnDocument: 'after', session },
       ),
     );
     if (!updated) {

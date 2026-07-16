@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiExtraModels,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -29,8 +30,15 @@ import {
   RequestWithAuthThrottle,
 } from './auth-endpoint-throttle.guard';
 import { AuthThrottleService } from './auth-throttle.service';
+import {
+  SharedLoginDto,
+  SharedLoginResponseDto,
+  SharedMemberLoginResponseDto,
+  SharedStaffLoginResponseDto,
+} from './dto/shared-login.dto';
 
 @ApiTags('auth')
+@ApiExtraModels(SharedStaffLoginResponseDto, SharedMemberLoginResponseDto)
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -41,20 +49,37 @@ export class AuthController {
   @Post('login')
   @UseGuards(AuthBrowserOriginGuard, AuthEndpointThrottleGuard)
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Authenticate a staff user' })
+  @ApiOperation({ summary: 'Authenticate a staff, administrator, or member' })
   @ApiOkResponse({
-    description: 'JWT access token and authenticated staff profile.',
-    type: LoginResponseDto,
+    description: 'JWT access token and discriminated authenticated profile.',
+    schema: {
+      oneOf: [
+        { $ref: '#/components/schemas/SharedStaffLoginResponseDto' },
+        { $ref: '#/components/schemas/SharedMemberLoginResponseDto' },
+      ],
+    },
   })
   @ApiBadRequestResponse({ description: 'Invalid login request payload.' })
-  @ApiUnauthorizedResponse({ description: 'Invalid staff credentials.' })
+  @ApiUnauthorizedResponse({ description: 'Invalid credentials.' })
   async login(
+    @Req() request: RequestWithAuthThrottle,
+    @Body() dto: SharedLoginDto,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<SharedLoginResponseDto> {
+    return this.completeSharedLogin(request, response, dto);
+  }
+
+  @Post('staff-login')
+  @UseGuards(AuthBrowserOriginGuard, AuthEndpointThrottleGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Compatibility staff sign-in wrapper' })
+  async staffLogin(
     @Req() request: RequestWithAuthThrottle,
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<LoginResponseDto> {
+  ): Promise<SharedStaffLoginResponseDto> {
     const session = await this.authService
-      .createStaffSession(dto)
+      .createSharedSession({ identifier: dto.email, password: dto.password })
       .catch(async (error: unknown) => {
         await this.recordIdentifierFailure(request, response);
         throw error;
@@ -64,7 +89,7 @@ export class AuthController {
       session.refreshToken,
       session.refreshExpiresAt,
     );
-    return session.response;
+    return session.response as SharedStaffLoginResponseDto;
   }
 
   @Post('member-login')
@@ -83,9 +108,12 @@ export class AuthController {
     @Req() request: RequestWithAuthThrottle,
     @Body() dto: MemberLoginDto,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<MemberLoginResponseDto> {
+  ): Promise<SharedMemberLoginResponseDto> {
     const session = await this.authService
-      .createMemberSession(dto)
+      .createSharedSession({
+        identifier: dto.loginIdentifier,
+        password: dto.password,
+      })
       .catch(async (error: unknown) => {
         await this.recordIdentifierFailure(request, response);
         throw error;
@@ -95,7 +123,7 @@ export class AuthController {
       session.refreshToken,
       session.refreshExpiresAt,
     );
-    return session.response;
+    return session.response as SharedMemberLoginResponseDto;
   }
 
   @Post('refresh')
@@ -217,5 +245,24 @@ export class AuthController {
       .consumeSignInIdentifierFailure(normalizedIdentifier, 'invalid-password')
       .catch(() => ({ allowed: false }));
     assertAuthThrottleAllowed(decision, response);
+  }
+
+  private async completeSharedLogin(
+    request: RequestWithAuthThrottle,
+    response: Response,
+    dto: SharedLoginDto,
+  ): Promise<SharedLoginResponseDto> {
+    const session = await this.authService
+      .createSharedSession(dto)
+      .catch(async (error: unknown) => {
+        await this.recordIdentifierFailure(request, response);
+        throw error;
+      });
+    this.setRefreshCookie(
+      response,
+      session.refreshToken,
+      session.refreshExpiresAt,
+    );
+    return session.response;
   }
 }

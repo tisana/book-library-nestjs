@@ -1,12 +1,15 @@
 import { authSession } from '@/lib/auth/session';
-import { signOut } from '@/lib/auth/sign-out';
+import { signOut, signOutAll } from '@/lib/auth/sign-out';
 import { apiClient } from './client';
 import type {
   AuthTokenMetadata,
   CurrentAuthResponse,
   LoginResponse,
+  SharedLoginRequest,
+  SharedLoginResponse,
   StaffLoginRequest,
   StaffSessionUser,
+  SessionUser,
 } from './types';
 
 function tokenMetadata(response: LoginResponse): AuthTokenMetadata {
@@ -31,25 +34,50 @@ function normalizeStaffUser(response: LoginResponse<StaffSessionUser>) {
   return {
     ...user,
     roleArea: 'staff' as const,
-    permissions: user.permissions ?? response.permissions,
+    permissions: user.permissions ?? response.permissions ?? ['catalog:read'],
   };
 }
 
-export async function staffLogin(input: StaffLoginRequest) {
-  const response = await apiClient.post<LoginResponse<StaffSessionUser>>(
+function normalizeSharedUser(response: SharedLoginResponse): SessionUser {
+  if (
+    response.roleArea === 'member' ||
+    ('member' in response && response.member)
+  ) {
+    const member = response.member;
+    if (!member) {
+      throw new Error('Member login did not return a member session.');
+    }
+    return {
+      ...member,
+      roleArea: 'member',
+      permissions: member.permissions ??
+        response.permissions ?? ['member:self:read'],
+    };
+  }
+
+  return normalizeStaffUser(response);
+}
+
+export async function login(input: SharedLoginRequest) {
+  const response = await apiClient.post<SharedLoginResponse>(
     '/auth/login',
     input,
     { auth: false },
   );
-  const staffUser = normalizeStaffUser(response);
+  const user = normalizeSharedUser(response);
+  authSession.setSession(response.accessToken, user, tokenMetadata(response));
+  return user;
+}
 
-  authSession.setSession(
-    response.accessToken,
-    staffUser,
-    tokenMetadata(response),
-  );
-
-  return staffUser;
+export async function staffLogin(input: StaffLoginRequest) {
+  const user = await login({
+    identifier: input.email,
+    password: input.password,
+  });
+  if (user.roleArea !== 'staff') {
+    throw new Error('Staff login did not return a staff session.');
+  }
+  return user;
 }
 
 export async function refreshStaffSession() {
@@ -96,9 +124,5 @@ export function staffLogout() {
 }
 
 export async function staffLogoutAll() {
-  try {
-    await apiClient.post('/auth/logout-all', undefined);
-  } finally {
-    authSession.clear('signed-out');
-  }
+  return signOutAll();
 }

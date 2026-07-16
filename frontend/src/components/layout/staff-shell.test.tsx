@@ -22,7 +22,7 @@ describe('StaffShell', () => {
     navigateMock.mockClear();
   });
 
-  it('renders accessible sign-out controls that route to staff login', async () => {
+  it('renders accessible sign-out controls that route to shared login', async () => {
     const user = userEvent.setup();
     server.use(
       http.post(`${apiBaseUrl}/auth/logout`, () => HttpResponse.json({})),
@@ -42,7 +42,7 @@ describe('StaffShell', () => {
     await user.click(signOutButtons[0]);
 
     await waitFor(() =>
-      expect(navigateMock).toHaveBeenCalledWith({ to: '/staff/login' }),
+      expect(navigateMock).toHaveBeenCalledWith({ to: '/login' }),
     );
   });
 });

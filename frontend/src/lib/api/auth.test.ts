@@ -23,6 +23,7 @@ const staffAuthResponse = {
   expiresIn: 900,
   scope: 'catalog:read staff-users:read',
   permissions: ['catalog:read', 'staff-users:read'] satisfies AuthPermission[],
+  roleArea: 'staff' as const,
   user: {
     id: 'staff-1',
     email: 'admin@example.com',
@@ -41,6 +42,7 @@ const memberAuthResponse = {
   expiresIn: 900,
   scope: 'member:self:read',
   permissions: ['member:self:read'] satisfies AuthPermission[],
+  roleArea: 'member' as const,
   member: {
     id: 'member-1',
     memberNumber: 'M-1001',
@@ -83,7 +85,7 @@ describe('auth API client', () => {
 
   it('stores member login token metadata and member permissions in the memory session', async () => {
     server.use(
-      http.post(`${apiBaseUrl}/auth/member-login`, () =>
+      http.post(`${apiBaseUrl}/auth/login`, () =>
         HttpResponse.json(memberAuthResponse),
       ),
     );
@@ -103,6 +105,21 @@ describe('auth API client', () => {
         permissions: ['member:self:read'],
       },
     });
+  });
+
+  it('returns one generic API error for a failed unified login', async () => {
+    server.use(
+      http.post(`${apiBaseUrl}/auth/login`, () =>
+        HttpResponse.json(
+          { statusCode: 401, message: 'Invalid credentials' },
+          { status: 401 },
+        ),
+      ),
+    );
+
+    await expect(
+      staffLogin({ email: 'unknown@example.com', password: 'wrong-password' }),
+    ).rejects.toMatchObject({ status: 401, message: 'Invalid credentials' });
   });
 
   it('refreshes staff and member sessions from the shared refresh endpoint', async () => {
@@ -187,7 +204,7 @@ describe('auth API client', () => {
       ),
     );
 
-    await expect(staffLogout()).resolves.toBe('/staff/login');
+    await expect(staffLogout()).resolves.toBe('/login');
     expect(authSession.getSnapshot().accessToken).toBeUndefined();
 
     authSession.setSession('new-token', {

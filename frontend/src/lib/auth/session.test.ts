@@ -22,6 +22,40 @@ describe('auth session store', () => {
   beforeEach(() => {
     authSession.clear('signed-out');
     localStorage.clear();
+    sessionStorage.clear();
+  });
+
+  it('never writes access or refresh credentials to browser persistence or logs', () => {
+    const store = createAuthSessionStore();
+    const setItem = vi.spyOn(Storage.prototype, 'setItem');
+    const indexedDbOpen = vi.fn();
+    vi.stubGlobal('indexedDB', { open: indexedDbOpen });
+    const consoleLog = vi
+      .spyOn(console, 'log')
+      .mockImplementation(() => undefined);
+    const consoleError = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+
+    store.setSession('private-access-token', staffUser, {
+      tokenType: 'Bearer',
+      expiresIn: 900,
+      permissions: ['catalog:read'],
+    });
+
+    expect(localStorage.length).toBe(0);
+    expect(sessionStorage.length).toBe(0);
+    expect(setItem).not.toHaveBeenCalled();
+    expect(indexedDbOpen).not.toHaveBeenCalled();
+    expect(JSON.stringify(queryClient.getQueryCache().getAll())).not.toContain(
+      'private-access-token',
+    );
+    expect(consoleLog).not.toHaveBeenCalled();
+    expect(consoleError).not.toHaveBeenCalled();
+
+    consoleLog.mockRestore();
+    consoleError.mockRestore();
+    vi.unstubAllGlobals();
   });
 
   it('keeps access tokens in memory only', () => {
@@ -64,7 +98,7 @@ describe('auth session store', () => {
     expect(authSession.getSnapshot().accessToken).toBe('refreshed-token');
     expect(cachedClient.getQueryData(['staff', 'books'])).toBeDefined();
 
-    await expect(signOut('staff')).resolves.toBe('/staff/login');
+    await expect(signOut('staff')).resolves.toBe('/login');
     expect(authSession.getSnapshot().accessToken).toBeUndefined();
     expect(cachedClient.getQueryData(['staff', 'books'])).toBeUndefined();
   });
@@ -79,6 +113,7 @@ describe('auth session store', () => {
       id: 'member-1',
       memberNumber: 'M-1001',
       displayName: 'Member One',
+      membershipStatus: 'active',
       roleArea: 'member',
       permissions: ['member:self:read'],
     });
@@ -87,7 +122,7 @@ describe('auth session store', () => {
       http.post(`${apiBaseUrl}/auth/logout`, () => HttpResponse.error()),
     );
 
-    await expect(signOut('member')).resolves.toBe('/member/login');
+    await expect(signOut('member')).resolves.toBe('/login');
     expect(authSession.getSnapshot().accessToken).toBeUndefined();
     expect(cachedClient.getQueryData(['member', 'borrowings'])).toBeUndefined();
   });
