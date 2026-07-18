@@ -199,15 +199,19 @@ describe('SecurityActivityService', () => {
       eventType: SecurityActivityEventType.AuthorizationDenied,
       actorType: SecurityActivityActorType.Member,
       outcome: SecurityActivityOutcome.Denied,
+      operationId: 'operation-1',
       page: 2,
       limit: 50,
     });
 
-    expect(find).toHaveBeenCalledWith({
-      eventType: SecurityActivityEventType.AuthorizationDenied,
-      actorType: SecurityActivityActorType.Member,
-      outcome: SecurityActivityOutcome.Denied,
-    });
+    const expectedFilter = {
+      eventType: { $eq: SecurityActivityEventType.AuthorizationDenied },
+      actorType: { $eq: SecurityActivityActorType.Member },
+      outcome: { $eq: SecurityActivityOutcome.Denied },
+      operationId: { $eq: 'operation-1' },
+    };
+    expect(find).toHaveBeenCalledWith(expectedFilter);
+    expect(countDocuments).toHaveBeenCalledWith(expectedFilter);
     expect(sort).toHaveBeenCalledWith({ createdAt: -1, _id: -1 });
     expect(skip).toHaveBeenCalledWith(50);
     expect(limit).toHaveBeenCalledWith(50);

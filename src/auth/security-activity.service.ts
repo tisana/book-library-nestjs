@@ -68,6 +68,14 @@ export interface RecordIdentifierRepairResumedInput {
   resumingActor: SecurityActivityActorReference;
 }
 
+interface SecurityActivityListFilter {
+  eventType?: { $eq: SecurityActivityEventType };
+  actorType?: { $eq: SecurityActivityActorType };
+  outcome?: { $eq: SecurityActivityOutcome };
+  operationId?: { $eq: string };
+  createdAt?: { $gte?: Date; $lte?: Date };
+}
+
 const sensitiveKeyPattern =
   /password|token|secret|authorization|cookie|credential|identifier|email|login/i;
 
@@ -141,11 +149,11 @@ export class SecurityActivityService {
   async list(
     query: SecurityActivityQueryDto,
   ): Promise<PaginatedResult<SecurityActivityEventViewDto>> {
-    const filter: Record<string, unknown> = {};
-    if (query.eventType) filter.eventType = query.eventType;
-    if (query.actorType) filter.actorType = query.actorType;
-    if (query.outcome) filter.outcome = query.outcome;
-    if (query.operationId) filter.operationId = query.operationId;
+    const filter: SecurityActivityListFilter = {};
+    if (query.eventType) filter.eventType = { $eq: query.eventType };
+    if (query.actorType) filter.actorType = { $eq: query.actorType };
+    if (query.outcome) filter.outcome = { $eq: query.outcome };
+    if (query.operationId) filter.operationId = { $eq: query.operationId };
     if (query.from || query.to) {
       filter.createdAt = {
         ...(query.from ? { $gte: new Date(query.from) } : {}),
