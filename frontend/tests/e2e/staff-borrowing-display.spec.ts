@@ -69,6 +69,13 @@ async function mockStaffApi(page: Page) {
           displayName: 'Staff User',
           roles: ['staff'],
           roleArea: 'staff',
+          permissions: [
+            'catalog:read',
+            'members:read',
+            'members:manage',
+            'borrowings:read',
+            'borrowings:manage',
+          ],
         },
       },
     }),

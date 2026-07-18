@@ -5,6 +5,8 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Param,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -30,6 +32,18 @@ import {
   RequestWithAuthThrottle,
 } from './auth-endpoint-throttle.guard';
 import { AuthThrottleService } from './auth-throttle.service';
+import { PermissionsGuard } from './permissions.guard';
+import { PermissionsService, RolePermissionReview } from './permissions.service';
+import { RequirePermissions } from './permissions.decorator';
+import { AuthPermission } from '../common/enums/auth-permission.enum';
+import { AuthIdentifierService } from './auth-identifier.service';
+import {
+  AuthIdentifierConflictQueryDto,
+  AuthIdentifierConflictViewDto,
+  AuthIdentifierOperationStatusDto,
+  AuthIdentifierResolutionResultDto,
+  ResolveAuthIdentifierConflictDto,
+} from './dto/auth-identifier.dto';
 import {
   SharedLoginDto,
   SharedLoginResponseDto,
@@ -44,6 +58,8 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly authThrottleService: AuthThrottleService,
+    private readonly permissionsService: PermissionsService,
+    private readonly authIdentifierService: AuthIdentifierService,
   ) {}
 
   @Post('login')
@@ -202,6 +218,55 @@ export class AuthController {
         permissions: user.permissions,
       },
     };
+  }
+
+  @Get('roles')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions(AuthPermission.RolesRead)
+  @ApiOperation({ summary: 'Review built-in staff roles and permissions' })
+  roleReview(): RolePermissionReview[] {
+    return this.permissionsService.reviewStaffRoles();
+  }
+
+  @Get('identifier-conflicts')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions(AuthPermission.AuthIdentifiersRead)
+  listIdentifierConflicts(
+    @Query() query: AuthIdentifierConflictQueryDto,
+  ): Promise<AuthIdentifierConflictViewDto[]> {
+    return this.authIdentifierService.listConflicts(query);
+  }
+
+  @Post('identifier-conflicts/:id/resolve')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions(AuthPermission.AuthIdentifiersManage)
+  async resolveIdentifierConflict(
+    @Param('id') id: string,
+    @Body() dto: ResolveAuthIdentifierConflictDto,
+    @CurrentUser() user: { id: string },
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<AuthIdentifierResolutionResultDto> {
+    const result = await this.authIdentifierService.resolveConflict(id, dto, {
+      subjectType: 'staff',
+      subjectId: user.id,
+    });
+    response.status(result.httpStatus);
+    return {
+      operationId: result.operationId,
+      status: result.status,
+      replayed: result.replayed,
+      outcome: result.result.outcome,
+      reasonCategory: result.result.reasonCategory,
+    };
+  }
+
+  @Get('identifier-operations/:operationId')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions(AuthPermission.AuthIdentifiersRead)
+  identifierOperationStatus(
+    @Param('operationId') operationId: string,
+  ): Promise<AuthIdentifierOperationStatusDto> {
+    return this.authIdentifierService.getOperationStatus(operationId);
   }
 
   private setRefreshCookie(

@@ -13,6 +13,13 @@ test('staff member detail preserves returned and inactive borrowing history', as
           displayName: 'Staff User',
           roles: ['staff'],
           roleArea: 'staff',
+          permissions: [
+            'catalog:read',
+            'members:read',
+            'members:manage',
+            'borrowings:read',
+            'borrowings:manage',
+          ],
         },
       },
     }),

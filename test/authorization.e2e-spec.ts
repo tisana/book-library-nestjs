@@ -66,6 +66,8 @@ describe('Authorization boundaries (e2e)', () => {
         AuthPermission.BorrowingsManage,
         AuthPermission.StaffUsersRead,
         AuthPermission.StaffUsersManage,
+        AuthPermission.RolesRead,
+        AuthPermission.RolesManage,
       ],
     },
   };

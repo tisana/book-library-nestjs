@@ -7,25 +7,37 @@ import {
   Library,
   LogOut,
   ShieldAlert,
+  Fingerprint,
   Ticket,
   Users,
+  UserRoundCog,
 } from 'lucide-react';
 import { staffLogout } from '@/lib/api/auth';
 import { cn } from '@/lib/utils';
+import { useAuthSession } from '@/lib/auth/session';
+import type { AuthPermission } from '@/lib/api/types';
 
 const staffNavItems = [
-  { to: '/staff', label: 'Dashboard', icon: Library },
-  { to: '/staff/books', label: 'Books', icon: BookOpen },
-  { to: '/staff/catalog', label: 'Catalog', icon: Layers },
-  { to: '/staff/membership-types', label: 'Membership', icon: Ticket },
-  { to: '/staff/members', label: 'Members', icon: Users },
-  { to: '/staff/borrowings', label: 'Borrowings', icon: ClipboardList },
-  { to: '/staff/borrowings/new', label: 'New borrowing', icon: ClipboardList },
-  { to: '/staff/borrowings/overdue', label: 'Overdue', icon: ShieldAlert },
+  { to: '/staff', label: 'Dashboard', icon: Library, permissions: [] },
+  { to: '/staff/books', label: 'Books', icon: BookOpen, permissions: ['catalog:read'] },
+  { to: '/staff/catalog', label: 'Catalog', icon: Layers, permissions: ['catalog:read'] },
+  { to: '/staff/membership-types', label: 'Membership', icon: Ticket, permissions: ['membership-types:read'] },
+  { to: '/staff/members', label: 'Members', icon: Users, permissions: ['members:read'] },
+  { to: '/staff/borrowings', label: 'Borrowings', icon: ClipboardList, permissions: ['borrowings:read'] },
+  { to: '/staff/borrowings/new', label: 'New borrowing', icon: ClipboardList, permissions: ['borrowings:manage'] },
+  { to: '/staff/borrowings/overdue', label: 'Overdue', icon: ShieldAlert, permissions: ['borrowings:read'] },
+  { to: '/staff/users', label: 'Staff access', icon: UserRoundCog, permissions: ['staff-users:read', 'roles:read'] },
+  { to: '/staff/identifier-conflicts', label: 'Identifier conflicts', icon: Fingerprint, permissions: ['auth-identifiers:read'] },
 ] as const;
 
 export function StaffShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
+  const session = useAuthSession();
+  const visibleNavItems = staffNavItems.filter((item) =>
+    item.permissions.every((permission) =>
+      session.permissions?.includes(permission as AuthPermission),
+    ),
+  );
 
   async function handleSignOut() {
     const to = await staffLogout();
@@ -45,7 +57,7 @@ export function StaffShell({ children }: { children: ReactNode }) {
           className="flex flex-1 flex-col gap-1 p-3"
           aria-label="Staff navigation"
         >
-          {staffNavItems.map(({ to, label, icon: Icon }) => (
+          {visibleNavItems.map(({ to, label, icon: Icon }) => (
             <Link
               activeProps={{
                 className: 'bg-cyan-50 text-cyan-800',
@@ -74,7 +86,7 @@ export function StaffShell({ children }: { children: ReactNode }) {
       </aside>
       <div className="lg:pl-64">
         <div className="sticky top-0 z-10 flex gap-2 overflow-x-auto border-b bg-white px-3 py-2 lg:hidden">
-          {staffNavItems.map(({ to, label, icon: Icon }) => (
+          {visibleNavItems.map(({ to, label, icon: Icon }) => (
             <Link
               activeProps={{
                 className: 'bg-cyan-50 text-cyan-800',

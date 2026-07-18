@@ -45,3 +45,25 @@ export async function invalidateBorrowingMutation(borrowing: BorrowingView) {
     queryClient.invalidateQueries({ queryKey: ['member'] }),
   ]);
 }
+
+export async function invalidateStaffUserMutation() {
+  await Promise.all([
+    queryClient.invalidateQueries({ queryKey: ['staff', 'staff-users'] }),
+    queryClient.invalidateQueries({ queryKey: queryKeys.staff.roleReview }),
+  ]);
+}
+
+export async function invalidateIdentifierConflictMutation(
+  operationId?: string,
+) {
+  await Promise.all([
+    queryClient.invalidateQueries({
+      queryKey: ['staff', 'identifier-conflicts'],
+    }),
+    operationId
+      ? queryClient.invalidateQueries({
+          queryKey: queryKeys.staff.identifierOperation(operationId),
+        })
+      : Promise.resolve(),
+  ]);
+}

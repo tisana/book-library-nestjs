@@ -1,7 +1,22 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PasswordHasherService } from '../auth/password-hasher.service';
-import { RolesGuard } from '../auth/roles.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { PermissionsGuard } from '../auth/permissions.guard';
+import { PermissionsService } from '../auth/permissions.service';
+import { SecurityActivityService } from '../auth/security-activity.service';
+import {
+  AuthIdentifierModelName,
+  AuthIdentifierSchema,
+} from '../auth/schemas/auth-identifier.schema';
+import {
+  RefreshTokenFamilyModelName,
+  RefreshTokenFamilySchema,
+} from '../auth/schemas/refresh-token-family.schema';
+import {
+  SecurityActivityEventModelName,
+  SecurityActivityEventSchema,
+} from '../auth/schemas/security-activity-event.schema';
 import {
   StaffUserModelName,
   StaffUserSchema,
@@ -13,10 +28,26 @@ import { StaffUsersService } from './staff-users.service';
   imports: [
     MongooseModule.forFeature([
       { name: StaffUserModelName, schema: StaffUserSchema },
+      { name: AuthIdentifierModelName, schema: AuthIdentifierSchema },
+      {
+        name: RefreshTokenFamilyModelName,
+        schema: RefreshTokenFamilySchema,
+      },
+      {
+        name: SecurityActivityEventModelName,
+        schema: SecurityActivityEventSchema,
+      },
     ]),
   ],
   controllers: [StaffUsersController],
-  providers: [StaffUsersService, PasswordHasherService, RolesGuard],
+  providers: [
+    StaffUsersService,
+    PasswordHasherService,
+    JwtAuthGuard,
+    PermissionsGuard,
+    PermissionsService,
+    SecurityActivityService,
+  ],
   exports: [StaffUsersService],
 })
 export class StaffUsersModule {}

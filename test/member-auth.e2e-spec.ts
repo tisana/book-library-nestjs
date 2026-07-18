@@ -10,6 +10,7 @@ import * as request from 'supertest';
 import { AuthController } from '../src/auth/auth.controller';
 import { AuthBrowserOriginGuard } from '../src/auth/auth-browser-origin.guard';
 import { AuthEndpointThrottleGuard } from '../src/auth/auth-endpoint-throttle.guard';
+import { AuthIdentifierService } from '../src/auth/auth-identifier.service';
 import { AuthService } from '../src/auth/auth.service';
 import { AuthThrottleService } from '../src/auth/auth-throttle.service';
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
@@ -145,6 +146,8 @@ describe('Member authentication endpoints (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
+        PermissionsGuard,
+        PermissionsService,
         {
           provide: AuthService,
           useValue: {
@@ -205,6 +208,14 @@ describe('Member authentication endpoints (e2e)', () => {
             consumeSignInIdentifierFailure: jest
               .fn()
               .mockResolvedValue({ allowed: true }),
+          },
+        },
+        {
+          provide: AuthIdentifierService,
+          useValue: {
+            listConflicts: jest.fn(),
+            resolveConflict: jest.fn(),
+            getOperationStatus: jest.fn(),
           },
         },
       ],

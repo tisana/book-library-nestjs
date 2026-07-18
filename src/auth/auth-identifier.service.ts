@@ -1,11 +1,12 @@
 import {
   ConflictException,
   Injectable,
+  NotFoundException,
   Optional,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ClientSession } from 'mongoose';
+import { ClientSession, Model } from 'mongoose';
 import {
   SecurityActivityActorType,
   SecurityActivityOutcome,
@@ -16,6 +17,27 @@ import {
 } from './schemas/auth-identifier.schema';
 import { AuthIdentifierOperationModelName } from './schemas/auth-identifier-operation.schema';
 import { SecurityActivityService } from './security-activity.service';
+import {
+  AuthIdentifierConflictResolutionStatus,
+  AuthIdentifierDocument,
+  AuthIdentifierStatus,
+  AuthIdentifierSubjectType as PersistedSubjectType,
+} from './schemas/auth-identifier.schema';
+import { AuthIdentifierOperationStatus as PersistedOperationStatus } from './schemas/auth-identifier-operation.schema';
+import {
+  StaffUserDocument,
+  StaffUserModelName,
+} from '../staff-users/schemas/staff-user.schema';
+import {
+  MemberDocument,
+  MemberModelName,
+} from '../members/schemas/member.schema';
+import {
+  AuthIdentifierConflictQueryDto,
+  AuthIdentifierConflictViewDto,
+  AuthIdentifierOperationStatusDto,
+  ResolveAuthIdentifierConflictDto,
+} from './dto/auth-identifier.dto';
 
 export type AuthIdentifierSubjectType = 'staff' | 'member';
 export type AuthIdentifierAction = 'retain' | 'claim' | 'replace' | 'release';
@@ -64,6 +86,8 @@ interface IdentifierOperationDocument {
   assignments: PersistedAssignment[];
   result?: AuthIdentifierOperationResult['result'];
   requestedBy?: AuthIdentifierActorReference;
+  retainedSubject?: AuthIdentifierActorReference;
+  completedAt?: Date;
   cleanupStatus?: 'not-required' | 'pending' | 'completed';
   terminalEventId?: string;
   terminalEventRecordedAt?: Date;
@@ -77,6 +101,9 @@ interface IdentifierReservationDocument {
   status: 'pending' | 'active' | 'released' | 'conflict';
   pendingOperationId?: string;
   activationGateOperationId?: string;
+  conflictingSubjects?: AuthIdentifierActorReference[];
+  conflictResolutionStatus?: AuthIdentifierConflictResolutionStatus;
+  identifierType?: 'email' | 'member-number' | 'login-identifier';
 }
 
 interface QueryLike<T> {
@@ -137,6 +164,7 @@ export interface AuthIdentifierOperationInput {
   compensateOnFailure?: boolean;
   cleanupStatus?: 'not-required' | 'pending';
   resumeId?: string;
+  retainedSubject?: AuthIdentifierActorReference;
 }
 
 export interface AuthIdentifierOperationResult {
@@ -188,6 +216,12 @@ export class AuthIdentifierService {
     private readonly operationModel: PersistenceModel<IdentifierOperationDocument>,
     private readonly securityActivityService: SecurityActivityService,
     @Optional() options: AuthIdentifierServiceOptions = {},
+    @Optional()
+    @InjectModel(StaffUserModelName)
+    private readonly staffUserModel?: Model<StaffUserDocument>,
+    @Optional()
+    @InjectModel(MemberModelName)
+    private readonly memberModel?: Model<MemberDocument>,
   ) {
     this.maxAssignments = options.maxAssignments ?? 20;
     this.operationRetentionMs =
@@ -257,6 +291,138 @@ export class AuthIdentifierService {
     return {
       subjectType: reservation.subjectType,
       subjectId: reservation.subjectId,
+    };
+  }
+
+  async listConflicts(
+    query: AuthIdentifierConflictQueryDto,
+  ): Promise<AuthIdentifierConflictViewDto[]> {
+    const model = this.identifierModel as unknown as Model<AuthIdentifierDocument>;
+    const conflicts = await model
+      .find({ status: AuthIdentifierStatus.Conflict })
+      .sort({ updatedAt: -1, _id: 1 })
+      .skip((query.page - 1) * query.limit)
+      .limit(query.limit)
+      .lean()
+      .exec();
+
+    return Promise.all(
+      conflicts.map(async (conflict) => ({
+        id: String(conflict._id),
+        normalizedIdentifier: conflict.normalizedIdentifier,
+        resolutionStatus:
+          conflict.conflictResolutionStatus ??
+          AuthIdentifierConflictResolutionStatus.ManualRepairRequired,
+        subjects: await Promise.all(
+          (conflict.conflictingSubjects ?? []).map(async (subject) => ({
+            ...subject,
+            displayLabel: await this.safeDisplayLabel(subject),
+          })),
+        ),
+      })),
+    );
+  }
+
+  async resolveConflict(
+    conflictId: string,
+    dto: ResolveAuthIdentifierConflictDto,
+    actor: AuthIdentifierActorReference,
+  ): Promise<AuthIdentifierOperationResult> {
+    const model = this.identifierModel as unknown as Model<AuthIdentifierDocument>;
+    const conflict = await model.findById(conflictId).lean().exec();
+    if (!conflict || conflict.status !== AuthIdentifierStatus.Conflict) {
+      throw new NotFoundException('Identifier conflict not found');
+    }
+    if (
+      conflict.conflictResolutionStatus !==
+      AuthIdentifierConflictResolutionStatus.Reviewable
+    ) {
+      throw new UnprocessableEntityException(
+        'Identifier conflict requires offline repair',
+      );
+    }
+
+    const subjects = conflict.conflictingSubjects ?? [];
+    this.validateConflictMapping(subjects, conflict.normalizedIdentifier, dto);
+    const retained = dto.retainedSubject;
+    const assignments: AuthIdentifierAssignmentInput[] = [
+      ...(retained
+        ? [
+            {
+              assignmentId: `${dto.operationId}:retain`,
+              subjectType: retained.subjectType,
+              subjectId: retained.subjectId,
+              action: 'retain' as const,
+              sourceReservationId: conflictId,
+            },
+          ]
+        : []),
+      ...dto.reassignments.map((item) => ({
+        assignmentId: `${dto.operationId}:${item.subjectType}:${item.subjectId}`,
+        subjectType: item.subjectType,
+        subjectId: item.subjectId,
+        action: 'replace' as const,
+        normalizedIdentifier: this.normalizeIdentifier(item.newIdentifier),
+        identifierType:
+          item.subjectType === 'staff'
+            ? ('email' as const)
+            : ('login-identifier' as const),
+        sourceReservationId: conflictId,
+      })),
+    ];
+    const finalAssignmentId = retained
+      ? undefined
+      : assignments[assignments.length - 1]?.assignmentId;
+
+    return this.execute(
+      {
+        operationId: dto.operationId,
+        operationType: 'resolve-conflict',
+        assignments,
+        requestedBy: actor,
+        retainedSubject: retained,
+        successHttpStatus: 200,
+        successReasonCategory: 'identifier-conflict-resolved',
+        failureHttpStatus: 409,
+        failureReasonCategory: 'identifier-conflict-resolution-failed',
+        compensateOnFailure: true,
+      },
+      this.conflictAggregateAdapter(
+        conflictId,
+        conflict.normalizedIdentifier,
+        finalAssignmentId,
+      ),
+    );
+  }
+
+  async getOperationStatus(
+    operationId: string,
+  ): Promise<AuthIdentifierOperationStatusDto> {
+    const operation = (await this.findOperation(
+      operationId,
+    )) as IdentifierOperationDocument | null;
+    if (!operation) throw new NotFoundException('Identifier operation not found');
+
+    const subjects = Array.from(
+      new Map(
+        operation.assignments.map((assignment) => [
+          `${assignment.subjectType}:${assignment.subjectId}`,
+          {
+            subjectType: assignment.subjectType as PersistedSubjectType,
+            subjectId: assignment.subjectId,
+          },
+        ]),
+      ).values(),
+    );
+    return {
+      operationId: operation.operationId,
+      status: operation.status as PersistedOperationStatus,
+      subjects,
+      currentStep: operation.status,
+      completedAt: operation.completedAt,
+      outcome: operation.result?.outcome,
+      reasonCategory: operation.result?.reasonCategory,
+      httpStatus: operation.result?.httpStatus,
     };
   }
 
@@ -451,6 +617,7 @@ export class AuthIdentifierService {
           status: 'pending',
           assignments: persistedAssignments,
           requestedBy: input.requestedBy,
+          retainedSubject: input.retainedSubject,
           cleanupStatus: input.cleanupStatus ?? 'not-required',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -591,12 +758,15 @@ export class AuthIdentifierService {
       }
       filter = {
         _id: assignment.sourceReservationId,
-        subjectType: assignment.subjectType,
-        subjectId: assignment.subjectId,
         $or: [
           { pendingOperationId: operationId },
           {
-            status: assignment.action === 'retain' ? 'conflict' : 'active',
+            status: {
+              $in:
+                assignment.action === 'retain'
+                  ? ['conflict']
+                  : ['active', 'conflict'],
+            },
           },
         ],
       };
@@ -608,6 +778,8 @@ export class AuthIdentifierService {
               ? AuthIdentifierPendingAction.ResolveConflict
               : AuthIdentifierPendingAction.Release,
           pendingOperationId: operationId,
+          subjectType: assignment.subjectType,
+          subjectId: assignment.subjectId,
           updatedBy: actorId,
           updatedAt: new Date(),
         },
@@ -1048,6 +1220,196 @@ export class AuthIdentifierService {
       return (query as QueryLike<unknown>).exec!();
     }
     return Promise.resolve(query);
+  }
+
+  private validateConflictMapping(
+    subjects: AuthIdentifierActorReference[],
+    originalIdentifier: string,
+    dto: ResolveAuthIdentifierConflictDto,
+  ): void {
+    const subjectKeys = new Set(
+      subjects.map((item) => `${item.subjectType}:${item.subjectId}`),
+    );
+    const retainedKey = dto.retainedSubject
+      ? `${dto.retainedSubject.subjectType}:${dto.retainedSubject.subjectId}`
+      : undefined;
+    if (retainedKey && !subjectKeys.has(retainedKey)) {
+      throw new UnprocessableEntityException('Retained subject is not a claimant');
+    }
+
+    const reassignmentKeys = dto.reassignments.map(
+      (item) => `${item.subjectType}:${item.subjectId}`,
+    );
+    if (new Set(reassignmentKeys).size !== reassignmentKeys.length) {
+      throw new UnprocessableEntityException('Each subject may be reassigned once');
+    }
+    const accounted = new Set([
+      ...(retainedKey ? [retainedKey] : []),
+      ...reassignmentKeys,
+    ]);
+    if (
+      accounted.size !== subjectKeys.size ||
+      [...accounted].some((key) => !subjectKeys.has(key))
+    ) {
+      throw new UnprocessableEntityException(
+        'Every conflicting subject must be retained or reassigned',
+      );
+    }
+
+    const replacements = dto.reassignments.map((item) =>
+      this.normalizeIdentifier(item.newIdentifier),
+    );
+    if (
+      new Set(replacements).size !== replacements.length ||
+      replacements.some((identifier) => identifier === originalIdentifier)
+    ) {
+      throw new UnprocessableEntityException(
+        'Replacement identifiers must be unique',
+      );
+    }
+  }
+
+  private conflictAggregateAdapter(
+    conflictId: string,
+    originalIdentifier: string,
+    releaseOnAssignmentId?: string,
+  ): AuthIdentifierAggregateAdapter {
+    return {
+      apply: async (assignment, { session }) => {
+        if (assignment.action !== 'retain') {
+          await this.updateAggregateIdentifier(
+            assignment,
+            assignment.normalizedIdentifier!,
+            session,
+          );
+        }
+        if (assignment.assignmentId === releaseOnAssignmentId) {
+          await this.releaseOriginalConflict(conflictId, assignment, session);
+        }
+      },
+      compensate: async (assignment, { session }) => {
+        if (assignment.action !== 'retain') {
+          await this.updateAggregateIdentifier(
+            assignment,
+            originalIdentifier,
+            session,
+          );
+        }
+        if (assignment.assignmentId === releaseOnAssignmentId) {
+          await (
+            this.identifierModel as unknown as Model<AuthIdentifierDocument>
+          ).updateOne(
+            { _id: conflictId },
+            {
+              $set: {
+                status: AuthIdentifierStatus.Conflict,
+                conflictResolutionStatus:
+                  AuthIdentifierConflictResolutionStatus.Reviewable,
+              },
+              $unset: { releasedAt: '' },
+            },
+            { session },
+          );
+        }
+      },
+      isApplied: async (assignment, { session }) => {
+        if (assignment.action === 'retain') return false;
+        const identifier = assignment.normalizedIdentifier;
+        const model = (
+          assignment.subjectType === 'staff'
+            ? this.staffUserModel
+            : this.memberModel
+        ) as unknown as Model<Record<string, unknown>> | undefined;
+        if (!model || !identifier) return false;
+        const field =
+          assignment.subjectType === 'staff' ? 'email' : 'loginIdentifier';
+        const found = await model
+          .findOne({ _id: assignment.subjectId, [field]: identifier })
+          .session(session ?? null)
+          .lean()
+          .exec();
+        return Boolean(found);
+      },
+    };
+  }
+
+  private async updateAggregateIdentifier(
+    assignment: AuthIdentifierAssignmentInput,
+    normalizedIdentifier: string,
+    session?: ClientSession,
+  ): Promise<void> {
+    const model = (
+      assignment.subjectType === 'staff'
+        ? this.staffUserModel
+        : this.memberModel
+    ) as unknown as Model<Record<string, unknown>> | undefined;
+    if (!model) throw new NotFoundException('Identifier subject not found');
+    const field = assignment.subjectType === 'staff' ? 'email' : 'loginIdentifier';
+    const result = await model.updateOne(
+      { _id: assignment.subjectId },
+      {
+        $set: { [field]: normalizedIdentifier },
+        $inc: { authVersion: 1 },
+      },
+      { session },
+    );
+    if (!result.matchedCount) throw new NotFoundException('Identifier subject not found');
+  }
+
+  private async releaseOriginalConflict(
+    conflictId: string,
+    assignment: AuthIdentifierAssignmentInput,
+    session?: ClientSession,
+  ): Promise<void> {
+    await (
+      this.identifierModel as unknown as Model<AuthIdentifierDocument>
+    ).updateOne(
+      { _id: conflictId, status: AuthIdentifierStatus.Conflict },
+      {
+        $set: {
+          status: AuthIdentifierStatus.Released,
+          subjectType: assignment.subjectType,
+          subjectId: assignment.subjectId,
+          releasedAt: new Date(),
+        },
+        $unset: { conflictingSubjects: '', conflictResolutionStatus: '' },
+      },
+      { session },
+    );
+  }
+
+  private async safeDisplayLabel(
+    subject: AuthIdentifierActorReference,
+  ): Promise<string> {
+    try {
+      if (subject.subjectType === 'staff' && this.staffUserModel) {
+        const user = await this.staffUserModel
+          .findById(subject.subjectId)
+          .select({ displayName: 1, email: 1 })
+          .lean()
+          .exec();
+        if (user) return user.displayName || user.email;
+      }
+      if (subject.subjectType === 'member' && this.memberModel) {
+        const member = await this.memberModel
+          .findById(subject.subjectId)
+          .select({ fullName: 1, memberNumber: 1 })
+          .lean()
+          .exec();
+        if (member) return member.fullName || member.memberNumber;
+      }
+    } catch {
+      // A missing or malformed legacy subject remains reviewable by opaque id.
+    }
+    return `${subject.subjectType} ${subject.subjectId}`;
+  }
+
+  private normalizeIdentifier(value: string): string {
+    const normalized = value.trim().toLowerCase();
+    if (!normalized) {
+      throw new UnprocessableEntityException('Replacement identifier is required');
+    }
+    return normalized;
   }
 
   private isDuplicateKey(error: unknown): boolean {

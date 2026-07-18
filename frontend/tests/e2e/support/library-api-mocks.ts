@@ -2,6 +2,17 @@ import type { Page, Route } from '@playwright/test';
 
 const API_URL_PATTERN = /http:\/\/(?:localhost|127\.0\.0\.1):3000\/.*$/;
 
+export const staffPermissions = [
+  'catalog:read',
+  'catalog:manage',
+  'members:read',
+  'members:manage',
+  'membership-types:read',
+  'membership-types:manage',
+  'borrowings:read',
+  'borrowings:manage',
+];
+
 export interface MockBook {
   id: string;
   title: string;
@@ -153,8 +164,8 @@ export async function mockStaffApi(page: Page, options: StaffMockOptions = {}) {
         accessToken: 'staff-token',
         tokenType: 'Bearer',
         expiresIn: 900,
-        scope: 'catalog:read',
-        permissions: ['catalog:read'],
+        scope: staffPermissions.join(' '),
+        permissions: staffPermissions,
         roleArea: 'staff',
         user: {
           id: 'staff-1',
@@ -162,7 +173,7 @@ export async function mockStaffApi(page: Page, options: StaffMockOptions = {}) {
           displayName: 'Staff User',
           roles: ['staff'],
           roleArea: 'staff',
-          permissions: ['catalog:read'],
+          permissions: staffPermissions,
         },
       });
     }

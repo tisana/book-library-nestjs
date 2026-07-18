@@ -26,8 +26,20 @@ export interface RawAuthPayload {
   auth_version?: number;
 }
 
+export interface RolePermissionReview {
+  role: StaffRole;
+  permissions: AuthPermission[];
+}
+
 @Injectable()
 export class PermissionsService {
+  reviewStaffRoles(): RolePermissionReview[] {
+    return Object.values(StaffRole).map((role) => ({
+      role,
+      permissions: this.permissionsForStaffRoles([role]),
+    }));
+  }
+
   permissionsForStaffRoles(roles: readonly StaffRole[]): AuthPermission[] {
     return permissionsForStaffRoles(roles);
   }

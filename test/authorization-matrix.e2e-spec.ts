@@ -185,6 +185,16 @@ const protectedActions: ProtectedAction[] = [
     areaDenyToken: memberToken,
     successStatus: 201,
   },
+  {
+    method: 'patch',
+    path: '/staff-users/staff-user-id',
+    routePath: '/staff-users/:id',
+    requiredPermission: AuthPermission.StaffUsersManage,
+    allowToken: adminToken,
+    policyDenyToken: staffPolicyDenyToken,
+    areaDenyToken: memberToken,
+    successStatus: 200,
+  },
 ];
 
 const protectedControllers: Type[] = [
@@ -382,6 +392,7 @@ describe('Protected controller authorization matrix (e2e)', () => {
           useValue: {
             create: jest.fn().mockResolvedValue({ id: 'staff-user-id' }),
             findAll: jest.fn().mockResolvedValue([]),
+            update: jest.fn().mockResolvedValue({ id: 'staff-user-id' }),
           },
         },
       ],

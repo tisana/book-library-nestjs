@@ -9,10 +9,13 @@ import * as request from 'supertest';
 import { AuthBrowserOriginGuard } from '../src/auth/auth-browser-origin.guard';
 import { AuthController } from '../src/auth/auth.controller';
 import { AuthEndpointThrottleGuard } from '../src/auth/auth-endpoint-throttle.guard';
+import { AuthIdentifierService } from '../src/auth/auth-identifier.service';
 import { AuthService } from '../src/auth/auth.service';
 import { AuthSourceIdentityService } from '../src/auth/auth-source-identity.service';
 import { AuthThrottleService } from '../src/auth/auth-throttle.service';
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
+import { PermissionsGuard } from '../src/auth/permissions.guard';
+import { PermissionsService } from '../src/auth/permissions.service';
 import { TokenSessionService } from '../src/auth/token-session.service';
 
 const trustedOrigins = ['https://library.example', 'https://staff.example'];
@@ -70,8 +73,18 @@ describe('Browser session security boundary (e2e)', () => {
       providers: [
         AuthBrowserOriginGuard,
         AuthEndpointThrottleGuard,
+        PermissionsGuard,
+        PermissionsService,
         { provide: AuthService, useValue: authService },
         { provide: AuthThrottleService, useValue: throttleService },
+        {
+          provide: AuthIdentifierService,
+          useValue: {
+            listConflicts: jest.fn(),
+            resolveConflict: jest.fn(),
+            getOperationStatus: jest.fn(),
+          },
+        },
         { provide: TokenSessionService, useValue: tokenSessionService },
         { provide: AuthSourceIdentityService, useValue: sourceIdentityService },
         {

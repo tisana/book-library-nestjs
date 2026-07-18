@@ -1,6 +1,9 @@
 import { authSession } from '@/lib/auth/session';
 import { signOut, signOutAll } from '@/lib/auth/sign-out';
 import { apiClient } from './client';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { invalidateIdentifierConflictMutation } from './mutations';
+import { queryKeys } from './query-keys';
 import type {
   AuthTokenMetadata,
   CurrentAuthResponse,
@@ -10,6 +13,10 @@ import type {
   StaffLoginRequest,
   StaffSessionUser,
   SessionUser,
+  AuthIdentifierConflictView,
+  AuthIdentifierOperationView,
+  AuthIdentifierResolutionResult,
+  ResolveAuthIdentifierConflictInput,
 } from './types';
 
 function tokenMetadata(response: LoginResponse): AuthTokenMetadata {
@@ -125,4 +132,61 @@ export function staffLogout() {
 
 export async function staffLogoutAll() {
   return signOutAll();
+}
+
+export function listIdentifierConflicts() {
+  return apiClient.get<AuthIdentifierConflictView[]>(
+    '/auth/identifier-conflicts',
+  );
+}
+
+export function resolveIdentifierConflict(
+  conflictId: string,
+  input: ResolveAuthIdentifierConflictInput,
+) {
+  return apiClient.post<AuthIdentifierResolutionResult>(
+    `/auth/identifier-conflicts/${conflictId}/resolve`,
+    input,
+  );
+}
+
+export function getIdentifierOperation(operationId: string) {
+  return apiClient.get<AuthIdentifierOperationView>(
+    `/auth/identifier-operations/${operationId}`,
+  );
+}
+
+export function useIdentifierConflicts() {
+  return useQuery({
+    queryKey: queryKeys.staff.identifierConflicts(),
+    queryFn: listIdentifierConflicts,
+  });
+}
+
+export function useResolveIdentifierConflict() {
+  return useMutation({
+    mutationFn: ({
+      conflictId,
+      input,
+    }: {
+      conflictId: string;
+      input: ResolveAuthIdentifierConflictInput;
+    }) => resolveIdentifierConflict(conflictId, input),
+    onSuccess: (result) =>
+      invalidateIdentifierConflictMutation(result.operationId),
+  });
+}
+
+export function useIdentifierOperation(operationId?: string) {
+  return useQuery({
+    queryKey: queryKeys.staff.identifierOperation(operationId ?? ''),
+    queryFn: () => getIdentifierOperation(operationId!),
+    enabled: Boolean(operationId),
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      return status === 'completed' || status === 'failed-terminal'
+        ? false
+        : 1_000;
+    },
+  });
 }

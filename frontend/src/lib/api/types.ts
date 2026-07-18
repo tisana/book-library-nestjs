@@ -128,6 +128,100 @@ export interface CurrentAuthResponse {
   permissions?: AuthPermission[];
 }
 
+export type StaffUserStatus = 'active' | 'suspended' | 'inactive';
+
+export interface StaffUserView {
+  id: string;
+  email: string;
+  displayName: string;
+  roles: StaffRole[];
+  permissions: AuthPermission[];
+  status: StaffUserStatus;
+  lastLoginAt?: string;
+}
+
+export interface RolePermissionReview {
+  role: StaffRole;
+  permissions: AuthPermission[];
+}
+
+export interface CreateStaffUserInput {
+  email: string;
+  displayName: string;
+  password: string;
+  roles: StaffRole[];
+}
+
+export interface UpdateStaffUserInput {
+  email?: string;
+  displayName?: string;
+  roles?: StaffRole[];
+  status?: StaffUserStatus;
+}
+
+export type AuthIdentifierSubjectType = 'staff' | 'member';
+export type AuthIdentifierResolutionStatus =
+  | 'reviewable'
+  | 'manual-repair-required';
+export type AuthIdentifierOperationState =
+  | 'pending'
+  | 'applying'
+  | 'compensating'
+  | 'finalizing'
+  | 'failed-retryable'
+  | 'completed'
+  | 'failed-terminal';
+
+export interface AuthIdentifierSubjectView {
+  subjectType: AuthIdentifierSubjectType;
+  subjectId: string;
+  displayLabel: string;
+}
+
+export interface AuthIdentifierConflictView {
+  id: string;
+  normalizedIdentifier: string;
+  resolutionStatus: AuthIdentifierResolutionStatus;
+  subjects: AuthIdentifierSubjectView[];
+}
+
+export interface AuthIdentifierReassignmentInput {
+  subjectType: AuthIdentifierSubjectType;
+  subjectId: string;
+  newIdentifier: string;
+}
+
+export interface ResolveAuthIdentifierConflictInput {
+  operationId: string;
+  retainedSubject?: Pick<
+    AuthIdentifierSubjectView,
+    'subjectType' | 'subjectId'
+  >;
+  reassignments: AuthIdentifierReassignmentInput[];
+}
+
+export interface AuthIdentifierResolutionResult {
+  operationId: string;
+  status: 'completed' | 'failed-terminal';
+  replayed: boolean;
+  outcome: 'success' | 'failure';
+  reasonCategory: string;
+}
+
+export interface AuthIdentifierOperationView {
+  operationId: string;
+  status: AuthIdentifierOperationState;
+  subjects: Array<{
+    subjectType: AuthIdentifierSubjectType;
+    subjectId: string;
+  }>;
+  currentStep?: string;
+  completedAt?: string;
+  outcome?: string;
+  reasonCategory?: string;
+  httpStatus?: number;
+}
+
 export interface BookView {
   id: string;
   catalogIdentifier: string;

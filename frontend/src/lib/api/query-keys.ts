@@ -17,6 +17,13 @@ export const queryKeys = {
       ['staff', 'borrowing', borrowingId] as const,
     overdueBorrowings: (query?: unknown) =>
       ['staff', 'borrowings', 'overdue', query ?? {}] as const,
+    staffUsers: (query?: unknown) =>
+      ['staff', 'staff-users', query ?? {}] as const,
+    roleReview: ['staff', 'role-review'] as const,
+    identifierConflicts: (query?: unknown) =>
+      ['staff', 'identifier-conflicts', query ?? {}] as const,
+    identifierOperation: (operationId: string) =>
+      ['staff', 'identifier-operation', operationId] as const,
   },
   books: {
     all: ['books'] as const,

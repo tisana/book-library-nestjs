@@ -11,6 +11,13 @@ test('staff can create a borrowing and return it', async ({ page }) => {
           displayName: 'Staff User',
           roles: ['staff'],
           roleArea: 'staff',
+          permissions: [
+            'catalog:read',
+            'members:read',
+            'members:manage',
+            'borrowings:read',
+            'borrowings:manage',
+          ],
         },
       },
     }),

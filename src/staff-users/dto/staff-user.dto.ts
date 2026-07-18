@@ -56,6 +56,34 @@ export class StaffUserQueryDto extends PaginationQueryDto {
   role?: StaffRole;
 }
 
+export class UpdateStaffUserDto {
+  @ApiPropertyOptional({ example: 'staff@example.com' })
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @ApiPropertyOptional({ example: 'Circulation Staff' })
+  @IsOptional()
+  @IsString()
+  displayName?: string;
+
+  @ApiPropertyOptional({
+    enum: StaffRole,
+    enumName: 'StaffRole',
+    isArray: true,
+  })
+  @IsOptional()
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsEnum(StaffRole, { each: true })
+  roles?: StaffRole[];
+
+  @ApiPropertyOptional({ enum: StaffUserStatus, enumName: 'StaffUserStatus' })
+  @IsOptional()
+  @IsEnum(StaffUserStatus)
+  status?: StaffUserStatus;
+}
+
 export class StaffUserResponseDto {
   @ApiProperty({ example: '507f1f77bcf86cd799439011' })
   id: string;
@@ -87,13 +115,13 @@ export class StaffUserResponseDto {
   })
   lastLoginAt?: Date;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     enum: AuthPermission,
     enumName: 'AuthPermission',
     isArray: true,
     example: [AuthPermission.CatalogRead, AuthPermission.BorrowingsManage],
   })
-  permissions?: AuthPermission[];
+  permissions: AuthPermission[];
 }
 
 export class LoginDto {

@@ -31,11 +31,15 @@ import {
 } from '../src/auth/auth-throttle.service';
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
 import { RolesGuard } from '../src/auth/roles.guard';
+import { PermissionsGuard } from '../src/auth/permissions.guard';
+import { PermissionsService } from '../src/auth/permissions.service';
+import { AuthIdentifierService } from '../src/auth/auth-identifier.service';
 import {
   AuthThrottleBucketDocument,
   AuthThrottleBucketModelName,
   AuthThrottleBucketSchema,
 } from '../src/auth/schemas/auth-throttle-bucket.schema';
+import { AuthPermission } from '../src/common/enums/auth-permission.enum';
 import { StaffRole } from '../src/common/enums/library-status.enum';
 import { StaffUsersController } from '../src/staff-users/staff-users.controller';
 import { StaffUsersService } from '../src/staff-users/staff-users.service';
@@ -81,7 +85,14 @@ describe('Authentication and staff-users authorization (e2e)', () => {
         subjectId: 'admin-user-id',
         roleArea: 'staff',
         roles: adminTestUser.roles,
-        permissions: [],
+        permissions: [
+          AuthPermission.StaffUsersRead,
+          AuthPermission.StaffUsersManage,
+          AuthPermission.RolesRead,
+          AuthPermission.RolesManage,
+          AuthPermission.AuthIdentifiersRead,
+          AuthPermission.AuthIdentifiersManage,
+        ],
         authVersion: 0,
       },
     },
@@ -111,6 +122,8 @@ describe('Authentication and staff-users authorization (e2e)', () => {
       controllers: [AuthController, StaffUsersController],
       providers: [
         RolesGuard,
+        PermissionsGuard,
+        PermissionsService,
         {
           provide: AuthService,
           useValue: {
@@ -210,6 +223,15 @@ describe('Authentication and staff-users authorization (e2e)', () => {
               },
             ]),
             create: jest.fn(),
+            update: jest.fn(),
+          },
+        },
+        {
+          provide: AuthIdentifierService,
+          useValue: {
+            listConflicts: jest.fn().mockResolvedValue([]),
+            resolveConflict: jest.fn(),
+            getOperationStatus: jest.fn(),
           },
         },
         {
@@ -362,6 +384,25 @@ describe('Authentication and staff-users authorization (e2e)', () => {
       .get('/staff-users')
       .set('Authorization', authHeader(loginResponse.body))
       .expect(403);
+    await request(app.getHttpServer())
+      .post('/staff-users')
+      .set('Authorization', authHeader(loginResponse.body))
+      .send({
+        email: 'blocked@example.test',
+        displayName: 'Blocked Staff',
+        password: 'Temporary#2026',
+        roles: ['staff'],
+      })
+      .expect(403);
+    await request(app.getHttpServer())
+      .patch('/staff-users/staff-user-id')
+      .set('Authorization', authHeader(loginResponse.body))
+      .send({ roles: ['admin'] })
+      .expect(403);
+    await request(app.getHttpServer())
+      .get('/auth/roles')
+      .set('Authorization', authHeader(loginResponse.body))
+      .expect(403);
   });
 
   it('allows admin role access to staff-users management routes', async () => {
@@ -378,6 +419,70 @@ describe('Authentication and staff-users authorization (e2e)', () => {
       .get('/staff-users')
       .set('Authorization', authHeader(loginResponse.body))
       .expect(200);
+
+    const staffUsers = app.get(StaffUsersService) as jest.Mocked<StaffUsersService>;
+    staffUsers.create.mockResolvedValue({
+      id: 'created-staff-id',
+      email: 'created@example.test',
+      displayName: 'Created Staff',
+      roles: [StaffRole.Staff],
+      permissions: [AuthPermission.CatalogRead],
+      status: 'active',
+    } as never);
+    staffUsers.update.mockResolvedValue({
+      id: 'created-staff-id',
+      email: 'created@example.test',
+      displayName: 'Created Staff',
+      roles: [StaffRole.Admin],
+      permissions: [AuthPermission.StaffUsersManage],
+      status: 'inactive',
+    } as never);
+
+    await request(app.getHttpServer())
+      .post('/staff-users')
+      .set('Authorization', authHeader(loginResponse.body))
+      .send({
+        email: 'created@example.test',
+        displayName: 'Created Staff',
+        password: 'Temporary#2026',
+        roles: ['staff'],
+      })
+      .expect(201)
+      .expect(({ body }) => {
+        expect(body).not.toHaveProperty('password');
+        expect(body).not.toHaveProperty('passwordHash');
+      });
+    await request(app.getHttpServer())
+      .patch('/staff-users/created-staff-id')
+      .set('Authorization', authHeader(loginResponse.body))
+      .send({ roles: ['admin'], status: 'inactive' })
+      .expect(200)
+      .expect(({ body }) => {
+        expect(body).toMatchObject({ roles: ['admin'], status: 'inactive' });
+      });
+    await request(app.getHttpServer())
+      .get('/auth/roles')
+      .set('Authorization', authHeader(loginResponse.body))
+      .expect(200)
+      .expect(({ body }) => {
+        expect(body).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              role: 'admin',
+              permissions: expect.arrayContaining(['staff-users:manage']),
+            }),
+          ]),
+        );
+      });
+    expect(staffUsers.create).toHaveBeenCalledWith(
+      expect.objectContaining({ roles: ['staff'] }),
+      expect.objectContaining({ id: 'admin-user-id' }),
+    );
+    expect(staffUsers.update).toHaveBeenCalledWith(
+      'created-staff-id',
+      expect.objectContaining({ roles: ['admin'], status: 'inactive' }),
+      expect.objectContaining({ id: 'admin-user-id' }),
+    );
   });
 });
 

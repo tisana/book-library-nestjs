@@ -55,6 +55,13 @@ import { AuthThrottleService } from './auth-throttle.service';
 import { AuthSourceIdentityService } from './auth-source-identity.service';
 import { AuthIdentifierReconciliationService } from './auth-identifier-reconciliation.service';
 import { AuthEndpointThrottleGuard } from './auth-endpoint-throttle.guard';
+import {
+  StaffUserModelName,
+  StaffUserSchema,
+} from '../staff-users/schemas/staff-user.schema';
+import { MemberModelName, MemberSchema } from '../members/schemas/member.schema';
+import { AuthIdentifierRepairAuthorizationService } from './auth-identifier-repair-authorization.service';
+import { AuthIdentifierRepairService } from './auth-identifier-repair.service';
 
 @Module({
   imports: [
@@ -64,6 +71,8 @@ import { AuthEndpointThrottleGuard } from './auth-endpoint-throttle.guard';
     MembersModule,
     MongooseModule.forFeature([
       { name: AuthClientModelName, schema: AuthClientSchema },
+      { name: StaffUserModelName, schema: StaffUserSchema },
+      { name: MemberModelName, schema: MemberSchema },
       { name: RefreshTokenFamilyModelName, schema: RefreshTokenFamilySchema },
       {
         name: RefreshTokenReplayMarkerModelName,
@@ -126,6 +135,8 @@ import { AuthEndpointThrottleGuard } from './auth-endpoint-throttle.guard';
     AuthSourceIdentityService,
     AuthIdentifierReconciliationService,
     AuthEndpointThrottleGuard,
+    AuthIdentifierRepairAuthorizationService,
+    AuthIdentifierRepairService,
   ],
   exports: [
     AuthService,
@@ -145,6 +156,8 @@ import { AuthEndpointThrottleGuard } from './auth-endpoint-throttle.guard';
     AuthIdentifierReconciliationService,
     AuthEndpointThrottleGuard,
     JwtAuthGuard,
+    AuthIdentifierRepairAuthorizationService,
+    AuthIdentifierRepairService,
   ],
 })
 export class AuthModule {}
