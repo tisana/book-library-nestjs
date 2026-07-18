@@ -127,6 +127,14 @@ SecurityActivityEventSchema.index(
   { name: 'ix_security_activity_type_created' },
 );
 SecurityActivityEventSchema.index(
+  { outcome: 1, createdAt: -1 },
+  { name: 'ix_security_activity_outcome_created' },
+);
+SecurityActivityEventSchema.index(
+  { operationId: 1, createdAt: -1 },
+  { name: 'ix_security_activity_operation_created' },
+);
+SecurityActivityEventSchema.index(
   { actorType: 1, actorId: 1, createdAt: -1 },
   { name: 'ix_security_activity_actor_created' },
 );

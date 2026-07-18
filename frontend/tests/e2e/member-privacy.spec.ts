@@ -46,9 +46,13 @@ test('member browser direct staff route attempts do not load staff data', async 
     await page.goto(staffRoute);
 
     await expect(page).toHaveURL(/\/(?:unauthorized|login)$/);
-    expect(requestedUrls.slice(requestStart).some(isStaffBackOfficeApi)).toBe(
-      false,
-    );
+    const staffApiRequests = requestedUrls
+      .slice(requestStart)
+      .filter(isStaffBackOfficeApi);
+    expect({ staffRoute, staffApiRequests }).toEqual({
+      staffRoute,
+      staffApiRequests: [],
+    });
   }
 });
 
@@ -135,8 +139,11 @@ async function mockMemberSession(page: Page, requestedUrls: string[]) {
 }
 
 function isStaffBackOfficeApi(url: string) {
-  return /\/(books|book-categories|borrowings|membership-types|staff-users)(\/|\?|$)|\/members(?!\/me\b)(\/|\?|$)/.test(
-    url,
+  const pathname = new URL(url).pathname;
+  return (
+    /^\/(books|book-categories|borrowings|membership-types|staff-users)(\/|$)/.test(
+      pathname,
+    ) || /^\/members(?!\/me(?:\/|$))(\/|$)/.test(pathname)
   );
 }
 

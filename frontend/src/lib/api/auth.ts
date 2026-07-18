@@ -17,6 +17,9 @@ import type {
   AuthIdentifierOperationView,
   AuthIdentifierResolutionResult,
   ResolveAuthIdentifierConflictInput,
+  PaginatedResponse,
+  SecurityActivityEventView,
+  SecurityActivityQuery,
 } from './types';
 
 function tokenMetadata(response: LoginResponse): AuthTokenMetadata {
@@ -188,5 +191,23 @@ export function useIdentifierOperation(operationId?: string) {
         ? false
         : 1_000;
     },
+  });
+}
+
+export function listSecurityActivity(query: SecurityActivityQuery = {}) {
+  const params = new URLSearchParams();
+  Object.entries(query).forEach(([key, value]) => {
+    if (value !== undefined && value !== '') params.set(key, String(value));
+  });
+  const search = params.toString();
+  return apiClient.get<PaginatedResponse<SecurityActivityEventView>>(
+    `/auth/security-activity${search ? `?${search}` : ''}`,
+  );
+}
+
+export function useSecurityActivity(query: SecurityActivityQuery) {
+  return useQuery({
+    queryKey: queryKeys.staff.securityActivity(query),
+    queryFn: () => listSecurityActivity(query),
   });
 }

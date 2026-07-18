@@ -242,17 +242,17 @@
 
 ### Tests for User Story 4
 
-- [ ] T133 [P] [US4] Add e2e tests covering the complete required event catalog for successful/failed sign-in, sign-out, authorization denial, account deactivation, role changes, identifier conflict detection/resolution/recovery, authorized repair resume with original/resuming actors, refresh replay, and token revocation, including exact-one failed-sign-in opaque references, unresolved/ambiguous HMAC-only correlation, absence of browser-origin-denial security events, security activity filtering, admin-only access, and regular staff/member denial in test/security-activity.e2e-spec.ts
-- [ ] T134 [P] [US4] Add service tests for conflict/recovery event vocabulary, rejection of browser-origin-denial event persistence, exact-one failed-sign-in opaque references, unresolved/ambiguous versioned HMAC-SHA-256 correlation, equal-identifier correlation, key rotation, rejection of ordinary hashes/raw identifiers, operation/result context, filtering, pagination, and redaction in src/auth/security-activity.service.spec.ts
-- [ ] T135 [P] [US4] Add frontend tests for security activity table, empty state, filters, and forbidden state in frontend/src/features/auth/security-activity.test.tsx
+- [X] T133 [P] [US4] Add e2e tests covering the complete required event catalog for successful/failed sign-in, sign-out, authorization denial, account deactivation, role changes, identifier conflict detection/resolution/recovery, authorized repair resume with original/resuming actors, refresh replay, and token revocation, including exact-one failed-sign-in opaque references, unresolved/ambiguous HMAC-only correlation, absence of browser-origin-denial security events, security activity filtering, admin-only access, and regular staff/member denial in test/security-activity.e2e-spec.ts
+- [X] T134 [P] [US4] Add service tests for conflict/recovery event vocabulary, rejection of browser-origin-denial event persistence, exact-one failed-sign-in opaque references, unresolved/ambiguous versioned HMAC-SHA-256 correlation, equal-identifier correlation, key rotation, rejection of ordinary hashes/raw identifiers, operation/result context, filtering, pagination, and redaction in src/auth/security-activity.service.spec.ts
+- [X] T135 [P] [US4] Add frontend tests for security activity table, empty state, filters, and forbidden state in frontend/src/features/auth/security-activity.test.tsx
 
 ### Implementation for User Story 4
 
-- [ ] T136 [US4] Extend the foundational unique eventId/idempotent terminal-event support with conflict/recovery event vocabulary, explicit rejection of browser-origin-denial persistence, opaque failed-sign-in account references only after exact-one resolution, HMAC-only unresolved/ambiguous and identifier correlation using versioned AUTH_AUDIT_CORRELATION_SECRET keys, redacted operation context, query, pagination, filters, and DTOs in src/auth/schemas/security-activity-event.schema.ts, src/auth/security-activity.service.ts, and src/auth/dto/security-activity.dto.ts
-- [ ] T137 [US4] Add administrator-only security activity endpoints requiring security-events:read in src/auth/auth.controller.ts
-- [ ] T138 [US4] Wire authorization-denied event recording from PermissionsGuard and MemberAuthGuard in src/auth/permissions.guard.ts and src/auth/member-auth.guard.ts
-- [ ] T139 [US4] Add frontend API functions and types for security activity listing in frontend/src/lib/api/auth.ts and frontend/src/lib/api/types.ts
-- [ ] T140 [US4] Add administrator security activity route and table UI in frontend/src/features/auth/security-activity.tsx and frontend/src/app/router.tsx
+- [X] T136 [US4] Extend the foundational unique eventId/idempotent terminal-event support with conflict/recovery event vocabulary, explicit rejection of browser-origin-denial persistence, opaque failed-sign-in account references only after exact-one resolution, HMAC-only unresolved/ambiguous and identifier correlation using versioned AUTH_AUDIT_CORRELATION_SECRET keys, redacted operation context, query, pagination, filters, and DTOs in src/auth/schemas/security-activity-event.schema.ts, src/auth/security-activity.service.ts, and src/auth/dto/security-activity.dto.ts
+- [X] T137 [US4] Add administrator-only security activity endpoints requiring security-events:read in src/auth/auth.controller.ts
+- [X] T138 [US4] Wire authorization-denied event recording from PermissionsGuard and MemberAuthGuard in src/auth/permissions.guard.ts and src/auth/member-auth.guard.ts
+- [X] T139 [US4] Add frontend API functions and types for security activity listing in frontend/src/lib/api/auth.ts and frontend/src/lib/api/types.ts
+- [X] T140 [US4] Add administrator security activity route and table UI in frontend/src/features/auth/security-activity.tsx and frontend/src/app/router.tsx
 
 **Checkpoint**: All user stories are independently functional.
 

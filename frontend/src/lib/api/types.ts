@@ -222,6 +222,64 @@ export interface AuthIdentifierOperationView {
   httpStatus?: number;
 }
 
+export type SecurityActivityEventType =
+  | 'sign-in-success'
+  | 'sign-in-failure'
+  | 'authorization-denied'
+  | 'role-changed'
+  | 'account-status-changed'
+  | 'identifier-conflict-detected'
+  | 'identifier-conflict-resolved'
+  | 'identifier-reservation-recovered'
+  | 'identifier-repair-resumed'
+  | 'token-refreshed'
+  | 'refresh-replay-detected'
+  | 'token-revoked'
+  | 'sign-out';
+
+export type SecurityActivityActorType = 'staff' | 'member' | 'system' | 'unknown';
+export type SecurityActivityOutcome = 'success' | 'failure' | 'denied';
+
+export interface SecurityActivityEventView {
+  id: string;
+  eventId?: string;
+  eventType: SecurityActivityEventType;
+  actorType: SecurityActivityActorType;
+  actorId?: string;
+  targetType?: string;
+  targetId?: string;
+  clientId?: string;
+  subjectType?: string;
+  subjectId?: string;
+  outcome: SecurityActivityOutcome;
+  reasonCategory?: string;
+  identifierCorrelationHash?: string;
+  correlationKeyVersion?: number;
+  operationId?: string;
+  requestId?: string;
+  context?: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface SecurityActivityQuery {
+  eventType?: SecurityActivityEventType;
+  actorType?: SecurityActivityActorType;
+  outcome?: SecurityActivityOutcome;
+  from?: string;
+  to?: string;
+  operationId?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 export interface BookView {
   id: string;
   catalogIdentifier: string;

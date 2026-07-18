@@ -24,6 +24,8 @@ export const queryKeys = {
       ['staff', 'identifier-conflicts', query ?? {}] as const,
     identifierOperation: (operationId: string) =>
       ['staff', 'identifier-operation', operationId] as const,
+    securityActivity: (query?: unknown) =>
+      ['staff', 'security-activity', query ?? {}] as const,
   },
   books: {
     all: ['books'] as const,

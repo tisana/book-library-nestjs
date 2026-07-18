@@ -391,13 +391,13 @@ export class AuthService {
       user.status !== StaffUserStatus.Active ||
       !(await this.passwordHasher.verify(user.passwordHash, dto.password))
     ) {
-      await this.recordSecurityActivity({
-        eventType: SecurityActivityEventType.SignInFailure,
-        actorType: SecurityActivityActorType.Unknown,
-        outcome: SecurityActivityOutcome.Failure,
-        reasonCategory: 'invalid-credentials',
-        context: { email: dto.email },
-      });
+      await this.recordFailedSignIn(
+        dto.email.trim().toLowerCase(),
+        'invalid-credentials',
+        user
+          ? { subjectType: 'staff', subjectId: getStaffUserId(user) }
+          : undefined,
+      );
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -468,13 +468,13 @@ export class AuthService {
       !member.passwordHash ||
       !(await this.passwordHasher.verify(member.passwordHash, dto.password))
     ) {
-      await this.recordSecurityActivity({
-        eventType: SecurityActivityEventType.SignInFailure,
-        actorType: SecurityActivityActorType.Unknown,
-        outcome: SecurityActivityOutcome.Failure,
-        reasonCategory: 'invalid-credentials',
-        context: { loginIdentifier: dto.loginIdentifier },
-      });
+      await this.recordFailedSignIn(
+        dto.loginIdentifier.trim().toLowerCase(),
+        'invalid-credentials',
+        member
+          ? { subjectType: 'member', subjectId: getMemberId(member) }
+          : undefined,
+      );
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -698,7 +698,31 @@ export class AuthService {
     reasonCategory: string,
     subject?: { subjectType: 'staff' | 'member'; subjectId: string },
   ): Promise<never> {
-    const correlation = this.identifierCorrelation(normalizedIdentifier);
+    await this.recordFailedSignIn(
+      normalizedIdentifier,
+      reasonCategory,
+      subject,
+    );
+    throw new UnauthorizedException('Invalid credentials');
+  }
+
+  private async recordFailedSignIn(
+    normalizedIdentifier: string,
+    reasonCategory: string,
+    subject?: { subjectType: 'staff' | 'member'; subjectId: string },
+  ): Promise<void> {
+    if (this.securityActivityService?.recordFailedSignIn) {
+      await this.securityActivityService.recordFailedSignIn({
+        normalizedIdentifier,
+        reasonCategory,
+        subject,
+      });
+      return;
+    }
+
+    const correlation = subject
+      ? undefined
+      : this.identifierCorrelation(normalizedIdentifier);
     await this.recordSecurityActivity({
       eventType: SecurityActivityEventType.SignInFailure,
       actorType: SecurityActivityActorType.Unknown,
@@ -707,10 +731,13 @@ export class AuthService {
         : {}),
       outcome: SecurityActivityOutcome.Failure,
       reasonCategory,
-      identifierCorrelationHash: correlation?.hash,
-      correlationKeyVersion: correlation?.version,
+      ...(correlation
+        ? {
+            identifierCorrelationHash: correlation.hash,
+            correlationKeyVersion: correlation.version,
+          }
+        : {}),
     });
-    throw new UnauthorizedException('Invalid credentials');
   }
 
   private identifierCorrelation(

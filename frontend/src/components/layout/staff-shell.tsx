@@ -11,6 +11,7 @@ import {
   Ticket,
   Users,
   UserRoundCog,
+  Activity,
 } from 'lucide-react';
 import { staffLogout } from '@/lib/api/auth';
 import { cn } from '@/lib/utils';
@@ -28,6 +29,7 @@ const staffNavItems = [
   { to: '/staff/borrowings/overdue', label: 'Overdue', icon: ShieldAlert, permissions: ['borrowings:read'] },
   { to: '/staff/users', label: 'Staff access', icon: UserRoundCog, permissions: ['staff-users:read', 'roles:read'] },
   { to: '/staff/identifier-conflicts', label: 'Identifier conflicts', icon: Fingerprint, permissions: ['auth-identifiers:read'] },
+  { to: '/staff/security-activity', label: 'Security activity', icon: Activity, permissions: ['security-events:read'] },
 ] as const;
 
 export function StaffShell({ children }: { children: ReactNode }) {

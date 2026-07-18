@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Post,
   Param,
+  Optional,
   Query,
   Req,
   Res,
@@ -50,6 +51,8 @@ import {
   SharedMemberLoginResponseDto,
   SharedStaffLoginResponseDto,
 } from './dto/shared-login.dto';
+import { SecurityActivityQueryDto } from './dto/security-activity.dto';
+import { SecurityActivityService } from './security-activity.service';
 
 @ApiTags('auth')
 @ApiExtraModels(SharedStaffLoginResponseDto, SharedMemberLoginResponseDto)
@@ -60,6 +63,8 @@ export class AuthController {
     private readonly authThrottleService: AuthThrottleService,
     private readonly permissionsService: PermissionsService,
     private readonly authIdentifierService: AuthIdentifierService,
+    @Optional()
+    private readonly securityActivityService?: SecurityActivityService,
   ) {}
 
   @Post('login')
@@ -226,6 +231,17 @@ export class AuthController {
   @ApiOperation({ summary: 'Review built-in staff roles and permissions' })
   roleReview(): RolePermissionReview[] {
     return this.permissionsService.reviewStaffRoles();
+  }
+
+  @Get('security-activity')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions(AuthPermission.SecurityEventsRead)
+  @ApiOperation({ summary: 'Review paginated security activity' })
+  securityActivity(@Query() query: SecurityActivityQueryDto) {
+    if (!this.securityActivityService) {
+      throw new Error('Security activity service is unavailable');
+    }
+    return this.securityActivityService.list(query);
   }
 
   @Get('identifier-conflicts')

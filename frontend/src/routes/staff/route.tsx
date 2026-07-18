@@ -55,6 +55,10 @@ const IdentifierConflictsRoute = lazyRouteComponent(
   () => import('./identifier-conflicts'),
   'IdentifierConflictsRoute',
 );
+const SecurityActivityRoute = lazyRouteComponent(
+  () => import('./security-activity'),
+  'SecurityActivityRoute',
+);
 
 function StaffRouteLayout() {
   const location = useLocation();
@@ -168,6 +172,13 @@ export function createStaffRoutes(parentRoute: AnyRoute) {
     component: IdentifierConflictsRoute,
   });
 
+  const securityActivityRoute = createRoute({
+    getParentRoute: () => staffRoute,
+    path: 'security-activity',
+    beforeLoad: () => requireStaffPermission('security-events:read'),
+    component: SecurityActivityRoute,
+  });
+
   return staffRoute.addChildren([
     indexRoute,
     staffLoginRoute,
@@ -183,5 +194,6 @@ export function createStaffRoutes(parentRoute: AnyRoute) {
     borrowingDetailRoute,
     staffUsersRoute,
     identifierConflictsRoute,
+    securityActivityRoute,
   ]);
 }

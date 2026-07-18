@@ -23,6 +23,7 @@ describe('Authentication persistence across application restarts (e2e)', () => {
   let replicaSet: MongoMemoryReplSet;
   let app: INestApplication;
   let previousMongoUri: string | undefined;
+  let previousTrustedOrigins: string | undefined;
 
   async function createApp(): Promise<INestApplication> {
     const module = await Test.createTestingModule({
@@ -42,6 +43,8 @@ describe('Authentication persistence across application restarts (e2e)', () => {
 
   beforeAll(async () => {
     previousMongoUri = process.env.MONGODB_URI;
+    previousTrustedOrigins = process.env.AUTH_TRUSTED_BROWSER_ORIGINS;
+    process.env.AUTH_TRUSTED_BROWSER_ORIGINS = JSON.stringify([origin]);
     replicaSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
     process.env.MONGODB_URI = replicaSet.getUri('auth-persistence');
 
@@ -61,6 +64,11 @@ describe('Authentication persistence across application restarts (e2e)', () => {
     await replicaSet?.stop();
     if (previousMongoUri === undefined) delete process.env.MONGODB_URI;
     else process.env.MONGODB_URI = previousMongoUri;
+    if (previousTrustedOrigins === undefined) {
+      delete process.env.AUTH_TRUSTED_BROWSER_ORIGINS;
+    } else {
+      process.env.AUTH_TRUSTED_BROWSER_ORIGINS = previousTrustedOrigins;
+    }
   });
 
   it('preserves staff/member identity, scope, ownership, and refresh continuity', async () => {

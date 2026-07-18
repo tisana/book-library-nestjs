@@ -46,11 +46,11 @@ describe('PermissionsGuard and permission mapping', () => {
     );
   });
 
-  it('denies by default when permission metadata is missing', () => {
+  it('denies by default when permission metadata is missing', async () => {
     jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(undefined);
     const guard = new PermissionsGuard(reflector, permissionsService);
 
-    expect(() =>
+    await expect(
       guard.canActivate(
         createExecutionContext({
           id: 'staff-user-id',
@@ -58,10 +58,10 @@ describe('PermissionsGuard and permission mapping', () => {
           permissions: [AuthPermission.CatalogRead],
         }),
       ),
-    ).toThrow(ForbiddenException);
+    ).rejects.toThrow(ForbiddenException);
   });
 
-  it('bypasses permission checks only for explicit public metadata', () => {
+  it('bypasses permission checks only for explicit public metadata', async () => {
     jest
       .spyOn(reflector, 'getAllAndOverride')
       .mockImplementation((key: string) => key === 'auth:public');
@@ -71,17 +71,20 @@ describe('PermissionsGuard and permission mapping', () => {
     );
     const guard = new PermissionsGuard(reflector, permissionsService);
 
-    expect(guard.canActivate(createExecutionContext())).toBe(true);
+    await expect(guard.canActivate(createExecutionContext())).resolves.toBe(true);
     expect(normalizeContext).not.toHaveBeenCalled();
   });
 
-  it('rejects member tokens from staff permissions', () => {
+  it('rejects member tokens from staff permissions and records a safe denial event', async () => {
     jest
       .spyOn(reflector, 'getAllAndOverride')
       .mockReturnValue([AuthPermission.CatalogRead]);
-    const guard = new PermissionsGuard(reflector, permissionsService);
+    const record = jest.fn().mockResolvedValue(undefined);
+    const guard = new PermissionsGuard(reflector, permissionsService, {
+      record,
+    } as any);
 
-    expect(() =>
+    await expect(
       guard.canActivate(
         createExecutionContext({
           id: 'member-id',
@@ -89,16 +92,25 @@ describe('PermissionsGuard and permission mapping', () => {
           permissions: [AuthPermission.MemberSelfRead],
         }),
       ),
-    ).toThrow(ForbiddenException);
+    ).rejects.toThrow(ForbiddenException);
+    expect(record).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventType: 'authorization-denied',
+        actorType: 'member',
+        actorId: 'member-id',
+        outcome: 'denied',
+        reasonCategory: 'staff-permission-required',
+      }),
+    );
   });
 
-  it('allows authenticated users with all required permissions', () => {
+  it('allows authenticated users with all required permissions', async () => {
     jest
       .spyOn(reflector, 'getAllAndOverride')
       .mockReturnValue([AuthPermission.CatalogRead]);
     const guard = new PermissionsGuard(reflector, permissionsService);
 
-    expect(
+    await expect(
       guard.canActivate(
         createExecutionContext({
           id: 'staff-user-id',
@@ -106,6 +118,6 @@ describe('PermissionsGuard and permission mapping', () => {
           permissions: [AuthPermission.CatalogRead],
         }),
       ),
-    ).toBe(true);
+    ).resolves.toBe(true);
   });
 });
