@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": false,
+    "incremental": false,
+    "outDir": "./dist-performance",
+    "rootDir": ".",
+    "sourceMap": false
+  },
+  "include": [
+    "src/**/*.ts",
+    "migrations/**/*.ts",
+    "scripts/verify-auth-performance.ts",
+    "test/performance/auth-benchmark.controller.ts",
+    "test/performance/auth-benchmark.module.ts"
+  ],
+  "exclude": ["node_modules", "dist", "dist-performance", "frontend", "**/*spec.ts"]
+}

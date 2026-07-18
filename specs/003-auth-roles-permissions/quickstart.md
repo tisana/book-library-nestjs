@@ -115,7 +115,7 @@ Expected coverage:
 9. Review the conflict as an administrator, assign a unique replacement identifier, and confirm the corrected account can sign in without changing its password.
 10. For an oversized `manual-repair-required` conflict, supply a short-lived administrator access token through standard input and run the thin offline repair CLI in dry-run mode. Confirm that `AuthIdentifierRepairAuthorizationService` validates authorization before data access and every mutating batch, `AuthIdentifierRepairKeyPolicyService` validates referenced-key availability, and `AuthIdentifierRepairService` canonicalizes the normalized mapping, records the deterministic salted HKDF/HMAC manifest, transitions the parent through `pending`, `applying`, and `finalizing`, prepares bounded resumable `AuthIdentifierRepairBatch` documents, activates reservations behind the parent repair gate, and requires confirmation before the bounded parent-completion transaction unlocks authentication. Resume with a fresh authorized token and confirm original/resuming actor attribution.
 11. Review security activity and confirm sign-in, ambiguous sign-in failure, conflict resolution/recovery, authorized repair resume with original/resuming actors, denied access, role change, refresh replay, sign-out, and account-status events are visible without secrets.
-12. Repeat shared sign-in, refresh, current-session sign-out, and all-session sign-out with one trusted exact origin and with missing, `null`, malformed, and untrusted origins. Confirm only the trusted request reaches authentication/session handling; every rejection has no cookie, authentication, or throttle side effect and appends only one redacted route/reason security event.
+12. Repeat shared sign-in, refresh, current-session sign-out, and all-session sign-out with one trusted exact origin and with missing, `null`, malformed, and untrusted origins. Confirm only the trusted request reaches authentication/session handling; every rejection has no cookie, authentication, throttle, or persistent security-event side effect and emits only bounded redacted operational warning telemetry.
 13. Rotate a refresh credential at least three times, replay the first exchanged credential, and confirm the family is revoked. Verify the newest cookie never outlives the original family expiry.
 
 ## Shared Sign-In Usability Protocol
@@ -160,3 +160,36 @@ These checks do not require Keycloak for v1. They verify that a future IdP can r
 - Confirm failed sign-in security events contain an opaque account reference only after exact-one account resolution; unresolved or ambiguous attempts contain only versioned HMAC identifier correlation, and no event contains raw or normalized identifiers.
 - Confirm retained `completed` and `failed-terminal` operation retries replay the original redacted result and HTTP status without re-execution, while expired operations require a new operation id.
 - Confirm benchmark routes are absent from the normal production application route graph.
+
+## Phase 7 Verification Record (2026-07-18)
+
+Environment: Node.js `v24.15.0`, MongoDB Memory Server `8.2.6`, Windows, Intel Core i7-9700K (8 logical CPUs). Automated suites use dedicated temporary databases where isolation is required.
+
+| Command | Result |
+| --- | --- |
+| `npm test -- --runInBand` | PASS: 27 suites, 215 tests |
+| `npm run test:e2e` | PASS: 29 suites, 242 tests |
+| `npm run verify:auth-performance` | PASS: boundary p95 21.46 ms; first 50 of 10,000 events 13.90 ms |
+| `npm run frontend:test` | PASS: 16 files, 42 tests |
+| `npm run frontend:test:e2e` | PASS: 86 tests; 1 intentional mobile performance skip |
+| `npm run lint` and supplemental performance-file ESLint | PASS |
+| `npm run build` | PASS |
+| `npm run frontend:lint` | PASS |
+| `npm run frontend:build` | PASS |
+
+Backend acceptance evidence:
+
+- Exact-origin allow/deny, common CORS source, bounded non-persistent telemetry, strict set/clear cookies, `900`/`2592000` lifetime ceilings, immutable family expiry, pending-marker lease takeover/reconciliation, legacy-family revocation, multi-generation replay, and current/all-session sign-out passed in `auth-browser-session-security.e2e-spec.ts`, `auth.e2e-spec.ts`, `auth-persistence.e2e-spec.ts`, and `token-session.service.spec.ts`.
+- Shared and compatibility routes passed default identifier/source/refresh throttle boundaries of 5/20/30 and automatic window recovery in `auth-browser-session-security.e2e-spec.ts` and `auth-throttle.service.spec.ts`.
+- History preservation passed for role changes, deactivation/reactivation, identifier correction, borrowing records, actor references, and security events in `auth-history-preservation.e2e-spec.ts`.
+- Role and direct `authVersion` changes denied the next protected request without polling or delay and within 60 seconds in `authorization.e2e-spec.ts`.
+- The preflight process accepted `{"candidateCurrentVersion":5,"candidatePreviousVersions":[4]}` with exact exit `0`/`status: ok`; a fixture requiring versions `[1,2,4]` returned exact exit `2`/`repair-key-rotation-blocked`; secret-bearing input returned exit `1`/`invalid-input`. All process cases made no mutation and passed in `auth-audit-key-rotation-preflight.e2e-spec.ts`.
+- The benchmark module uses equivalent handlers and is absent from the production `AppModule` and production TypeScript build graph. Generated evidence is in `evidence/auth-performance.md`.
+
+Frontend acceptance evidence:
+
+- Shared staff/admin/member sign-in, role landing, route guards, role-specific navigation, staff/admin permission boundaries, current-session sign-out refresh revocation, memory/cache clearing, member privacy, accessibility, and responsive behavior passed across desktop, tablet, and mobile projects.
+
+Human acceptance evidence:
+
+- SC-006 is **NOT CONDUCTED** and remains a production release blocker. Product owner or QA must complete the 20-participant protocol in `evidence/shared-sign-in-usability.md`; automated verification does not satisfy T148.

@@ -18,6 +18,7 @@
     "migrate:status": "ts-node -r tsconfig-paths/register migrations/migrate.ts status",
     "auth:key-rotation:preflight": "ts-node --transpile-only -r tsconfig-paths/register scripts/preflight-auth-audit-key-rotation.ts",
     "auth:identifier-repair": "ts-node --transpile-only -r tsconfig-paths/register scripts/resolve-auth-identifier-conflict.ts",
+    "verify:auth-performance": "npm run build && rimraf dist-performance && tsc -p tsconfig.performance.json && node dist-performance/scripts/verify-auth-performance.js",
     "bootstrap:admin": "ts-node -r tsconfig-paths/register scripts/bootstrap-admin.ts",
     "seed:users": "ts-node -r tsconfig-paths/register scripts/seed-sample-users.ts",
     "seed:demo": "ts-node -r tsconfig-paths/register scripts/seed-demo-data.ts",
