@@ -4,6 +4,7 @@ import { BooksService } from './books.service';
 import { BookResponseDto } from './dto/book.dto';
 
 import { getModelToken } from '@nestjs/mongoose';
+import { PermissionsService } from '../auth/permissions.service';
 import { LibraryItemStatus } from '../common/enums/library-status.enum';
 import { BookModelName } from './schemas/book.schema';
 
@@ -16,6 +17,7 @@ describe('Books Controller', () => {
       controllers: [BooksController],
       providers: [
         BooksService,
+        PermissionsService,
         {
           provide: getModelToken(BookModelName),
           useValue: {},

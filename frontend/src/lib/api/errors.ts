@@ -8,6 +8,14 @@ export interface MutationErrorView {
 
 export function toMutationError(error: unknown): MutationErrorView {
   if (error instanceof ApiClientError) {
+    if (error.status === 401) {
+      return {
+        title: 'Sign in failed',
+        message: 'Invalid credentials.',
+        fieldErrors: {},
+      };
+    }
+
     if (error.status === 409) {
       return {
         title: 'Request blocked',
@@ -47,11 +55,7 @@ export function toMutationError(error: unknown): MutationErrorView {
 }
 
 function toFieldErrors(message: string | string[] | undefined) {
-  const messages = Array.isArray(message)
-    ? message
-    : message
-      ? [message]
-      : [];
+  const messages = Array.isArray(message) ? message : message ? [message] : [];
 
   return messages.reduce<Record<string, string>>((accumulator, current) => {
     const [field, ...rest] = current.split(' ');

@@ -1,8 +1,20 @@
 import { useSyncExternalStore } from 'react';
-import type { RoleArea, SessionUser } from '@/lib/api/types';
+import type {
+  AuthPermission,
+  AuthTokenMetadata,
+  RoleArea,
+  SessionUser,
+} from '@/lib/api/types';
 
 export interface AuthSessionSnapshot {
   accessToken?: string;
+  tokenType?: AuthTokenMetadata['tokenType'];
+  expiresIn?: number;
+  scope?: string;
+  permissions?: AuthPermission[];
+  issuer?: string;
+  audience?: string | string[];
+  authVersion?: number;
   roleArea?: RoleArea;
   user?: SessionUser;
   reason?: 'signed-out' | 'expired' | 'switched';
@@ -26,11 +38,23 @@ export function createAuthSessionStore() {
       listeners.add(listener);
       return () => listeners.delete(listener);
     },
-    setSession: (accessToken: string, user: SessionUser) => {
+    setSession: (
+      accessToken: string,
+      user: SessionUser,
+      metadata?: Partial<AuthTokenMetadata>,
+    ) => {
+      const permissions = metadata?.permissions ?? user.permissions ?? [];
       snapshot = {
         accessToken,
+        tokenType: metadata?.tokenType ?? 'Bearer',
+        expiresIn: metadata?.expiresIn,
+        scope: metadata?.scope ?? permissions.join(' '),
+        permissions,
+        issuer: metadata?.issuer,
+        audience: metadata?.audience,
+        authVersion: metadata?.authVersion,
         roleArea: user.roleArea,
-        user,
+        user: { ...user, permissions } as SessionUser,
         reason: 'switched',
       };
       emit();

@@ -13,6 +13,11 @@ export interface MigrationCollection<T> {
     keys: Record<string, 1 | -1>,
     options?: Record<string, unknown>,
   ): Promise<unknown>;
+  updateMany(
+    filter: Record<string, unknown>,
+    update: Record<string, unknown>,
+    options?: Record<string, unknown>,
+  ): Promise<unknown>;
   find(): {
     sort(sort: Record<string, 1 | -1>): {
       toArray(): Promise<T[]>;

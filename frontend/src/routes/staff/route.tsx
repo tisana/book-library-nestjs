@@ -9,6 +9,7 @@ import {
 import { StaffShell } from '@/components/layout/staff-shell';
 import { StaffLoginRoute } from '@/routes/public';
 import { requireStaffSession } from '@/lib/auth/route-guards';
+import { requireStaffPermission } from '@/lib/auth/route-guards';
 import { StaffRouteErrorBoundary } from './error-boundary';
 
 const StaffDashboard = lazyRouteComponent(
@@ -45,6 +46,18 @@ const StaffOverdueBorrowingsRoute = lazyRouteComponent(
 const StaffBorrowingDetailRoute = lazyRouteComponent(
   () => import('./borrowings.$borrowingId'),
   'StaffBorrowingDetailRoute',
+);
+const StaffUsersRoute = lazyRouteComponent(
+  () => import('./staff-users'),
+  'StaffUsersRoute',
+);
+const IdentifierConflictsRoute = lazyRouteComponent(
+  () => import('./identifier-conflicts'),
+  'IdentifierConflictsRoute',
+);
+const SecurityActivityRoute = lazyRouteComponent(
+  () => import('./security-activity'),
+  'SecurityActivityRoute',
 );
 
 function StaffRouteLayout() {
@@ -142,6 +155,30 @@ export function createStaffRoutes(parentRoute: AnyRoute) {
     component: StaffBorrowingDetailRoute,
   });
 
+  const staffUsersRoute = createRoute({
+    getParentRoute: () => staffRoute,
+    path: 'users',
+    beforeLoad: () => {
+      requireStaffPermission('staff-users:read');
+      return requireStaffPermission('roles:read');
+    },
+    component: StaffUsersRoute,
+  });
+
+  const identifierConflictsRoute = createRoute({
+    getParentRoute: () => staffRoute,
+    path: 'identifier-conflicts',
+    beforeLoad: () => requireStaffPermission('auth-identifiers:read'),
+    component: IdentifierConflictsRoute,
+  });
+
+  const securityActivityRoute = createRoute({
+    getParentRoute: () => staffRoute,
+    path: 'security-activity',
+    beforeLoad: () => requireStaffPermission('security-events:read'),
+    component: SecurityActivityRoute,
+  });
+
   return staffRoute.addChildren([
     indexRoute,
     staffLoginRoute,
@@ -155,5 +192,8 @@ export function createStaffRoutes(parentRoute: AnyRoute) {
     newBorrowingRoute,
     overdueBorrowingsRoute,
     borrowingDetailRoute,
+    staffUsersRoute,
+    identifierConflictsRoute,
+    securityActivityRoute,
   ]);
 }

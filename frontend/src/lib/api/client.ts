@@ -1,10 +1,17 @@
 import { authSession } from '@/lib/auth/session';
 import type { NormalizedApiError } from './types';
 
-const DEFAULT_API_BASE_URL = 'http://localhost:3000';
+function getDefaultApiBaseUrl(): string {
+  if (typeof window !== 'undefined' && window.location.hostname) {
+    return `${window.location.protocol}//${window.location.hostname}:3000`;
+  }
+
+  return 'http://localhost:3000';
+}
 
 export const apiBaseUrl =
-  import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') ?? DEFAULT_API_BASE_URL;
+  import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') ??
+  getDefaultApiBaseUrl();
 
 export class ApiClientError extends Error implements NormalizedApiError {
   constructor(
@@ -67,10 +74,10 @@ export async function apiRequest<TResponse>(
   }
 
   const response = await fetch(`${apiBaseUrl}${path}`, {
+    credentials: 'include',
     ...options,
     headers,
-    body:
-      options.body === undefined ? undefined : JSON.stringify(options.body),
+    body: options.body === undefined ? undefined : JSON.stringify(options.body),
   });
   const payload = await parseResponse(response);
 

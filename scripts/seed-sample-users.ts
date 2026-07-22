@@ -53,6 +53,8 @@ async function seedSampleUsers(): Promise<void> {
             passwordHash,
             roles: user.roles,
             status: 'active',
+            authVersion: 0,
+            passwordUpdatedAt: now,
             updatedAt: now,
           },
           $setOnInsert: {

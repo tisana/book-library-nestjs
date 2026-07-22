@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, MinLength } from 'class-validator';
+import { AuthPermission } from '../../common/enums/auth-permission.enum';
 import { MemberStatus } from '../../common/enums/library-status.enum';
 
 export class MemberLoginDto {
@@ -42,6 +43,23 @@ export class MemberLoginProfileDto {
 export class MemberLoginResponseDto {
   @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' })
   accessToken: string;
+
+  @ApiProperty({ example: 'Bearer' })
+  tokenType: 'Bearer';
+
+  @ApiProperty({ example: 900 })
+  expiresIn: number;
+
+  @ApiProperty({ example: 'member:self:read' })
+  scope: string;
+
+  @ApiProperty({
+    enum: AuthPermission,
+    enumName: 'AuthPermission',
+    isArray: true,
+    example: [AuthPermission.MemberSelfRead],
+  })
+  permissions: AuthPermission[];
 
   @ApiProperty({ type: MemberLoginProfileDto })
   member: MemberLoginProfileDto;

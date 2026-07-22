@@ -1,9 +1,17 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import {
+  AuthPermission,
+  NormalizedAuthContext,
+} from '../common/enums/auth-permission.enum';
 
 export interface CurrentMemberContext {
   id: string;
+  subjectId?: string;
   memberNumber: string;
   roleArea: 'member';
+  permissions?: AuthPermission[];
+  authVersion?: number;
+  authContext?: NormalizedAuthContext;
 }
 
 export const CurrentMember = createParamDecorator(

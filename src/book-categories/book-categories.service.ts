@@ -31,7 +31,8 @@ export class BookCategoriesService {
     actor?: AuditActor,
   ): Promise<BookCategoryResponseDto> {
     const code = this.normalizeCode(dto.code);
-    const modelWithExists = this.bookCategoryModel as Model<BookCategoryDocument> & {
+    const modelWithExists = this
+      .bookCategoryModel as Model<BookCategoryDocument> & {
       exists?: (filter: Record<string, unknown>) => Promise<unknown>;
     };
 

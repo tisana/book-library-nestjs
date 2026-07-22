@@ -31,7 +31,8 @@ export class MembershipTypesService {
     actor?: AuditActor,
   ): Promise<MembershipTypeResponseDto> {
     const code = this.normalizeCode(dto.code);
-    const modelWithExists = this.membershipTypeModel as Model<MembershipTypeDocument> & {
+    const modelWithExists = this
+      .membershipTypeModel as Model<MembershipTypeDocument> & {
       exists?: (filter: Record<string, unknown>) => Promise<unknown>;
     };
 

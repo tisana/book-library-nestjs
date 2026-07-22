@@ -7,7 +7,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
-import { RolesGuard } from '../src/auth/roles.guard';
+import { PermissionsGuard } from '../src/auth/permissions.guard';
 import { BookCategoriesController } from '../src/book-categories/book-categories.controller';
 import { BookCategoriesService } from '../src/book-categories/book-categories.service';
 import { BooksController } from '../src/books/books.controller';
@@ -28,7 +28,7 @@ describe('Book collection authorization (e2e)', () => {
     }
   }
 
-  class TestRolesGuard implements CanActivate {
+  class TestPermissionsGuard implements CanActivate {
     canActivate(): boolean {
       if (!authorized) {
         throw new ForbiddenException();
@@ -66,8 +66,8 @@ describe('Book collection authorization (e2e)', () => {
     })
       .overrideGuard(JwtAuthGuard)
       .useClass(TestJwtGuard)
-      .overrideGuard(RolesGuard)
-      .useClass(TestRolesGuard)
+      .overrideGuard(PermissionsGuard)
+      .useClass(TestPermissionsGuard)
       .compile();
 
     app = moduleFixture.createNestApplication();

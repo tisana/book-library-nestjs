@@ -22,12 +22,54 @@ test('member routes only call member-scoped me endpoints', async ({ page }) => {
   ).toBe(false);
 });
 
+test('member browser direct staff route attempts do not load staff data', async ({
+  page,
+}) => {
+  const requestedUrls: string[] = [];
+  await mockMemberSession(page, requestedUrls);
+
+  const staffRoutes = [
+    '/staff',
+    '/staff/books',
+    '/staff/catalog',
+    '/staff/membership-types',
+    '/staff/members',
+    '/staff/borrowings',
+    '/staff/borrowings/new',
+    '/staff/borrowings/overdue',
+  ];
+
+  for (const staffRoute of staffRoutes) {
+    await signInAsMember(page);
+
+    const requestStart = requestedUrls.length;
+    await page.goto(staffRoute);
+
+    await expect(page).toHaveURL(/\/(?:unauthorized|login)$/);
+    const staffApiRequests = requestedUrls
+      .slice(requestStart)
+      .filter(isStaffBackOfficeApi);
+    expect({ staffRoute, staffApiRequests }).toEqual({
+      staffRoute,
+      staffApiRequests: [],
+    });
+  }
+});
+
+async function signInAsMember(page: Page) {
+  await page.goto('/member/login');
+  await page.getByLabel('Login identifier').fill('M-1001');
+  await page.getByLabel('Password').fill('DemoMember#2026');
+  await page.getByRole('button', { name: /sign in/i }).click();
+  await page.waitForURL('**/member');
+}
+
 async function mockMemberSession(page: Page, requestedUrls: string[]) {
-  await page.route('http://localhost:3000/**', async (route) => {
+  await page.route('http://*:3000/**', async (route) => {
     const url = route.request().url();
     requestedUrls.push(url);
 
-    if (url.endsWith('/auth/member-login')) {
+    if (url.endsWith('/auth/login')) {
       await route.fulfill({
         json: {
           accessToken: 'member-token',
@@ -94,6 +136,15 @@ async function mockMemberSession(page: Page, requestedUrls: string[]) {
 
     await route.fulfill({ status: 404, json: { message: 'Not mocked' } });
   });
+}
+
+function isStaffBackOfficeApi(url: string) {
+  const pathname = new URL(url).pathname;
+  return (
+    /^\/(books|book-categories|borrowings|membership-types|staff-users)(\/|$)/.test(
+      pathname,
+    ) || /^\/members(?!\/me(?:\/|$))(\/|$)/.test(pathname)
+  );
 }
 
 function borrowing() {

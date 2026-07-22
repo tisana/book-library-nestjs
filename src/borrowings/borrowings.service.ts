@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -211,6 +212,10 @@ export class BorrowingsService {
     memberId: string,
     query: BorrowingQueryDto = new BorrowingQueryDto(),
   ): Promise<BorrowingResponseDto[]> {
+    if (query.memberId && query.memberId !== memberId) {
+      throw new ForbiddenException('Member id must come from the token');
+    }
+
     return this.findAll({ ...query, memberId });
   }
 

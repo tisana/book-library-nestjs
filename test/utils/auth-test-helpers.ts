@@ -40,6 +40,7 @@ export async function loginAs(
 ): Promise<AuthenticatedTestUser> {
   const response = await request(app.getHttpServer())
     .post('/auth/login')
+    .set('Origin', 'http://localhost:5173')
     .send(credentials)
     .expect(200);
 

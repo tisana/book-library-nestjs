@@ -1,7 +1,6 @@
-import { Link } from '@tanstack/react-router';
+import { Link, Navigate } from '@tanstack/react-router';
 import { PageHeader } from '@/components/page-header';
-import { MemberLogin } from '@/features/auth/member-login';
-import { StaffLogin } from '@/features/auth/staff-login';
+import { SharedLogin } from '@/features/auth/shared-login';
 
 export function PublicHome() {
   return (
@@ -22,9 +21,9 @@ export function PublicHome() {
         <div className="flex flex-wrap gap-3">
           <Link
             className="rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white"
-            to="/staff/login"
+            to="/login"
           >
-            Staff sign in
+            Sign in
           </Link>
           <Link
             className="rounded-md border bg-white px-4 py-2 text-sm font-medium text-slate-700"
@@ -44,22 +43,11 @@ export function LoginRoute() {
       <div className="mx-auto flex min-h-screen max-w-md items-center px-5">
         <section className="w-full rounded-md border bg-white p-5 shadow-sm">
           <PageHeader
-            description="Feature login forms are implemented in the user-story phases."
-            title="Sign in"
+            description="Use your staff email, member email, or member number."
+            title="Sign in to Book Library"
           />
-          <div className="flex flex-col gap-3 p-5">
-            <Link
-              className="rounded-md bg-slate-950 px-4 py-2 text-center text-sm font-medium text-white"
-              to="/staff/login"
-            >
-              Staff sign in
-            </Link>
-            <Link
-              className="rounded-md border px-4 py-2 text-center text-sm font-medium text-slate-700"
-              to="/member/login"
-            >
-              Member sign in
-            </Link>
+          <div className="p-5">
+            <SharedLogin />
           </div>
         </section>
       </div>
@@ -79,7 +67,7 @@ export function UnauthorizedRoute() {
         </p>
         <Link
           className="mt-5 inline-flex rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white"
-          to="/staff/login"
+          to="/login"
         >
           Return to sign in
         </Link>
@@ -89,37 +77,9 @@ export function UnauthorizedRoute() {
 }
 
 export function StaffLoginRoute() {
-  return (
-    <main className="min-h-screen bg-slate-100">
-      <div className="mx-auto flex min-h-screen max-w-md items-center px-5">
-        <section className="w-full rounded-md border bg-white p-5 shadow-sm">
-          <PageHeader
-            description="Use your staff or librarian account."
-            title="Staff sign in"
-          />
-          <div className="p-5">
-            <StaffLogin />
-          </div>
-        </section>
-      </div>
-    </main>
-  );
+  return <Navigate replace to="/login" />;
 }
 
 export function MemberLoginPlaceholderRoute() {
-  return (
-    <main className="min-h-screen bg-slate-100">
-      <div className="mx-auto flex min-h-screen max-w-md items-center px-5">
-        <section className="w-full rounded-md border bg-white p-5 shadow-sm">
-          <PageHeader
-            description="Use your member number or login email."
-            title="Member sign in"
-          />
-          <div className="p-5">
-            <MemberLogin />
-          </div>
-        </section>
-      </div>
-    </main>
-  );
+  return <Navigate replace to="/login" />;
 }

@@ -1,6 +1,6 @@
 import { BorrowingsRulesService } from './borrowings-rules.service';
 import { BorrowingsService } from './borrowings.service';
-import { UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { LoanState } from '../common/enums/library-status.enum';
 import { BorrowingQueryDto } from './dto/borrowing.dto';
 
@@ -101,9 +101,9 @@ describe('BorrowingsService', () => {
   it('requires an authenticated staff actor before returning borrowing records', async () => {
     const service = createService();
 
-    await expect(service.returnBorrowing('borrowing-id')).rejects.toBeInstanceOf(
-      UnauthorizedException,
-    );
+    await expect(
+      service.returnBorrowing('borrowing-id'),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
   });
 
   it('filters current borrowings to unreturned active and overdue records', async () => {
@@ -122,6 +122,18 @@ describe('BorrowingsService', () => {
       returnedAt: { $exists: false },
       status: { $in: [LoanState.Active, LoanState.Overdue] },
     });
+  });
+
+  it('rejects member self-service queries with a mismatched memberId', async () => {
+    const service = createService();
+
+    await expect(
+      service.findByMember('member-1', {
+        memberId: 'member-2',
+        page: 1,
+        limit: 20,
+      }),
+    ).rejects.toBeInstanceOf(ForbiddenException);
   });
 });
 

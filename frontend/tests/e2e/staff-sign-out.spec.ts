@@ -14,16 +14,18 @@ test('staff can sign out and protected staff data is cleared', async ({
   ).toBeVisible();
 
   await page.getByRole('button', { name: /sign out/i }).click();
-  await expect(page).toHaveURL(/\/staff\/login$/);
-  await expect(page.getByRole('heading', { name: 'Staff sign in' })).toBeVisible();
+  await expect(page).toHaveURL(/\/login$/);
+  await expect(
+    page.getByRole('heading', { name: 'Sign in to Book Library' }),
+  ).toBeVisible();
 
   await page.goto('/staff');
-  await expect(page).toHaveURL(/\/staff\/login$/);
+  await expect(page).toHaveURL(/\/login$/);
   await expect(page.getByText('Back office dashboard')).not.toBeVisible();
 });
 
 async function mockStaffApi(page: Page) {
-  await page.route('http://localhost:3000/auth/login', (route) =>
+  await page.route('http://*:3000/auth/login', (route) =>
     route.fulfill({
       json: {
         accessToken: 'staff-token',
@@ -37,16 +39,16 @@ async function mockStaffApi(page: Page) {
       },
     }),
   );
-  await page.route('http://localhost:3000/books**', (route) =>
+  await page.route('http://*:3000/books**', (route) =>
     route.fulfill({ json: [] }),
   );
-  await page.route('http://localhost:3000/members**', (route) =>
+  await page.route('http://*:3000/members**', (route) =>
     route.fulfill({ json: [] }),
   );
-  await page.route('http://localhost:3000/borrowings/overdue**', (route) =>
+  await page.route('http://*:3000/borrowings/overdue**', (route) =>
     route.fulfill({ json: [] }),
   );
-  await page.route('http://localhost:3000/borrowings**', (route) =>
+  await page.route('http://*:3000/borrowings**', (route) =>
     route.fulfill({ json: [] }),
   );
 }

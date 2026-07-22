@@ -1,6 +1,7 @@
 import { redirect } from '@tanstack/react-router';
+import { queryClient } from '@/app/query-client';
 import { authSession } from './session';
-import type { RoleArea } from '@/lib/api/types';
+import type { AuthPermission, RoleArea } from '@/lib/api/types';
 
 interface GuardContext {
   location: {
@@ -12,10 +13,26 @@ export function requireRoleArea(roleArea: RoleArea) {
   const session = authSession.getSnapshot();
 
   if (!session.accessToken) {
-    throw redirect({ to: roleArea === 'staff' ? '/staff/login' : '/member/login' });
+    throw redirect({ to: '/login' });
   }
 
   if (session.roleArea !== roleArea) {
+    authSession.clear('switched');
+    queryClient.clear();
+    throw redirect({ to: '/unauthorized' });
+  }
+
+  return session;
+}
+
+export function requirePermission(
+  roleArea: RoleArea,
+  permission: AuthPermission,
+) {
+  const session = requireRoleArea(roleArea);
+
+  if (!session.permissions?.includes(permission)) {
+    queryClient.clear();
     throw redirect({ to: '/unauthorized' });
   }
 
@@ -34,4 +51,12 @@ export function requireMemberSession(context?: GuardContext) {
     return undefined;
   }
   return requireRoleArea('member');
+}
+
+export function requireStaffPermission(permission: AuthPermission) {
+  return requirePermission('staff', permission);
+}
+
+export function requireMemberPermission(permission: AuthPermission) {
+  return requirePermission('member', permission);
 }

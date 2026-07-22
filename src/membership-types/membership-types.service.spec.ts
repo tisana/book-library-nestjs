@@ -1,6 +1,9 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { StaffRole, LibraryItemStatus } from '../common/enums/library-status.enum';
+import {
+  StaffRole,
+  LibraryItemStatus,
+} from '../common/enums/library-status.enum';
 import { MembershipTypesService } from './membership-types.service';
 import { MembershipTypeDocument } from './schemas/membership-type.schema';
 
