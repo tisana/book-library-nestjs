@@ -37,6 +37,34 @@ describe('coverage report', () => {
     },
   );
 
+  it.each([
+    {
+      ...summary,
+      total: {
+        ...summary.total,
+        lines: { total: 10, covered: 11, skipped: 0, pct: 100 },
+      },
+    },
+    {
+      ...summary,
+      total: {
+        ...summary.total,
+        lines: { total: 10, covered: 8, skipped: 3, pct: 80 },
+      },
+    },
+    {
+      ...summary,
+      total: {
+        ...summary.total,
+        lines: { total: 10, covered: 8, skipped: 0, pct: 101 },
+      },
+    },
+  ])('rejects impossible metric ranges and counts', (raw) => {
+    expect(() => parseCoverageSummary(raw, 'backend')).toThrow(
+      'invalid-coverage-summary',
+    );
+  });
+
   it('reports every dimension below its baseline', () => {
     const report = parseCoverageSummary(summary, 'backend');
     expect(
