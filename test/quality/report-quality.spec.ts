@@ -48,6 +48,27 @@ const e2eTests = {
   ],
 };
 
+const failedPlaywrightTests = {
+  suites: [
+    {
+      suites: [],
+      specs: [
+        {
+          tests: [
+            {
+              projectName: 'desktop-chromium',
+              expectedStatus: 'passed',
+              results: [{ status: 'failed' }],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+const zeroPlaywrightTests = { suites: [] };
+
 function qualityReport(
   stream: QualityReport['stream'],
   overrides: Partial<QualityReport> = {},
@@ -63,8 +84,11 @@ function qualityReport(
 
 describe('scoped quality reports', () => {
   let fixtureDirectory: string;
+  let originalGitHubStepSummary: string | undefined;
 
   beforeEach(async () => {
+    originalGitHubStepSummary = process.env.GITHUB_STEP_SUMMARY;
+    delete process.env.GITHUB_STEP_SUMMARY;
     fixtureDirectory = await mkdtemp(join(tmpdir(), 'quality-report-'));
     await Promise.all([
       writeFile(join(fixtureDirectory, 'coverage.json'), JSON.stringify(coverage)),
@@ -85,6 +109,11 @@ describe('scoped quality reports', () => {
   });
 
   afterEach(async () => {
+    if (originalGitHubStepSummary === undefined) {
+      delete process.env.GITHUB_STEP_SUMMARY;
+    } else {
+      process.env.GITHUB_STEP_SUMMARY = originalGitHubStepSummary;
+    }
     await rm(fixtureDirectory, { recursive: true, force: true });
   });
 
@@ -252,5 +281,186 @@ describe('scoped quality reports', () => {
         '--write-baseline',
       ]),
     ).rejects.toThrow('frontend-unit');
+  });
+
+  it('normalizes backend Jest e2e results instead of treating them as Playwright output', async () => {
+    const report = await runQualityReportCli([
+      '--stream',
+      'backend',
+      '--coverage',
+      join(fixtureDirectory, 'coverage.json'),
+      '--unit-tests',
+      join(fixtureDirectory, 'unit.json'),
+      '--e2e-tests',
+      join(fixtureDirectory, 'unit.json'),
+      '--baselines',
+      join(fixtureDirectory, 'baselines.json'),
+    ]);
+
+    expect(report.e2eTests).toMatchObject({
+      passed: 4,
+      failed: 0,
+      skipped: 1,
+      total: 5,
+    });
+  });
+
+  it('writes failed backend gate diagnostics before rejecting the command', async () => {
+    const failedE2ePath = join(fixtureDirectory, 'failed-backend-e2e.json');
+    const markdownPath = join(fixtureDirectory, 'failed.md');
+    const jsonPath = join(fixtureDirectory, 'failed.json');
+    const stepSummaryPath = join(fixtureDirectory, 'github-summary.md');
+    process.env.GITHUB_STEP_SUMMARY = stepSummaryPath;
+    await writeFile(
+      failedE2ePath,
+      JSON.stringify({
+        numPassedTests: 3,
+        numFailedTests: 1,
+        numPendingTests: 0,
+        numTotalTests: 4,
+      }),
+    );
+
+    await expect(
+      runQualityReportCli([
+        '--stream',
+        'backend',
+        '--coverage',
+        join(fixtureDirectory, 'coverage.json'),
+        '--unit-tests',
+        join(fixtureDirectory, 'unit.json'),
+        '--e2e-tests',
+        failedE2ePath,
+        '--baselines',
+        join(fixtureDirectory, 'baselines.json'),
+        '--markdown',
+        markdownPath,
+        '--json',
+        jsonPath,
+      ]),
+    ).rejects.toThrow('backend:quality-gate-failed');
+
+    await expect(readFile(markdownPath, 'utf8')).resolves.toContain('final-failures:1');
+    await expect(readFile(jsonPath, 'utf8')).resolves.toContain('"passed": false');
+    await expect(readFile(stepSummaryPath, 'utf8')).resolves.toContain(
+      '# Backend coverage and e2e',
+    );
+  });
+
+  it('rejects a backend Jest e2e run with zero tests', async () => {
+    const zeroE2ePath = join(fixtureDirectory, 'zero-backend-e2e.json');
+    await writeFile(
+      zeroE2ePath,
+      JSON.stringify({
+        numPassedTests: 0,
+        numFailedTests: 0,
+        numPendingTests: 0,
+        numTotalTests: 0,
+      }),
+    );
+
+    await expect(
+      runQualityReportCli([
+        '--stream',
+        'backend',
+        '--coverage',
+        join(fixtureDirectory, 'coverage.json'),
+        '--unit-tests',
+        join(fixtureDirectory, 'unit.json'),
+        '--e2e-tests',
+        zeroE2ePath,
+        '--baselines',
+        join(fixtureDirectory, 'baselines.json'),
+      ]),
+    ).rejects.toThrow('backend');
+  });
+
+  it('rejects a frontend coverage regression against its baseline', async () => {
+    const lowerCoveragePath = join(fixtureDirectory, 'lower-coverage.json');
+    const frontendBaselinesPath = join(fixtureDirectory, 'frontend-baselines.json');
+    await writeFile(
+      lowerCoveragePath,
+      JSON.stringify({
+        ...coverage,
+        total: {
+          ...coverage.total,
+          branches: { total: 100, covered: 69, skipped: 0, pct: 69 },
+        },
+      }),
+    );
+    await writeFile(
+      frontendBaselinesPath,
+      JSON.stringify({
+        backend: { statements: 80, branches: 70, functions: 80, lines: 90 },
+        frontend: { statements: 90, branches: 80, functions: 85, lines: 95 },
+      }),
+    );
+
+    await expect(
+      runQualityReportCli([
+        '--stream',
+        'frontend-unit',
+        '--coverage',
+        lowerCoveragePath,
+        '--unit-tests',
+        join(fixtureDirectory, 'unit.json'),
+        '--baselines',
+        frontendBaselinesPath,
+      ]),
+    ).rejects.toThrow('frontend-unit:quality-gate-failed:coverage:branches:69<80');
+  });
+
+  it.each([
+    ['final failures', failedPlaywrightTests, 'final-failures:1'],
+    ['zero tests', zeroPlaywrightTests, 'zero-tests'],
+  ])('rejects frontend Playwright e2e %s', async (_case, playwrightResults, reason) => {
+    const e2ePath = join(fixtureDirectory, `${reason}.json`);
+    await writeFile(e2ePath, JSON.stringify(playwrightResults));
+
+    await expect(
+      runQualityReportCli([
+        '--stream',
+        'frontend-e2e',
+        '--e2e-tests',
+        e2ePath,
+        '--baselines',
+        join(fixtureDirectory, 'baselines.json'),
+      ]),
+    ).rejects.toThrow(`frontend-e2e:quality-gate-failed:e2e-tests:${reason}`);
+  });
+
+  it('does not write reports, summaries, or baselines in check-only mode', async () => {
+    const markdownPath = join(fixtureDirectory, 'check-only.md');
+    const jsonPath = join(fixtureDirectory, 'check-only.json');
+    const stepSummaryPath = join(fixtureDirectory, 'check-only-summary.md');
+    const baselinePath = join(fixtureDirectory, 'baselines.json');
+    const originalBaselines = await readFile(baselinePath, 'utf8');
+    process.env.GITHUB_STEP_SUMMARY = stepSummaryPath;
+
+    await expect(
+      runQualityReportCli([
+        '--stream',
+        'backend',
+        '--coverage',
+        join(fixtureDirectory, 'coverage.json'),
+        '--unit-tests',
+        join(fixtureDirectory, 'unit.json'),
+        '--e2e-tests',
+        join(fixtureDirectory, 'unit.json'),
+        '--baselines',
+        baselinePath,
+        '--markdown',
+        markdownPath,
+        '--json',
+        jsonPath,
+        '--write-baseline',
+        '--check-only',
+      ]),
+    ).resolves.toMatchObject({ stream: 'backend', gate: { passed: true } });
+
+    await expect(readFile(markdownPath, 'utf8')).rejects.toThrow();
+    await expect(readFile(jsonPath, 'utf8')).rejects.toThrow();
+    await expect(readFile(stepSummaryPath, 'utf8')).rejects.toThrow();
+    await expect(readFile(baselinePath, 'utf8')).resolves.toBe(originalBaselines);
   });
 });

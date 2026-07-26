@@ -219,7 +219,9 @@ export async function runQualityReportCli(arguments_: string[]): Promise<Quality
       ? parseJestStyleResults(await readJson(options.unitTests, stream))
       : undefined;
     const e2eTests = options.e2eTests
-      ? parsePlaywrightResults(await readJson(options.e2eTests, stream))
+      ? stream === 'frontend-e2e'
+        ? parsePlaywrightResults(await readJson(options.e2eTests, stream))
+        : parseJestStyleResults(await readJson(options.e2eTests, stream))
       : undefined;
     const reportWithoutGate = {
       stream,
@@ -234,13 +236,7 @@ export async function runQualityReportCli(arguments_: string[]): Promise<Quality
       gate: evaluateGate(reportWithoutGate, baselines, options.writeBaseline),
     };
 
-    if (!report.gate.passed) {
-      throw new Error(`${stream}:quality-gate-failed:${report.gate.reasons.join(',')}`);
-    }
-    if (options.checkOnly) {
-      return report;
-    }
-    if (options.writeBaseline && coverage) {
+    if (!options.checkOnly && options.writeBaseline && coverage && report.gate.passed) {
       const nextBaselines: CoverageBaselineFile = {
         ...baselines,
         ...(stream === 'backend'
@@ -250,15 +246,20 @@ export async function runQualityReportCli(arguments_: string[]): Promise<Quality
       await writeOutput(options.baselines!, `${JSON.stringify(nextBaselines, null, 2)}\n`);
     }
 
-    const markdown = renderQualityMarkdown(report);
-    if (options.markdown) {
-      await writeOutput(options.markdown, `${markdown}\n`);
+    if (!options.checkOnly) {
+      const markdown = renderQualityMarkdown(report);
+      if (options.markdown) {
+        await writeOutput(options.markdown, `${markdown}\n`);
+      }
+      if (options.json) {
+        await writeOutput(options.json, `${JSON.stringify(report, null, 2)}\n`);
+      }
+      if (process.env.GITHUB_STEP_SUMMARY) {
+        await appendFile(process.env.GITHUB_STEP_SUMMARY, `${markdown}\n`);
+      }
     }
-    if (options.json) {
-      await writeOutput(options.json, `${JSON.stringify(report, null, 2)}\n`);
-    }
-    if (process.env.GITHUB_STEP_SUMMARY) {
-      await appendFile(process.env.GITHUB_STEP_SUMMARY, `${markdown}\n`);
+    if (!report.gate.passed) {
+      throw new Error(`${stream}:quality-gate-failed:${report.gate.reasons.join(',')}`);
     }
     return report;
   } catch (error) {
