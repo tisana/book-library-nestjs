@@ -51,20 +51,27 @@ function isCoverageMetric(value: unknown): value is CoverageMetric {
     return false;
   }
 
-  const hasFiniteNonNegativeValues = ['total', 'covered', 'skipped', 'pct'].every(
-    (field) =>
-      typeof value[field] === 'number' &&
-      Number.isFinite(value[field]) &&
-      value[field] >= 0,
-  );
+  const { total, covered, skipped, pct } = value;
+  if (
+    typeof total !== 'number' ||
+    typeof covered !== 'number' ||
+    typeof skipped !== 'number' ||
+    typeof pct !== 'number' ||
+    ![total, covered, skipped, pct].every(
+      (number) => Number.isFinite(number) && number >= 0,
+    )
+  ) {
+    return false;
+  }
+
+  const expectedPct =
+    total > 0 ? Math.floor(((1000 * 100 * covered) / total) / 10) / 100 : 100;
 
   return (
-    hasFiniteNonNegativeValues &&
-    (value.covered as number) <= (value.total as number) &&
-    (value.skipped as number) <= (value.total as number) &&
-    (value.covered as number) + (value.skipped as number) <=
-      (value.total as number) &&
-    (value.pct as number) <= 100
+    covered <= total &&
+    skipped <= total &&
+    covered + skipped <= total &&
+    pct === expectedPct
   );
 }
 

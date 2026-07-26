@@ -65,6 +65,48 @@ describe('coverage report', () => {
     );
   });
 
+  it.each([
+    { total: 10, covered: 0, skipped: 0, pct: 100 },
+    { total: 3, covered: 2, skipped: 0, pct: 66.67 },
+  ])('rejects percentages that disagree with coverage counts: %p', (lines) => {
+    expect(() =>
+      parseCoverageSummary(
+        { ...summary, total: { ...summary.total, lines } },
+        'backend',
+      ),
+    ).toThrow('invalid-coverage-summary');
+  });
+
+  it('accepts Istanbul floored two-decimal percentages', () => {
+    expect(
+      parseCoverageSummary(
+        {
+          ...summary,
+          total: {
+            ...summary.total,
+            lines: { total: 3, covered: 2, skipped: 0, pct: 66.66 },
+          },
+        },
+        'backend',
+      ).metrics.lines,
+    ).toEqual({ total: 3, covered: 2, skipped: 0, pct: 66.66 });
+  });
+
+  it('accepts Istanbul zero-total metrics as 100 percent', () => {
+    expect(
+      parseCoverageSummary(
+        {
+          ...summary,
+          total: {
+            ...summary.total,
+            lines: { total: 0, covered: 0, skipped: 0, pct: 100 },
+          },
+        },
+        'backend',
+      ).metrics.lines,
+    ).toEqual({ total: 0, covered: 0, skipped: 0, pct: 100 });
+  });
+
   it('reports every dimension below its baseline', () => {
     const report = parseCoverageSummary(summary, 'backend');
     expect(
