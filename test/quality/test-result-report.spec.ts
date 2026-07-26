@@ -72,6 +72,35 @@ describe('test result normalization', () => {
     });
   });
 
+  it.each([
+    {
+      numPassedTests: 1,
+      numFailedTests: 0,
+      numPendingTests: 0,
+      numTotalTests: 2,
+    },
+    {
+      numPassedTests: -1,
+      numFailedTests: 0,
+      numPendingTests: 0,
+      numTotalTests: 0,
+    },
+    {
+      numPassedTests: 1.5,
+      numFailedTests: 0,
+      numPendingTests: 0,
+      numTotalTests: 1.5,
+    },
+    {
+      numPassedTests: Number.POSITIVE_INFINITY,
+      numFailedTests: 0,
+      numPendingTests: 0,
+      numTotalTests: Number.POSITIVE_INFINITY,
+    },
+  ])('rejects malformed Jest or Vitest counts: %p', (raw) => {
+    expect(() => parseJestStyleResults(raw)).toThrow('invalid-test-results');
+  });
+
   it('normalizes Playwright first-pass, flaky, failure, skip, and project results', () => {
     expect(parsePlaywrightResults(playwrightResult)).toEqual({
       passed: 1,
@@ -109,5 +138,30 @@ describe('test result normalization', () => {
       passed: false,
       reasons: ['final-failures:1'],
     });
+  });
+
+  it.each([
+    {},
+    { suites: [{}] },
+    { suites: [{ suites: [], specs: [{}] }] },
+    {
+      suites: [
+        {
+          suites: [],
+          specs: [
+            {
+              tests: [
+                {
+                  expectedStatus: 'passed',
+                  results: [{ status: 'passed' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ])('rejects malformed Playwright output instead of ignoring it: %p', (raw) => {
+    expect(() => parsePlaywrightResults(raw)).toThrow('invalid-test-results');
   });
 });

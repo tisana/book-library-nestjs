@@ -38,7 +38,13 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function numberField(raw: unknown, field: string): number {
-  if (!isRecord(raw) || typeof raw[field] !== 'number') {
+  if (
+    !isRecord(raw) ||
+    typeof raw[field] !== 'number' ||
+    !Number.isFinite(raw[field]) ||
+    !Number.isInteger(raw[field]) ||
+    raw[field] < 0
+  ) {
     throw new Error('invalid-test-results');
   }
 
@@ -51,6 +57,10 @@ export function parseJestStyleResults(raw: unknown): TestRunSummary {
   const skipped = numberField(raw, 'numPendingTests');
   const total = numberField(raw, 'numTotalTests');
 
+  if (passed + failed + skipped !== total) {
+    throw new Error('invalid-test-results');
+  }
+
   return createSummary({ passed, failed, skipped, flaky: 0, total });
 }
 
@@ -60,7 +70,18 @@ function addResult(summary: TestRunCounts, target: keyof TestRunCounts): void {
 }
 
 function classifyPlaywrightTest(test: Record<string, unknown>): keyof TestRunCounts {
-  const results = Array.isArray(test.results) ? test.results : [];
+  if (
+    typeof test.projectName !== 'string' ||
+    typeof test.expectedStatus !== 'string' ||
+    !Array.isArray(test.results) ||
+    !test.results.every(
+      (result) => isRecord(result) && typeof result.status === 'string',
+    )
+  ) {
+    throw new Error('invalid-test-results');
+  }
+
+  const results = test.results;
   const finalResult = results[results.length - 1];
   const finalStatus = isRecord(finalResult) ? finalResult.status : undefined;
 
@@ -81,28 +102,37 @@ function visitSuites(
   projects: Record<string, TestRunCounts>,
 ): void {
   if (!Array.isArray(suites)) {
-    return;
+    throw new Error('invalid-test-results');
   }
 
   for (const suite of suites) {
     if (!isRecord(suite)) {
-      continue;
+      throw new Error('invalid-test-results');
     }
 
-    const specs = Array.isArray(suite.specs) ? suite.specs : [];
+    if (!Array.isArray(suite.specs) || !Array.isArray(suite.suites)) {
+      throw new Error('invalid-test-results');
+    }
+
+    const specs = suite.specs;
     for (const spec of specs) {
       if (!isRecord(spec) || !Array.isArray(spec.tests)) {
-        continue;
+        throw new Error('invalid-test-results');
       }
 
       for (const test of spec.tests) {
-        if (!isRecord(test) || typeof test.projectName !== 'string') {
-          continue;
+        if (!isRecord(test)) {
+          throw new Error('invalid-test-results');
+        }
+
+        const projectName = test.projectName;
+        if (typeof projectName !== 'string') {
+          throw new Error('invalid-test-results');
         }
 
         const classification = classifyPlaywrightTest(test);
         addResult(summary, classification);
-        const project = (projects[test.projectName] ??= {
+        const project = (projects[projectName] ??= {
           passed: 0,
           failed: 0,
           skipped: 0,
@@ -118,6 +148,10 @@ function visitSuites(
 }
 
 export function parsePlaywrightResults(raw: unknown): TestRunSummary {
+  if (!isRecord(raw) || !Array.isArray(raw.suites)) {
+    throw new Error('invalid-test-results');
+  }
+
   const counts: TestRunCounts = {
     passed: 0,
     failed: 0,
@@ -127,7 +161,7 @@ export function parsePlaywrightResults(raw: unknown): TestRunSummary {
   };
   const projects: Record<string, TestRunCounts> = {};
 
-  visitSuites(isRecord(raw) ? raw.suites : undefined, counts, projects);
+  visitSuites(raw.suites, counts, projects);
 
   return {
     ...createSummary(counts),
