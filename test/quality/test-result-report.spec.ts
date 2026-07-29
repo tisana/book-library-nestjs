@@ -69,6 +69,7 @@ describe('test result normalization', () => {
     expect(evaluateTestRun(summary)).toEqual({
       passed: false,
       reasons: ['zero-tests'],
+      warnings: [],
     });
   });
 
@@ -222,6 +223,34 @@ describe('test result normalization', () => {
     expect(evaluateTestRun(parsePlaywrightResults(playwrightResult))).toEqual({
       passed: false,
       reasons: ['final-failures:1'],
+      warnings: ['flaky-tests:1'],
+    });
+  });
+
+  it('passes a flaky-only Playwright run while reporting a flakiness warning', () => {
+    const flakyOnlyPlaywrightResult = {
+      suites: [
+        {
+          suites: [],
+          specs: [
+            {
+              tests: [
+                {
+                  projectName: 'desktop-chromium',
+                  expectedStatus: 'passed',
+                  results: [{ status: 'failed' }, { status: 'passed' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(evaluateTestRun(parsePlaywrightResults(flakyOnlyPlaywrightResult))).toEqual({
+      passed: true,
+      reasons: [],
+      warnings: ['flaky-tests:1'],
     });
   });
 

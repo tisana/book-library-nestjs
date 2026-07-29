@@ -180,6 +180,7 @@ export function parsePlaywrightResults(raw: unknown): TestRunSummary {
 export function evaluateTestRun(summary: TestRunSummary): {
   passed: boolean;
   reasons: string[];
+  warnings: string[];
 } {
   const reasons = [
     ...(summary.passed + summary.flaky + summary.failed === 0
@@ -188,5 +189,7 @@ export function evaluateTestRun(summary: TestRunSummary): {
     ...(summary.failed > 0 ? [`final-failures:${summary.failed}`] : []),
   ];
 
-  return { passed: reasons.length === 0, reasons };
+  const warnings = summary.flaky > 0 ? [`flaky-tests:${summary.flaky}`] : [];
+
+  return { passed: reasons.length === 0, reasons, warnings };
 }

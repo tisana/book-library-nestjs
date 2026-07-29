@@ -67,6 +67,25 @@ const failedPlaywrightTests = {
   ],
 };
 
+const flakyPlaywrightTests = {
+  suites: [
+    {
+      suites: [],
+      specs: [
+        {
+          tests: [
+            {
+              projectName: 'desktop-chromium',
+              expectedStatus: 'passed',
+              results: [{ status: 'failed' }, { status: 'passed' }],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
 const zeroPlaywrightTests = { suites: [] };
 
 function qualityReport(
@@ -77,7 +96,7 @@ function qualityReport(
     stream,
     generatedAt: '2026-07-26T00:00:00.000Z',
     toolVersions: { node: 'v25.0.0' },
-    gate: { passed: true, reasons: [] },
+    gate: { passed: true, reasons: [], warnings: [] },
     ...overrides,
   };
 }
@@ -464,6 +483,41 @@ describe('scoped quality reports', () => {
         join(fixtureDirectory, 'baselines.json'),
       ]),
     ).rejects.toThrow(`frontend-e2e:quality-gate-failed:e2e-tests:${reason}`);
+  });
+
+  it('writes non-blocking Playwright flakiness warnings to Markdown and JSON', async () => {
+    const e2ePath = join(fixtureDirectory, 'flaky-playwright.json');
+    const markdownPath = join(fixtureDirectory, 'flaky.md');
+    const jsonPath = join(fixtureDirectory, 'flaky.json');
+    await writeFile(e2ePath, JSON.stringify(flakyPlaywrightTests));
+
+    await expect(
+      runQualityReportCli([
+        '--stream',
+        'frontend-e2e',
+        '--e2e-tests',
+        e2ePath,
+        '--baselines',
+        join(fixtureDirectory, 'baselines.json'),
+        '--markdown',
+        markdownPath,
+        '--json',
+        jsonPath,
+      ]),
+    ).resolves.toMatchObject({
+      gate: {
+        passed: true,
+        reasons: [],
+        warnings: ['e2e-tests:flaky-tests:1'],
+      },
+    });
+
+    await expect(readFile(markdownPath, 'utf8')).resolves.toContain(
+      'Warnings:\n- e2e-tests:flaky-tests:1',
+    );
+    await expect(readFile(jsonPath, 'utf8')).resolves.toContain(
+      '"warnings": [\n      "e2e-tests:flaky-tests:1"\n    ]',
+    );
   });
 
   it('does not write reports, summaries, or baselines in check-only mode', async () => {

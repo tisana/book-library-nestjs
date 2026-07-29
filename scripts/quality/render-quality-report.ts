@@ -57,6 +57,9 @@ function reportMetadata(report: QualityReport): string {
     ...(report.gate.reasons.length > 0
       ? ['Reasons:', ...report.gate.reasons.map((reason) => `- ${reason}`)]
       : []),
+    ...(report.gate.warnings.length > 0
+      ? ['Warnings:', ...report.gate.warnings.map((warning) => `- ${warning}`)]
+      : []),
   ].join('\n');
 }
 

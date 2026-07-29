@@ -18,6 +18,12 @@ import {
 
 export type QualityStream = 'backend' | 'frontend-unit' | 'frontend-e2e';
 
+export interface QualityGate {
+  passed: boolean;
+  reasons: string[];
+  warnings: string[];
+}
+
 export interface QualityReport {
   stream: QualityStream;
   generatedAt: string;
@@ -25,7 +31,7 @@ export interface QualityReport {
   coverage?: CoverageReport;
   unitTests?: TestRunSummary;
   e2eTests?: TestRunSummary;
-  gate: { passed: boolean; reasons: string[] };
+  gate: QualityGate;
 }
 
 interface QualityReportOptions {
@@ -194,6 +200,7 @@ function evaluateGate(
   allowMissingCoverageBaseline: boolean,
 ): QualityReport['gate'] {
   const reasons: string[] = [];
+  const warnings: string[] = [];
   if (report.coverage) {
     const baseline = report.stream === 'backend' ? baselines.backend : baselines.frontend;
     if (!baseline) {
@@ -213,10 +220,12 @@ function evaluateGate(
     ['e2e-tests', report.e2eTests],
   ] as const) {
     if (summary) {
-      reasons.push(...evaluateTestRun(summary).reasons.map((reason) => `${name}:${reason}`));
+      const evaluation = evaluateTestRun(summary);
+      reasons.push(...evaluation.reasons.map((reason) => `${name}:${reason}`));
+      warnings.push(...evaluation.warnings.map((warning) => `${name}:${warning}`));
     }
   }
-  return { passed: reasons.length === 0, reasons };
+  return { passed: reasons.length === 0, reasons, warnings };
 }
 
 async function writeOutput(path: string, contents: string): Promise<void> {
