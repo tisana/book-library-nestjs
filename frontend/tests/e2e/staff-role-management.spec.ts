@@ -98,6 +98,7 @@ test('an administrator creates a staff account, assigns admin, and the new accou
   const row = page.getByRole('row').filter({ hasText: 'New Staff' });
   await row.getByRole('button', { name: 'Save' }).click();
   await expect(page.getByRole('status')).toContainText('New Staff updated');
+  await expect(page.getByLabel('Role for New Staff')).toHaveValue('admin');
 
   await page.getByRole('button', { name: /sign out/i }).first().click();
   await page.getByLabel('Email or login identifier').fill('new.staff@example.test');

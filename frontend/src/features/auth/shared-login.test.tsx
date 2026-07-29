@@ -129,4 +129,51 @@ describe('SharedLogin', () => {
     await waitFor(() => expect(navigateMock).toHaveBeenCalled());
     expect(attempts).toBe(1);
   });
+
+  it('keeps the invalid password focused without sending a request', async () => {
+    const user = userEvent.setup();
+    const loginHandler = vi.fn();
+    server.use(
+      http.post(`${apiBaseUrl}/auth/login`, () => {
+        loginHandler();
+        return HttpResponse.json(authResponse('staff', ['catalog:read']));
+      }),
+    );
+    render(<SharedLogin />);
+
+    await user.type(
+      screen.getByLabelText(/email or login identifier/i),
+      'staff@example.com',
+    );
+
+    await user.click(screen.getByRole('button', { name: /sign in/i }));
+
+    expect(screen.getByLabelText(/password/i)).toHaveFocus();
+    expect(loginHandler).not.toHaveBeenCalled();
+  });
+
+  it('allows a retry after a generic authentication failure', async () => {
+    const user = userEvent.setup();
+    let attempt = 0;
+    server.use(
+      http.post(`${apiBaseUrl}/auth/login`, () => {
+        attempt += 1;
+        return attempt === 1
+          ? HttpResponse.json({ message: 'details hidden' }, { status: 401 })
+          : HttpResponse.json(authResponse('staff', ['catalog:read']));
+      }),
+    );
+    render(<SharedLogin />);
+
+    await user.type(screen.getByLabelText(/email or login identifier/i), 'staff@example.com');
+    await user.type(screen.getByLabelText(/password/i), 'Password#2026');
+    await user.click(screen.getByRole('button', { name: /sign in/i }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Invalid credentials.');
+
+    await user.click(screen.getByRole('button', { name: /sign in/i }));
+    await waitFor(() =>
+      expect(navigateMock).toHaveBeenCalledWith({ to: '/staff' }),
+    );
+    expect(attempt).toBe(2);
+  });
 });

@@ -52,6 +52,14 @@ const activeBorrowing: BorrowingView = {
   borrowedByStaffId: 'staff-1',
 };
 
+const returnedBorrowing: BorrowingView = {
+  ...activeBorrowing,
+  id: 'borrowing-returned',
+  bookTitle: 'Already Returned',
+  status: 'returned',
+  returnedAt: '2026-06-16T00:00:00.000Z',
+};
+
 describe('Member home components', () => {
   it('renders quota, no-borrowings, and quota-available states', () => {
     const { rerender } = render(<QuotaStatusCard policy={policy} />);
@@ -80,5 +88,43 @@ describe('Member home components', () => {
     expect(screen.getByText('Borrowed Jun 3, 2026')).toBeInTheDocument();
     expect(screen.getByText('Due Jun 17, 2026')).toBeInTheDocument();
     expect(screen.getByText('Due today')).toBeInTheDocument();
+  });
+
+  it('excludes returned books from the current borrowing list', () => {
+    render(
+      <BorrowedBooksList
+        borrowings={[activeBorrowing, returnedBorrowing]}
+        now={new Date('2026-06-17T12:00:00.000Z')}
+      />,
+    );
+
+    expect(screen.getByRole('link', { name: 'Clean Code' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Already Returned' })).toBeNull();
+    expect(screen.getByText('1')).toBeInTheDocument();
+  });
+
+  it.each(['inactive', 'suspended'] as const)(
+    'explains why a %s account cannot borrow',
+    (status) => {
+      render(
+        <QuotaStatusCard
+          policy={{
+            ...policy,
+            status,
+            eligibleByStatus: false,
+            remainingAllowance: 0,
+            limitReached: false,
+          }}
+        />,
+      );
+
+      expect(screen.getByText(new RegExp(`membership is ${status}`, 'i'))).toBeInTheDocument();
+    },
+  );
+
+  it('does not announce quota availability when no allowance remains', () => {
+    render(<QuotaAvailableState remainingAllowance={0} />);
+
+    expect(screen.queryByText(/available to borrow/i)).toBeNull();
   });
 });

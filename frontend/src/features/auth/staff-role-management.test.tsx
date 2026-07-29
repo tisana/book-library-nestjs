@@ -117,4 +117,41 @@ describe('StaffRoleManagement', () => {
     );
     expect(screen.queryByRole('button', { name: 'Create account' })).toBeNull();
   });
+
+  it('shows loading and empty account states without mutation controls disappearing', () => {
+    api.useStaffUsers.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      isError: false,
+      error: null,
+    });
+    const { rerender } = render(<StaffRoleManagement />);
+    expect(screen.getByRole('columnheader', { name: 'Account' })).toBeInTheDocument();
+
+    api.useStaffUsers.mockReturnValue({
+      data: [],
+      isLoading: false,
+      isError: false,
+      error: null,
+    });
+    rerender(<StaffRoleManagement />);
+    expect(screen.getByText('No staff accounts.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Create account' })).toBeEnabled();
+  });
+
+  it('uses safe error copy when the account list cannot be loaded', () => {
+    api.useStaffUsers.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: true,
+      error: new Error('connection details must not be shown'),
+    });
+
+    render(<StaffRoleManagement />);
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Staff accounts could not be loaded.',
+    );
+    expect(screen.queryByText(/connection details/i)).toBeNull();
+  });
 });

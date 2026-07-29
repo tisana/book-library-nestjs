@@ -113,11 +113,25 @@ test('staff, administrator, and member use the same keyboard-only sign-in page',
   ] as const) {
     await keyboardSignIn(page, identifier);
     await expect(page).toHaveURL(new RegExp(`${landing}$`));
+    expect(
+      await page.evaluate(() =>
+        [...Object.values(localStorage), ...Object.values(sessionStorage)].some(
+          (value) => /(?:access|refresh)[-_ ]?token/i.test(value),
+        ),
+      ),
+    ).toBe(false);
     await page
       .getByRole('button', { name: /sign out/i })
       .first()
       .click();
     await expect(page).toHaveURL(/\/login$/);
+    expect(
+      await page.evaluate(() =>
+        [...Object.values(localStorage), ...Object.values(sessionStorage)].some(
+          (value) => /(?:access|refresh)[-_ ]?token/i.test(value),
+        ),
+      ),
+    ).toBe(false);
   }
 });
 

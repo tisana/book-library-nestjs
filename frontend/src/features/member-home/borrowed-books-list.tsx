@@ -26,6 +26,10 @@ const dueTones = {
 } as const;
 
 export function BorrowedBooksList({ borrowings, now }: BorrowedBooksListProps) {
+  const currentBorrowings = borrowings.filter(
+    (borrowing) => borrowing.status !== 'returned' && !borrowing.returnedAt,
+  );
+
   return (
     <section className="flex flex-col gap-3" aria-labelledby="borrowed-books">
       <div className="flex items-center justify-between gap-3">
@@ -36,11 +40,11 @@ export function BorrowedBooksList({ borrowings, now }: BorrowedBooksListProps) {
           Current borrowed books
         </h2>
         <span className="text-sm tabular-nums text-slate-500">
-          {borrowings.length}
+          {currentBorrowings.length}
         </span>
       </div>
       <div className="flex flex-col gap-3">
-        {borrowings.map((borrowing) => {
+        {currentBorrowings.map((borrowing) => {
           const dueStatus = getDueStatus(borrowing.dueAt, {
             returnedAt: borrowing.returnedAt,
             now,
