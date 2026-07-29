@@ -379,25 +379,21 @@ describe('BorrowingsService', () => {
     });
     const service = createService({ findOne });
 
-    await expect(
+    await expectBorrowingNotFound(
       service.findOneForMember(borrowingId, memberId),
-    ).rejects.toMatchObject({
-      message: 'Borrowing record not found',
-    });
+    );
   });
 
   it('uses the same not-found response for a valid missing self-service borrowing', async () => {
     const findOne = jest.fn().mockReturnValue(createFindQuery(null));
     const service = createService({ findOne });
 
-    await expect(
+    await expectBorrowingNotFound(
       service.findOneForMember(
         '665f4d3b8f4c8a001f5f0a14',
         '665f4d3b8f4c8a001f5f0a12',
       ),
-    ).rejects.toMatchObject({
-      message: 'Borrowing record not found',
-    });
+    );
   });
 
   it('keeps malformed borrowing IDs in the shared Mongo ID validation contract', async () => {
@@ -419,6 +415,17 @@ function createFindQuery(result: unknown) {
   };
 
   return query;
+}
+
+async function expectBorrowingNotFound(operation: Promise<unknown>) {
+  try {
+    await operation;
+    fail('Expected borrowing lookup to reject');
+  } catch (error) {
+    expect(error).toBeInstanceOf(NotFoundException);
+    expect(error).toMatchObject({ message: 'Borrowing record not found' });
+    expect((error as NotFoundException).getStatus()).toBe(404);
+  }
 }
 
 function createSessionQuery(result: unknown) {
