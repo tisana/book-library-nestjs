@@ -13,8 +13,58 @@ export interface ChangedCoverageGate {
   minimum: number;
 }
 
+function decodeGitPath(value: string): string {
+  if (!value.startsWith('"')) {
+    return value;
+  }
+
+  let decoded = '';
+  for (let index = 1; index < value.length; index += 1) {
+    const character = value[index];
+    if (character === '"') {
+      return decoded;
+    }
+    if (character !== '\\') {
+      decoded += character;
+      continue;
+    }
+
+    const escape = value[index + 1];
+    if (escape === undefined) {
+      return value;
+    }
+    const escapes: Record<string, string> = {
+      '"': '"',
+      '\\': '\\',
+      a: '\x07',
+      b: '\b',
+      f: '\f',
+      n: '\n',
+      r: '\r',
+      t: '\t',
+      v: '\v',
+    };
+    if (escapes[escape] !== undefined) {
+      decoded += escapes[escape];
+      index += 1;
+      continue;
+    }
+    const octal = value.slice(index + 1, index + 4).match(/^[0-7]{1,3}/)?.[0];
+    if (octal) {
+      decoded += String.fromCharCode(Number.parseInt(octal, 8));
+      index += octal.length;
+      continue;
+    }
+    return value;
+  }
+  return value;
+}
+
 function normalizePath(value: string): string {
-  let normalized = value.trim().replace(/\\/g, '/');
+  let normalized = decodeGitPath(value);
+  if (!value.startsWith('"')) {
+    normalized = normalized.replace(/\\/g, '/');
+  }
   normalized = normalized.replace(/^\.\//, '').replace(/^(?:a|b)\//, '');
   const repositoryPath = normalized.match(/(?:^|\/)((?:frontend\/)?(?:src|test|scripts)\/.*)$/);
   if (repositoryPath) {
@@ -27,29 +77,44 @@ export function parseChangedLines(unifiedDiff: string): Map<string, Set<number>>
   const changed = new Map<string, Set<number>>();
   let path: string | undefined;
   let nextAddedLine: number | undefined;
+  let awaitingNewFilePath = false;
 
   for (const line of unifiedDiff.split(/\r?\n/)) {
-    if (line.startsWith('+++ ')) {
-      const candidate = line.slice(4).trim();
-      path = candidate === '/dev/null' ? undefined : normalizePath(candidate);
+    if (line.startsWith('diff --git ')) {
+      path = undefined;
       nextAddedLine = undefined;
+      awaitingNewFilePath = false;
       continue;
     }
     const hunk = line.match(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@/);
     if (hunk) {
       nextAddedLine = Number(hunk[1]);
+      awaitingNewFilePath = false;
       continue;
     }
-    if (nextAddedLine === undefined || !path) {
+    if (nextAddedLine !== undefined) {
+      if (!path) {
+        continue;
+      }
+      if (line.startsWith('+')) {
+        const lines = changed.get(path) ?? new Set<number>();
+        lines.add(nextAddedLine);
+        changed.set(path, lines);
+        nextAddedLine += 1;
+      } else if (!line.startsWith('-')) {
+        nextAddedLine += 1;
+      }
       continue;
     }
-    if (line.startsWith('+')) {
-      const lines = changed.get(path) ?? new Set<number>();
-      lines.add(nextAddedLine);
-      changed.set(path, lines);
-      nextAddedLine += 1;
-    } else if (!line.startsWith('-')) {
-      nextAddedLine += 1;
+    if (line.startsWith('--- ')) {
+      path = undefined;
+      awaitingNewFilePath = true;
+      continue;
+    }
+    if (awaitingNewFilePath && line.startsWith('+++ ')) {
+      const candidate = line.slice(4);
+      path = candidate === '/dev/null' ? undefined : normalizePath(candidate);
+      awaitingNewFilePath = false;
     }
   }
   return changed;

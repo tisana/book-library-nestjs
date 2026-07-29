@@ -34,6 +34,52 @@ diff --git a/frontend/src/view.tsx b/frontend/src/view.tsx
     );
   });
 
+  it('counts an added source line beginning with +++ without mistaking it for a file header', () => {
+    const changed = parseChangedLines(`diff --git a/src/counter.ts b/src/counter.ts
+--- a/src/counter.ts
++++ b/src/counter.ts
+@@ -1,0 +1,2 @@
++++ +counter;
++export const next = counter;
+diff --git a/src/next.ts b/src/next.ts
+--- a/src/next.ts
++++ b/src/next.ts
+@@ -3 +3,2 @@
++export const later = true;
+ export {};
+`);
+
+    expect(changed).toEqual(
+      new Map([
+        ['src/counter.ts', new Set([1, 2])],
+        ['src/next.ts', new Set([3])],
+      ]),
+    );
+  });
+
+  it('decodes quoted Git file headers before normalizing paths', () => {
+    const changed = parseChangedLines(`diff --git "a/src/space name.ts" "b/src/space name.ts"
+--- "a/src/space name.ts"
++++ "b/src/space name.ts"
+@@ -4 +4,2 @@
++export const space = true;
+ export {};
+diff --git "a/src/quote\\\"slash\\\\tab\\t.ts" "b/src/quote\\\"slash\\\\tab\\t.ts"
+--- "a/src/quote\\\"slash\\\\tab\\t.ts"
++++ "b/src/quote\\\"slash\\\\tab\\t.ts"
+@@ -1 +1,2 @@
++export const escaped = true;
+ export {};
+`);
+
+    expect(changed).toEqual(
+      new Map([
+        ['src/space name.ts', new Set([4])],
+        ['src/quote"slash\\tab\t.ts', new Set([1])],
+      ]),
+    );
+  });
+
   it('parses LCOV line hits using normalized case-preserving paths', () => {
     expect(
       parseLcov(`TN:
