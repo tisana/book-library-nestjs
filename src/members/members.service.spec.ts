@@ -1,7 +1,9 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
 import {
   LibraryItemStatus,
+  MemberAuthStatus,
   MemberStatus,
   StaffRole,
 } from '../common/enums/library-status.enum';
@@ -29,6 +31,7 @@ describe('MembersService', () => {
     exists?: jest.Mock;
     find?: jest.Mock;
     findOne?: jest.Mock;
+    updateOne?: jest.Mock;
   };
 
   type MockMemberDocument = Omit<Partial<MemberDocument>, 'save'> & {
@@ -320,5 +323,170 @@ describe('MembersService', () => {
         limitReached: true,
       },
     );
+  });
+
+  it('looks up credentials with normalized login identifiers and the password hash selected', async () => {
+    const member = createMemberDocument({
+      loginIdentifier: 'ada@example.com',
+      passwordHash: 'stored-hash',
+      authVersion: 4,
+    });
+    const exec = jest.fn().mockResolvedValue(member);
+    const select = jest.fn().mockReturnValue({ exec });
+    const model: MockMemberModel = jest.fn();
+    model.findOne = jest.fn().mockReturnValue({ select });
+    const service = new MembersService(
+      asModel(model),
+      createMembershipTypesService(),
+    );
+
+    await expect(
+      service.findByLoginIdentifierWithPassword(' ADA@EXAMPLE.COM '),
+    ).resolves.toBe(member as MemberDocument);
+
+    expect(model.findOne).toHaveBeenCalledWith({
+      $or: [
+        { loginIdentifier: { $eq: 'ada@example.com' } },
+        { memberNumber: { $eq: 'ADA@EXAMPLE.COM' } },
+        { email: { $eq: 'ada@example.com' } },
+      ],
+    });
+    expect(select).toHaveBeenCalledWith('+passwordHash');
+  });
+
+  it.each([
+    [MemberStatus.Suspended, MemberAuthStatus.Active],
+    [MemberStatus.Active, MemberAuthStatus.Locked],
+  ])(
+    'rejects a non-active member status pair (%s, %s) as not found',
+    async (status, authStatus) => {
+      const exec = jest
+        .fn()
+        .mockResolvedValue(createMemberDocument({ status, authStatus }));
+      const model: MockMemberModel = jest.fn();
+      model.findOne = jest.fn().mockReturnValue({ exec });
+      const service = new MembersService(
+        asModel(model),
+        createMembershipTypesService(),
+      );
+
+      await expect(service.findActiveById(validMemberId)).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+    },
+  );
+
+  it('updates last login atomically without loading the member document', async () => {
+    const model: MockMemberModel = jest.fn();
+    model.updateOne = jest.fn().mockResolvedValue({ matchedCount: 1 });
+    const service = new MembersService(
+      asModel(model),
+      createMembershipTypesService(),
+    );
+
+    await service.touchLastLogin(validMemberId);
+
+    expect(model.updateOne).toHaveBeenCalledWith(
+      { _id: { $eq: expect.objectContaining({ _bsontype: 'ObjectId' }) } },
+      { $set: { lastLoginAt: expect.any(Date) } },
+    );
+  });
+
+  it('sets normalized credentials, increments auth version, and records the actor', async () => {
+    const member = createMemberDocument({
+      authVersion: 2,
+      loginIdentifier: 'old@example.com',
+    });
+    member.save.mockResolvedValue(member);
+    const exec = jest.fn().mockResolvedValue(member);
+    const model: MockMemberModel = jest.fn();
+    model.exists = jest.fn().mockResolvedValue(null);
+    model.findOne = jest.fn().mockReturnValue({ exec });
+    const service = new MembersService(
+      asModel(model),
+      createMembershipTypesService(),
+    );
+
+    await service.setMemberCredentials(
+      validMemberId,
+      ' ADA@EXAMPLE.COM ',
+      'plain-text-password',
+      actor,
+    );
+
+    expect(member.loginIdentifier).toBe('ada@example.com');
+    expect(member.passwordHash).not.toBe('plain-text-password');
+    await expect(
+      bcrypt.compare('plain-text-password', member.passwordHash!),
+    ).resolves.toBe(true);
+    expect(member.authVersion).toBe(3);
+    expect(member.authStatus).toBe(MemberAuthStatus.Active);
+    expect(member.updatedBy).toBe('staff-user-id');
+    expect(member).not.toHaveProperty('password');
+  });
+
+  it('leaves member credentials unchanged when the normalized login identifier conflicts', async () => {
+    const member = createMemberDocument({
+      authVersion: 2,
+      loginIdentifier: 'old@example.com',
+      passwordHash: 'existing-hash',
+    });
+    const exec = jest.fn().mockResolvedValue(member);
+    const model: MockMemberModel = jest.fn();
+    model.exists = jest.fn().mockResolvedValue({ _id: 'other-member' });
+    model.findOne = jest.fn().mockReturnValue({ exec });
+    const service = new MembersService(
+      asModel(model),
+      createMembershipTypesService(),
+    );
+
+    await expect(
+      service.setMemberCredentials(
+        validMemberId,
+        ' OTHER@EXAMPLE.COM ',
+        'new-password',
+        actor,
+      ),
+    ).rejects.toBeInstanceOf(ConflictException);
+
+    expect(member).toMatchObject({
+      loginIdentifier: 'old@example.com',
+      passwordHash: 'existing-hash',
+      authVersion: 2,
+    });
+    expect(member.save).not.toHaveBeenCalled();
+  });
+
+  it('rejects a missing member when bumping its auth version', async () => {
+    const model: MockMemberModel = jest.fn();
+    model.updateOne = jest.fn().mockResolvedValue({ matchedCount: 0 });
+    const service = new MembersService(
+      asModel(model),
+      createMembershipTypesService(),
+    );
+
+    await expect(service.bumpAuthVersion(validMemberId)).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+
+    expect(model.updateOne).toHaveBeenCalledWith(
+      { _id: { $eq: expect.objectContaining({ _bsontype: 'ObjectId' }) } },
+      { $inc: { authVersion: 1 } },
+    );
+  });
+
+  it('updates a member profile without validating membership policy when membership and status do not change', async () => {
+    const member = createMemberDocument();
+    member.save.mockResolvedValue(member);
+    const exec = jest.fn().mockResolvedValue(member);
+    const model: MockMemberModel = jest.fn();
+    model.findOne = jest.fn().mockReturnValue({ exec });
+    const membershipTypesService = createMembershipTypesService();
+    const service = new MembersService(asModel(model), membershipTypesService);
+
+    await service.update(validMemberId, { fullName: 'Grace Hopper' }, actor);
+
+    expect(member.fullName).toBe('Grace Hopper');
+    expect(membershipTypesService.validateActivePolicy).not.toHaveBeenCalled();
   });
 });
