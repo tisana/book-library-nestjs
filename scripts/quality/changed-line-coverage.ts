@@ -1,4 +1,5 @@
 import { appendFile, readFile } from 'node:fs/promises';
+import { TextDecoder } from 'node:util';
 
 export type ChangedLineCoverageStatus = 'passed' | 'failed' | 'not-applicable';
 export type ChangedLineCoverageScope = 'backend' | 'frontend';
@@ -18,46 +19,64 @@ function decodeGitPath(value: string): string {
     return value;
   }
 
-  let decoded = '';
+  const bytes: number[] = [];
   for (let index = 1; index < value.length; index += 1) {
     const character = value[index];
     if (character === '"') {
-      return decoded;
+      try {
+        return new TextDecoder('utf-8', { fatal: true }).decode(
+          Uint8Array.from(bytes),
+        );
+      } catch {
+        throw new Error('invalid-git-path');
+      }
     }
     if (character !== '\\') {
-      decoded += character;
+      let literalEnd = index + 1;
+      while (
+        literalEnd < value.length &&
+        value[literalEnd] !== '"' &&
+        value[literalEnd] !== '\\'
+      ) {
+        literalEnd += 1;
+      }
+      bytes.push(...Buffer.from(value.slice(index, literalEnd), 'utf8'));
+      index = literalEnd - 1;
       continue;
     }
 
     const escape = value[index + 1];
     if (escape === undefined) {
-      return value;
+      throw new Error('invalid-git-path');
     }
-    const escapes: Record<string, string> = {
-      '"': '"',
-      '\\': '\\',
-      a: '\x07',
-      b: '\b',
-      f: '\f',
-      n: '\n',
-      r: '\r',
-      t: '\t',
-      v: '\v',
+    const escapes: Record<string, number> = {
+      '"': 0x22,
+      '\\': 0x5c,
+      a: 0x07,
+      b: 0x08,
+      f: 0x0c,
+      n: 0x0a,
+      r: 0x0d,
+      t: 0x09,
+      v: 0x0b,
     };
     if (escapes[escape] !== undefined) {
-      decoded += escapes[escape];
+      bytes.push(escapes[escape]);
       index += 1;
       continue;
     }
-    const octal = value.slice(index + 1, index + 4).match(/^[0-7]{1,3}/)?.[0];
-    if (octal) {
-      decoded += String.fromCharCode(Number.parseInt(octal, 8));
-      index += octal.length;
+    if (/^[0-7]$/.test(escape)) {
+      const octal = value.slice(index + 1, index + 4);
+      if (!/^[0-7]{3}$/.test(octal)) {
+        throw new Error('invalid-git-path');
+      }
+      bytes.push(Number.parseInt(octal, 8));
+      index += 3;
       continue;
     }
-    return value;
+    throw new Error('invalid-git-path');
   }
-  return value;
+  throw new Error('invalid-git-path');
 }
 
 function normalizePath(value: string): string {

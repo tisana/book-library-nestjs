@@ -80,6 +80,38 @@ diff --git "a/src/quote\\\"slash\\\\tab\\t.ts" "b/src/quote\\\"slash\\\\tab\\t.t
     );
   });
 
+  it('decodes adjacent octal UTF-8 bytes and matches the LCOV path exactly', () => {
+    const changed = parseChangedLines(`diff --git "a/src/caf\\303\\251-\\303\\261.ts" "b/src/caf\\303\\251-\\303\\261.ts"
+--- "a/src/caf\\303\\251-\\303\\261.ts"
++++ "b/src/caf\\303\\251-\\303\\261.ts"
+@@ -6 +6,2 @@
++export const café = 'mañana';
+ export {};
+`);
+    const lcov = parseLcov('SF:src/café-ñ.ts\nDA:6,1\nend_of_record\n');
+
+    expect(changed).toEqual(new Map([['src/café-ñ.ts', new Set([6])]]));
+    expect(evaluateChangedLineCoverage(changed, lcov)).toMatchObject({
+      passed: true,
+      covered: 1,
+      total: 1,
+    });
+  });
+
+  it.each([
+    ['truncated octal escape', '"b/src/caf\\30.ts"'],
+    ['invalid UTF-8 bytes', '"b/src/caf\\303\\050.ts"'],
+  ])('rejects a quoted Git path with %s', (_case, path) => {
+    expect(() =>
+      parseChangedLines(`diff --git a/src/example.ts b/src/example.ts
+--- a/src/example.ts
++++ ${path}
+@@ -1,0 +1,1 @@
++export const example = true;
+`),
+    ).toThrow('invalid-git-path');
+  });
+
   it('parses LCOV line hits using normalized case-preserving paths', () => {
     expect(
       parseLcov(`TN:
