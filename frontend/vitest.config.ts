@@ -18,7 +18,21 @@ export default defineConfig({
     css: true,
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'html'],
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/**/*.test.{ts,tsx}',
+        'src/**/*.spec.{ts,tsx}',
+        'src/test/**',
+        'src/**/*.d.ts',
+        'src/main.tsx',
+        'src/**/__generated__/**',
+      ],
+      reporter: ['text-summary', 'json-summary', 'lcov', 'html'],
+      reportsDirectory: './coverage',
     },
+    reporters: [
+      'default',
+      ['json', { outputFile: './test-results/vitest-results.json' }],
+    ],
   },
 });

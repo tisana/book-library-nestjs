@@ -4,5 +4,11 @@
     "branches": 55.95,
     "functions": 59.66,
     "lines": 59.58
+  },
+  "frontend": {
+    "statements": 37.58,
+    "branches": 32.58,
+    "functions": 31.4,
+    "lines": 38.55
   }
 }
