@@ -489,4 +489,168 @@ describe('MembersService', () => {
     expect(member.fullName).toBe('Grace Hopper');
     expect(membershipTypesService.validateActivePolicy).not.toHaveBeenCalled();
   });
+
+  it('reserves a changed email, revokes active sessions, and audits identifier and status changes', async () => {
+    const member = createMemberDocument({
+      email: 'ada@example.com',
+      authVersion: 0,
+    });
+    member.save.mockResolvedValue(member);
+    const exec = jest.fn().mockResolvedValue(member);
+    const model: MockMemberModel = jest.fn();
+    model.findOne = jest.fn().mockReturnValue({ exec });
+    const identifierModel = createIdentifierModel(null);
+    const refreshTokenFamilyModel = { updateMany: jest.fn().mockResolvedValue({}) };
+    const securityActivityService = { record: jest.fn().mockResolvedValue(undefined) };
+    const service = new MembersService(
+      asModel(model),
+      createMembershipTypesService(),
+      identifierModel as never,
+      refreshTokenFamilyModel as never,
+      securityActivityService as never,
+    );
+
+    await service.update(
+      validMemberId,
+      { email: ' NEW@EXAMPLE.COM ', status: MemberStatus.Suspended },
+      actor,
+    );
+
+    expect(member).toMatchObject({
+      email: 'new@example.com',
+      status: MemberStatus.Suspended,
+      authVersion: 2,
+      updatedBy: 'staff-user-id',
+    });
+    expect(identifierModel.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        normalizedIdentifier: 'new@example.com',
+        subjectId: 'member-id',
+        createdBy: 'staff-user-id',
+      }),
+    );
+    expect(identifierModel.updateOne).toHaveBeenCalledWith(
+      expect.objectContaining({
+        normalizedIdentifier: 'ada@example.com',
+        subjectId: 'member-id',
+      }),
+      expect.objectContaining({ $set: expect.objectContaining({ updatedBy: 'staff-user-id' }) }),
+    );
+    expect(refreshTokenFamilyModel.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ subjectId: 'member-id' }),
+      expect.objectContaining({ $set: expect.objectContaining({ revokedReason: 'member-account-updated' }) }),
+    );
+    expect(securityActivityService.record).toHaveBeenCalledTimes(2);
+  });
+
+  it('releases a newly reserved email when saving the member change fails', async () => {
+    const member = createMemberDocument({ email: 'ada@example.com' });
+    member.save.mockRejectedValue(new Error('database write failed'));
+    const exec = jest.fn().mockResolvedValue(member);
+    const model: MockMemberModel = jest.fn();
+    model.findOne = jest.fn().mockReturnValue({ exec });
+    const identifierModel = createIdentifierModel(null);
+    const service = new MembersService(
+      asModel(model),
+      createMembershipTypesService(),
+      identifierModel as never,
+    );
+
+    await expect(
+      service.update(validMemberId, { email: 'new@example.com' }, actor),
+    ).rejects.toThrow('database write failed');
+
+    expect(identifierModel.create).toHaveBeenCalledTimes(1);
+    expect(identifierModel.updateOne).toHaveBeenCalledWith(
+      expect.objectContaining({ normalizedIdentifier: 'new@example.com' }),
+      expect.objectContaining({ $set: expect.objectContaining({ releasedAt: expect.any(Date) }) }),
+    );
+  });
+
+  it('recovers a released credential identifier and revokes sessions after saving credentials', async () => {
+    const member = createMemberDocument({
+      loginIdentifier: 'old@example.com',
+      authVersion: 3,
+    });
+    member.save.mockResolvedValue(member);
+    const exec = jest.fn().mockResolvedValue(member);
+    const model: MockMemberModel = jest.fn();
+    model.exists = jest.fn().mockResolvedValue(null);
+    model.findOne = jest.fn().mockReturnValue({ exec });
+    const identifierModel = createIdentifierModel({
+      _id: 'released-id',
+      status: 'released',
+      subjectType: 'member',
+      subjectId: 'another-member',
+    });
+    const refreshTokenFamilyModel = { updateMany: jest.fn().mockResolvedValue({}) };
+    const securityActivityService = { record: jest.fn().mockResolvedValue(undefined) };
+    const service = new MembersService(
+      asModel(model),
+      createMembershipTypesService(),
+      identifierModel as never,
+      refreshTokenFamilyModel as never,
+      securityActivityService as never,
+    );
+
+    await service.setMemberCredentials(
+      validMemberId,
+      'new@example.com',
+      'plain-text-password',
+      actor,
+    );
+
+    expect(identifierModel.updateOne).toHaveBeenCalledWith(
+      { _id: 'released-id', status: 'released' },
+      expect.objectContaining({
+        $set: expect.objectContaining({ subjectId: 'member-id' }),
+        $unset: { releasedAt: '' },
+      }),
+    );
+    expect(refreshTokenFamilyModel.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ subjectId: 'member-id' }),
+      expect.objectContaining({ $set: expect.objectContaining({ revokedReason: 'member-credentials-updated' }) }),
+    );
+    expect(securityActivityService.record).toHaveBeenCalledWith(
+      expect.objectContaining({ reasonCategory: 'member-identifier-updated' }),
+    );
+  });
+
+  it('releases a newly reserved credential identifier when saving credentials fails', async () => {
+    const member = createMemberDocument({ loginIdentifier: 'old@example.com' });
+    member.save.mockRejectedValue(new Error('database write failed'));
+    const exec = jest.fn().mockResolvedValue(member);
+    const model: MockMemberModel = jest.fn();
+    model.exists = jest.fn().mockResolvedValue(null);
+    model.findOne = jest.fn().mockReturnValue({ exec });
+    const identifierModel = createIdentifierModel(null);
+    const service = new MembersService(
+      asModel(model),
+      createMembershipTypesService(),
+      identifierModel as never,
+    );
+
+    await expect(
+      service.setMemberCredentials(
+        validMemberId,
+        'new@example.com',
+        'plain-text-password',
+        actor,
+      ),
+    ).rejects.toThrow('database write failed');
+
+    expect(identifierModel.create).toHaveBeenCalledTimes(1);
+    expect(identifierModel.updateOne).toHaveBeenCalledWith(
+      expect.objectContaining({ normalizedIdentifier: 'new@example.com' }),
+      expect.objectContaining({ $set: expect.objectContaining({ releasedAt: expect.any(Date) }) }),
+    );
+  });
 });
+
+function createIdentifierModel(existing: unknown) {
+  return {
+    findOne: jest.fn().mockReturnValue({ exec: jest.fn().mockResolvedValue(existing) }),
+    create: jest.fn().mockResolvedValue(undefined),
+    updateOne: jest.fn().mockResolvedValue({}),
+  };
+}
