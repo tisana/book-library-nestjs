@@ -1,4 +1,4 @@
-import { UnauthorizedException } from '@nestjs/common';
+import { Logger, UnauthorizedException } from '@nestjs/common';
 import {
   AuthSubjectType,
   RefreshTokenFamilyStatus,
@@ -50,11 +50,34 @@ class FakeQuery<T> {
   }
 }
 
+class FakeSingleQuery<T> {
+  constructor(
+    private readonly value: T | undefined,
+    private readonly error?: Error,
+  ) {}
+
+  select() {
+    return this;
+  }
+
+  lean() {
+    return this;
+  }
+
+  async exec(): Promise<T | undefined> {
+    if (this.error) throw this.error;
+    return this.value;
+  }
+}
+
 class FakeModel {
   documents: Record<string, any>[] = [];
   failNextCreate = false;
   failNextCommit = false;
   failNextCas = false;
+  returnNullNextCommit = false;
+  returnNullNextCas = false;
+  failNextFindOne = false;
   lastLimit?: number;
 
   async create(document: Record<string, any>) {
@@ -78,9 +101,14 @@ class FakeModel {
   }
 
   findOne(filter: Record<string, any>) {
-    return {
-      exec: async () => this.documents.find((value) => matches(value, filter)),
-    };
+    const error = this.failNextFindOne
+      ? new Error('query failed')
+      : undefined;
+    this.failNextFindOne = false;
+    return new FakeSingleQuery(
+      this.documents.find((value) => matches(value, filter)),
+      error,
+    );
   }
 
   findOneAndUpdate(filter: Record<string, any>, update: Record<string, any>) {
@@ -90,9 +118,20 @@ class FakeModel {
           this.failNextCas = false;
           throw new Error('uncertain CAS');
         }
+        if (update.$set?.lastRotationOperationId && this.returnNullNextCas) {
+          this.returnNullNextCas = false;
+          return null;
+        }
         if (update.$set?.status === 'committed' && this.failNextCommit) {
           this.failNextCommit = false;
           throw new Error('commit failed');
+        }
+        if (
+          update.$set?.status === 'committed' &&
+          this.returnNullNextCommit
+        ) {
+          this.returnNullNextCommit = false;
+          return null;
         }
         const document = this.documents.find((value) => matches(value, filter));
         if (!document) return null;
@@ -290,6 +329,39 @@ describe('TokenSessionService', () => {
     );
   });
 
+  it('fails closed when the family compare-and-swap returns no successor', async () => {
+    const created = await createFamily();
+    families.returnNullNextCas = true;
+
+    await expect(service.rotate(created.refreshToken)).rejects.toEqual(
+      new UnauthorizedException('Invalid refresh session'),
+    );
+
+    expect(families.documents[0]).toEqual(
+      expect.objectContaining({
+        status: RefreshTokenFamilyStatus.Revoked,
+        revokedReason: 'refresh-rotation-invariant',
+      }),
+    );
+    expect(markers.documents[0].status).toBe('committed');
+  });
+
+  it('fails closed when a completed rotation marker cannot be found', async () => {
+    const created = await createFamily();
+    markers.returnNullNextCommit = true;
+
+    await expect(service.rotate(created.refreshToken)).rejects.toEqual(
+      new UnauthorizedException('Invalid refresh session'),
+    );
+
+    expect(families.documents[0]).toEqual(
+      expect.objectContaining({
+        status: RefreshTokenFamilyStatus.Revoked,
+        revokedReason: 'refresh-rotation-orphaned',
+      }),
+    );
+  });
+
   it('reconciles orphaned rotations and leaves expired pre-CAS work for takeover', async () => {
     const orphaned = await createFamily('orphaned');
     const available = await createFamily('available');
@@ -338,6 +410,39 @@ describe('TokenSessionService', () => {
     expect(reconcile).toHaveBeenCalledTimes(1);
   });
 
+  it('contains scheduled reconciliation failures and leaves the next interval available', async () => {
+    jest.useFakeTimers();
+    jest.spyOn(Logger.prototype, 'error').mockImplementation();
+    const reconcile = jest
+      .spyOn(service, 'reconcileExpiredPendingMarkers')
+      .mockRejectedValueOnce(new Error('query failed'))
+      .mockResolvedValueOnce(0);
+
+    service.onModuleInit();
+    await jest.advanceTimersByTimeAsync(60_000);
+    await jest.advanceTimersByTimeAsync(60_000);
+
+    expect(reconcile).toHaveBeenCalledTimes(2);
+  });
+
+  it('contains individual reconciliation query failures', async () => {
+    jest.spyOn(Logger.prototype, 'error').mockImplementation();
+    const created = await createFamily('reconciliation-failure');
+    const family = families.documents[0];
+    markers.documents.push({
+      tokenHash: service.hashRefreshToken(created.refreshToken),
+      familyId: family.familyId,
+      status: 'pending',
+      rotationOperationId: 'failed-query',
+      leaseExpiresAt: new Date(Date.now() - 1),
+      expiresAt: family.expiresAt,
+    });
+    families.failNextFindOne = true;
+
+    await expect(service.reconcileExpiredPendingMarkers()).resolves.toBe(0);
+    expect(family.status).toBe(RefreshTokenFamilyStatus.Active);
+  });
+
   it('uses remaining lifetime and strict host-only cookie parity', () => {
     const now = new Date('2026-07-15T00:00:00Z');
     const options = service.getRefreshCookieOptions(
@@ -356,6 +461,105 @@ describe('TokenSessionService', () => {
     });
     expect(options).not.toHaveProperty('domain');
     expect(clear).toEqual({ ...options, maxAge: 0 });
+  });
+
+  it('clamps expired cookies at zero and changes only Secure outside production', () => {
+    const now = new Date('2026-07-15T00:00:00Z');
+    const development = service.getRefreshCookieOptions(
+      new Date(now.getTime() - 1),
+      false,
+      now,
+    );
+    const production = service.getRefreshCookieOptions(600, true, now);
+
+    expect(development).toEqual({
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+      path: '/auth',
+      maxAge: 0,
+    });
+    expect(production).toEqual({ ...development, secure: true, maxAge: 600_000 });
+    expect(service.getClearRefreshCookieOptions(false)).toEqual({
+      ...development,
+      maxAge: 0,
+    });
+  });
+
+  it('resolves only a family id for active and replayed refresh credentials', async () => {
+    const created = await createFamily('resolvable-subject');
+    const rotated = await service.rotate(created.refreshToken);
+
+    expect(await service.resolveFamilyId(rotated.refreshToken)).toBe(
+      created.familyId,
+    );
+    expect(await service.resolveFamilyId(created.refreshToken)).toBe(
+      created.familyId,
+    );
+    expect(await service.resolveFamilyId(undefined)).toBeUndefined();
+  });
+
+  it('rejects malformed, missing, expired, and revoked credentials without mutation', async () => {
+    const expired = await createFamily('expired-subject');
+    const revoked = await createFamily('revoked-subject');
+    families.documents[0].expiresAt = new Date(Date.now() - 1);
+    families.documents[1].status = RefreshTokenFamilyStatus.Revoked;
+    const beforeMarkers = markers.documents.length;
+
+    for (const refreshToken of [
+      undefined,
+      '',
+      'missing-refresh-token',
+      expired.refreshToken,
+      revoked.refreshToken,
+    ]) {
+      await expect(service.rotate(refreshToken as never)).rejects.toEqual(
+        new UnauthorizedException('Invalid refresh session'),
+      );
+    }
+
+    expect(markers.documents).toHaveLength(beforeMarkers);
+    expect(families.documents[0].status).toBe(RefreshTokenFamilyStatus.Active);
+    expect(families.documents[1].status).toBe(RefreshTokenFamilyStatus.Revoked);
+  });
+
+  it('revokes families and subjects idempotently', async () => {
+    await createFamily('idempotent-subject');
+    await createFamily('idempotent-subject');
+
+    await service.revokeFamily(families.documents[0].familyId, 'inactive-subject');
+    await service.revokeFamily(families.documents[0].familyId, 'inactive-subject');
+    await service.revokeSubject(
+      AuthSubjectType.Staff,
+      'idempotent-subject',
+      'stale-auth-version',
+    );
+    await service.revokeSubject(
+      AuthSubjectType.Staff,
+      'idempotent-subject',
+      'stale-auth-version',
+    );
+    await expect(
+      service.revokeRefreshToken(undefined, 'missing-cookie'),
+    ).resolves.toBeUndefined();
+
+    expect(families.documents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          status: RefreshTokenFamilyStatus.Revoked,
+          revokedReason: 'inactive-subject',
+        }),
+        expect.objectContaining({
+          status: RefreshTokenFamilyStatus.Revoked,
+          revokedReason: 'stale-auth-version',
+        }),
+      ]),
+    );
+    expect(families.documents).toEqual(
+      expect.not.arrayContaining([
+        expect.objectContaining({ currentTokenHash: expect.any(String) }),
+      ]),
+    );
   });
 
   it('revokes current and all subject sessions without exposing token hashes', async () => {
