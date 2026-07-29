@@ -54,9 +54,11 @@ class FakeSingleQuery<T> {
   constructor(
     private readonly value: T | undefined,
     private readonly error?: Error,
+    private readonly owner?: FakeModel,
   ) {}
 
-  select() {
+  select(projection: Record<string, number>) {
+    this.owner?.selectedProjections.push(projection);
     return this;
   }
 
@@ -79,6 +81,7 @@ class FakeModel {
   returnNullNextCas = false;
   failNextFindOne = false;
   lastLimit?: number;
+  selectedProjections: Record<string, number>[] = [];
 
   async create(document: Record<string, any>) {
     if (this.failNextCreate) {
@@ -101,13 +104,12 @@ class FakeModel {
   }
 
   findOne(filter: Record<string, any>) {
-    const error = this.failNextFindOne
-      ? new Error('query failed')
-      : undefined;
+    const error = this.failNextFindOne ? new Error('query failed') : undefined;
     this.failNextFindOne = false;
     return new FakeSingleQuery(
       this.documents.find((value) => matches(value, filter)),
       error,
+      this,
     );
   }
 
@@ -126,10 +128,7 @@ class FakeModel {
           this.failNextCommit = false;
           throw new Error('commit failed');
         }
-        if (
-          update.$set?.status === 'committed' &&
-          this.returnNullNextCommit
-        ) {
+        if (update.$set?.status === 'committed' && this.returnNullNextCommit) {
           this.returnNullNextCommit = false;
           return null;
         }
@@ -479,7 +478,11 @@ describe('TokenSessionService', () => {
       path: '/auth',
       maxAge: 0,
     });
-    expect(production).toEqual({ ...development, secure: true, maxAge: 600_000 });
+    expect(production).toEqual({
+      ...development,
+      secure: true,
+      maxAge: 600_000,
+    });
     expect(service.getClearRefreshCookieOptions(false)).toEqual({
       ...development,
       maxAge: 0,
@@ -497,6 +500,11 @@ describe('TokenSessionService', () => {
       created.familyId,
     );
     expect(await service.resolveFamilyId(undefined)).toBeUndefined();
+    expect(families.selectedProjections).toEqual([
+      { _id: 0, familyId: 1 },
+      { _id: 0, familyId: 1 },
+    ]);
+    expect(markers.selectedProjections).toEqual([{ _id: 0, familyId: 1 }]);
   });
 
   it('rejects malformed, missing, expired, and revoked credentials without mutation', async () => {
@@ -527,8 +535,14 @@ describe('TokenSessionService', () => {
     await createFamily('idempotent-subject');
     await createFamily('idempotent-subject');
 
-    await service.revokeFamily(families.documents[0].familyId, 'inactive-subject');
-    await service.revokeFamily(families.documents[0].familyId, 'inactive-subject');
+    await service.revokeFamily(
+      families.documents[0].familyId,
+      'inactive-subject',
+    );
+    await service.revokeFamily(
+      families.documents[0].familyId,
+      'inactive-subject',
+    );
     await service.revokeSubject(
       AuthSubjectType.Staff,
       'idempotent-subject',

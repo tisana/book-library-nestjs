@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import { UnauthorizedException } from '@nestjs/common';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 import { AuthPermission } from '../common/enums/auth-permission.enum';
 import {
@@ -290,7 +290,113 @@ describe('AuthService login contract', () => {
       expect(jwtService.signAsync).not.toHaveBeenCalled();
     });
 
-    it('rejects refresh when account authVersion is newer than the session', async () => {
+    it('revokes a rotated member family when the member is no longer active', async () => {
+      const tokenSessionService = {
+        rotate: jest.fn().mockResolvedValue({
+          familyId: 'member-family-id',
+          subjectType: AuthSubjectType.Member,
+          subjectId: 'member-id',
+          authVersion: 1,
+          refreshToken: 'next-refresh-token',
+        }),
+        revokeFamily: jest.fn().mockResolvedValue(undefined),
+      };
+      const service = new AuthService(
+        { findActiveById: jest.fn() },
+        {
+          findActiveById: jest
+            .fn()
+            .mockRejectedValue(
+              new NotFoundException('Active member not found'),
+            ),
+        },
+        { verify: jest.fn() },
+        { signAsync: jest.fn() },
+        { get: jest.fn().mockReturnValue(900) },
+        tokenSessionService as any,
+      );
+
+      await expect(service.refresh('refresh-token')).rejects.toEqual(
+        new UnauthorizedException('Invalid refresh session'),
+      );
+      expect(tokenSessionService.revokeFamily).toHaveBeenCalledWith(
+        'member-family-id',
+        'inactive-subject',
+      );
+    });
+
+    it('revokes a rotated member family when authVersion is stale', async () => {
+      const tokenSessionService = {
+        rotate: jest.fn().mockResolvedValue({
+          familyId: 'member-family-id',
+          subjectType: AuthSubjectType.Member,
+          subjectId: 'member-id',
+          authVersion: 1,
+          refreshToken: 'next-refresh-token',
+        }),
+        revokeFamily: jest.fn().mockResolvedValue(undefined),
+      };
+      const service = new AuthService(
+        { findActiveById: jest.fn() },
+        {
+          findActiveById: jest.fn().mockResolvedValue({
+            id: 'member-id',
+            authVersion: 2,
+          }),
+        },
+        { verify: jest.fn() },
+        { signAsync: jest.fn() },
+        { get: jest.fn().mockReturnValue(900) },
+        tokenSessionService as any,
+      );
+
+      await expect(service.refresh('refresh-token')).rejects.toEqual(
+        new UnauthorizedException('Invalid refresh session'),
+      );
+      expect(tokenSessionService.revokeFamily).toHaveBeenCalledWith(
+        'member-family-id',
+        'stale-auth-version',
+      );
+    });
+
+    it('keeps the refresh denial generic when inactive-family revocation fails', async () => {
+      const tokenSessionService = {
+        rotate: jest.fn().mockResolvedValue({
+          familyId: 'member-family-id',
+          subjectType: AuthSubjectType.Member,
+          subjectId: 'member-id',
+          authVersion: 1,
+          refreshToken: 'next-refresh-token',
+        }),
+        revokeFamily: jest
+          .fn()
+          .mockRejectedValue(new Error('database unavailable')),
+      };
+      const service = new AuthService(
+        { findActiveById: jest.fn() },
+        {
+          findActiveById: jest
+            .fn()
+            .mockRejectedValue(
+              new NotFoundException('Active member not found'),
+            ),
+        },
+        { verify: jest.fn() },
+        { signAsync: jest.fn() },
+        { get: jest.fn().mockReturnValue(900) },
+        tokenSessionService as any,
+      );
+
+      await expect(service.refresh('refresh-token')).rejects.toEqual(
+        new UnauthorizedException('Invalid refresh session'),
+      );
+      expect(tokenSessionService.revokeFamily).toHaveBeenCalledWith(
+        'member-family-id',
+        'inactive-subject',
+      );
+    });
+
+    it('revokes a rotated staff family when account authVersion is newer than the session', async () => {
       const staffUsersService = {
         findActiveById: jest.fn().mockResolvedValue({
           id: 'staff-user-id',
@@ -300,24 +406,31 @@ describe('AuthService login contract', () => {
           authVersion: 2,
         }),
       };
+      const tokenSessionService = {
+        rotate: jest.fn().mockResolvedValue({
+          familyId: 'staff-family-id',
+          subjectType: AuthSubjectType.Staff,
+          subjectId: 'staff-user-id',
+          authVersion: 1,
+          refreshToken: 'next-refresh-token',
+        }),
+        revokeFamily: jest.fn().mockResolvedValue(undefined),
+      };
       const service = new AuthService(
         staffUsersService,
         undefined,
         { verify: jest.fn() },
         { signAsync: jest.fn() },
         { get: jest.fn().mockReturnValue(900) },
-        {
-          rotate: jest.fn().mockResolvedValue({
-            subjectType: AuthSubjectType.Staff,
-            subjectId: 'staff-user-id',
-            authVersion: 1,
-            refreshToken: 'next-refresh-token',
-          }),
-        } as any,
+        tokenSessionService as any,
       );
 
-      await expect(service.refresh('refresh-token')).rejects.toBeInstanceOf(
-        UnauthorizedException,
+      await expect(service.refresh('refresh-token')).rejects.toEqual(
+        new UnauthorizedException('Invalid refresh session'),
+      );
+      expect(tokenSessionService.revokeFamily).toHaveBeenCalledWith(
+        'staff-family-id',
+        'stale-auth-version',
       );
     });
   });
