@@ -17,11 +17,11 @@ function coverageTable(coverage: CoverageReport): string {
   return rows.join('\n');
 }
 
-function testTable(summary: TestRunSummary): string {
+function testTable(summary: TestRunSummary, passedLabel = 'Passed'): string {
   return [
     '| Result | Count |',
     '| --- | ---: |',
-    `| Passed | ${summary.passed} |`,
+    `| ${passedLabel} | ${summary.passed} |`,
     `| Flaky | ${summary.flaky} |`,
     `| Failed | ${summary.failed} |`,
     `| Skipped | ${summary.skipped} |`,
@@ -33,7 +33,7 @@ function testTable(summary: TestRunSummary): string {
 
 function projectTable(summary: TestRunSummary): string {
   const rows = [
-    '| Project | Passed | Flaky | Failed | Skipped | Total | Clean pass rate | Eventual pass rate |',
+    '| Project | First-attempt passed | Flaky | Failed | Skipped | Total | Clean pass rate | Eventual pass rate |',
     '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
   ];
   for (const [project, projectSummary] of Object.entries(summary.projects ?? {}).sort(
@@ -102,7 +102,7 @@ export function renderQualityMarkdown(report: QualityReport): string {
     '',
     '## Overall',
     '',
-    testTable(report.e2eTests!),
+    testTable(report.e2eTests!, 'First-attempt passed'),
     '',
     '## Per-project',
     '',

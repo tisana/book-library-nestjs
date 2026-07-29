@@ -195,6 +195,12 @@ describe('scoped quality reports', () => {
     expect(renderQualityMarkdown(frontendE2eReport)).toContain(
       '| Clean pass rate | 100.00% |',
     );
+    expect(renderQualityMarkdown(frontendE2eReport)).toContain(
+      '| First-attempt passed | 1 |',
+    );
+    expect(renderQualityMarkdown(frontendE2eReport)).toContain(
+      '| Project | First-attempt passed | Flaky | Failed | Skipped | Total | Clean pass rate | Eventual pass rate |',
+    );
     expect(
       [
         renderQualityMarkdown(backendReport),

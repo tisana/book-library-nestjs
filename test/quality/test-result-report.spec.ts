@@ -133,6 +133,91 @@ describe('test result normalization', () => {
     });
   });
 
+  it('aggregates every project from nested Playwright suites', () => {
+    const nestedProjectResults = {
+      suites: [
+        {
+          specs: [],
+          suites: [
+            {
+              specs: [
+                {
+                  tests: [
+                    {
+                      projectName: 'desktop-chromium',
+                      expectedStatus: 'passed',
+                      results: [{ status: 'passed' }],
+                    },
+                  ],
+                },
+              ],
+              suites: [
+                {
+                  specs: [
+                    {
+                      tests: [
+                        {
+                          projectName: 'tablet-chromium',
+                          expectedStatus: 'passed',
+                          results: [{ status: 'passed' }],
+                        },
+                        {
+                          projectName: 'mobile-chromium',
+                          expectedStatus: 'passed',
+                          results: [{ status: 'passed' }],
+                        },
+                      ],
+                    },
+                  ],
+                  suites: [],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const summary = parsePlaywrightResults(nestedProjectResults);
+
+    expect(summary.total).toBe(3);
+    expect(summary.passed).toBe(3);
+    expect(summary.projects).toMatchObject({
+      'desktop-chromium': { total: 1, passed: 1 },
+      'tablet-chromium': { total: 1, passed: 1 },
+      'mobile-chromium': { total: 1, passed: 1 },
+    });
+  });
+
+  it('accepts Playwright leaf suites that omit an empty nested-suite array', () => {
+    const actualPlaywrightLeafSuite = {
+      suites: [
+        {
+          specs: [
+            {
+              tests: [
+                {
+                  projectName: 'desktop-chromium',
+                  expectedStatus: 'passed',
+                  results: [{ status: 'passed' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(parsePlaywrightResults(actualPlaywrightLeafSuite)).toMatchObject({
+      passed: 1,
+      failed: 0,
+      skipped: 0,
+      flaky: 0,
+      total: 1,
+      projects: { 'desktop-chromium': { passed: 1, total: 1 } },
+    });
+  });
+
   it('rejects Playwright runs with final failures while reporting flaky passes', () => {
     expect(evaluateTestRun(parsePlaywrightResults(playwrightResult))).toEqual({
       passed: false,

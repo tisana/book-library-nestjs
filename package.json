@@ -30,6 +30,7 @@
     "frontend:test": "npm run test --prefix frontend",
     "frontend:test:coverage": "npm run test:coverage --prefix frontend",
     "frontend:test:e2e": "npm run test:e2e --prefix frontend",
+    "frontend:test:e2e:report": "npm run test:e2e:report --prefix frontend",
     "test": "jest",
     "test:watch": "jest --watch",
     "pretest:cov": "node -e \"require('fs').mkdirSync('test-results', { recursive: true })\"",

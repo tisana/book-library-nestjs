@@ -110,7 +110,10 @@ function visitSuites(
       throw new Error('invalid-test-results');
     }
 
-    if (!Array.isArray(suite.specs) || !Array.isArray(suite.suites)) {
+    if (
+      !Array.isArray(suite.specs) ||
+      (suite.suites !== undefined && !Array.isArray(suite.suites))
+    ) {
       throw new Error('invalid-test-results');
     }
 
@@ -143,7 +146,7 @@ function visitSuites(
       }
     }
 
-    visitSuites(suite.suites, summary, projects);
+    visitSuites(suite.suites ?? [], summary, projects);
   }
 }
 
