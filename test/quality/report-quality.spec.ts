@@ -305,6 +305,37 @@ describe('scoped quality reports', () => {
     });
   });
 
+  it('rejects a backend coverage report whose represented executable-file count differs from the expected denominator', async () => {
+    const coverageWith86Files = {
+      ...coverage,
+      ...Object.fromEntries(
+        Array.from({ length: 85 }, (_, index) => [
+          `src/represented-${index}.ts`,
+          coverage.total,
+        ]),
+      ),
+    };
+    const coveragePath = join(fixtureDirectory, 'coverage-with-86-files.json');
+    await writeFile(coveragePath, JSON.stringify(coverageWith86Files));
+
+    await expect(
+      runQualityReportCli([
+        '--stream',
+        'backend',
+        '--coverage',
+        coveragePath,
+        '--unit-tests',
+        join(fixtureDirectory, 'unit.json'),
+        '--e2e-tests',
+        join(fixtureDirectory, 'unit.json'),
+        '--baselines',
+        join(fixtureDirectory, 'baselines.json'),
+        '--expected-files',
+        '87',
+      ]),
+    ).rejects.toThrow('backend-source-denominator-mismatch');
+  });
+
   it('writes failed backend gate diagnostics before rejecting the command', async () => {
     const failedE2ePath = join(fixtureDirectory, 'failed-backend-e2e.json');
     const markdownPath = join(fixtureDirectory, 'failed.md');

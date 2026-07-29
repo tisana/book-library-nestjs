@@ -34,6 +34,7 @@ interface QualityReportOptions {
   unitTests?: string;
   e2eTests?: string;
   baselines?: string;
+  expectedFiles?: string;
   markdown?: string;
   json?: string;
   writeBaseline: boolean;
@@ -46,6 +47,7 @@ type ValueOption =
   | 'unitTests'
   | 'e2eTests'
   | 'baselines'
+  | 'expectedFiles'
   | 'markdown'
   | 'json';
 
@@ -55,6 +57,7 @@ const valueFlags: Record<string, ValueOption> = {
   '--unit-tests': 'unitTests',
   '--e2e-tests': 'e2eTests',
   '--baselines': 'baselines',
+  '--expected-files': 'expectedFiles',
   '--markdown': 'markdown',
   '--json': 'json',
 };
@@ -115,6 +118,26 @@ function assertInputs(stream: QualityStream, options: QualityReportOptions): voi
   if (options.writeBaseline && stream === 'frontend-e2e') {
     throw new Error(`${stream}:baseline-not-supported`);
   }
+  if (options.expectedFiles && stream !== 'backend') {
+    throw new Error(`${stream}:invalid-expected-files`);
+  }
+}
+
+function parseExpectedFiles(
+  value: string | undefined,
+  stream: QualityStream,
+): number | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (!/^\d+$/.test(value)) {
+    throw new Error(`${stream}:invalid-expected-files`);
+  }
+  const expectedFiles = Number(value);
+  if (!Number.isSafeInteger(expectedFiles) || expectedFiles < 1) {
+    throw new Error(`${stream}:invalid-expected-files`);
+  }
+  return expectedFiles;
 }
 
 async function readJson(path: string, stream: QualityStream): Promise<unknown> {
@@ -215,6 +238,10 @@ export async function runQualityReportCli(arguments_: string[]): Promise<Quality
           stream === 'backend' ? 'backend' : 'frontend',
         )
       : undefined;
+    const expectedFiles = parseExpectedFiles(options.expectedFiles, stream);
+    if (expectedFiles !== undefined && coverage?.files !== expectedFiles) {
+      throw new Error(`${stream}-source-denominator-mismatch`);
+    }
     const unitTests = options.unitTests
       ? parseJestStyleResults(await readJson(options.unitTests, stream))
       : undefined;
