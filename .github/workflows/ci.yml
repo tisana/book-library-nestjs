@@ -40,6 +40,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -59,9 +61,21 @@ jobs:
         run: npm run test:e2e:report
         continue-on-error: true
 
+      - name: Generate pull-request diff
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: git diff --unified=0 "$GITHUB_BASE_SHA...$GITHUB_SHA" > test-results/pull-request.diff
+
       - name: Publish backend quality summary
         if: always()
-        run: npm run quality:report:backend
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            npm run quality:report:backend -- --changed-line-diff test-results/pull-request.diff --changed-line-lcov coverage/backend-unit/lcov.info
+          else
+            npm run quality:report:backend
+          fi
 
       - name: Upload backend quality reports
         if: always()
@@ -76,7 +90,12 @@ jobs:
 
       - name: Enforce backend quality gate
         if: always()
-        run: npm run quality:report:backend -- --check-only
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            npm run quality:report:backend -- --check-only --changed-line-diff test-results/pull-request.diff --changed-line-lcov coverage/backend-unit/lcov.info
+          else
+            npm run quality:report:backend -- --check-only
+          fi
 
   frontend-unit-quality:
     name: Frontend unit coverage
@@ -84,6 +103,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -109,9 +130,21 @@ jobs:
         run: npm run frontend:test:coverage
         continue-on-error: true
 
+      - name: Generate pull-request diff
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: git diff --unified=0 "$GITHUB_BASE_SHA...$GITHUB_SHA" > frontend/test-results/pull-request.diff
+
       - name: Publish frontend unit quality summary
         if: always()
-        run: npm run quality:report:frontend-unit
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            npm run quality:report:frontend-unit -- --changed-line-diff frontend/test-results/pull-request.diff --changed-line-lcov frontend/coverage/lcov.info
+          else
+            npm run quality:report:frontend-unit
+          fi
 
       - name: Upload frontend unit quality reports
         if: always()
@@ -127,7 +160,11 @@ jobs:
       - name: Enforce frontend unit quality gate
         if: always()
         run: |
-          npm run quality:report:frontend-unit -- --check-only
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            npm run quality:report:frontend-unit -- --check-only --changed-line-diff frontend/test-results/pull-request.diff --changed-line-lcov frontend/coverage/lcov.info
+          else
+            npm run quality:report:frontend-unit -- --check-only
+          fi
           if [ "${{ steps.frontend-lint.outcome }}" != "success" ]; then
             echo "Frontend lint failed."
             exit 1

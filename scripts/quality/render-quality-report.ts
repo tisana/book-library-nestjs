@@ -17,6 +17,24 @@ function coverageTable(coverage: CoverageReport): string {
   return rows.join('\n');
 }
 
+function changedLineCoverageTable(report: QualityReport): string[] {
+  if (!report.changedLineCoverage) {
+    return [];
+  }
+  const coverage = report.changedLineCoverage;
+  return [
+    '## Changed-line coverage',
+    '',
+    '| Status | Covered | Total | Coverage | Minimum |',
+    '| --- | ---: | ---: | ---: | ---: |',
+    `| ${coverage.status} | ${coverage.covered} | ${coverage.total} | ${formatPercent(coverage.pct)} | ${formatPercent(coverage.minimum)} |`,
+    ...(coverage.missingFiles.length > 0
+      ? ['', 'Missing LCOV files:', ...coverage.missingFiles.map((path) => `- ${path}`)]
+      : []),
+    '',
+  ];
+}
+
 function testTable(summary: TestRunSummary, passedLabel = 'Passed'): string {
   return [
     '| Result | Count |',
@@ -72,6 +90,7 @@ export function renderQualityMarkdown(report: QualityReport): string {
       '',
       coverageTable(report.coverage!),
       '',
+      ...changedLineCoverageTable(report),
       '## Unit tests',
       '',
       testTable(report.unitTests!),
@@ -92,6 +111,7 @@ export function renderQualityMarkdown(report: QualityReport): string {
       '',
       coverageTable(report.coverage!),
       '',
+      ...changedLineCoverageTable(report),
       '## Unit tests',
       '',
       testTable(report.unitTests!),

@@ -10,6 +10,13 @@ import {
 } from './coverage-report';
 import { renderQualityMarkdown } from './render-quality-report';
 import {
+  evaluateChangedLineCoverage,
+  filterChangedLines,
+  parseChangedLines,
+  parseLcov,
+  type ChangedCoverageGate,
+} from './changed-line-coverage';
+import {
   evaluateTestRun,
   parseJestStyleResults,
   parsePlaywrightResults,
@@ -29,6 +36,7 @@ export interface QualityReport {
   generatedAt: string;
   toolVersions: { node: string };
   coverage?: CoverageReport;
+  changedLineCoverage?: ChangedCoverageGate;
   unitTests?: TestRunSummary;
   e2eTests?: TestRunSummary;
   gate: QualityGate;
@@ -43,6 +51,8 @@ interface QualityReportOptions {
   expectedFiles?: string;
   markdown?: string;
   json?: string;
+  changedLineDiff?: string;
+  changedLineLcov?: string;
   writeBaseline: boolean;
   checkOnly: boolean;
 }
@@ -55,7 +65,9 @@ type ValueOption =
   | 'baselines'
   | 'expectedFiles'
   | 'markdown'
-  | 'json';
+  | 'json'
+  | 'changedLineDiff'
+  | 'changedLineLcov';
 
 const valueFlags: Record<string, ValueOption> = {
   '--stream': 'stream',
@@ -66,6 +78,8 @@ const valueFlags: Record<string, ValueOption> = {
   '--expected-files': 'expectedFiles',
   '--markdown': 'markdown',
   '--json': 'json',
+  '--changed-line-diff': 'changedLineDiff',
+  '--changed-line-lcov': 'changedLineLcov',
 };
 
 function parseArguments(arguments_: string[]): QualityReportOptions {
@@ -126,6 +140,12 @@ function assertInputs(stream: QualityStream, options: QualityReportOptions): voi
   }
   if (options.expectedFiles && stream !== 'backend') {
     throw new Error(`${stream}:invalid-expected-files`);
+  }
+  if (Boolean(options.changedLineDiff) !== Boolean(options.changedLineLcov)) {
+    throw new Error(`${stream}:invalid-changed-line-input`);
+  }
+  if (options.changedLineDiff && stream === 'frontend-e2e') {
+    throw new Error(`${stream}:invalid-changed-line-input`);
   }
 }
 
@@ -194,6 +214,33 @@ function coverageMinimums(report: CoverageReport): CoverageMinimums {
   };
 }
 
+async function evaluateChangedLines(
+  stream: QualityStream,
+  options: QualityReportOptions,
+): Promise<ChangedCoverageGate | undefined> {
+  if (!options.changedLineDiff || !options.changedLineLcov) {
+    return undefined;
+  }
+  try {
+    const [diff, rawLcov] = await Promise.all([
+      readFile(options.changedLineDiff, 'utf8'),
+      readFile(options.changedLineLcov, 'utf8'),
+    ]);
+    return evaluateChangedLineCoverage(
+      filterChangedLines(
+        parseChangedLines(diff),
+        stream === 'backend' ? 'backend' : 'frontend',
+      ),
+      parseLcov(rawLcov),
+    );
+  } catch (error) {
+    if (error instanceof Error && error.message === 'invalid-changed-line-minimum') {
+      throw error;
+    }
+    throw new Error(`${stream}:invalid-changed-line-input`);
+  }
+}
+
 function evaluateGate(
   report: Omit<QualityReport, 'gate'>,
   baselines: CoverageBaselineFile,
@@ -214,6 +261,14 @@ function evaluateGate(
         ),
       );
     }
+  }
+  if (report.changedLineCoverage && !report.changedLineCoverage.passed) {
+    reasons.push(
+      `changed-line-coverage:${report.changedLineCoverage.pct}<${report.changedLineCoverage.minimum}`,
+      ...report.changedLineCoverage.missingFiles.map(
+        (path) => `changed-line-coverage:missing-lcov:${path}`,
+      ),
+    );
   }
   for (const [name, summary] of [
     ['unit-tests', report.unitTests],
@@ -251,6 +306,7 @@ export async function runQualityReportCli(arguments_: string[]): Promise<Quality
     if (expectedFiles !== undefined && coverage?.files !== expectedFiles) {
       throw new Error(`${stream}-source-denominator-mismatch`);
     }
+    const changedLineCoverage = await evaluateChangedLines(stream, options);
     const unitTests = options.unitTests
       ? parseJestStyleResults(await readJson(options.unitTests, stream))
       : undefined;
@@ -264,6 +320,7 @@ export async function runQualityReportCli(arguments_: string[]): Promise<Quality
       generatedAt: new Date().toISOString(),
       toolVersions: { node: process.version },
       ...(coverage ? { coverage } : {}),
+      ...(changedLineCoverage ? { changedLineCoverage } : {}),
       ...(unitTests ? { unitTests } : {}),
       ...(e2eTests ? { e2eTests } : {}),
     };

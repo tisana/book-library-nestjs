@@ -246,6 +246,76 @@ Run migration verification against a local MongoDB instance:
 npm run migrate:status
 ```
 
+## Quality reporting and coverage ratchet
+
+CI publishes three independent reporting streams. Their percentages must never be
+added together or presented as one combined score:
+
+1. **Backend coverage and e2e** reports backend Jest unit coverage and backend
+   Jest e2e results side by side. The coverage denominator is executable lines,
+   statements, functions, and branches represented by the backend Istanbul
+   report; e2e results are a separate test-result metric.
+2. **Frontend unit coverage** reports only the frontend Vitest/Istanbul coverage
+   denominator and frontend unit-test result counts.
+3. **Frontend Playwright e2e** reports only frontend browser-test result counts;
+   it has no coverage percentage.
+
+Run the complete local reporting sequence with the same inputs used by CI:
+
+```bash
+npm run test:quality-reporting
+npm run test:cov
+npm run test:e2e:report
+npm run quality:report:backend
+npm run frontend:test:coverage
+npm run quality:report:frontend-unit
+npm run frontend:test:e2e:report
+npm run quality:report:frontend-e2e
+```
+
+The backend reports are written under `coverage/backend-unit/` and
+`test-results/backend-*.json` / `test-results/backend-summary.*`. Frontend unit
+artifacts are under `frontend/coverage/` and `frontend/test-results/unit-summary.*`;
+Playwright JSON, report, traces, screenshots, and videos are under
+`frontend/test-results/` and `frontend/playwright-report/`.
+
+For a pull-request-equivalent changed-line check, create a zero-context diff
+against the target branch after both coverage commands complete. The backend and
+frontend commands remain independent:
+
+```bash
+git diff --unified=0 origin/main...HEAD > test-results/pull-request.diff
+npm run quality:report:backend -- --changed-line-diff test-results/pull-request.diff --changed-line-lcov coverage/backend-unit/lcov.info
+
+git diff --unified=0 origin/main...HEAD > frontend/test-results/pull-request.diff
+npm run quality:report:frontend-unit -- --changed-line-diff frontend/test-results/pull-request.diff --changed-line-lcov frontend/coverage/lcov.info
+```
+
+Changed-line coverage considers only added lines from `src/` for the backend or
+`frontend/src/` for the frontend. Added lines with an LCOV `DA` record form the
+denominator; a changed line absent from a represented file's line records is
+non-executable and excluded. A changed production file absent from its expected
+LCOV report fails closed. Renames retain the new path, path separators and
+repository prefixes are normalized without changing path case, and an unaffected
+scope is reported as `not-applicable` and passes. Each affected pull-request
+scope requires at least **80%** changed-line coverage.
+
+Jest and Playwright results expose passed, failed, skipped, flaky, and total
+counts. Skipped tests are excluded from pass-rate denominators. `clean pass
+rate = first-attempt passed / (passed + flaky + failed)` and `eventual pass rate
+= (passed + flaky) / (passed + flaky + failed)`. A Playwright test that passes
+only after a retry is flaky: it contributes to eventual, not clean, pass rate.
+Any final failure or zero-test report fails its stream; flakiness is visible as
+a warning and must be investigated.
+
+Coverage baselines are checked in at `quality/coverage-baselines.json` with
+separate backend and frontend denominators. Ratcheting can only keep or raise a
+metric; **baselines are never lowered to make CI green**. The release direction
+is at least **75% overall** coverage, **80% changed-line** coverage, and
+**85–90% critical-branch** coverage, with security-sensitive permission and
+token-session paths prioritized. Current checked-in baselines remain the
+enforced floor until deliberately raised with validated coverage evidence.
+
 ## Containers
 
 Build and start the app plus MongoDB replica set:

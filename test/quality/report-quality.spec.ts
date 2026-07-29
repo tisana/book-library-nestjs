@@ -330,6 +330,41 @@ describe('scoped quality reports', () => {
     });
   });
 
+  it('reports and gates backend changed-line coverage independently of overall coverage', async () => {
+    const diffPath = join(fixtureDirectory, 'changed.diff');
+    const lcovPath = join(fixtureDirectory, 'changed.lcov');
+    await writeFile(
+      diffPath,
+      `diff --git a/src/example.ts b/src/example.ts\n--- a/src/example.ts\n+++ b/src/example.ts\n@@ -10,0 +10,1 @@\n+export const example = true;\n`,
+    );
+    await writeFile(lcovPath, 'SF:src/example.ts\nDA:10,1\nend_of_record\n');
+
+    const report = await runQualityReportCli([
+      '--stream',
+      'backend',
+      '--coverage',
+      join(fixtureDirectory, 'coverage.json'),
+      '--unit-tests',
+      join(fixtureDirectory, 'unit.json'),
+      '--e2e-tests',
+      join(fixtureDirectory, 'unit.json'),
+      '--baselines',
+      join(fixtureDirectory, 'baselines.json'),
+      '--changed-line-diff',
+      diffPath,
+      '--changed-line-lcov',
+      lcovPath,
+    ]);
+
+    expect(report.changedLineCoverage).toMatchObject({
+      passed: true,
+      covered: 1,
+      total: 1,
+      pct: 100,
+    });
+    expect(renderQualityMarkdown(report)).toContain('## Changed-line coverage');
+  });
+
   it('rejects a backend coverage report whose represented executable-file count differs from the expected denominator', async () => {
     const coverageWith86Files = {
       ...coverage,
