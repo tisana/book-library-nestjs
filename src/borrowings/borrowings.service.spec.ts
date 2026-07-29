@@ -335,9 +335,10 @@ describe('BorrowingsService', () => {
       id: borrowingId,
     });
 
-    expect(findOne).toHaveBeenCalledWith({
-      _id: { $eq: expect.objectContaining({ _bsontype: 'ObjectId' }) },
-    });
+    const filter = findOne.mock.calls[0][0] as {
+      _id: { $eq: { toHexString: () => string } };
+    };
+    expect(filter._id.$eq.toHexString()).toBe(borrowingId);
   });
 
   it('applies both borrowing and member ObjectId ownership filters for self-service detail', async () => {
@@ -356,27 +357,48 @@ describe('BorrowingsService', () => {
       memberId,
     });
 
-    expect(findOne).toHaveBeenCalledWith({
-      _id: { $eq: expect.objectContaining({ _bsontype: 'ObjectId' }) },
-      memberId: { $eq: expect.objectContaining({ _bsontype: 'ObjectId' }) },
+    const filter = findOne.mock.calls[0][0] as {
+      _id: { $eq: { toHexString: () => string } };
+      memberId: { $eq: { toHexString: () => string } };
+    };
+    expect(filter._id.$eq.toHexString()).toBe(borrowingId);
+    expect(filter.memberId.$eq.toHexString()).toBe(memberId);
+  });
+
+  it('does not reveal a foreign borrowing when the owner filter is absent or wrong', async () => {
+    const borrowingId = '665f4d3b8f4c8a001f5f0a14';
+    const memberId = '665f4d3b8f4c8a001f5f0a12';
+    const foreignBorrowing = createBorrowingDocument({
+      _id: objectId(borrowingId),
+      id: borrowingId,
+      memberId: objectId('665f4d3b8f4c8a001f5f0a13'),
+    });
+    const findOne = jest.fn().mockImplementation((filter) => {
+      const ownerId = filter.memberId?.$eq?.toHexString?.();
+      return createFindQuery(ownerId === memberId ? null : foreignBorrowing);
+    });
+    const service = createService({ findOne });
+
+    await expect(
+      service.findOneForMember(borrowingId, memberId),
+    ).rejects.toMatchObject({
+      message: 'Borrowing record not found',
     });
   });
 
-  it.each(['wrong owner', 'missing record'])(
-    'returns the borrowing not-found contract for self-service %s',
-    async () => {
-      const query = createFindQuery(null);
-      const findOne = jest.fn().mockReturnValue(query);
-      const service = createService({ findOne });
+  it('uses the same not-found response for a valid missing self-service borrowing', async () => {
+    const findOne = jest.fn().mockReturnValue(createFindQuery(null));
+    const service = createService({ findOne });
 
-      await expect(
-        service.findOneForMember(
-          '665f4d3b8f4c8a001f5f0a14',
-          '665f4d3b8f4c8a001f5f0a12',
-        ),
-      ).rejects.toBeInstanceOf(NotFoundException);
-    },
-  );
+    await expect(
+      service.findOneForMember(
+        '665f4d3b8f4c8a001f5f0a14',
+        '665f4d3b8f4c8a001f5f0a12',
+      ),
+    ).rejects.toMatchObject({
+      message: 'Borrowing record not found',
+    });
+  });
 
   it('keeps malformed borrowing IDs in the shared Mongo ID validation contract', async () => {
     const service = createService();
