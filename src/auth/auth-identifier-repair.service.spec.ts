@@ -1,6 +1,7 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthIdentifierRepairService } from './auth-identifier-repair.service';
+import { hashRepairManifest } from './auth-identifier-repair-manifest';
 import {
   AuthIdentifierOperationStatus,
   AuthIdentifierOperationType,
@@ -39,13 +40,25 @@ describe('AuthIdentifierRepairService', () => {
   function createFixture() {
     const operationModel = {
       updateOne: jest.fn().mockResolvedValue({ modifiedCount: 1 }),
+      findOne: jest.fn(),
+      create: jest.fn(),
+      db: {
+        startSession: jest.fn(),
+      },
     };
     const repairBatchModel = {
       find: jest.fn(() => ({
         sort: jest.fn(() => ({ exec: jest.fn().mockResolvedValue([]) })),
       })),
+      findOne: jest.fn(),
+      create: jest.fn(),
+      updateOne: jest.fn().mockResolvedValue({ modifiedCount: 1 }),
     };
-    const identifierModel = { updateOne: jest.fn() };
+    const identifierModel = {
+      updateOne: jest.fn(),
+      updateMany: jest.fn().mockResolvedValue({ modifiedCount: 1 }),
+      findOneAndUpdate: jest.fn(),
+    };
     const authorization = {
       authorizeDryRun: jest.fn().mockResolvedValue({ subjectId: 'admin-1' }),
       authorizeMutation: jest.fn().mockResolvedValue({ subjectId: 'admin-2' }),
@@ -56,6 +69,7 @@ describe('AuthIdentifierRepairService', () => {
     };
     const securityActivity = {
       recordIdentifierRepairResumed: jest.fn(),
+      recordIdentifierOperationTerminal: jest.fn().mockResolvedValue('event-1'),
     };
     const config = {
       get: jest.fn((key: string) =>
@@ -81,6 +95,7 @@ describe('AuthIdentifierRepairService', () => {
       repairBatchModel,
       identifierModel,
       authorization,
+      keyPolicy,
       securityActivity,
     };
   }
@@ -258,5 +273,469 @@ describe('AuthIdentifierRepairService', () => {
         }),
       }),
     );
+  });
+
+  it('dry-runs an existing matching operation without mutating any model', async () => {
+    const fixture = createFixture();
+    const manifestHash = hashRepairManifest(manifest, Buffer.alloc(32, 4), 1);
+    fixture.operationModel.findOne.mockReturnValue({
+      lean: () => ({
+        exec: jest.fn().mockResolvedValue({
+          operationId: 'repair-dry-run',
+          operationType: AuthIdentifierOperationType.OfflineRepair,
+          status: AuthIdentifierOperationStatus.Pending,
+          manifestKeyVersion: 1,
+          manifestHash: manifestHash.manifestHash,
+        }),
+      }),
+    });
+    jest
+      .spyOn(fixture.service as never, 'loadConflict' as never)
+      .mockResolvedValue({
+        status: AuthIdentifierStatus.Conflict,
+        conflictingSubjects: [manifest.retainedSubject, ...manifest.reassignments],
+      } as never);
+
+    await expect(
+      fixture.service.dryRun({
+        token: 'stdin-token',
+        operationId: 'repair-dry-run',
+        manifest,
+      }),
+    ).resolves.toMatchObject({
+      status: AuthIdentifierOperationStatus.Pending,
+      replayed: true,
+      batchCount: 2,
+    });
+
+    expect(fixture.operationModel.create).not.toHaveBeenCalled();
+    expect(fixture.operationModel.updateOne).not.toHaveBeenCalled();
+    expect(fixture.repairBatchModel.find).not.toHaveBeenCalled();
+    expect(fixture.identifierModel.updateOne).not.toHaveBeenCalled();
+  });
+
+  it('rejects an unavailable manifest key before looking up an operation', async () => {
+    const fixture = createFixture();
+    fixture.keyPolicy.repairWorkerDecision.mockReturnValue({ allowed: false });
+    jest
+      .spyOn(fixture.service as never, 'loadConflict' as never)
+      .mockResolvedValue({
+        status: AuthIdentifierStatus.Conflict,
+        conflictingSubjects: [manifest.retainedSubject, ...manifest.reassignments],
+      } as never);
+
+    await expect(
+      fixture.service.dryRun({
+        token: 'stdin-token',
+        operationId: 'repair-key-denied',
+        manifest,
+      }),
+    ).rejects.toThrow('repair-key-required');
+
+    expect(fixture.operationModel.findOne).not.toHaveBeenCalled();
+    expect(fixture.operationModel.create).not.toHaveBeenCalled();
+  });
+
+  it('replays a completed operation without preparing or activating batches', async () => {
+    const fixture = createFixture();
+    const completed = {
+      operationId: 'repair-completed',
+      operationType: AuthIdentifierOperationType.OfflineRepair,
+      status: AuthIdentifierOperationStatus.Completed,
+      manifestHash: 'persisted-hash',
+      manifestKeyVersion: 1,
+      result: { reasonCategory: 'identifier-offline-repair-completed' },
+    };
+    jest
+      .spyOn(fixture.service as never, 'requireOperation' as never)
+      .mockResolvedValue(completed as never);
+    jest
+      .spyOn(fixture.service as never, 'verifyPersistedManifest' as never)
+      .mockReturnValue(undefined as never);
+    const prepare = jest.spyOn(fixture.service as never, 'prepareBatch' as never);
+    const activate = jest.spyOn(fixture.service as never, 'activateBatch' as never);
+
+    await expect(
+      fixture.service.apply({
+        token: 'stdin-token',
+        operationId: 'repair-completed',
+        resumeId: 'resume-completed',
+        manifest,
+      }),
+    ).resolves.toMatchObject({
+      status: AuthIdentifierOperationStatus.Completed,
+      replayed: true,
+      reasonCategory: 'identifier-offline-repair-completed',
+    });
+
+    expect(prepare).not.toHaveBeenCalled();
+    expect(activate).not.toHaveBeenCalled();
+    expect(fixture.operationModel.updateOne).not.toHaveBeenCalled();
+  });
+
+  it('fails closed when a resume manifest differs from the persisted hash', async () => {
+    const fixture = createFixture();
+    jest
+      .spyOn(fixture.service as never, 'requireOperation' as never)
+      .mockResolvedValue({
+        operationId: 'repair-mismatch',
+        operationType: AuthIdentifierOperationType.OfflineRepair,
+        status: AuthIdentifierOperationStatus.Pending,
+        manifestHash: 'different-hash',
+        manifestKeyVersion: 1,
+      } as never);
+
+    await expect(
+      fixture.service.apply({
+        token: 'stdin-token',
+        operationId: 'repair-mismatch',
+        resumeId: 'resume-mismatch',
+        manifest,
+      }),
+    ).rejects.toThrow('Repair manifest does not match dry run');
+
+    expect(fixture.operationModel.updateOne).not.toHaveBeenCalled();
+    expect(fixture.repairBatchModel.find).not.toHaveBeenCalled();
+  });
+
+  it('replays terminal cancellation without compensation mutations', async () => {
+    const fixture = createFixture();
+    jest
+      .spyOn(fixture.service as never, 'requireOperation' as never)
+      .mockResolvedValue({
+        operationId: 'repair-cancelled',
+        operationType: AuthIdentifierOperationType.OfflineRepair,
+        status: AuthIdentifierOperationStatus.FailedTerminal,
+        manifestHash: 'persisted-hash',
+        manifestKeyVersion: 1,
+        result: { reasonCategory: 'identifier-offline-repair-cancelled' },
+      } as never);
+    jest
+      .spyOn(fixture.service as never, 'verifyPersistedManifest' as never)
+      .mockReturnValue(undefined as never);
+
+    await expect(
+      fixture.service.cancel({
+        token: 'stdin-token',
+        operationId: 'repair-cancelled',
+        manifest,
+      }),
+    ).resolves.toMatchObject({
+      status: AuthIdentifierOperationStatus.FailedTerminal,
+      replayed: true,
+      reasonCategory: 'identifier-offline-repair-cancelled',
+    });
+
+    expect(fixture.repairBatchModel.find).not.toHaveBeenCalled();
+    expect(fixture.identifierModel.updateOne).not.toHaveBeenCalled();
+    expect(fixture.operationModel.updateOne).not.toHaveBeenCalled();
+  });
+
+  it('leaves cancellation retryable when authorization expires between compensation batches', async () => {
+    const fixture = createFixture();
+    const operation = {
+      operationId: 'repair-4',
+      operationType: AuthIdentifierOperationType.OfflineRepair,
+      status: AuthIdentifierOperationStatus.Applying,
+      manifestHash: 'persisted-hash',
+      manifestKeyVersion: 1,
+      requestedBy: { subjectId: 'admin-1' },
+    };
+    fixture.authorization.authorizeMutation
+      .mockResolvedValueOnce({ subjectId: 'admin-1' })
+      .mockResolvedValueOnce({ subjectId: 'admin-1' })
+      .mockRejectedValueOnce(new UnauthorizedException('authorization-denied'));
+    jest
+      .spyOn(fixture.service as never, 'requireOperation' as never)
+      .mockResolvedValue(operation as never);
+    jest
+      .spyOn(fixture.service as never, 'verifyPersistedManifest' as never)
+      .mockReturnValue(undefined as never);
+    fixture.repairBatchModel.find.mockReturnValue({
+      sort: jest.fn(() => ({
+        exec: jest.fn().mockResolvedValue([{ batchNumber: 1 }, { batchNumber: 0 }]),
+      })),
+    });
+    const compensate = jest
+      .spyOn(fixture.service as never, 'compensateBatch' as never)
+      .mockResolvedValue(undefined as never);
+
+    await expect(
+      fixture.service.cancel({
+        token: 'expired-token',
+        operationId: 'repair-4',
+        manifest,
+      }),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+
+    expect(compensate).toHaveBeenCalledTimes(1);
+    expect(fixture.operationModel.updateOne).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        operationId: 'repair-4',
+        status: AuthIdentifierOperationStatus.Compensating,
+      }),
+      { $set: { status: AuthIdentifierOperationStatus.FailedRetryable } },
+    );
+    expect(fixture.identifierModel.updateOne).not.toHaveBeenCalled();
+  });
+
+  it('prepares a new bounded batch before applying its aggregate changes', async () => {
+    const fixture = createFixture();
+    const session = {
+      withTransaction: async (work: () => Promise<void>) => work(),
+      endSession: jest.fn(),
+    };
+    fixture.operationModel.db.startSession.mockResolvedValue(session);
+    fixture.repairBatchModel.findOne.mockResolvedValue(null);
+    fixture.repairBatchModel.create.mockResolvedValue([{ _id: 'batch-1' }]);
+    const reserve = jest
+      .spyOn(fixture.service as never, 'reserveReplacement' as never)
+      .mockResolvedValue({ _id: 'reservation-1' } as never);
+    const apply = jest
+      .spyOn(fixture.service as never, 'applyAggregateIdentifier' as never)
+      .mockResolvedValue(undefined as never);
+
+    await (fixture.service as any).prepareBatch(
+      {
+        operationId: 'repair-prepare',
+        manifestKeyVersion: 1,
+        requestedBy: { subjectId: 'admin-1' },
+      },
+      { _id: 'conflict-1' },
+      manifest.reassignments.slice(0, 1),
+      0,
+      2,
+    );
+
+    expect(fixture.repairBatchModel.create).toHaveBeenCalledWith(
+      [expect.objectContaining({ batchNumber: 0, batchCount: 2 })],
+      { session },
+    );
+    expect(reserve).toHaveBeenCalledTimes(1);
+    expect(apply).toHaveBeenCalledTimes(1);
+    expect(fixture.repairBatchModel.updateOne).toHaveBeenCalledWith(
+      expect.objectContaining({ batchNumber: 0 }),
+      expect.objectContaining({
+        $set: expect.objectContaining({ status: 'prepared' }),
+      }),
+      { session },
+    );
+    expect(session.endSession).toHaveBeenCalledTimes(1);
+  });
+
+  it('activates a prepared batch and keeps its identifiers gated until parent completion', async () => {
+    const fixture = createFixture();
+    const session = {
+      withTransaction: async (work: () => Promise<void>) => work(),
+      endSession: jest.fn(),
+    };
+    fixture.operationModel.db.startSession.mockResolvedValue(session);
+    fixture.repairBatchModel.findOne.mockResolvedValue({
+      status: 'prepared',
+      assignments: [{ targetReservationId: 'reservation-1' }],
+    });
+    await (fixture.service as any).activateBatch('repair-activate', 0);
+
+    expect(fixture.identifierModel.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ pendingOperationId: 'repair-activate' }),
+      expect.objectContaining({
+        $set: expect.objectContaining({ activationGateOperationId: 'repair-activate' }),
+      }),
+      { session },
+    );
+    expect(fixture.repairBatchModel.updateOne).toHaveBeenCalledWith(
+      { parentOperationId: 'repair-activate', batchNumber: 0 },
+      expect.objectContaining({
+        $set: expect.objectContaining({ status: 'activated' }),
+      }),
+      { session },
+    );
+  });
+
+  it('compensates batch assignments in reverse and releases their reservations', async () => {
+    const fixture = createFixture();
+    const session = {
+      withTransaction: async (work: () => Promise<void>) => work(),
+      endSession: jest.fn(),
+    };
+    fixture.operationModel.db.startSession.mockResolvedValue(session);
+    jest
+      .spyOn(fixture.service as never, 'loadConflict' as never)
+      .mockResolvedValue({ normalizedIdentifier: 'shared@example.test' } as never);
+    const restore = jest
+      .spyOn(fixture.service as never, 'setAggregateIdentifier' as never)
+      .mockResolvedValue(undefined as never);
+
+    await (fixture.service as any).compensateBatch(
+      {
+        _id: 'batch-1',
+        status: 'prepared',
+        assignments: [
+          {
+            subjectType: AuthIdentifierSubjectType.Member,
+            subjectId: 'member-1',
+            targetReservationId: 'reservation-1',
+          },
+        ],
+      },
+      manifest,
+    );
+
+    expect(restore).toHaveBeenCalledWith(
+      AuthIdentifierSubjectType.Member,
+      'member-1',
+      'shared@example.test',
+      session,
+    );
+    expect(fixture.identifierModel.updateOne).toHaveBeenCalledWith(
+      { _id: 'reservation-1' },
+      expect.objectContaining({ $set: expect.objectContaining({ status: 'released' }) }),
+      { session },
+    );
+    expect(fixture.repairBatchModel.updateOne).toHaveBeenCalledWith(
+      { _id: 'batch-1' },
+      expect.objectContaining({ $set: expect.objectContaining({ status: 'compensated' }) }),
+      { session },
+    );
+  });
+
+  it('treats already prepared batch work as idempotent without opening a transaction', async () => {
+    const fixture = createFixture();
+    fixture.repairBatchModel.findOne.mockResolvedValue({ status: 'activated' });
+
+    await (fixture.service as any).prepareBatch(
+      { operationId: 'repair-idempotent', manifestKeyVersion: 1 },
+      { _id: 'conflict-1' },
+      manifest.reassignments.slice(0, 1),
+      0,
+      1,
+    );
+
+    expect(fixture.operationModel.db.startSession).not.toHaveBeenCalled();
+    expect(fixture.repairBatchModel.create).not.toHaveBeenCalled();
+  });
+
+  it('does not activate missing or already activated batches', async () => {
+    const fixture = createFixture();
+    fixture.repairBatchModel.findOne
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ status: 'activated' });
+
+    await (fixture.service as any).activateBatch('repair-noop', 0);
+    await (fixture.service as any).activateBatch('repair-noop', 1);
+
+    expect(fixture.operationModel.db.startSession).not.toHaveBeenCalled();
+    expect(fixture.identifierModel.updateMany).not.toHaveBeenCalled();
+  });
+
+  it('does not compensate an already compensated batch', async () => {
+    const fixture = createFixture();
+
+    await (fixture.service as any).compensateBatch(
+      { status: 'compensated', assignments: [] },
+      manifest,
+    );
+
+    expect(fixture.operationModel.db.startSession).not.toHaveBeenCalled();
+    expect(fixture.identifierModel.updateOne).not.toHaveBeenCalled();
+  });
+
+  it('completes the parent only after recording its terminal event', async () => {
+    const fixture = createFixture();
+    const calls: string[] = [];
+    const session = {
+      withTransaction: async (work: () => Promise<void>) => work(),
+      endSession: jest.fn(),
+    };
+    fixture.operationModel.db.startSession.mockResolvedValue(session);
+    fixture.identifierModel.updateOne.mockImplementation(async () => {
+      calls.push('identifier');
+    });
+    fixture.securityActivity.recordIdentifierOperationTerminal.mockImplementation(async () => {
+      calls.push('event');
+      return 'event-1';
+    });
+    fixture.operationModel.updateOne.mockImplementation(async () => {
+      calls.push('operation');
+    });
+
+    await (fixture.service as any).completeParent(
+      { operationId: 'repair-parent' },
+      manifest,
+      'admin-1',
+    );
+
+    expect(calls).toEqual(['identifier', 'event', 'operation']);
+    expect(fixture.operationModel.updateOne).toHaveBeenCalledWith(
+      expect.objectContaining({ status: AuthIdentifierOperationStatus.Finalizing }),
+      expect.objectContaining({
+        $set: expect.objectContaining({ status: AuthIdentifierOperationStatus.Completed }),
+      }),
+      { session },
+    );
+  });
+
+  it('records a cancellation terminal event before failing its parent', async () => {
+    const fixture = createFixture();
+    const session = {
+      withTransaction: async (work: () => Promise<void>) => work(),
+      endSession: jest.fn(),
+    };
+    fixture.operationModel.db.startSession.mockResolvedValue(session);
+
+    await (fixture.service as any).finishFailedParent('repair-failed', 'admin-1');
+
+    expect(fixture.securityActivity.recordIdentifierOperationTerminal).toHaveBeenCalledWith(
+      expect.objectContaining({
+        operationId: 'repair-failed',
+        terminalStatus: 'failed-terminal',
+      }),
+      session,
+    );
+    expect(fixture.operationModel.updateOne).toHaveBeenCalledWith(
+      expect.objectContaining({ status: AuthIdentifierOperationStatus.Finalizing }),
+      expect.objectContaining({
+        $set: expect.objectContaining({ status: AuthIdentifierOperationStatus.FailedTerminal }),
+      }),
+      { session },
+    );
+  });
+
+  it('reserves a replacement with pending ownership for the repair operation', async () => {
+    const fixture = createFixture();
+    const session = {};
+    fixture.identifierModel.findOneAndUpdate.mockResolvedValue({ _id: 'reservation-1' });
+
+    await expect(
+      (fixture.service as any).reserveReplacement(
+        {
+          operationId: 'repair-reserve',
+          requestedBy: { subjectId: 'admin-1' },
+        },
+        manifest.reassignments[0],
+        session,
+      ),
+    ).resolves.toMatchObject({ _id: 'reservation-1' });
+
+    expect(fixture.identifierModel.findOneAndUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({ normalizedIdentifier: 'member-1@example.test' }),
+      expect.objectContaining({
+        $set: expect.objectContaining({ pendingOperationId: 'repair-reserve' }),
+      }),
+      expect.objectContaining({ upsert: true, session }),
+    );
+  });
+
+  it('maps duplicate replacement reservations to a conflict without leaking database errors', async () => {
+    const fixture = createFixture();
+    fixture.identifierModel.findOneAndUpdate.mockRejectedValue({ code: 11000 });
+
+    await expect(
+      (fixture.service as any).reserveReplacement(
+        { operationId: 'repair-duplicate', requestedBy: { subjectId: 'admin-1' } },
+        manifest.reassignments[0],
+        {},
+      ),
+    ).rejects.toThrow('Replacement identifier is already reserved');
   });
 });

@@ -323,4 +323,215 @@ describe('AuthIdentifierReconciliationService', () => {
     });
     expect(operations.findOneAndUpdate).not.toHaveBeenCalled();
   });
+
+  it('starts one bounded schedule at bootstrap and clears it once on shutdown', async () => {
+    const registry = {
+      addInterval: jest.fn(),
+      doesExist: jest.fn().mockReturnValue(true),
+      deleteInterval: jest.fn(),
+    };
+    const scheduled = new AuthIdentifierReconciliationService(
+      operations,
+      identifiers,
+      batches,
+      policy as AuthIdentifierRepairKeyPolicyService,
+      events,
+      config,
+      registry as any,
+    );
+
+    await scheduled.onApplicationBootstrap();
+    await scheduled.onApplicationBootstrap();
+    scheduled.onApplicationShutdown();
+    scheduled.onApplicationShutdown();
+
+    expect(registry.addInterval).toHaveBeenCalledTimes(1);
+    expect(registry.addInterval.mock.calls[0][0]).toBe(
+      'auth-identifier-reconciliation',
+    );
+    expect(registry.deleteInterval).toHaveBeenCalledTimes(1);
+  });
+
+  it('shares one in-flight reconciliation pass between concurrent callers', async () => {
+    let resolvePass!: (value: any) => void;
+    const pass = new Promise<any>((resolve) => {
+      resolvePass = resolve;
+    });
+    const run = jest
+      .spyOn(service as any, 'runBoundedPass')
+      .mockReturnValue(pass);
+
+    const first = service.reconcileOnce();
+    const second = service.reconcileOnce();
+    expect(first).toBe(second);
+    expect(run).toHaveBeenCalledTimes(1);
+    resolvePass({ examined: 0, claimed: 0, processed: 0, skippedMissingKey: 0 });
+    await expect(first).resolves.toMatchObject({ examined: 0 });
+  });
+
+  it('reports lost lease ownership without changing operation state', async () => {
+    operations.findOneAndUpdate.mockResolvedValue(null);
+
+    await expect(service.renewLease('operation-lost')).resolves.toBe(false);
+    expect(operations.findOneAndUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({ operationId: 'operation-lost' }),
+      expect.any(Array),
+      expect.any(Object),
+    );
+  });
+
+  it('fails an invalid transition terminally with a redacted event', async () => {
+    jest
+      .spyOn(service as any, 'attachMissingReservationReferences')
+      .mockResolvedValue(undefined);
+
+    await (service as any).process(operation({ status: 'invalid-state' }));
+
+    expect(events.recordIdentifierOperationTerminal).toHaveBeenCalledWith(
+      expect.objectContaining({
+        terminalStatus: AuthIdentifierOperationStatus.FailedTerminal,
+        reasonCategory: 'identifier-operation-invalid-state',
+      }),
+    );
+    expect(JSON.stringify(events.recordIdentifierOperationTerminal.mock.calls)).not.toContain(
+      'normalizedIdentifier',
+    );
+    expect(operations.findOneAndUpdate).toHaveBeenCalled();
+  });
+
+  it('continues processing later claimed operations after one operation fails', async () => {
+    const first = operation({ operationId: 'operation-fails' });
+    const second = operation({ operationId: 'operation-recovers' });
+    operations.find.mockReturnValue(query([first, second]));
+    operations.findOneAndUpdate
+      .mockResolvedValueOnce(first)
+      .mockResolvedValueOnce(second);
+    const process = jest
+      .spyOn(service as any, 'process')
+      .mockRejectedValueOnce(new Error('transient failure'))
+      .mockResolvedValueOnce(undefined);
+
+    await expect(service.reconcileOnce()).resolves.toMatchObject({
+      claimed: 2,
+      processed: 1,
+    });
+    expect(process).toHaveBeenCalledTimes(2);
+    expect(operations.updateOne).toHaveBeenCalledWith(
+      expect.objectContaining({ operationId: 'operation-fails' }),
+      expect.any(Array),
+      expect.any(Object),
+    );
+    expect(operations.updateOne).toHaveBeenCalledWith(
+      expect.objectContaining({ operationId: 'operation-recovers' }),
+      expect.any(Array),
+      expect.any(Object),
+    );
+  });
+
+  it('skips an offline repair with unavailable audit material before claiming it', async () => {
+    operations.find.mockReturnValue(
+      query([
+        operation({
+          operationType: AuthIdentifierOperationType.OfflineRepair,
+          manifestKeyVersion: 1,
+        }),
+      ]),
+    );
+    (policy.getKeyMaterial as jest.Mock).mockReturnValue(undefined);
+
+    await expect(service.reconcileOnce()).resolves.toMatchObject({
+      claimed: 0,
+      processed: 0,
+      skippedMissingKey: 1,
+    });
+    expect(operations.findOneAndUpdate).not.toHaveBeenCalled();
+    expect(operations.updateOne).not.toHaveBeenCalled();
+    expect(identifiers.updateOne).not.toHaveBeenCalled();
+  });
+
+  it('recovers applied reservations into finalization when every assignment is durable', async () => {
+    const current = operation({
+      status: AuthIdentifierOperationStatus.Applying,
+      assignments: [
+        {
+          assignmentId: 'assignment-1',
+          action: 'claim',
+          status: 'pending',
+        },
+      ],
+    });
+    jest.spyOn(service as any, 'findReservation').mockResolvedValue({
+      status: AuthIdentifierStatus.Active,
+      lastOperationId: 'operation-1',
+      updatedAt: new Date(),
+    });
+
+    await (service as any).recoverApplying(current);
+
+    expect(operations.updateOne).toHaveBeenCalledWith(
+      expect.objectContaining({ 'assignments.assignmentId': 'assignment-1' }),
+      expect.objectContaining({ $set: expect.objectContaining({ 'assignments.$.status': 'applied' }) }),
+    );
+    expect(operations.updateOne).toHaveBeenLastCalledWith(
+      expect.objectContaining({ status: AuthIdentifierOperationStatus.Applying }),
+      { $set: { status: AuthIdentifierOperationStatus.Finalizing } },
+    );
+  });
+
+  it('compensates a pending reservation and advances a recovered operation to finalization', async () => {
+    const current = operation({
+      status: AuthIdentifierOperationStatus.Compensating,
+      assignments: [
+        {
+          assignmentId: 'assignment-1',
+          action: 'replace',
+          status: 'pending',
+        },
+      ],
+    });
+    jest.spyOn(service as any, 'findReservation').mockResolvedValue({
+      _id: new Types.ObjectId(),
+      pendingOperationId: 'operation-1',
+    });
+
+    await (service as any).recoverCompensating(current);
+
+    expect(identifiers.updateOne).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.objectContaining({ $set: expect.objectContaining({ status: AuthIdentifierStatus.Released }) }),
+    );
+    expect(operations.updateOne).toHaveBeenLastCalledWith(
+      expect.objectContaining({ status: AuthIdentifierOperationStatus.Compensating }),
+      { $set: { status: AuthIdentifierOperationStatus.Finalizing } },
+    );
+  });
+
+  it('returns incomplete application recovery to a retryable state', async () => {
+    const current = operation({
+      status: AuthIdentifierOperationStatus.Applying,
+      assignments: [{ assignmentId: 'assignment-1', action: 'claim', status: 'pending' }],
+    });
+    jest.spyOn(service as any, 'findReservation').mockResolvedValue(null);
+
+    await (service as any).recoverApplying(current);
+
+    expect(operations.updateOne).toHaveBeenLastCalledWith(
+      expect.objectContaining({ status: AuthIdentifierOperationStatus.Applying }),
+      { $set: { status: AuthIdentifierOperationStatus.FailedRetryable } },
+    );
+  });
+
+  it('returns compensation with applied assignments to a retryable state', async () => {
+    await (service as any).recoverCompensating(
+      operation({
+        status: AuthIdentifierOperationStatus.Compensating,
+        assignments: [{ assignmentId: 'assignment-1', action: 'claim', status: 'applied' }],
+      }),
+    );
+
+    expect(operations.updateOne).toHaveBeenLastCalledWith(
+      expect.objectContaining({ status: AuthIdentifierOperationStatus.Compensating }),
+      { $set: { status: AuthIdentifierOperationStatus.FailedRetryable } },
+    );
+  });
 });

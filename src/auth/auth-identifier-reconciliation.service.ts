@@ -195,6 +195,8 @@ export class AuthIdentifierReconciliationService
       try {
         await this.process(operation);
         result.processed += 1;
+      } catch {
+        this.logger.warn('Auth identifier reconciliation operation failed');
       } finally {
         await this.releaseLease(operation.operationId);
       }
@@ -234,8 +236,10 @@ export class AuthIdentifierReconciliationService
     if (operation.operationType !== AuthIdentifierOperationType.OfflineRepair) {
       return true;
     }
-    return this.keyPolicy.repairWorkerDecision(operation.manifestKeyVersion)
-      .allowed;
+    return (
+      this.keyPolicy.repairWorkerDecision(operation.manifestKeyVersion).allowed &&
+      Boolean(this.keyPolicy.getKeyMaterial(operation.manifestKeyVersion))
+    );
   }
 
   private async claim(
@@ -338,7 +342,60 @@ export class AuthIdentifierReconciliationService
       case AuthIdentifierOperationStatus.Finalizing:
         await this.finalize(operation);
         break;
+      default:
+        await this.failInvalidOperation(operation);
     }
+  }
+
+  private async failInvalidOperation(
+    operation: AuthIdentifierOperationDocument,
+  ): Promise<void> {
+    const eventId =
+      await this.securityActivityService.recordIdentifierOperationTerminal({
+        operationId: operation.operationId,
+        operationType: operation.operationType,
+        terminalStatus: AuthIdentifierOperationStatus.FailedTerminal,
+        actor: {
+          actorType:
+            operation.requestedBy.subjectType === 'member'
+              ? SecurityActivityActorType.Member
+              : SecurityActivityActorType.Staff,
+          actorId: operation.requestedBy.subjectId,
+        },
+        outcome: SecurityActivityOutcome.Failure,
+        reasonCategory: 'identifier-operation-invalid-state',
+      });
+    await this.operationModel.findOneAndUpdate(
+      {
+        operationId: operation.operationId,
+        status: operation.status,
+        leaseOwner: this.instanceId,
+      },
+      [
+        {
+          $set: {
+            status: AuthIdentifierOperationStatus.FailedTerminal,
+            result: {
+              outcome: AuthIdentifierOperationResultOutcome.Failure,
+              reasonCategory: 'identifier-operation-invalid-state',
+              httpStatus: 409,
+            },
+            terminalEventId: eventId,
+            terminalEventRecordedAt: '$$NOW',
+            completedAt: '$$NOW',
+            expiresAt: {
+              $dateAdd: {
+                startDate: '$$NOW',
+                unit: 'day',
+                amount: this.retentionDays,
+              },
+            },
+            updatedAt: '$$NOW',
+          },
+        },
+      ],
+      { returnDocument: 'after', updatePipeline: true },
+    );
   }
 
   private async attachMissingReservationReferences(
