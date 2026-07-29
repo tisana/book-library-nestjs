@@ -79,19 +79,11 @@ function decodeGitPath(value: string): string {
   throw new Error('invalid-git-path');
 }
 
-function normalizePath(value: string): string {
-  let normalized = decodeGitPath(value);
-  if (!value.startsWith('"')) {
-    normalized = normalized.replace(/\\/g, '/');
-  }
-  normalized = normalized.replace(/^\.\//, '').replace(/^(?:a|b)\//, '');
-  const repositoryPath = normalized.match(
-    /(?:^|\/)((?:frontend\/)?(?:src|test|scripts)\/.*)$/,
-  );
-  if (repositoryPath) {
-    normalized = repositoryPath[1];
-  }
-  return normalized;
+function normalizeGitPath(value: string): string {
+  return decodeGitPath(value)
+    .replace(/\\/g, '/')
+    .replace(/^\.\//, '')
+    .replace(/^(?:a|b)\//, '');
 }
 
 export function parseChangedLines(
@@ -136,7 +128,8 @@ export function parseChangedLines(
     }
     if (awaitingNewFilePath && line.startsWith('+++ ')) {
       const candidate = line.slice(4);
-      path = candidate === '/dev/null' ? undefined : normalizePath(candidate);
+      path =
+        candidate === '/dev/null' ? undefined : normalizeGitPath(candidate);
       awaitingNewFilePath = false;
     }
   }
@@ -147,7 +140,19 @@ function normalizeLcovPath(
   value: string,
   scope: ChangedLineCoverageScope,
 ): string {
-  const normalized = normalizePath(value);
+  const normalized = value.replace(/\\/g, '/').replace(/^\.\//, '');
+  const isAbsolute =
+    normalized.startsWith('/') || /^[A-Za-z]:\//.test(normalized);
+
+  if (isAbsolute) {
+    const marker = scope === 'backend' ? '/src/' : '/frontend/src/';
+    const sourceRoot = normalized.lastIndexOf(marker);
+    if (sourceRoot >= 0) {
+      return normalized.slice(sourceRoot + 1);
+    }
+    return normalized;
+  }
+
   if (scope === 'frontend' && normalized.startsWith('src/')) {
     return `frontend/${normalized}`;
   }
@@ -231,7 +236,7 @@ export function evaluateChangedLineCoverage(
   let total = 0;
   const missingFiles: string[] = [];
   for (const [path, changedLines] of changed) {
-    const lineHits = lcov.get(normalizePath(path));
+    const lineHits = lcov.get(path);
     if (!lineHits) {
       missingFiles.push(path);
       total += changedLines.size;

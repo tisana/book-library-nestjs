@@ -78,7 +78,7 @@ diff --git "a/src/quote\\\"slash\\\\tab\\t.ts" "b/src/quote\\\"slash\\\\tab\\t.t
     expect(changed).toEqual(
       new Map([
         ['src/space name.ts', new Set([4])],
-        ['src/quote"slash\\tab\t.ts', new Set([1])],
+        ['src/quote"slash/tab\t.ts', new Set([1])],
       ]),
     );
   });
@@ -135,6 +135,21 @@ end_of_record
         ],
       ]),
     );
+  });
+
+  it('normalizes absolute backend and frontend LCOV paths only within their producer scope', () => {
+    expect(
+      parseLcov(
+        'SF:E:\\repo\\.worktrees\\feature\\src\\Backend.ts\nDA:7,1\nend_of_record\n',
+        'backend',
+      ),
+    ).toEqual(new Map([['src/Backend.ts', new Map([[7, 1]])]]));
+    expect(
+      parseLcov(
+        'SF:E:\\repo\\.worktrees\\feature\\frontend\\src\\View.tsx\nDA:9,1\nend_of_record\n',
+        'frontend',
+      ),
+    ).toEqual(new Map([['frontend/src/View.tsx', new Map([[9, 1]])]]));
   });
 
   it('passes at the inclusive changed-line threshold', () => {
@@ -310,6 +325,46 @@ diff --git a/frontend/src/styles.css b/frontend/src/styles.css
       ['frontend/src/view.test.tsx', new Set([1])],
     ]);
 
+    expect(
+      evaluateChangedLineCoverage(
+        filterChangedLines(changed, 'backend'),
+        new Map(),
+      ),
+    ).toMatchObject({ status: 'not-applicable', passed: true, total: 0 });
+    expect(
+      evaluateChangedLineCoverage(
+        filterChangedLines(changed, 'frontend'),
+        new Map(),
+      ),
+    ).toMatchObject({ status: 'not-applicable', passed: true, total: 0 });
+  });
+
+  it('keeps nested non-root source paths outside both repository coverage scopes', () => {
+    const changed =
+      parseChangedLines(`diff --git a/docs/src/example.ts b/docs/src/example.ts
+--- a/docs/src/example.ts
++++ b/docs/src/example.ts
+@@ -1,0 +1,1 @@
++export const docsExample = true;
+diff --git a/examples/frontend/src/example.tsx b/examples/frontend/src/example.tsx
+--- a/examples/frontend/src/example.tsx
++++ b/examples/frontend/src/example.tsx
+@@ -1,0 +1,1 @@
++export const Example = () => null;
+diff --git "a/docs/src/caf\\303\\251.ts" "b/docs/src/caf\\303\\251.ts"
+--- "a/docs/src/caf\\303\\251.ts"
++++ "b/docs/src/caf\\303\\251.ts"
+@@ -2,0 +2,1 @@
++export const café = true;
+`);
+
+    expect(changed).toEqual(
+      new Map([
+        ['docs/src/example.ts', new Set([1])],
+        ['examples/frontend/src/example.tsx', new Set([1])],
+        ['docs/src/café.ts', new Set([2])],
+      ]),
+    );
     expect(
       evaluateChangedLineCoverage(
         filterChangedLines(changed, 'backend'),

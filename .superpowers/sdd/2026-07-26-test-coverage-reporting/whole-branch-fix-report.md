@@ -197,6 +197,72 @@ because of excluded test files or frontend LCOV path roots.
 This report is added in a follow-up evidence-only commit so it can cite the
 immutable implementation commit hash exactly.
 
+## Narrow nested-path re-review correction
+
+Final re-review found that Git diff and LCOV paths still shared one suffix
+normalizer. It incorrectly collapsed `docs/src/example.ts` to
+`src/example.ts` and `examples/frontend/src/example.tsx` to
+`frontend/src/example.tsx`, making unrelated nested examples appear eligible.
+
+The correction separates the two boundaries:
+
+- Git paths decode quoted bytes, normalize slash direction, and strip only an
+  exact leading `./`, `a/`, or `b/`. Arbitrary prefixes are preserved.
+- LCOV paths normalize slash direction independently. Relative frontend
+  `src/...` paths are rebased using explicit producer scope; only absolute
+  producer paths use `/src/` or `/frontend/src/` suffix rebasing.
+- Changed-line evaluation exact-matches the normalized maps instead of
+  renormalizing repository paths through LCOV rules.
+
+RED:
+
+```text
+npx jest --config ./test/jest-quality.json --runInBand test/quality/changed-line-coverage.spec.ts
+FAIL: docs/src/example.ts received as src/example.ts
+FAIL: examples/frontend/src/example.tsx received as frontend/src/example.tsx
+FAIL: decoded quoted backslash was not slash-normalized
+```
+
+GREEN and adversarial evidence:
+
+```text
+npx jest --config ./test/jest-quality.json --runInBand test/quality/changed-line-coverage.spec.ts
+PASS: 16 tests
+
+npx ts-node --transpile-only scripts/quality/changed-line-coverage.ts --scope backend --diff test-results/adversarial-nested-paths.diff --lcov test-results/adversarial-empty.lcov
+{"scope":"backend","status":"not-applicable","passed":true,"pct":100,"covered":0,"total":0,"missingFiles":[],"minimum":80}
+
+npx ts-node --transpile-only scripts/quality/changed-line-coverage.ts --scope frontend --diff test-results/adversarial-nested-paths.diff --lcov test-results/adversarial-empty.lcov
+{"scope":"frontend","status":"not-applicable","passed":true,"pct":100,"covered":0,"total":0,"missingFiles":[],"minimum":80}
+```
+
+The regressions also prove case-preserving Windows absolute backend and
+frontend LCOV mapping plus existing quoted and adjacent-octal UTF-8 Git paths.
+The full quality suite passed 4 suites and 68 tests. The actual whole-branch
+real-LCOV results remained backend 68/82 (82.92%, zero missing) and frontend
+47/50 (94.00%, zero missing).
+
+Additional fresh checks passed:
+
+- `npx tsc --noEmit -p tsconfig.json`
+- `npm run lint`
+- `npx eslint scripts/quality/*.ts test/quality/*.ts`
+- `npm run frontend:lint`
+- `npm run build`
+- `npm run frontend:build`
+- pinned Prettier YAML parse and Prettier check
+- `git diff --check`
+
+Narrow correction files:
+
+- `scripts/quality/changed-line-coverage.ts`
+- `test/quality/changed-line-coverage.spec.ts`
+- `.superpowers/sdd/2026-07-26-test-coverage-reporting/whole-branch-fix-report.md`
+
+Narrow commit subject:
+`fix(ci): preserve nested paths in changed-line gates`. The exact immutable hash
+is returned in the final handoff because this report is part of that commit.
+
 ## Concerns and tooling notes
 
 - Playwright intentionally skipped the mobile Chromium instance of the
