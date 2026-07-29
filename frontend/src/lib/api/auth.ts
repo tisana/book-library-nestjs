@@ -1,6 +1,6 @@
 import { authSession } from '@/lib/auth/session';
 import { signOut, signOutAll } from '@/lib/auth/sign-out';
-import { apiClient } from './client';
+import { ApiClientError, apiClient } from './client';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { invalidateIdentifierConflictMutation } from './mutations';
 import { queryKeys } from './query-keys';
@@ -21,6 +21,8 @@ import type {
   SecurityActivityEventView,
   SecurityActivityQuery,
 } from './types';
+
+let pendingStaffRefresh: Promise<StaffSessionUser> | undefined;
 
 function tokenMetadata(response: LoginResponse): AuthTokenMetadata {
   return {
@@ -69,14 +71,25 @@ function normalizeSharedUser(response: SharedLoginResponse): SessionUser {
 }
 
 export async function login(input: SharedLoginRequest) {
-  const response = await apiClient.post<SharedLoginResponse>(
-    '/auth/login',
-    input,
-    { auth: false },
-  );
-  const user = normalizeSharedUser(response);
-  authSession.setSession(response.accessToken, user, tokenMetadata(response));
-  return user;
+  try {
+    const response = await apiClient.post<SharedLoginResponse>(
+      '/auth/login',
+      input,
+      { auth: false },
+    );
+    const user = normalizeSharedUser(response);
+    authSession.setSession(
+      response.accessToken,
+      user,
+      tokenMetadata(response),
+    );
+    return user;
+  } catch (caught) {
+    if (caught instanceof ApiClientError) {
+      throw new ApiClientError(caught.status, 'Invalid credentials.');
+    }
+    throw caught;
+  }
 }
 
 export async function staffLogin(input: StaffLoginRequest) {
@@ -90,21 +103,29 @@ export async function staffLogin(input: StaffLoginRequest) {
   return user;
 }
 
-export async function refreshStaffSession() {
-  const response = await apiClient.post<LoginResponse<StaffSessionUser>>(
-    '/auth/refresh',
-    undefined,
-    { auth: false },
-  );
-  const staffUser = normalizeStaffUser(response);
+export function refreshStaffSession() {
+  if (!pendingStaffRefresh) {
+    pendingStaffRefresh = (async () => {
+      const response = await apiClient.post<LoginResponse<StaffSessionUser>>(
+        '/auth/refresh',
+        undefined,
+        { auth: false },
+      );
+      const staffUser = normalizeStaffUser(response);
 
-  authSession.setSession(
-    response.accessToken,
-    staffUser,
-    tokenMetadata(response),
-  );
+      authSession.setSession(
+        response.accessToken,
+        staffUser,
+        tokenMetadata(response),
+      );
 
-  return staffUser;
+      return staffUser;
+    })().finally(() => {
+      pendingStaffRefresh = undefined;
+    });
+  }
+
+  return pendingStaffRefresh;
 }
 
 export async function getCurrentAuthUser() {

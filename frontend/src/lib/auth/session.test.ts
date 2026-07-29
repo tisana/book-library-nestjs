@@ -1,10 +1,10 @@
 import { QueryClient } from '@tanstack/react-query';
 import { http, HttpResponse } from 'msw';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { queryClient } from '@/app/query-client';
 import { apiBaseUrl } from '@/lib/api/client';
 import type { AuthPermission } from '@/lib/api/types';
-import { refreshStaffSession } from '@/lib/api/auth';
+import { refreshStaffSession, staffLogoutAll } from '@/lib/api/auth';
 import { authSession, createAuthSessionStore } from './session';
 import { signOut } from './sign-out';
 import { server } from '@/test/mocks/server';
@@ -103,6 +103,79 @@ describe('auth session store', () => {
     expect(cachedClient.getQueryData(['staff', 'books'])).toBeUndefined();
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('replaces every token metadata field during refresh without retaining the previous token', async () => {
+    authSession.setSession('previous-token', staffUser, {
+      tokenType: 'Bearer',
+      expiresIn: 30,
+      scope: 'stale:scope',
+      permissions: ['catalog:read'],
+      issuer: 'previous-issuer',
+      audience: 'previous-audience',
+      authVersion: 1,
+    });
+    server.use(
+      http.post(`${apiBaseUrl}/auth/refresh`, () =>
+        HttpResponse.json({
+          accessToken: 'replacement-token',
+          tokenType: 'Bearer',
+          expiresIn: 900,
+          scope: 'catalog:read staff-users:read',
+          permissions: ['catalog:read', 'staff-users:read'],
+          issuer: 'replacement-issuer',
+          audience: ['library-web'],
+          authVersion: 2,
+          user: { ...staffUser, permissions: ['catalog:read', 'staff-users:read'] },
+        }),
+      ),
+    );
+
+    await refreshStaffSession();
+
+    expect(authSession.getSnapshot()).toEqual({
+      accessToken: 'replacement-token',
+      tokenType: 'Bearer',
+      expiresIn: 900,
+      scope: 'catalog:read staff-users:read',
+      permissions: ['catalog:read', 'staff-users:read'],
+      issuer: 'replacement-issuer',
+      audience: ['library-web'],
+      authVersion: 2,
+      roleArea: 'staff',
+      user: { ...staffUser, permissions: ['catalog:read', 'staff-users:read'] },
+      reason: 'switched',
+    });
+  });
+
+  it('shares one refresh request and session outcome for concurrent callers', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          accessToken: 'shared-token',
+          tokenType: 'Bearer',
+          expiresIn: 900,
+          scope: 'catalog:read',
+          permissions: ['catalog:read'],
+          user: staffUser,
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      ),
+    );
+
+    const first = refreshStaffSession();
+    const second = refreshStaffSession();
+
+    await expect(Promise.all([first, second])).resolves.toEqual([
+      { ...staffUser, roleArea: 'staff', permissions: ['catalog:read'] },
+      { ...staffUser, roleArea: 'staff', permissions: ['catalog:read'] },
+    ]);
+    expect(authSession.getSnapshot().accessToken).toBe('shared-token');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it('clears local session even when server logout cannot be reached', async () => {
     const cachedClient = queryClient as QueryClient;
     cachedClient.setQueryData(
@@ -124,6 +197,24 @@ describe('auth session store', () => {
 
     await expect(signOut('member')).resolves.toBe('/login');
     expect(authSession.getSnapshot().accessToken).toBeUndefined();
+    expect(cachedClient.getQueryData(['member', 'borrowings'])).toBeUndefined();
+  });
+
+  it('clears every cached query when logout-all receives a server error', async () => {
+    const cachedClient = queryClient as QueryClient;
+    cachedClient.setQueryData(['staff', 'books'], [{ id: 'book-1' }]);
+    cachedClient.setQueryData(['member', 'borrowings'], [{ id: 'borrowing-1' }]);
+    authSession.setSession('staff-token', staffUser);
+    server.use(
+      http.post(`${apiBaseUrl}/auth/logout-all`, () =>
+        HttpResponse.json({ message: 'Unavailable' }, { status: 500 }),
+      ),
+    );
+
+    await expect(staffLogoutAll()).resolves.toBe('/login');
+
+    expect(authSession.getSnapshot()).toEqual({ reason: 'signed-out' });
+    expect(cachedClient.getQueryData(['staff', 'books'])).toBeUndefined();
     expect(cachedClient.getQueryData(['member', 'borrowings'])).toBeUndefined();
   });
 });

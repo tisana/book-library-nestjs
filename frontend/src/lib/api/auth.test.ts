@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   getCurrentAuthUser,
   refreshStaffSession,
@@ -111,7 +111,10 @@ describe('auth API client', () => {
     server.use(
       http.post(`${apiBaseUrl}/auth/login`, () =>
         HttpResponse.json(
-          { statusCode: 401, message: 'Invalid credentials' },
+          {
+            statusCode: 401,
+            message: 'Unknown identifier member-9919@example.com',
+          },
           { status: 401 },
         ),
       ),
@@ -119,7 +122,7 @@ describe('auth API client', () => {
 
     await expect(
       staffLogin({ email: 'unknown@example.com', password: 'wrong-password' }),
-    ).rejects.toMatchObject({ status: 401, message: 'Invalid credentials' });
+    ).rejects.toMatchObject({ status: 401, message: 'Invalid credentials.' });
   });
 
   it('refreshes staff and member sessions from the shared refresh endpoint', async () => {
@@ -180,6 +183,36 @@ describe('auth API client', () => {
       roleArea: 'member',
       member: { roleArea: 'member' },
     });
+  });
+
+  it('clears the session exactly once for auth/me and refresh 401 responses', async () => {
+    const clear = vi.spyOn(authSession, 'clear');
+    authSession.setSession('staff-token', {
+      ...staffAuthResponse.user,
+      roleArea: 'staff',
+      permissions: staffAuthResponse.permissions,
+    });
+    server.use(
+      http.get(`${apiBaseUrl}/auth/me`, () =>
+        HttpResponse.json({ message: 'Unauthorized' }, { status: 401 }),
+      ),
+      http.post(`${apiBaseUrl}/auth/refresh`, () =>
+        HttpResponse.json({ message: 'Unauthorized' }, { status: 401 }),
+      ),
+    );
+
+    await expect(getCurrentAuthUser()).rejects.toMatchObject({ status: 401 });
+    expect(clear).toHaveBeenCalledTimes(1);
+
+    authSession.setSession('replacement-token', {
+      ...staffAuthResponse.user,
+      roleArea: 'staff',
+      permissions: staffAuthResponse.permissions,
+    });
+    clear.mockClear();
+    await expect(refreshStaffSession()).rejects.toMatchObject({ status: 401 });
+    expect(clear).toHaveBeenCalledTimes(1);
+    clear.mockRestore();
   });
 
   it('posts logout endpoints and clears invalid sessions only on 401', async () => {
