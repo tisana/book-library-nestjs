@@ -85,14 +85,18 @@ function normalizePath(value: string): string {
     normalized = normalized.replace(/\\/g, '/');
   }
   normalized = normalized.replace(/^\.\//, '').replace(/^(?:a|b)\//, '');
-  const repositoryPath = normalized.match(/(?:^|\/)((?:frontend\/)?(?:src|test|scripts)\/.*)$/);
+  const repositoryPath = normalized.match(
+    /(?:^|\/)((?:frontend\/)?(?:src|test|scripts)\/.*)$/,
+  );
   if (repositoryPath) {
     normalized = repositoryPath[1];
   }
   return normalized;
 }
 
-export function parseChangedLines(unifiedDiff: string): Map<string, Set<number>> {
+export function parseChangedLines(
+  unifiedDiff: string,
+): Map<string, Set<number>> {
   const changed = new Map<string, Set<number>>();
   let path: string | undefined;
   let nextAddedLine: number | undefined;
@@ -139,13 +143,27 @@ export function parseChangedLines(unifiedDiff: string): Map<string, Set<number>>
   return changed;
 }
 
-export function parseLcov(raw: string): Map<string, Map<number, number>> {
+function normalizeLcovPath(
+  value: string,
+  scope: ChangedLineCoverageScope,
+): string {
+  const normalized = normalizePath(value);
+  if (scope === 'frontend' && normalized.startsWith('src/')) {
+    return `frontend/${normalized}`;
+  }
+  return normalized;
+}
+
+export function parseLcov(
+  raw: string,
+  scope: ChangedLineCoverageScope = 'backend',
+): Map<string, Map<number, number>> {
   const lcov = new Map<string, Map<number, number>>();
   let path: string | undefined;
 
   for (const line of raw.split(/\r?\n/)) {
     if (line.startsWith('SF:')) {
-      path = normalizePath(line.slice(3));
+      path = normalizeLcovPath(line.slice(3), scope);
       if (!lcov.has(path)) {
         lcov.set(path, new Map<number, number>());
       }
@@ -166,8 +184,27 @@ export function filterChangedLines(
   changed: Map<string, Set<number>>,
   scope: ChangedLineCoverageScope,
 ): Map<string, Set<number>> {
-  const prefix = scope === 'backend' ? 'src/' : 'frontend/src/';
-  return new Map([...changed].filter(([path]) => path.startsWith(prefix)));
+  return new Map(
+    [...changed].filter(([path]) => {
+      if (scope === 'backend') {
+        return (
+          /^src\/.*\.ts$/.test(path) &&
+          !/\.(?:spec|test)\.ts$/.test(path) &&
+          !/\.d\.ts$/.test(path) &&
+          path !== 'src/books/interfaces/book.interface.ts'
+        );
+      }
+
+      return (
+        /^frontend\/src\/.*\.tsx?$/.test(path) &&
+        !/\.(?:spec|test)\.(?:ts|tsx)$/.test(path) &&
+        !/^frontend\/src\/test\//.test(path) &&
+        !/^frontend\/src\/(?:.*\/)?__generated__\//.test(path) &&
+        !/\.d\.ts$/.test(path) &&
+        path !== 'frontend/src/main.tsx'
+      );
+    }),
+  );
 }
 
 export function evaluateChangedLineCoverage(
@@ -238,7 +275,10 @@ function parseArguments(arguments_: string[]): ChangedLineCoverageCliOptions {
     if (!value || value.startsWith('--')) {
       throw new Error(`invalid-changed-line-coverage:${argument}`);
     }
-    if (argument === '--scope' && (value === 'backend' || value === 'frontend')) {
+    if (
+      argument === '--scope' &&
+      (value === 'backend' || value === 'frontend')
+    ) {
       options.scope = value;
     } else if (argument === '--diff') {
       options.diff = value;
@@ -267,14 +307,16 @@ export async function runChangedLineCoverageCli(
   ]);
   const gate = evaluateChangedLineCoverage(
     filterChangedLines(parseChangedLines(diff), options.scope!),
-    parseLcov(rawLcov),
+    parseLcov(rawLcov, options.scope!),
     options.minimum,
   );
   const summary = `## ${options.scope} changed-line coverage\n\n| Status | Covered | Total | Coverage | Minimum |\n| --- | ---: | ---: | ---: | ---: |\n| ${gate.status} | ${gate.covered} | ${gate.total} | ${gate.pct.toFixed(2)}% | ${gate.minimum.toFixed(2)}% |\n`;
   if (process.env.GITHUB_STEP_SUMMARY) {
     await appendFile(process.env.GITHUB_STEP_SUMMARY, summary);
   }
-  process.stdout.write(`${JSON.stringify({ scope: options.scope, ...gate })}\n`);
+  process.stdout.write(
+    `${JSON.stringify({ scope: options.scope, ...gate })}\n`,
+  );
   if (!gate.passed) {
     throw new Error(`${options.scope}:changed-line-coverage-gate-failed`);
   }
@@ -284,6 +326,8 @@ export async function runChangedLineCoverageCli(
 if (require.main === module) {
   runChangedLineCoverageCli(process.argv.slice(2)).catch((error: unknown) => {
     process.exitCode = 1;
-    process.stderr.write(`${error instanceof Error ? error.message : 'invalid-changed-line-coverage'}\n`);
+    process.stderr.write(
+      `${error instanceof Error ? error.message : 'invalid-changed-line-coverage'}\n`,
+    );
   });
 }

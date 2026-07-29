@@ -6,6 +6,13 @@ export interface TestRunSummary {
   total: number;
   cleanPassRate: number;
   eventualPassRate: number;
+  suites?: {
+    passed: number;
+    failed: number;
+    skipped: number;
+    total: number;
+  };
+  globalErrors?: string[];
   projects?: Record<string, TestRunSummary>;
 }
 
@@ -52,16 +59,31 @@ function numberField(raw: unknown, field: string): number {
 }
 
 export function parseJestStyleResults(raw: unknown): TestRunSummary {
+  const passedSuites = numberField(raw, 'numPassedTestSuites');
+  const failedSuites = numberField(raw, 'numFailedTestSuites');
+  const skippedSuites = numberField(raw, 'numPendingTestSuites');
+  const totalSuites = numberField(raw, 'numTotalTestSuites');
   const passed = numberField(raw, 'numPassedTests');
   const failed = numberField(raw, 'numFailedTests');
   const skipped = numberField(raw, 'numPendingTests');
   const total = numberField(raw, 'numTotalTests');
 
-  if (passed + failed + skipped !== total) {
+  if (
+    passed + failed + skipped !== total ||
+    passedSuites + failedSuites + skippedSuites !== totalSuites
+  ) {
     throw new Error('invalid-test-results');
   }
 
-  return createSummary({ passed, failed, skipped, flaky: 0, total });
+  return {
+    ...createSummary({ passed, failed, skipped, flaky: 0, total }),
+    suites: {
+      passed: passedSuites,
+      failed: failedSuites,
+      skipped: skippedSuites,
+      total: totalSuites,
+    },
+  };
 }
 
 function addResult(summary: TestRunCounts, target: keyof TestRunCounts): void {
@@ -69,7 +91,9 @@ function addResult(summary: TestRunCounts, target: keyof TestRunCounts): void {
   summary.total += 1;
 }
 
-function classifyPlaywrightTest(test: Record<string, unknown>): keyof TestRunCounts {
+function classifyPlaywrightTest(
+  test: Record<string, unknown>,
+): keyof TestRunCounts {
   if (
     typeof test.projectName !== 'string' ||
     typeof test.expectedStatus !== 'string' ||
@@ -151,9 +175,31 @@ function visitSuites(
 }
 
 export function parsePlaywrightResults(raw: unknown): TestRunSummary {
-  if (!isRecord(raw) || !Array.isArray(raw.suites)) {
+  if (
+    !isRecord(raw) ||
+    !Array.isArray(raw.suites) ||
+    !Array.isArray(raw.errors)
+  ) {
     throw new Error('invalid-test-results');
   }
+  const globalErrors = raw.errors.map((error) => {
+    if (!isRecord(error)) {
+      throw new Error('invalid-test-results');
+    }
+    const diagnostic =
+      typeof error.message === 'string'
+        ? error.message
+        : typeof error.value === 'string'
+          ? error.value
+          : undefined;
+    if (!diagnostic || diagnostic.trim().length === 0) {
+      throw new Error('invalid-test-results');
+    }
+    if (error.stack !== undefined && typeof error.stack !== 'string') {
+      throw new Error('invalid-test-results');
+    }
+    return diagnostic.replace(/\s+/g, ' ').trim();
+  });
 
   const counts: TestRunCounts = {
     passed: 0,
@@ -168,6 +214,7 @@ export function parsePlaywrightResults(raw: unknown): TestRunSummary {
 
   return {
     ...createSummary(counts),
+    globalErrors,
     projects: Object.fromEntries(
       Object.entries(projects).map(([name, projectCounts]) => [
         name,
@@ -187,6 +234,12 @@ export function evaluateTestRun(summary: TestRunSummary): {
       ? ['zero-tests']
       : []),
     ...(summary.failed > 0 ? [`final-failures:${summary.failed}`] : []),
+    ...(summary.suites && summary.suites.failed > 0
+      ? [`failed-suites:${summary.suites.failed}`]
+      : []),
+    ...(summary.globalErrors && summary.globalErrors.length > 0
+      ? [`global-errors:${summary.globalErrors.length}`]
+      : []),
   ];
 
   const warnings = summary.flaky > 0 ? [`flaky-tests:${summary.flaky}`] : [];

@@ -1,14 +1,22 @@
 import type { CoverageReport } from './coverage-report';
 import type { TestRunSummary } from './test-result-report';
-import type { QualityReport } from './report-quality';
+import type { ProducerMetadata, QualityReport } from './report-quality';
 
 function formatPercent(value: number): string {
   return `${value.toFixed(2)}%`;
 }
 
 function coverageTable(coverage: CoverageReport): string {
-  const rows = ['| Metric | Covered | Total | Skipped | Coverage |', '| --- | ---: | ---: | ---: | ---: |'];
-  for (const metric of ['statements', 'branches', 'functions', 'lines'] as const) {
+  const rows = [
+    '| Metric | Covered | Total | Skipped | Coverage |',
+    '| --- | ---: | ---: | ---: | ---: |',
+  ];
+  for (const metric of [
+    'statements',
+    'branches',
+    'functions',
+    'lines',
+  ] as const) {
     const result = coverage.metrics[metric];
     rows.push(
       `| ${metric} | ${result.covered} | ${result.total} | ${result.skipped} | ${formatPercent(result.pct)} |`,
@@ -29,7 +37,11 @@ function changedLineCoverageTable(report: QualityReport): string[] {
     '| --- | ---: | ---: | ---: | ---: |',
     `| ${coverage.status} | ${coverage.covered} | ${coverage.total} | ${formatPercent(coverage.pct)} | ${formatPercent(coverage.minimum)} |`,
     ...(coverage.missingFiles.length > 0
-      ? ['', 'Missing LCOV files:', ...coverage.missingFiles.map((path) => `- ${path}`)]
+      ? [
+          '',
+          'Missing LCOV files:',
+          ...coverage.missingFiles.map((path) => `- ${path}`),
+        ]
       : []),
     '',
   ];
@@ -46,7 +58,38 @@ function testTable(summary: TestRunSummary, passedLabel = 'Passed'): string {
     `| Total | ${summary.total} |`,
     `| Clean pass rate | ${formatPercent(summary.cleanPassRate)} |`,
     `| Eventual pass rate | ${formatPercent(summary.eventualPassRate)} |`,
+    ...(summary.suites
+      ? [
+          `| Passed suites | ${summary.suites.passed} |`,
+          `| Failed suites | ${summary.suites.failed} |`,
+          `| Skipped suites | ${summary.suites.skipped} |`,
+          `| Total suites | ${summary.suites.total} |`,
+        ]
+      : []),
   ].join('\n');
+}
+
+function producerMetadata(
+  source: ProducerMetadata,
+  representedFiles?: number,
+): string {
+  return [
+    ...(representedFiles === undefined
+      ? []
+      : [`Source files represented: ${representedFiles}`]),
+    `Producer: ${source.tool} ${source.version}`,
+    `Source command: \`${source.command}\``,
+  ].join('\n');
+}
+
+function globalErrorDiagnostics(summary: TestRunSummary): string[] {
+  return summary.globalErrors && summary.globalErrors.length > 0
+    ? [
+        '',
+        'Global runner errors:',
+        ...summary.globalErrors.map((diagnostic) => `- ${diagnostic}`),
+      ]
+    : [];
 }
 
 function projectTable(summary: TestRunSummary): string {
@@ -54,9 +97,9 @@ function projectTable(summary: TestRunSummary): string {
     '| Project | First-attempt passed | Flaky | Failed | Skipped | Total | Clean pass rate | Eventual pass rate |',
     '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
   ];
-  for (const [project, projectSummary] of Object.entries(summary.projects ?? {}).sort(
-    ([left], [right]) => left.localeCompare(right),
-  )) {
+  for (const [project, projectSummary] of Object.entries(
+    summary.projects ?? {},
+  ).sort(([left], [right]) => left.localeCompare(right))) {
     rows.push(
       `| ${project} | ${projectSummary.passed} | ${projectSummary.flaky} | ${projectSummary.failed} | ${projectSummary.skipped} | ${projectSummary.total} | ${formatPercent(projectSummary.cleanPassRate)} | ${formatPercent(projectSummary.eventualPassRate)} |`,
     );
@@ -68,6 +111,18 @@ function reportMetadata(report: QualityReport): string {
   return [
     `Generated: ${report.generatedAt}`,
     `Node: ${report.toolVersions.node}`,
+    ...(Object.keys(report.producerOutcomes).length > 0
+      ? [
+          '',
+          '## Producer outcomes',
+          '',
+          '| Producer | Outcome |',
+          '| --- | --- |',
+          ...Object.entries(report.producerOutcomes).map(
+            ([producer, outcome]) => `| ${producer} | ${outcome} |`,
+          ),
+        ]
+      : []),
     '',
     '## Quality gate',
     '',
@@ -88,16 +143,23 @@ export function renderQualityMarkdown(report: QualityReport): string {
       '',
       '## Unit coverage',
       '',
+      producerMetadata(report.sources.coverage!, report.coverage!.files),
+      '',
       coverageTable(report.coverage!),
       '',
       ...changedLineCoverageTable(report),
       '## Unit tests',
       '',
+      producerMetadata(report.sources.unitTests!),
+      '',
       testTable(report.unitTests!),
       '',
       '## Backend e2e',
       '',
+      producerMetadata(report.sources.e2eTests!),
+      '',
       testTable(report.e2eTests!),
+      ...globalErrorDiagnostics(report.e2eTests!),
       '',
       reportMetadata(report),
     ].join('\n');
@@ -109,10 +171,14 @@ export function renderQualityMarkdown(report: QualityReport): string {
       '',
       '## Unit coverage',
       '',
+      producerMetadata(report.sources.coverage!, report.coverage!.files),
+      '',
       coverageTable(report.coverage!),
       '',
       ...changedLineCoverageTable(report),
       '## Unit tests',
+      '',
+      producerMetadata(report.sources.unitTests!),
       '',
       testTable(report.unitTests!),
       '',
@@ -125,7 +191,10 @@ export function renderQualityMarkdown(report: QualityReport): string {
     '',
     '## Overall',
     '',
+    producerMetadata(report.sources.e2eTests!),
+    '',
     testTable(report.e2eTests!, 'First-attempt passed'),
+    ...globalErrorDiagnostics(report.e2eTests!),
     '',
     '## Per-project',
     '',

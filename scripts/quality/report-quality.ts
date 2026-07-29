@@ -1,5 +1,5 @@
 import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises';
-import { dirname } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import {
   evaluateCoverage,
   parseCoverageSummary,
@@ -31,15 +31,92 @@ export interface QualityGate {
   warnings: string[];
 }
 
+export interface ProducerMetadata {
+  tool: 'Jest' | 'Vitest' | 'Playwright';
+  version: string;
+  command: string;
+}
+
 export interface QualityReport {
   stream: QualityStream;
   generatedAt: string;
   toolVersions: { node: string };
+  sources: {
+    coverage?: ProducerMetadata;
+    unitTests?: ProducerMetadata;
+    e2eTests?: ProducerMetadata;
+  };
+  producerOutcomes: Record<
+    string,
+    'success' | 'failure' | 'cancelled' | 'skipped'
+  >;
   coverage?: CoverageReport;
   changedLineCoverage?: ChangedCoverageGate;
   unitTests?: TestRunSummary;
   e2eTests?: TestRunSummary;
   gate: QualityGate;
+}
+
+async function readProducerVersion(
+  path: string,
+  stream: QualityStream,
+): Promise<string> {
+  const raw = await readJson(resolve(__dirname, path), stream);
+  if (
+    typeof raw !== 'object' ||
+    raw === null ||
+    Array.isArray(raw) ||
+    typeof (raw as Record<string, unknown>).version !== 'string' ||
+    !/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(
+      (raw as Record<string, string>).version,
+    )
+  ) {
+    throw new Error(`${stream}:invalid-producer-version`);
+  }
+  return (raw as Record<string, string>).version;
+}
+
+async function producerSources(
+  stream: QualityStream,
+): Promise<QualityReport['sources']> {
+  if (stream === 'backend') {
+    const version = await readProducerVersion(
+      '../../node_modules/jest/package.json',
+      stream,
+    );
+    return {
+      coverage: { tool: 'Jest', version, command: 'npm run test:cov' },
+      unitTests: { tool: 'Jest', version, command: 'npm run test:cov' },
+      e2eTests: {
+        tool: 'Jest',
+        version,
+        command: 'npm run test:e2e:report',
+      },
+    };
+  }
+  if (stream === 'frontend-unit') {
+    const version = await readProducerVersion(
+      '../../frontend/node_modules/vitest/package.json',
+      stream,
+    );
+    const source = {
+      tool: 'Vitest' as const,
+      version,
+      command: 'npm run frontend:test:coverage',
+    };
+    return { coverage: source, unitTests: source };
+  }
+  const version = await readProducerVersion(
+    '../../frontend/node_modules/@playwright/test/package.json',
+    stream,
+  );
+  return {
+    e2eTests: {
+      tool: 'Playwright',
+      version,
+      command: 'npm run frontend:test:e2e:report',
+    },
+  };
 }
 
 interface QualityReportOptions {
@@ -53,6 +130,7 @@ interface QualityReportOptions {
   json?: string;
   changedLineDiff?: string;
   changedLineLcov?: string;
+  producerOutcomes: string[];
   writeBaseline: boolean;
   checkOnly: boolean;
 }
@@ -83,22 +161,41 @@ const valueFlags: Record<string, ValueOption> = {
 };
 
 function parseArguments(arguments_: string[]): QualityReportOptions {
-  const options: QualityReportOptions = { writeBaseline: false, checkOnly: false };
+  const options: QualityReportOptions = {
+    producerOutcomes: [],
+    writeBaseline: false,
+    checkOnly: false,
+  };
 
   for (let index = 0; index < arguments_.length; index += 1) {
     const argument = arguments_[index];
     if (argument === '--write-baseline' || argument === '--check-only') {
-      const key = argument === '--write-baseline' ? 'writeBaseline' : 'checkOnly';
+      const key =
+        argument === '--write-baseline' ? 'writeBaseline' : 'checkOnly';
       if (options[key]) {
         throw new Error(`invalid-quality-report:duplicate-${argument}`);
       }
       options[key] = true;
       continue;
     }
+    if (argument === '--producer-outcome') {
+      const value = arguments_[index + 1];
+      if (!value || value.startsWith('--')) {
+        throw new Error(`invalid-quality-report:${argument}`);
+      }
+      options.producerOutcomes.push(value);
+      index += 1;
+      continue;
+    }
 
     const key = valueFlags[argument];
     const value = arguments_[index + 1];
-    if (!key || !value || value.startsWith('--') || options[key] !== undefined) {
+    if (
+      !key ||
+      !value ||
+      value.startsWith('--') ||
+      options[key] !== undefined
+    ) {
       throw new Error(`invalid-quality-report:${argument}`);
     }
     (options as Record<ValueOption, string | undefined>)[key] = value;
@@ -108,14 +205,38 @@ function parseArguments(arguments_: string[]): QualityReportOptions {
   return options;
 }
 
+function parseProducerOutcomes(
+  values: string[],
+  stream: QualityStream,
+): QualityReport['producerOutcomes'] {
+  const outcomes: QualityReport['producerOutcomes'] = {};
+  for (const value of values) {
+    const match = value.match(
+      /^([a-z][a-z0-9-]*)=(success|failure|cancelled|skipped)$/,
+    );
+    if (!match || outcomes[match[1]] !== undefined) {
+      throw new Error(`${stream}:invalid-producer-outcome`);
+    }
+    outcomes[match[1]] = match[2] as QualityReport['producerOutcomes'][string];
+  }
+  return outcomes;
+}
+
 function assertStream(value: string | undefined): QualityStream {
-  if (value === 'backend' || value === 'frontend-unit' || value === 'frontend-e2e') {
+  if (
+    value === 'backend' ||
+    value === 'frontend-unit' ||
+    value === 'frontend-e2e'
+  ) {
     return value;
   }
   throw new Error(`invalid-quality-report:stream:${value ?? 'missing'}`);
 }
 
-function assertInputs(stream: QualityStream, options: QualityReportOptions): void {
+function assertInputs(
+  stream: QualityStream,
+  options: QualityReportOptions,
+): void {
   const expected =
     stream === 'backend'
       ? { coverage: true, unitTests: true, e2eTests: true }
@@ -123,10 +244,9 @@ function assertInputs(stream: QualityStream, options: QualityReportOptions): voi
         ? { coverage: true, unitTests: true, e2eTests: false }
         : { coverage: false, unitTests: false, e2eTests: true };
 
-  for (const [key, required] of Object.entries(expected) as Array<[
-    'coverage' | 'unitTests' | 'e2eTests',
-    boolean,
-  ]>) {
+  for (const [key, required] of Object.entries(expected) as Array<
+    ['coverage' | 'unitTests' | 'e2eTests', boolean]
+  >) {
     if (Boolean(options[key]) !== required) {
       throw new Error(`${stream}:invalid-${key}`);
     }
@@ -180,11 +300,16 @@ function isMinimums(value: unknown): value is CoverageMinimums {
   }
   return ['statements', 'branches', 'functions', 'lines'].every((metric) => {
     const minimum = (value as Record<string, unknown>)[metric];
-    return typeof minimum === 'number' && Number.isFinite(minimum) && minimum >= 0;
+    return (
+      typeof minimum === 'number' && Number.isFinite(minimum) && minimum >= 0
+    );
   });
 }
 
-function parseBaselines(raw: unknown, stream: QualityStream): CoverageBaselineFile {
+function parseBaselines(
+  raw: unknown,
+  stream: QualityStream,
+): CoverageBaselineFile {
   if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
     throw new Error(`${stream}:invalid-baselines`);
   }
@@ -231,10 +356,13 @@ async function evaluateChangedLines(
         parseChangedLines(diff),
         stream === 'backend' ? 'backend' : 'frontend',
       ),
-      parseLcov(rawLcov),
+      parseLcov(rawLcov, stream === 'backend' ? 'backend' : 'frontend'),
     );
   } catch (error) {
-    if (error instanceof Error && error.message === 'invalid-changed-line-minimum') {
+    if (
+      error instanceof Error &&
+      error.message === 'invalid-changed-line-minimum'
+    ) {
       throw error;
     }
     throw new Error(`${stream}:invalid-changed-line-input`);
@@ -248,8 +376,14 @@ function evaluateGate(
 ): QualityReport['gate'] {
   const reasons: string[] = [];
   const warnings: string[] = [];
+  reasons.push(
+    ...Object.entries(report.producerOutcomes)
+      .filter(([, outcome]) => outcome !== 'success')
+      .map(([producer, outcome]) => `producer:${producer}:${outcome}`),
+  );
   if (report.coverage) {
-    const baseline = report.stream === 'backend' ? baselines.backend : baselines.frontend;
+    const baseline =
+      report.stream === 'backend' ? baselines.backend : baselines.frontend;
     if (!baseline) {
       if (!allowMissingCoverageBaseline) {
         reasons.push('missing-coverage-baseline');
@@ -257,7 +391,8 @@ function evaluateGate(
     } else {
       reasons.push(
         ...evaluateCoverage(report.coverage, baseline).failures.map(
-          (failure) => `coverage:${failure.metric}:${failure.actual}<${failure.required}`,
+          (failure) =>
+            `coverage:${failure.metric}:${failure.actual}<${failure.required}`,
         ),
       );
     }
@@ -277,7 +412,9 @@ function evaluateGate(
     if (summary) {
       const evaluation = evaluateTestRun(summary);
       reasons.push(...evaluation.reasons.map((reason) => `${name}:${reason}`));
-      warnings.push(...evaluation.warnings.map((warning) => `${name}:${warning}`));
+      warnings.push(
+        ...evaluation.warnings.map((warning) => `${name}:${warning}`),
+      );
     }
   }
   return { passed: reasons.length === 0, reasons, warnings };
@@ -288,14 +425,19 @@ async function writeOutput(path: string, contents: string): Promise<void> {
   await writeFile(path, contents);
 }
 
-export async function runQualityReportCli(arguments_: string[]): Promise<QualityReport> {
+export async function runQualityReportCli(
+  arguments_: string[],
+): Promise<QualityReport> {
   let stream: QualityStream;
   try {
     const options = parseArguments(arguments_);
     stream = assertStream(options.stream);
     assertInputs(stream, options);
 
-    const baselines = parseBaselines(await readJson(options.baselines!, stream), stream);
+    const baselines = parseBaselines(
+      await readJson(options.baselines!, stream),
+      stream,
+    );
     const coverage = options.coverage
       ? parseCoverageSummary(
           await readJson(options.coverage, stream),
@@ -319,6 +461,8 @@ export async function runQualityReportCli(arguments_: string[]): Promise<Quality
       stream,
       generatedAt: new Date().toISOString(),
       toolVersions: { node: process.version },
+      sources: await producerSources(stream),
+      producerOutcomes: parseProducerOutcomes(options.producerOutcomes, stream),
       ...(coverage ? { coverage } : {}),
       ...(changedLineCoverage ? { changedLineCoverage } : {}),
       ...(unitTests ? { unitTests } : {}),
@@ -329,14 +473,32 @@ export async function runQualityReportCli(arguments_: string[]): Promise<Quality
       gate: evaluateGate(reportWithoutGate, baselines, options.writeBaseline),
     };
 
-    if (!options.checkOnly && options.writeBaseline && coverage && report.gate.passed) {
+    if (
+      !options.checkOnly &&
+      options.writeBaseline &&
+      coverage &&
+      report.gate.passed
+    ) {
       const nextBaselines: CoverageBaselineFile = {
         ...baselines,
         ...(stream === 'backend'
-          ? { backend: ratchetCoverageBaseline(baselines.backend, coverageMinimums(coverage)) }
-          : { frontend: ratchetCoverageBaseline(baselines.frontend, coverageMinimums(coverage)) }),
+          ? {
+              backend: ratchetCoverageBaseline(
+                baselines.backend,
+                coverageMinimums(coverage),
+              ),
+            }
+          : {
+              frontend: ratchetCoverageBaseline(
+                baselines.frontend,
+                coverageMinimums(coverage),
+              ),
+            }),
       };
-      await writeOutput(options.baselines!, `${JSON.stringify(nextBaselines, null, 2)}\n`);
+      await writeOutput(
+        options.baselines!,
+        `${JSON.stringify(nextBaselines, null, 2)}\n`,
+      );
     }
 
     if (!options.checkOnly) {
@@ -352,11 +514,14 @@ export async function runQualityReportCli(arguments_: string[]): Promise<Quality
       }
     }
     if (!report.gate.passed) {
-      throw new Error(`${stream}:quality-gate-failed:${report.gate.reasons.join(',')}`);
+      throw new Error(
+        `${stream}:quality-gate-failed:${report.gate.reasons.join(',')}`,
+      );
     }
     return report;
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'invalid-quality-report';
+    const message =
+      error instanceof Error ? error.message : 'invalid-quality-report';
     if (typeof stream === 'string' && !message.startsWith(`${stream}:`)) {
       throw new Error(`${stream}:${message}`);
     }
@@ -369,7 +534,9 @@ async function main(): Promise<void> {
     await runQualityReportCli(process.argv.slice(2));
   } catch (error) {
     process.exitCode = 1;
-    process.stderr.write(`${error instanceof Error ? error.message : 'invalid-quality-report'}\n`);
+    process.stderr.write(
+      `${error instanceof Error ? error.message : 'invalid-quality-report'}\n`,
+    );
   }
 }
 

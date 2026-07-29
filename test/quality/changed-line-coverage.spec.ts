@@ -7,7 +7,8 @@ import {
 
 describe('changed-line coverage', () => {
   it('parses only added lines from renamed files and normalizes repository paths', () => {
-    const changed = parseChangedLines(`diff --git a/src/old-name.ts b/src/new-name.ts
+    const changed =
+      parseChangedLines(`diff --git a/src/old-name.ts b/src/new-name.ts
 similarity index 78%
 rename from src/old-name.ts
 rename to src/new-name.ts
@@ -35,7 +36,8 @@ diff --git a/frontend/src/view.tsx b/frontend/src/view.tsx
   });
 
   it('counts an added source line beginning with +++ without mistaking it for a file header', () => {
-    const changed = parseChangedLines(`diff --git a/src/counter.ts b/src/counter.ts
+    const changed =
+      parseChangedLines(`diff --git a/src/counter.ts b/src/counter.ts
 --- a/src/counter.ts
 +++ b/src/counter.ts
 @@ -1,0 +1,2 @@
@@ -58,7 +60,8 @@ diff --git a/src/next.ts b/src/next.ts
   });
 
   it('decodes quoted Git file headers before normalizing paths', () => {
-    const changed = parseChangedLines(`diff --git "a/src/space name.ts" "b/src/space name.ts"
+    const changed =
+      parseChangedLines(`diff --git "a/src/space name.ts" "b/src/space name.ts"
 --- "a/src/space name.ts"
 +++ "b/src/space name.ts"
 @@ -4 +4,2 @@
@@ -81,7 +84,8 @@ diff --git "a/src/quote\\\"slash\\\\tab\\t.ts" "b/src/quote\\\"slash\\\\tab\\t.t
   });
 
   it('decodes adjacent octal UTF-8 bytes and matches the LCOV path exactly', () => {
-    const changed = parseChangedLines(`diff --git "a/src/caf\\303\\251-\\303\\261.ts" "b/src/caf\\303\\251-\\303\\261.ts"
+    const changed =
+      parseChangedLines(`diff --git "a/src/caf\\303\\251-\\303\\261.ts" "b/src/caf\\303\\251-\\303\\261.ts"
 --- "a/src/caf\\303\\251-\\303\\261.ts"
 +++ "b/src/caf\\303\\251-\\303\\261.ts"
 @@ -6 +6,2 @@
@@ -122,7 +126,13 @@ end_of_record
 `),
     ).toEqual(
       new Map([
-        ['src/Example.ts', new Map([[10, 1], [11, 0]])],
+        [
+          'src/Example.ts',
+          new Map([
+            [10, 1],
+            [11, 0],
+          ]),
+        ],
       ]),
     );
   });
@@ -194,7 +204,123 @@ end_of_record
       evaluateChangedLineCoverage(filterChangedLines(changed, 'backend'), lcov),
     ).toMatchObject({ passed: true, total: 1, covered: 1 });
     expect(
-      evaluateChangedLineCoverage(filterChangedLines(changed, 'frontend'), lcov),
+      evaluateChangedLineCoverage(
+        filterChangedLines(changed, 'frontend'),
+        lcov,
+      ),
     ).toMatchObject({ passed: false, total: 1, covered: 0 });
+  });
+
+  it('mirrors backend and frontend coverage eligibility for a whole-repository diff', () => {
+    const changed =
+      parseChangedLines(`diff --git a/src/service.ts b/src/service.ts
+--- a/src/service.ts
++++ b/src/service.ts
+@@ -10,0 +10,5 @@
++export const one = 1;
++export const two = 2;
++export const three = 3;
++export const four = 4;
++export const five = 5;
+diff --git a/src/service.spec.ts b/src/service.spec.ts
+--- a/src/service.spec.ts
++++ b/src/service.spec.ts
+@@ -1,0 +1,1 @@
++it('is excluded', () => undefined);
+diff --git a/src/books/interfaces/book.interface.ts b/src/books/interfaces/book.interface.ts
+--- a/src/books/interfaces/book.interface.ts
++++ b/src/books/interfaces/book.interface.ts
+@@ -1,0 +1,1 @@
++export interface Book {}
+diff --git a/frontend/src/view.tsx b/frontend/src/view.tsx
+--- a/frontend/src/view.tsx
++++ b/frontend/src/view.tsx
+@@ -20,0 +20,5 @@
++export const One = 1;
++export const Two = 2;
++export const Three = 3;
++export const Four = 4;
++export const Five = 5;
+diff --git a/frontend/src/view.test.tsx b/frontend/src/view.test.tsx
+--- a/frontend/src/view.test.tsx
++++ b/frontend/src/view.test.tsx
+@@ -1,0 +1,1 @@
++it('is excluded', () => undefined);
+diff --git a/frontend/src/test/setup.ts b/frontend/src/test/setup.ts
+--- a/frontend/src/test/setup.ts
++++ b/frontend/src/test/setup.ts
+@@ -1,0 +1,1 @@
++export const setup = true;
+diff --git a/frontend/src/main.tsx b/frontend/src/main.tsx
+--- a/frontend/src/main.tsx
++++ b/frontend/src/main.tsx
+@@ -1,0 +1,1 @@
++export const bootstrap = true;
+diff --git a/frontend/src/schema.d.ts b/frontend/src/schema.d.ts
+--- a/frontend/src/schema.d.ts
++++ b/frontend/src/schema.d.ts
+@@ -1,0 +1,1 @@
++export type Schema = string;
+diff --git a/frontend/src/__generated__/routes.ts b/frontend/src/__generated__/routes.ts
+--- a/frontend/src/__generated__/routes.ts
++++ b/frontend/src/__generated__/routes.ts
+@@ -1,0 +1,1 @@
++export const generated = true;
+diff --git a/frontend/src/styles.css b/frontend/src/styles.css
+--- a/frontend/src/styles.css
++++ b/frontend/src/styles.css
+@@ -1,0 +1,1 @@
++.root { display: block; }
+`);
+    const backend = evaluateChangedLineCoverage(
+      filterChangedLines(changed, 'backend'),
+      parseLcov(
+        'SF:src/service.ts\nDA:10,1\nDA:11,1\nDA:12,1\nDA:13,1\nDA:14,0\nend_of_record\n',
+      ),
+    );
+    const frontend = evaluateChangedLineCoverage(
+      filterChangedLines(changed, 'frontend'),
+      parseLcov(
+        'SF:src\\view.tsx\nDA:20,1\nDA:21,1\nDA:22,1\nDA:23,1\nDA:24,0\nend_of_record\n',
+        'frontend',
+      ),
+    );
+
+    expect(backend).toMatchObject({
+      status: 'passed',
+      passed: true,
+      pct: 80,
+      covered: 4,
+      total: 5,
+      missingFiles: [],
+    });
+    expect(frontend).toMatchObject({
+      status: 'passed',
+      passed: true,
+      pct: 80,
+      covered: 4,
+      total: 5,
+      missingFiles: [],
+    });
+  });
+
+  it('reports both scopes not applicable when a repository diff changes only excluded files', () => {
+    const changed = new Map([
+      ['src/service.spec.ts', new Set([1])],
+      ['frontend/src/view.test.tsx', new Set([1])],
+    ]);
+
+    expect(
+      evaluateChangedLineCoverage(
+        filterChangedLines(changed, 'backend'),
+        new Map(),
+      ),
+    ).toMatchObject({ status: 'not-applicable', passed: true, total: 0 });
+    expect(
+      evaluateChangedLineCoverage(
+        filterChangedLines(changed, 'frontend'),
+        new Map(),
+      ),
+    ).toMatchObject({ status: 'not-applicable', passed: true, total: 0 });
   });
 });

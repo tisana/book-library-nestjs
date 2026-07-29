@@ -5,6 +5,7 @@ import {
 } from '../../scripts/quality/test-result-report';
 
 const playwrightResult = {
+  errors: [],
   suites: [
     {
       suites: [],
@@ -42,6 +43,10 @@ describe('test result normalization', () => {
   it('normalizes Jest and Vitest counts without treating skips as passes', () => {
     expect(
       parseJestStyleResults({
+        numPassedTestSuites: 2,
+        numFailedTestSuites: 1,
+        numPendingTestSuites: 1,
+        numTotalTestSuites: 4,
         numPassedTests: 8,
         numFailedTests: 1,
         numPendingTests: 2,
@@ -55,11 +60,21 @@ describe('test result normalization', () => {
       total: 11,
       cleanPassRate: 88.89,
       eventualPassRate: 88.89,
+      suites: {
+        passed: 2,
+        failed: 1,
+        skipped: 1,
+        total: 4,
+      },
     });
   });
 
   it('fails a zero-test run even when the producer reports success', () => {
     const summary = parseJestStyleResults({
+      numPassedTestSuites: 0,
+      numFailedTestSuites: 0,
+      numPendingTestSuites: 0,
+      numTotalTestSuites: 0,
       numPassedTests: 0,
       numFailedTests: 0,
       numPendingTests: 0,
@@ -73,12 +88,31 @@ describe('test result normalization', () => {
     });
   });
 
+  it('fails a Jest or Vitest run with a failed suite even when every reported test passed', () => {
+    const summary = parseJestStyleResults({
+      numPassedTestSuites: 1,
+      numFailedTestSuites: 1,
+      numPendingTestSuites: 0,
+      numTotalTestSuites: 2,
+      numPassedTests: 1,
+      numFailedTests: 0,
+      numPendingTests: 0,
+      numTotalTests: 1,
+    });
+
+    expect(evaluateTestRun(summary)).toEqual({
+      passed: false,
+      reasons: ['failed-suites:1'],
+      warnings: [],
+    });
+  });
+
   it.each([
     {
       numPassedTests: 1,
       numFailedTests: 0,
       numPendingTests: 0,
-      numTotalTests: 2,
+      numTotalTests: 1,
     },
     {
       numPassedTests: -1,
@@ -131,11 +165,13 @@ describe('test result normalization', () => {
           eventualPassRate: 0,
         },
       },
+      globalErrors: [],
     });
   });
 
   it('aggregates every project from nested Playwright suites', () => {
     const nestedProjectResults = {
+      errors: [],
       suites: [
         {
           specs: [],
@@ -192,6 +228,7 @@ describe('test result normalization', () => {
 
   it('accepts Playwright leaf suites that omit an empty nested-suite array', () => {
     const actualPlaywrightLeafSuite = {
+      errors: [],
       suites: [
         {
           specs: [
@@ -229,6 +266,7 @@ describe('test result normalization', () => {
 
   it('passes a flaky-only Playwright run while reporting a flakiness warning', () => {
     const flakyOnlyPlaywrightResult = {
+      errors: [],
       suites: [
         {
           suites: [],
@@ -247,18 +285,52 @@ describe('test result normalization', () => {
       ],
     };
 
-    expect(evaluateTestRun(parsePlaywrightResults(flakyOnlyPlaywrightResult))).toEqual({
+    expect(
+      evaluateTestRun(parsePlaywrightResults(flakyOnlyPlaywrightResult)),
+    ).toEqual({
       passed: true,
       reasons: [],
       warnings: ['flaky-tests:1'],
     });
   });
 
+  it('fails a Playwright run with one passed test and a top-level runner error', () => {
+    const summary = parsePlaywrightResults({
+      errors: [{ message: 'global setup failed' }],
+      suites: [
+        {
+          suites: [],
+          specs: [
+            {
+              tests: [
+                {
+                  projectName: 'desktop-chromium',
+                  expectedStatus: 'passed',
+                  results: [{ status: 'passed' }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(summary.globalErrors).toEqual(['global setup failed']);
+    expect(evaluateTestRun(summary)).toEqual({
+      passed: false,
+      reasons: ['global-errors:1'],
+      warnings: [],
+    });
+  });
+
   it.each([
     {},
-    { suites: [{}] },
-    { suites: [{ suites: [], specs: [{}] }] },
+    { suites: [], errors: 'not-an-array' },
+    { suites: [], errors: [{}] },
+    { suites: [{}], errors: [] },
+    { suites: [{ suites: [], specs: [{}] }], errors: [] },
     {
+      errors: [],
       suites: [
         {
           suites: [],
@@ -275,7 +347,10 @@ describe('test result normalization', () => {
         },
       ],
     },
-  ])('rejects malformed Playwright output instead of ignoring it: %p', (raw) => {
-    expect(() => parsePlaywrightResults(raw)).toThrow('invalid-test-results');
-  });
+  ])(
+    'rejects malformed Playwright output instead of ignoring it: %p',
+    (raw) => {
+      expect(() => parsePlaywrightResults(raw)).toThrow('invalid-test-results');
+    },
+  );
 });

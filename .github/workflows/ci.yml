@@ -54,10 +54,12 @@ jobs:
         run: npm ci
 
       - name: Run backend unit coverage
+        id: backend-unit
         run: npm run test:cov
         continue-on-error: true
 
       - name: Run backend e2e tests
+        id: backend-e2e
         run: npm run test:e2e:report
         continue-on-error: true
 
@@ -72,9 +74,9 @@ jobs:
         if: always()
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            npm run quality:report:backend -- --changed-line-diff test-results/pull-request.diff --changed-line-lcov coverage/backend-unit/lcov.info
+            npm run quality:report:backend -- --producer-outcome backend-unit=${{ steps.backend-unit.outcome }} --producer-outcome backend-e2e=${{ steps.backend-e2e.outcome }} --changed-line-diff test-results/pull-request.diff --changed-line-lcov coverage/backend-unit/lcov.info
           else
-            npm run quality:report:backend
+            npm run quality:report:backend -- --producer-outcome backend-unit=${{ steps.backend-unit.outcome }} --producer-outcome backend-e2e=${{ steps.backend-e2e.outcome }}
           fi
 
       - name: Upload backend quality reports
@@ -92,9 +94,9 @@ jobs:
         if: always()
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            npm run quality:report:backend -- --check-only --changed-line-diff test-results/pull-request.diff --changed-line-lcov coverage/backend-unit/lcov.info
+            npm run quality:report:backend -- --check-only --producer-outcome backend-unit=${{ steps.backend-unit.outcome }} --producer-outcome backend-e2e=${{ steps.backend-e2e.outcome }} --changed-line-diff test-results/pull-request.diff --changed-line-lcov coverage/backend-unit/lcov.info
           else
-            npm run quality:report:backend -- --check-only
+            npm run quality:report:backend -- --check-only --producer-outcome backend-unit=${{ steps.backend-unit.outcome }} --producer-outcome backend-e2e=${{ steps.backend-e2e.outcome }}
           fi
 
   frontend-unit-quality:
@@ -127,6 +129,7 @@ jobs:
         continue-on-error: true
 
       - name: Run frontend unit coverage
+        id: frontend-unit
         run: npm run frontend:test:coverage
         continue-on-error: true
 
@@ -141,9 +144,9 @@ jobs:
         if: always()
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            npm run quality:report:frontend-unit -- --changed-line-diff frontend/test-results/pull-request.diff --changed-line-lcov frontend/coverage/lcov.info
+            npm run quality:report:frontend-unit -- --producer-outcome frontend-lint=${{ steps.frontend-lint.outcome }} --producer-outcome frontend-unit=${{ steps.frontend-unit.outcome }} --changed-line-diff frontend/test-results/pull-request.diff --changed-line-lcov frontend/coverage/lcov.info
           else
-            npm run quality:report:frontend-unit
+            npm run quality:report:frontend-unit -- --producer-outcome frontend-lint=${{ steps.frontend-lint.outcome }} --producer-outcome frontend-unit=${{ steps.frontend-unit.outcome }}
           fi
 
       - name: Upload frontend unit quality reports
@@ -161,13 +164,9 @@ jobs:
         if: always()
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            npm run quality:report:frontend-unit -- --check-only --changed-line-diff frontend/test-results/pull-request.diff --changed-line-lcov frontend/coverage/lcov.info
+            npm run quality:report:frontend-unit -- --check-only --producer-outcome frontend-lint=${{ steps.frontend-lint.outcome }} --producer-outcome frontend-unit=${{ steps.frontend-unit.outcome }} --changed-line-diff frontend/test-results/pull-request.diff --changed-line-lcov frontend/coverage/lcov.info
           else
-            npm run quality:report:frontend-unit -- --check-only
-          fi
-          if [ "${{ steps.frontend-lint.outcome }}" != "success" ]; then
-            echo "Frontend lint failed."
-            exit 1
+            npm run quality:report:frontend-unit -- --check-only --producer-outcome frontend-lint=${{ steps.frontend-lint.outcome }} --producer-outcome frontend-unit=${{ steps.frontend-unit.outcome }}
           fi
 
   frontend-e2e-quality:
@@ -197,12 +196,13 @@ jobs:
         working-directory: frontend
 
       - name: Run frontend Playwright e2e
+        id: frontend-playwright
         run: npm run frontend:test:e2e:report
         continue-on-error: true
 
       - name: Publish frontend e2e quality summary
         if: always()
-        run: npm run quality:report:frontend-e2e
+        run: npm run quality:report:frontend-e2e -- --producer-outcome frontend-playwright=${{ steps.frontend-playwright.outcome }}
 
       - name: Upload frontend e2e quality reports
         if: always()
@@ -218,7 +218,7 @@ jobs:
 
       - name: Enforce frontend e2e quality gate
         if: always()
-        run: npm run quality:report:frontend-e2e -- --check-only
+        run: npm run quality:report:frontend-e2e -- --check-only --producer-outcome frontend-playwright=${{ steps.frontend-playwright.outcome }}
 
   build:
     name: Build & Upload Artifact
