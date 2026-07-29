@@ -69,3 +69,10 @@ The minimal fixes add required, focused validation to the shared-login inputs an
 - Shared-login coverage now proves pending `Signing in`/disabled semantics and that a malformed returned role-area/session mismatch produces a generic error without routing.
 - Token-storage browser coverage now checks auth-related key names and JWT-shaped values in both local and session storage after sign-in and sign-out. The focused cross-viewport browser suite passed 12/12.
 - Latest full unit coverage: 20 files, 84/84 tests; statements 45.33%, branches 42.40%, functions 38.37%, lines 46.53%. Frontend lint and build passed. Full Playwright rerun remains to be run by the parent task after this handoff.
+
+## Fix round 2
+
+- RED: real-hook IdentifierConflicts tests showed no loading feedback and a successful resolution did not invalidate the active query provider, leaving stale conflicts rendered. GREEN: added the visible loading state and provider-scoped invalidation. MSW integration coverage now proves loading, retryable safe failure, post-resolution stale-conflict removal, successful operation status, manual-repair-only, and forbidden states.
+- Focused Task 12 components: 8 files, 32/32 passed.
+- Full frontend unit coverage: 21 files, 87/87 passed; statements 46.75%, branches 43.66%, functions 41.08%, lines 48.02%. The frontend-only baseline was ratcheted to these values.
+- Full Playwright: 86 passed, 0 failed, 0 flaky, 1 explicit mobile performance skip (87 total); desktop 29/29, tablet 29/29, mobile 28/29 with the documented skip. Frontend E2E quality gate passed. Frontend lint and build passed.

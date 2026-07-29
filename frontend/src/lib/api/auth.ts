@@ -1,8 +1,7 @@
 import { authSession } from '@/lib/auth/session';
 import { signOut, signOutAll } from '@/lib/auth/sign-out';
 import { ApiClientError, apiClient } from './client';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { invalidateIdentifierConflictMutation } from './mutations';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from './query-keys';
 import type {
   AuthTokenMetadata,
@@ -212,6 +211,7 @@ export function useIdentifierConflicts() {
 }
 
 export function useResolveIdentifierConflict() {
+  const client = useQueryClient();
   return useMutation({
     mutationFn: ({
       conflictId,
@@ -221,7 +221,14 @@ export function useResolveIdentifierConflict() {
       input: ResolveAuthIdentifierConflictInput;
     }) => resolveIdentifierConflict(conflictId, input),
     onSuccess: (result) =>
-      invalidateIdentifierConflictMutation(result.operationId),
+      Promise.all([
+        client.invalidateQueries({
+          queryKey: ['staff', 'identifier-conflicts'],
+        }),
+        client.invalidateQueries({
+          queryKey: queryKeys.staff.identifierOperation(result.operationId),
+        }),
+      ]),
   });
 }
 

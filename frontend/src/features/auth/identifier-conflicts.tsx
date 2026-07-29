@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Fingerprint, Wrench } from 'lucide-react';
 import { FormField, TextInput } from '@/components/forms';
+import { LoadingState } from '@/components/states';
 import { StatusBadge } from '@/components/status-badge';
 import {
   useIdentifierConflicts,
@@ -25,6 +26,10 @@ export function IdentifierConflicts() {
         You do not have permission to review identifier conflicts.
       </p>
     );
+  }
+
+  if (conflicts.isLoading) {
+    return <LoadingState title="Loading identifier conflicts" />;
   }
 
   return (
