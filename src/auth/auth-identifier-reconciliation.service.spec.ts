@@ -398,6 +398,70 @@ describe('AuthIdentifierReconciliationService', () => {
     gated.onApplicationShutdown();
   });
 
+  it('serializes concurrent ready checks into one schedule and startup pass', async () => {
+    let resolveReady!: (value: unknown) => void;
+    const pending = new Promise((resolve) => {
+      resolveReady = resolve;
+    });
+    const registry = {
+      addInterval: jest.fn(),
+      doesExist: jest.fn().mockReturnValue(true),
+      deleteInterval: jest.fn(),
+    };
+    const concurrent = new (AuthIdentifierReconciliationService as any)(
+      operations, identifiers, batches, policy, events, config, registry,
+      { db: { collection: jest.fn().mockReturnValue({ findOne: jest.fn().mockReturnValue(pending) }) } },
+    );
+    const reconcile = jest.spyOn(concurrent, 'reconcileOnce').mockResolvedValue({});
+
+    const first = concurrent.startWhenMigrationsReady();
+    const second = concurrent.startWhenMigrationsReady();
+    resolveReady({ version: '003' });
+    await Promise.all([first, second]);
+
+    expect(registry.addInterval).toHaveBeenCalledTimes(1);
+    expect(reconcile).toHaveBeenCalledTimes(1);
+    concurrent.onApplicationShutdown();
+  });
+
+  it('does not start after shutdown when an in-flight readiness query resolves', async () => {
+    let resolveReady!: (value: unknown) => void;
+    const pending = new Promise((resolve) => { resolveReady = resolve; });
+    const registry = { addInterval: jest.fn(), doesExist: jest.fn().mockReturnValue(true), deleteInterval: jest.fn() };
+    const late = new (AuthIdentifierReconciliationService as any)(
+      operations, identifiers, batches, policy, events, config, registry,
+      { db: { collection: jest.fn().mockReturnValue({ findOne: jest.fn().mockReturnValue(pending) }) } },
+    );
+    const reconcile = jest.spyOn(late, 'reconcileOnce');
+    const check = late.startWhenMigrationsReady();
+    late.onApplicationShutdown();
+    resolveReady({ version: '003' });
+    await check;
+
+    expect(registry.addInterval).not.toHaveBeenCalled();
+    expect(reconcile).not.toHaveBeenCalled();
+  });
+
+  it('contains readiness query failures and allows a later successful probe', async () => {
+    const findOne = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('mongo unavailable'))
+      .mockResolvedValueOnce({ version: '003' });
+    const registry = { addInterval: jest.fn(), doesExist: jest.fn().mockReturnValue(true), deleteInterval: jest.fn() };
+    const retryable = new (AuthIdentifierReconciliationService as any)(
+      operations, identifiers, batches, policy, events, config, registry,
+      { db: { collection: jest.fn().mockReturnValue({ findOne }) } },
+    );
+    const reconcile = jest.spyOn(retryable, 'reconcileOnce').mockResolvedValue({});
+
+    await expect(retryable.runReadinessProbe()).resolves.toBeUndefined();
+    expect(registry.addInterval).not.toHaveBeenCalled();
+    await expect(retryable.runReadinessProbe()).resolves.toBeUndefined();
+    expect(registry.addInterval).toHaveBeenCalledTimes(1);
+    expect(reconcile).toHaveBeenCalledTimes(1);
+    retryable.onApplicationShutdown();
+  });
+
   it('shares one in-flight reconciliation pass between concurrent callers', async () => {
     let resolvePass!: (value: any) => void;
     const pass = new Promise<any>((resolve) => {

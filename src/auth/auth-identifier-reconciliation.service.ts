@@ -78,6 +78,9 @@ export class AuthIdentifierReconciliationService
   private activeRun?: Promise<AuthIdentifierReconciliationResult>;
   private scheduled = false;
   private readinessProbe?: NodeJS.Timeout;
+  private readinessStart?: Promise<boolean>;
+  private lifecycleGeneration = 0;
+  private stopped = false;
 
   constructor(
     @InjectModel(AuthIdentifierOperationModelName)
@@ -96,17 +99,50 @@ export class AuthIdentifierReconciliationService
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
-    if (!(await this.startWhenMigrationsReady())) {
+    if (this.stopped) {
+      this.stopped = false;
+      this.lifecycleGeneration += 1;
+    }
+    let started = false;
+    try {
+      started = await this.startWhenMigrationsReady();
+    } catch {
+      this.logger.warn('Auth identifier migration readiness check failed');
+    }
+    if (!started) {
       this.registerReadinessProbe();
-      return;
     }
   }
 
-  private async startWhenMigrationsReady(): Promise<boolean> {
-    if (this.scheduled || !(await this.requiredMigrationsReady())) {
+  private startWhenMigrationsReady(): Promise<boolean> {
+    if (!this.readinessStart) {
+      const generation = this.lifecycleGeneration;
+      this.readinessStart = this.startWhenMigrationsReadyOnce(generation).finally(
+        () => {
+          this.readinessStart = undefined;
+        },
+      );
+    }
+    return this.readinessStart;
+  }
+
+  private async startWhenMigrationsReadyOnce(
+    generation: number,
+  ): Promise<boolean> {
+    if (this.stopped || this.scheduled || !(await this.requiredMigrationsReady())) {
+      return this.scheduled;
+    }
+    if (
+      this.stopped ||
+      generation !== this.lifecycleGeneration ||
+      this.scheduled
+    ) {
       return this.scheduled;
     }
     this.registerSchedule();
+    if (this.stopped || generation !== this.lifecycleGeneration || !this.scheduled) {
+      return false;
+    }
     try {
       await this.reconcileOnce();
     } catch {
@@ -116,6 +152,8 @@ export class AuthIdentifierReconciliationService
   }
 
   onApplicationShutdown(): void {
+    this.stopped = true;
+    this.lifecycleGeneration += 1;
     if (this.readinessProbe) {
       clearInterval(this.readinessProbe);
       this.readinessProbe = undefined;
@@ -390,12 +428,16 @@ export class AuthIdentifierReconciliationService
   }
 
   private async runReadinessProbe(): Promise<void> {
-    if (!(await this.startWhenMigrationsReady())) {
-      return;
-    }
-    if (this.readinessProbe) {
-      clearInterval(this.readinessProbe);
-      this.readinessProbe = undefined;
+    try {
+      if (!(await this.startWhenMigrationsReady())) {
+        return;
+      }
+      if (this.readinessProbe) {
+        clearInterval(this.readinessProbe);
+        this.readinessProbe = undefined;
+      }
+    } catch {
+      this.logger.warn('Auth identifier migration readiness check failed');
     }
   }
 
