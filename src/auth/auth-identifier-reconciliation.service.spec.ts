@@ -338,6 +338,13 @@ describe('AuthIdentifierReconciliationService', () => {
       events,
       config,
       registry as any,
+      {
+        db: {
+          collection: jest.fn().mockReturnValue({
+            findOne: jest.fn().mockResolvedValue({ version: '003' }),
+          }),
+        },
+      } as any,
     );
 
     await scheduled.onApplicationBootstrap();
@@ -350,6 +357,45 @@ describe('AuthIdentifierReconciliationService', () => {
       'auth-identifier-reconciliation',
     );
     expect(registry.deleteInterval).toHaveBeenCalledTimes(1);
+  });
+
+  it('skips reconciliation scheduling until the required auth migration is recorded', async () => {
+    const registry = {
+      addInterval: jest.fn(),
+      doesExist: jest.fn().mockReturnValue(true),
+      deleteInterval: jest.fn(),
+    };
+    const migrationRecord = jest.fn().mockResolvedValue(null);
+    const migrationConnection = {
+      db: {
+        collection: jest.fn().mockReturnValue({
+          findOne: migrationRecord,
+        }),
+      },
+    };
+    const gated = new (AuthIdentifierReconciliationService as any)(
+      operations,
+      identifiers,
+      batches,
+      policy,
+      events,
+      config,
+      registry,
+      migrationConnection,
+    );
+    const reconcile = jest.spyOn(gated, 'reconcileOnce');
+
+    await gated.onApplicationBootstrap();
+
+    expect(reconcile).not.toHaveBeenCalled();
+    expect(registry.addInterval).not.toHaveBeenCalled();
+
+    migrationRecord.mockResolvedValueOnce({ version: '003' });
+    await gated.runReadinessProbe();
+
+    expect(reconcile).toHaveBeenCalledTimes(1);
+    expect(registry.addInterval).toHaveBeenCalledTimes(1);
+    gated.onApplicationShutdown();
   });
 
   it('shares one in-flight reconciliation pass between concurrent callers', async () => {

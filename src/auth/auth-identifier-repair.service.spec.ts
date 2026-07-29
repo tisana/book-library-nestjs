@@ -59,6 +59,8 @@ describe('AuthIdentifierRepairService', () => {
       updateMany: jest.fn().mockResolvedValue({ modifiedCount: 1 }),
       findOneAndUpdate: jest.fn(),
     };
+    const staffUserModel = { updateOne: jest.fn() };
+    const memberModel = { updateOne: jest.fn() };
     const authorization = {
       authorizeDryRun: jest.fn().mockResolvedValue({ subjectId: 'admin-1' }),
       authorizeMutation: jest.fn().mockResolvedValue({ subjectId: 'admin-2' }),
@@ -80,8 +82,8 @@ describe('AuthIdentifierRepairService', () => {
       operationModel as never,
       repairBatchModel as never,
       identifierModel as never,
-      {} as never,
-      {} as never,
+      staffUserModel as never,
+      memberModel as never,
       authorization as never,
       keyPolicy as never,
       securityActivity as never,
@@ -94,6 +96,8 @@ describe('AuthIdentifierRepairService', () => {
       operationModel,
       repairBatchModel,
       identifierModel,
+      staffUserModel,
+      memberModel,
       authorization,
       keyPolicy,
       securityActivity,
@@ -312,6 +316,8 @@ describe('AuthIdentifierRepairService', () => {
     expect(fixture.operationModel.updateOne).not.toHaveBeenCalled();
     expect(fixture.repairBatchModel.find).not.toHaveBeenCalled();
     expect(fixture.identifierModel.updateOne).not.toHaveBeenCalled();
+    expect(fixture.staffUserModel.updateOne).not.toHaveBeenCalled();
+    expect(fixture.memberModel.updateOne).not.toHaveBeenCalled();
   });
 
   it('rejects an unavailable manifest key before looking up an operation', async () => {
@@ -477,6 +483,52 @@ describe('AuthIdentifierRepairService', () => {
       { $set: { status: AuthIdentifierOperationStatus.FailedRetryable } },
     );
     expect(fixture.identifierModel.updateOne).not.toHaveBeenCalled();
+  });
+
+  it('revalidates authorization after the final compensation batch before parent mutations', async () => {
+    const fixture = createFixture();
+    const operation = {
+      operationId: 'repair-5',
+      operationType: AuthIdentifierOperationType.OfflineRepair,
+      status: AuthIdentifierOperationStatus.Applying,
+      manifestHash: 'persisted-hash',
+      manifestKeyVersion: 1,
+      requestedBy: { subjectId: 'admin-1' },
+    };
+    fixture.authorization.authorizeMutation
+      .mockResolvedValueOnce({ subjectId: 'admin-1' })
+      .mockResolvedValueOnce({ subjectId: 'admin-1' })
+      .mockRejectedValueOnce(new UnauthorizedException('authorization-denied'));
+    jest
+      .spyOn(fixture.service as never, 'requireOperation' as never)
+      .mockResolvedValue(operation as never);
+    jest
+      .spyOn(fixture.service as never, 'verifyPersistedManifest' as never)
+      .mockReturnValue(undefined as never);
+    fixture.repairBatchModel.find.mockReturnValue({
+      sort: jest.fn(() => ({ exec: jest.fn().mockResolvedValue([{ batchNumber: 0 }]) })),
+    });
+    jest
+      .spyOn(fixture.service as never, 'compensateBatch' as never)
+      .mockResolvedValue(undefined as never);
+    const finish = jest
+      .spyOn(fixture.service as never, 'finishFailedParent' as never)
+      .mockResolvedValue(undefined as never);
+
+    await expect(
+      fixture.service.cancel({
+        token: 'expired-token',
+        operationId: 'repair-5',
+        manifest,
+      }),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+
+    expect(fixture.identifierModel.updateOne).not.toHaveBeenCalled();
+    expect(finish).not.toHaveBeenCalled();
+    expect(fixture.operationModel.updateOne).toHaveBeenLastCalledWith(
+      expect.objectContaining({ status: AuthIdentifierOperationStatus.Compensating }),
+      { $set: { status: AuthIdentifierOperationStatus.FailedRetryable } },
+    );
   });
 
   it('prepares a new bounded batch before applying its aggregate changes', async () => {

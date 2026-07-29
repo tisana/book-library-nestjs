@@ -229,6 +229,7 @@ export class AuthIdentifierRepairService {
         await this.authorization.authorizeMutation(input.token);
         await this.compensateBatch(batch, manifest);
       }
+      await this.authorization.authorizeMutation(input.token);
       await this.identifierModel.updateOne(
         { _id: manifest.conflictId },
         {

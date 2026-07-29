@@ -6,10 +6,10 @@ import {
   Optional,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { createHmac, randomUUID } from 'node:crypto';
-import { Model, Types } from 'mongoose';
+import { Connection, Model, Types } from 'mongoose';
 import { AuthIdentifierRepairKeyPolicyService } from './auth-identifier-repair-key-policy.service';
 import {
   AuthIdentifierAssignmentStatus,
@@ -44,6 +44,8 @@ const DEFAULT_INTERVAL_SECONDS = 60;
 const DEFAULT_BATCH_SIZE = 100;
 const DEFAULT_RETENTION_DAYS = 90;
 const DEFAULT_MAX_ASSIGNMENTS = 20;
+const REQUIRED_AUTH_MIGRATION = '003';
+const MIGRATION_RECORDS_COLLECTION = 'migration_records';
 
 const RECONCILABLE_STATUSES = [
   AuthIdentifierOperationStatus.Pending,
@@ -75,6 +77,7 @@ export class AuthIdentifierReconciliationService
   private readonly instanceId = randomUUID();
   private activeRun?: Promise<AuthIdentifierReconciliationResult>;
   private scheduled = false;
+  private readinessProbe?: NodeJS.Timeout;
 
   constructor(
     @InjectModel(AuthIdentifierOperationModelName)
@@ -87,18 +90,36 @@ export class AuthIdentifierReconciliationService
     private readonly securityActivityService: SecurityActivityService,
     private readonly configService: ConfigService,
     @Optional() private readonly schedulerRegistry?: SchedulerRegistry,
+    @Optional()
+    @InjectConnection()
+    private readonly connection?: Connection,
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
+    if (!(await this.startWhenMigrationsReady())) {
+      this.registerReadinessProbe();
+      return;
+    }
+  }
+
+  private async startWhenMigrationsReady(): Promise<boolean> {
+    if (this.scheduled || !(await this.requiredMigrationsReady())) {
+      return this.scheduled;
+    }
     this.registerSchedule();
     try {
       await this.reconcileOnce();
     } catch {
       this.logger.warn('Auth identifier reconciliation startup pass failed');
     }
+    return true;
   }
 
   onApplicationShutdown(): void {
+    if (this.readinessProbe) {
+      clearInterval(this.readinessProbe);
+      this.readinessProbe = undefined;
+    }
     if (
       this.scheduled &&
       this.schedulerRegistry?.doesExist('interval', SCHEDULE_NAME)
@@ -344,6 +365,37 @@ export class AuthIdentifierReconciliationService
         break;
       default:
         await this.failInvalidOperation(operation);
+    }
+  }
+
+  private async requiredMigrationsReady(): Promise<boolean> {
+    if (!this.connection?.db) {
+      return false;
+    }
+    return Boolean(
+      await this.connection.db
+        .collection(MIGRATION_RECORDS_COLLECTION)
+        .findOne({ version: REQUIRED_AUTH_MIGRATION }),
+    );
+  }
+
+  private registerReadinessProbe(): void {
+    if (this.readinessProbe || this.scheduled) {
+      return;
+    }
+    this.readinessProbe = setInterval(() => {
+      void this.runReadinessProbe();
+    }, this.intervalSeconds * 1000);
+    this.readinessProbe.unref();
+  }
+
+  private async runReadinessProbe(): Promise<void> {
+    if (!(await this.startWhenMigrationsReady())) {
+      return;
+    }
+    if (this.readinessProbe) {
+      clearInterval(this.readinessProbe);
+      this.readinessProbe = undefined;
     }
   }
 
