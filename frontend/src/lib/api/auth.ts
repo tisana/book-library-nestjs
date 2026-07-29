@@ -22,7 +22,7 @@ import type {
   SecurityActivityQuery,
 } from './types';
 
-let pendingStaffRefresh: Promise<StaffSessionUser> | undefined;
+let pendingRefresh: Promise<SessionUser> | undefined;
 
 function tokenMetadata(response: LoginResponse): AuthTokenMetadata {
   return {
@@ -86,9 +86,19 @@ export async function login(input: SharedLoginRequest) {
     return user;
   } catch (caught) {
     if (caught instanceof ApiClientError) {
-      throw new ApiClientError(caught.status, 'Invalid credentials.');
+      const message =
+        caught.status === 401
+          ? 'Invalid credentials.'
+          : caught.status === 403
+            ? 'Browser session request denied'
+            : caught.status === 429
+              ? 'Authentication temporarily unavailable'
+              : 'Something went wrong while contacting the API.';
+      throw new ApiClientError(caught.status, message);
     }
-    throw caught;
+    throw new Error('Something went wrong while contacting the API.', {
+      cause: caught,
+    });
   }
 }
 
@@ -104,28 +114,42 @@ export async function staffLogin(input: StaffLoginRequest) {
 }
 
 export function refreshStaffSession() {
-  if (!pendingStaffRefresh) {
-    pendingStaffRefresh = (async () => {
-      const response = await apiClient.post<LoginResponse<StaffSessionUser>>(
+  return refreshSession().then((user) => {
+    if (user.roleArea !== 'staff') {
+      throw new Error('Staff login did not return a staff session.');
+    }
+    return user;
+  });
+}
+
+export function refreshSession() {
+  if (!pendingRefresh) {
+    const generation = authSession.getGeneration();
+    pendingRefresh = (async () => {
+      const response = await apiClient.post<SharedLoginResponse>(
         '/auth/refresh',
         undefined,
         { auth: false },
       );
-      const staffUser = normalizeStaffUser(response);
+      const user = normalizeSharedUser(response);
+
+      if (authSession.getGeneration() !== generation) {
+        throw new Error('Session changed during refresh.');
+      }
 
       authSession.setSession(
         response.accessToken,
-        staffUser,
+        user,
         tokenMetadata(response),
       );
 
-      return staffUser;
+      return user;
     })().finally(() => {
-      pendingStaffRefresh = undefined;
+      pendingRefresh = undefined;
     });
   }
 
-  return pendingStaffRefresh;
+  return pendingRefresh;
 }
 
 export async function getCurrentAuthUser() {

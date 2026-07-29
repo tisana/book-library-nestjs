@@ -5,6 +5,7 @@ import { queryClient } from '@/app/query-client';
 import { apiBaseUrl } from '@/lib/api/client';
 import type { AuthPermission } from '@/lib/api/types';
 import { refreshStaffSession, staffLogoutAll } from '@/lib/api/auth';
+import { refreshMemberSession } from '@/lib/api/member-auth';
 import { authSession, createAuthSessionStore } from './session';
 import { signOut } from './sign-out';
 import { server } from '@/test/mocks/server';
@@ -17,6 +18,23 @@ const staffUser = {
   roleArea: 'staff' as const,
   permissions: ['catalog:read'] satisfies AuthPermission[],
 };
+
+const memberUser = {
+  id: 'member-1',
+  memberNumber: 'M-1001',
+  displayName: 'Member One',
+  membershipStatus: 'active' as const,
+  roleArea: 'member' as const,
+  permissions: ['member:self:read'] satisfies AuthPermission[],
+};
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((resolvePromise) => {
+    resolve = resolvePromise;
+  });
+  return { promise, resolve };
+}
 
 describe('auth session store', () => {
   beforeEach(() => {
@@ -174,6 +192,120 @@ describe('auth session store', () => {
     ]);
     expect(authSession.getSnapshot().accessToken).toBe('shared-token');
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not restore a logged-out session when a pending refresh resolves', async () => {
+    const response = deferred<Response>();
+    vi.spyOn(globalThis, 'fetch').mockReturnValue(response.promise);
+    authSession.setSession('staff-token', staffUser);
+
+    const refresh = refreshStaffSession();
+    authSession.clear('signed-out');
+    response.resolve(
+      new Response(
+        JSON.stringify({
+          accessToken: 'stale-token',
+          tokenType: 'Bearer',
+          expiresIn: 900,
+          scope: 'catalog:read',
+          permissions: ['catalog:read'],
+          user: staffUser,
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      ),
+    );
+
+    await expect(refresh).rejects.toThrow('Session changed during refresh.');
+    expect(authSession.getSnapshot()).toEqual({ reason: 'signed-out' });
+  });
+
+  it('does not overwrite a newer session when a pending refresh resolves', async () => {
+    const response = deferred<Response>();
+    vi.spyOn(globalThis, 'fetch').mockReturnValue(response.promise);
+    authSession.setSession('old-staff-token', staffUser);
+
+    const refresh = refreshStaffSession();
+    authSession.setSession('new-member-token', memberUser);
+    response.resolve(
+      new Response(
+        JSON.stringify({
+          accessToken: 'stale-staff-token',
+          tokenType: 'Bearer',
+          expiresIn: 900,
+          scope: 'catalog:read',
+          permissions: ['catalog:read'],
+          user: staffUser,
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      ),
+    );
+
+    await expect(refresh).rejects.toThrow('Session changed during refresh.');
+    expect(authSession.getSnapshot()).toMatchObject({
+      accessToken: 'new-member-token',
+      roleArea: 'member',
+    });
+  });
+
+  it('shares the rotating refresh request across concurrent staff and member callers', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          accessToken: 'staff-refresh-token',
+          tokenType: 'Bearer',
+          expiresIn: 900,
+          scope: 'catalog:read',
+          permissions: ['catalog:read'],
+          roleArea: 'staff',
+          user: staffUser,
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      ),
+    );
+
+    const staffRefresh = refreshStaffSession();
+    const memberRefresh = refreshMemberSession();
+
+    await expect(staffRefresh).resolves.toMatchObject({ roleArea: 'staff' });
+    await expect(memberRefresh).rejects.toThrow(
+      'Member login did not return a member session.',
+    );
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(authSession.getSnapshot()).toMatchObject({
+      accessToken: 'staff-refresh-token',
+      roleArea: 'staff',
+    });
+  });
+
+  it('clears a rejected refresh flight so a later retry can refresh the session', async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ message: 'Unavailable' }), {
+          status: 500,
+          headers: { 'content-type': 'application/json' },
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            accessToken: 'retry-token',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+            scope: 'catalog:read',
+            permissions: ['catalog:read'],
+            user: staffUser,
+          }),
+          { status: 200, headers: { 'content-type': 'application/json' } },
+        ),
+      );
+
+    await expect(refreshStaffSession()).rejects.toMatchObject({ status: 500 });
+    await expect(refreshStaffSession()).resolves.toMatchObject({
+      roleArea: 'staff',
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(authSession.getSnapshot().accessToken).toBe('retry-token');
   });
 
   it('clears local session even when server logout cannot be reached', async () => {

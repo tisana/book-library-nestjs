@@ -125,6 +125,36 @@ describe('auth API client', () => {
     ).rejects.toMatchObject({ status: 401, message: 'Invalid credentials.' });
   });
 
+  it.each([
+    [403, 'member-9919@example.com is not from a trusted origin', 'Browser session request denied'],
+    [429, 'member-9919@example.com exceeded its retry window', 'Authentication temporarily unavailable'],
+    [500, 'member-9919@example.com database is unavailable', 'Something went wrong while contacting the API.'],
+  ])(
+    'returns a safe %i login error without backend details',
+    async (status, backendMessage, expectedMessage) => {
+      server.use(
+        http.post(`${apiBaseUrl}/auth/login`, () =>
+          HttpResponse.json(
+            { statusCode: status, message: backendMessage },
+            { status },
+          ),
+        ),
+      );
+
+      await expect(
+        staffLogin({ email: 'unknown@example.com', password: 'wrong-password' }),
+      ).rejects.toMatchObject({ status, message: expectedMessage });
+    },
+  );
+
+  it('uses a safe operational message when the login network request fails', async () => {
+    server.use(http.post(`${apiBaseUrl}/auth/login`, () => HttpResponse.error()));
+
+    await expect(
+      staffLogin({ email: 'unknown@example.com', password: 'wrong-password' }),
+    ).rejects.toThrow('Something went wrong while contacting the API.');
+  });
+
   it('refreshes staff and member sessions from the shared refresh endpoint', async () => {
     server.use(
       http.post(`${apiBaseUrl}/auth/refresh`, () =>
