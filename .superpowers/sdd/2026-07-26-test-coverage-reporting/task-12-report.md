@@ -61,3 +61,11 @@ The minimal fixes add required, focused validation to the shared-login inputs an
 - Planned commit: `test: cover frontend user state transitions`.
 - `frontend/public/` was already untracked and intentionally remains untouched and unstaged.
 - The explicit Playwright skip is the existing mobile staff performance test; it is reported by the quality stream and has no failures or flakes.
+
+## Fix round 1
+
+- RED: history and retry tests failed because a global returned-item filter hid `MemberBorrowingsRoute` history and its API error state offered no retry. GREEN: `BorrowedBooksList` now defaults to current-only behavior while history explicitly opts out, and the history route refetches from a visible retry action (9/9 focused tests).
+- Added a real MSW/query-client staff-role integration test. Its server response changes only after PATCH; the UI proves the invalidated query refetched the changed display name. This exposed and fixed mutation invalidation being coupled to the global client rather than the active provider client.
+- Shared-login coverage now proves pending `Signing in`/disabled semantics and that a malformed returned role-area/session mismatch produces a generic error without routing.
+- Token-storage browser coverage now checks auth-related key names and JWT-shaped values in both local and session storage after sign-in and sign-out. The focused cross-viewport browser suite passed 12/12.
+- Latest full unit coverage: 20 files, 84/84 tests; statements 45.33%, branches 42.40%, functions 38.37%, lines 46.53%. Frontend lint and build passed. Full Playwright rerun remains to be run by the parent task after this handoff.

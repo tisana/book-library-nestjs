@@ -101,6 +101,18 @@ async function keyboardSignIn(page: Page, identifier: string) {
   await page.keyboard.press('Enter');
 }
 
+async function hasStoredTokenMaterial(page: Page) {
+  return page.evaluate(() => {
+    const jwt = /eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/;
+    return [localStorage, sessionStorage].some((storage) =>
+      Object.keys(storage).some((key) =>
+        /(?:access|refresh)?[_-]?(?:token|jwt)|bearer/i.test(key) ||
+        jwt.test(storage.getItem(key) ?? ''),
+      ),
+    );
+  });
+}
+
 test('staff, administrator, and member use the same keyboard-only sign-in page', async ({
   page,
 }) => {
@@ -113,25 +125,13 @@ test('staff, administrator, and member use the same keyboard-only sign-in page',
   ] as const) {
     await keyboardSignIn(page, identifier);
     await expect(page).toHaveURL(new RegExp(`${landing}$`));
-    expect(
-      await page.evaluate(() =>
-        [...Object.values(localStorage), ...Object.values(sessionStorage)].some(
-          (value) => /(?:access|refresh)[-_ ]?token/i.test(value),
-        ),
-      ),
-    ).toBe(false);
+    expect(await hasStoredTokenMaterial(page)).toBe(false);
     await page
       .getByRole('button', { name: /sign out/i })
       .first()
       .click();
     await expect(page).toHaveURL(/\/login$/);
-    expect(
-      await page.evaluate(() =>
-        [...Object.values(localStorage), ...Object.values(sessionStorage)].some(
-          (value) => /(?:access|refresh)[-_ ]?token/i.test(value),
-        ),
-      ),
-    ).toBe(false);
+    expect(await hasStoredTokenMaterial(page)).toBe(false);
   }
 });
 

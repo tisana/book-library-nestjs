@@ -124,6 +124,7 @@ describe('SharedLogin', () => {
       .getByRole('button', { name: /sign in/i })
       .closest('form');
     fireEvent.submit(form!);
+    expect(screen.getByRole('button', { name: 'Signing in' })).toBeDisabled();
     fireEvent.submit(form!);
 
     await waitFor(() => expect(navigateMock).toHaveBeenCalled());
@@ -175,5 +176,26 @@ describe('SharedLogin', () => {
       expect(navigateMock).toHaveBeenCalledWith({ to: '/staff' }),
     );
     expect(attempt).toBe(2);
+  });
+
+  it('shows a generic error and does not route when the returned role area lacks its session', async () => {
+    const user = userEvent.setup();
+    server.use(
+      http.post(`${apiBaseUrl}/auth/login`, () =>
+        HttpResponse.json({
+          accessToken: 'mismatch-token', tokenType: 'Bearer', expiresIn: 900,
+          scope: 'member:self:read', permissions: ['member:self:read'], roleArea: 'member',
+          user: { id: 'staff-1', email: 'staff@example.com', displayName: 'Staff One', roles: ['staff'] },
+        }),
+      ),
+    );
+    render(<SharedLogin />);
+
+    await user.type(screen.getByLabelText(/email or login identifier/i), 'staff@example.com');
+    await user.type(screen.getByLabelText(/password/i), 'Password#2026');
+    await user.click(screen.getByRole('button', { name: /sign in/i }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Something went wrong while contacting the API.');
+    expect(navigateMock).not.toHaveBeenCalled();
   });
 });

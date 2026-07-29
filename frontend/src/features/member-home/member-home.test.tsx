@@ -103,6 +103,19 @@ describe('Member home components', () => {
     expect(screen.getByText('1')).toBeInTheDocument();
   });
 
+  it('keeps returned books when the list is explicitly used for borrowing history', () => {
+    render(
+      <BorrowedBooksList
+        borrowings={[activeBorrowing, returnedBorrowing]}
+        currentOnly={false}
+        now={new Date('2026-06-17T12:00:00.000Z')}
+      />,
+    );
+
+    expect(screen.getByRole('link', { name: 'Already Returned' })).toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
+  });
+
   it.each(['inactive', 'suspended'] as const)(
     'explains why a %s account cannot borrow',
     (status) => {
