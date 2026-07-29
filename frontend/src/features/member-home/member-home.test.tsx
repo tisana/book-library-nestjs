@@ -112,6 +112,8 @@ describe('Member home components', () => {
       />,
     );
 
+    expect(screen.getByRole('heading', { name: 'Borrowing history' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Borrowing history' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Already Returned' })).toBeInTheDocument();
     expect(screen.getByText('2')).toBeInTheDocument();
   });

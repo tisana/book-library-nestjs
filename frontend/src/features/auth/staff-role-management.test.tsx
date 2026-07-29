@@ -126,7 +126,8 @@ describe('StaffRoleManagement', () => {
       error: null,
     });
     const { rerender } = render(<StaffRoleManagement />);
-    expect(screen.getByRole('columnheader', { name: 'Account' })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('Loading staff accounts');
+    expect(screen.queryByRole('table')).toBeNull();
 
     api.useStaffUsers.mockReturnValue({
       data: [],

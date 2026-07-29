@@ -36,6 +36,7 @@ export function BorrowedBooksList({
         (borrowing) => borrowing.status !== 'returned' && !borrowing.returnedAt,
       )
     : borrowings;
+  const heading = currentOnly ? 'Current borrowed books' : 'Borrowing history';
 
   return (
     <section className="flex flex-col gap-3" aria-labelledby="borrowed-books">
@@ -44,7 +45,7 @@ export function BorrowedBooksList({
           id="borrowed-books"
           className="text-base font-semibold text-slate-950"
         >
-          Current borrowed books
+          {heading}
         </h2>
         <span className="text-sm tabular-nums text-slate-500">
           {displayedBorrowings.length}

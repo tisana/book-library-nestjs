@@ -45,6 +45,8 @@ describe('MemberBorrowingsRoute', () => {
     server.use(http.get(`${apiBaseUrl}/members/me/borrowings`, () => HttpResponse.json([returnedRecord])));
     renderRoute();
 
+    expect(await screen.findByRole('heading', { name: 'Borrowing history' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Borrowing history' })).toBeInTheDocument();
     expect(await screen.findByRole('link', { name: 'Returned History' })).toBeInTheDocument();
     expect(screen.getByText('Returned')).toBeInTheDocument();
   });

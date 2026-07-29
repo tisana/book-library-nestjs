@@ -6,9 +6,9 @@
     "lines": 68.82
   },
   "frontend": {
-    "statements": 46.75,
-    "branches": 43.66,
+    "statements": 47,
+    "branches": 44.03,
     "functions": 41.08,
-    "lines": 48.02
+    "lines": 48.27
   }
 }

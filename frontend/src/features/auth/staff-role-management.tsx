@@ -37,6 +37,14 @@ export function StaffRoleManagement() {
     return <AccessDenied />;
   }
 
+  if (staffUsers.isLoading || roleReview.isLoading) {
+    return (
+      <p className="m-5 text-sm text-slate-600" role="status">
+        Loading staff accounts
+      </p>
+    );
+  }
+
   return (
     <div className="grid gap-6 p-5 xl:grid-cols-[minmax(0,1fr)_22rem] sm:p-6">
       <section className="min-w-0">

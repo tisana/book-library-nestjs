@@ -36,6 +36,7 @@ async function mockMemberSelfService(page: Page) {
     route.fulfill({
       json: {
         accessToken: 'member-token',
+        roleArea: 'member',
         member: {
           id: 'member-1',
           memberNumber: 'M-1001',

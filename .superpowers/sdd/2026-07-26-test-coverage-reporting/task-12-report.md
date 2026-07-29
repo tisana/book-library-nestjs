@@ -76,3 +76,10 @@ The minimal fixes add required, focused validation to the shared-login inputs an
 - Focused Task 12 components: 8 files, 32/32 passed.
 - Full frontend unit coverage: 21 files, 87/87 passed; statements 46.75%, branches 43.66%, functions 41.08%, lines 48.02%. The frontend-only baseline was ratcheted to these values.
 - Full Playwright: 86 passed, 0 failed, 0 flaky, 1 explicit mobile performance skip (87 total); desktop 29/29, tablet 29/29, mobile 28/29 with the documented skip. Frontend E2E quality gate passed. Frontend lint and build passed.
+
+## Fix round 3
+
+- RED: a staff-labelled response carrying only a member payload was normalized as a member and stored before the staff wrapper rejected it; history used a misleading “Current borrowed books” accessible heading; and StaffRoleManagement rendered an empty table during a delayed real query. GREEN: normalization now branches strictly on `roleArea`, history labels itself “Borrowing history”, and staff loading renders a status with no table. Real MSW 5xx coverage verifies safe error redaction.
+- The strict response contract required updating stale member browser fixtures to include `roleArea: 'member'`. The first full browser run exposed those fixtures (15 timed-out member logins); their focused rerun passed 18/18, and the final full report passed.
+- Focused Task 12 suite: 9 files, 45/45 passed. Full unit coverage: 21 files, 89/89 passed; statements 47.00%, branches 44.03%, functions 41.08%, lines 48.27%. Baseline ratcheted. Lint/build passed.
+- Final Playwright: 86 passed, 0 final failures, 0 flaky, 1 explicit mobile performance skip (87 total); desktop 29/29, tablet 29/29, mobile 28/29. Frontend E2E quality passed.

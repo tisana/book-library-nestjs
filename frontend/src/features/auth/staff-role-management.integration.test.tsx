@@ -18,19 +18,33 @@ const roles = [
 ];
 
 describe('StaffRoleManagement MSW integration', () => {
-  it('renders loading, empty, and forbidden responses through real hooks', async () => {
+  it('renders a visible loading state before empty and forbidden responses through real hooks', async () => {
     server.use(
       http.get(`${apiBaseUrl}/staff-users`, async () => { await delay(20); return HttpResponse.json([]); }),
       http.get(`${apiBaseUrl}/auth/roles`, () => HttpResponse.json(roles)),
     );
     renderManagement();
-    expect(screen.getByRole('columnheader', { name: 'Account' })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('Loading staff accounts');
+    expect(screen.queryByRole('table')).toBeNull();
     expect(await screen.findByText('No staff accounts.')).toBeInTheDocument();
 
     server.use(http.get(`${apiBaseUrl}/staff-users`, () => HttpResponse.json({}, { status: 403 })));
     const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     render(<QueryClientProvider client={client}><StaffRoleManagement /></QueryClientProvider>);
     expect(await screen.findByRole('alert')).toHaveTextContent('You do not have permission to manage staff roles.');
+  });
+
+  it('redacts generic server failures through real hooks', async () => {
+    server.use(
+      http.get(`${apiBaseUrl}/staff-users`, () =>
+        HttpResponse.json({ message: 'database hostname must stay private' }, { status: 500 }),
+      ),
+      http.get(`${apiBaseUrl}/auth/roles`, () => HttpResponse.json(roles)),
+    );
+    renderManagement();
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Staff accounts could not be loaded.');
+    expect(screen.queryByText(/database hostname/i)).toBeNull();
   });
 
   it('refetches real staff data after a successful role update', async () => {

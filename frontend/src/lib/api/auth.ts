@@ -50,10 +50,7 @@ function normalizeStaffUser(response: LoginResponse<StaffSessionUser>) {
 }
 
 function normalizeSharedUser(response: SharedLoginResponse): SessionUser {
-  if (
-    response.roleArea === 'member' ||
-    ('member' in response && response.member)
-  ) {
+  if (response.roleArea === 'member') {
     const member = response.member;
     if (!member) {
       throw new Error('Member login did not return a member session.');

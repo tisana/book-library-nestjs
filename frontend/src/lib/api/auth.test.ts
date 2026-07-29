@@ -155,6 +155,19 @@ describe('auth API client', () => {
     ).rejects.toThrow('Something went wrong while contacting the API.');
   });
 
+  it('rejects a staff role area paired with a member payload without storing a session', async () => {
+    server.use(
+      http.post(`${apiBaseUrl}/auth/login`, () =>
+        HttpResponse.json({ ...memberAuthResponse, roleArea: 'staff' }),
+      ),
+    );
+
+    await expect(
+      staffLogin({ email: 'staff@example.com', password: 'password' }),
+    ).rejects.toThrow('Something went wrong while contacting the API.');
+    expect(authSession.getSnapshot()).toEqual({ reason: 'signed-out' });
+  });
+
   it('refreshes staff and member sessions from the shared refresh endpoint', async () => {
     server.use(
       http.post(`${apiBaseUrl}/auth/refresh`, () =>
