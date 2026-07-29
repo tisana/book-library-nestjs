@@ -376,6 +376,21 @@ describe('MembersService', () => {
     },
   );
 
+  it('returns the active-member not-found contract when the member does not exist', async () => {
+    const model: MockMemberModel = jest.fn();
+    model.findOne = jest.fn().mockReturnValue({
+      exec: jest.fn().mockResolvedValue(null),
+    });
+    const service = new MembersService(
+      asModel(model),
+      createMembershipTypesService(),
+    );
+
+    await expect(service.findActiveById(validMemberId)).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+  });
+
   it('updates last login atomically without loading the member document', async () => {
     const model: MockMemberModel = jest.fn();
     model.updateOne = jest.fn().mockResolvedValue({ matchedCount: 1 });
@@ -540,7 +555,27 @@ describe('MembersService', () => {
       expect.objectContaining({ subjectId: 'member-id' }),
       expect.objectContaining({ $set: expect.objectContaining({ revokedReason: 'member-account-updated' }) }),
     );
-    expect(securityActivityService.record).toHaveBeenCalledTimes(2);
+    expect(securityActivityService.record).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        actorType: 'staff',
+        actorId: 'staff-user-id',
+        targetType: 'member',
+        targetId: 'member-id',
+        subjectType: 'member',
+        subjectId: 'member-id',
+        reasonCategory: 'member-identifier-updated',
+      }),
+    );
+    expect(securityActivityService.record).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        actorType: 'staff',
+        actorId: 'staff-user-id',
+        targetId: 'member-id',
+        reasonCategory: 'member-status-updated',
+      }),
+    );
   });
 
   it('releases a newly reserved email when saving the member change fails', async () => {

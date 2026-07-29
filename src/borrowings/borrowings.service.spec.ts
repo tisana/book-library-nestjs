@@ -1,6 +1,7 @@
 import { BorrowingsRulesService } from './borrowings-rules.service';
 import { BorrowingsService } from './borrowings.service';
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   NotFoundException,
@@ -176,8 +177,32 @@ describe('BorrowingsService', () => {
     });
     expect(fixture.book.availableQuantity).toBe(1);
     expect(fixture.member.activeLoanCount).toBe(1);
-    expect(fixture.book.save).toHaveBeenCalledTimes(1);
-    expect(fixture.member.save).toHaveBeenCalledTimes(1);
+    expect(fixture.rulesService.assertCanBorrow).toHaveBeenCalledWith({
+      book: fixture.book,
+      category: fixture.category,
+      member: fixture.member,
+      membershipType: fixture.membershipType,
+      hasOverdueLoans: false,
+    });
+    expect(fixture.memberQuery.session).toHaveBeenCalledWith(fixture.session);
+    expect(fixture.bookQuery.session).toHaveBeenCalledWith(fixture.session);
+    expect(fixture.categoryQuery.session).toHaveBeenCalledWith(fixture.session);
+    expect(fixture.membershipTypeQuery.session).toHaveBeenCalledWith(
+      fixture.session,
+    );
+    expect(fixture.overdueQuery.session).toHaveBeenCalledWith(fixture.session);
+    expect(fixture.createdBorrowing.save).toHaveBeenCalledWith({
+      session: fixture.session,
+    });
+    expect(fixture.book.save).toHaveBeenCalledWith({ session: fixture.session });
+    expect(fixture.member.save).toHaveBeenCalledWith({
+      session: fixture.session,
+    });
+    const policyCall = fixture.rulesService.assertCanBorrow as jest.Mock;
+    const borrowingSave = fixture.createdBorrowing.save as jest.Mock;
+    expect(policyCall.mock.invocationCallOrder[0]).toBeLessThan(
+      borrowingSave.mock.invocationCallOrder[0],
+    );
   });
 
   it('does not change book availability or member loans when borrowing persistence fails', async () => {
@@ -296,6 +321,70 @@ describe('BorrowingsService', () => {
       service.findOne('665f4d3b8f4c8a001f5f0a14'),
     ).rejects.toBeInstanceOf(NotFoundException);
   });
+
+  it('looks up a borrowing with an exact ObjectId equality filter', async () => {
+    const borrowingId = '665f4d3b8f4c8a001f5f0a14';
+    const query = createFindQuery(createBorrowingDocument({
+      _id: objectId(borrowingId),
+      id: borrowingId,
+    }));
+    const findOne = jest.fn().mockReturnValue(query);
+    const service = createService({ findOne });
+
+    await expect(service.findOne(borrowingId)).resolves.toMatchObject({
+      id: borrowingId,
+    });
+
+    expect(findOne).toHaveBeenCalledWith({
+      _id: { $eq: expect.objectContaining({ _bsontype: 'ObjectId' }) },
+    });
+  });
+
+  it('applies both borrowing and member ObjectId ownership filters for self-service detail', async () => {
+    const borrowingId = '665f4d3b8f4c8a001f5f0a14';
+    const memberId = '665f4d3b8f4c8a001f5f0a12';
+    const query = createFindQuery(createBorrowingDocument({
+      _id: objectId(borrowingId),
+      id: borrowingId,
+      memberId: objectId(memberId),
+    }));
+    const findOne = jest.fn().mockReturnValue(query);
+    const service = createService({ findOne });
+
+    await expect(service.findOneForMember(borrowingId, memberId)).resolves.toMatchObject({
+      id: borrowingId,
+      memberId,
+    });
+
+    expect(findOne).toHaveBeenCalledWith({
+      _id: { $eq: expect.objectContaining({ _bsontype: 'ObjectId' }) },
+      memberId: { $eq: expect.objectContaining({ _bsontype: 'ObjectId' }) },
+    });
+  });
+
+  it.each(['wrong owner', 'missing record'])(
+    'returns the borrowing not-found contract for self-service %s',
+    async () => {
+      const query = createFindQuery(null);
+      const findOne = jest.fn().mockReturnValue(query);
+      const service = createService({ findOne });
+
+      await expect(
+        service.findOneForMember(
+          '665f4d3b8f4c8a001f5f0a14',
+          '665f4d3b8f4c8a001f5f0a12',
+        ),
+      ).rejects.toBeInstanceOf(NotFoundException);
+    },
+  );
+
+  it('keeps malformed borrowing IDs in the shared Mongo ID validation contract', async () => {
+    const service = createService();
+
+    await expect(service.findOne('not-a-mongo-id')).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
+  });
 });
 
 function createFindQuery(result: unknown) {
@@ -329,7 +418,11 @@ function createBorrowingLifecycleFixture(options: { borrowingSave?: jest.Mock } 
   const categoryId = '665f4d3b8f4c8a001f5f0a14';
   const membershipTypeId = '665f4d3b8f4c8a001f5f0a15';
   const borrowingId = '665f4d3b8f4c8a001f5f0a16';
-  const session = {};
+  const session = {
+    withTransaction: async (work: (value: unknown) => Promise<void>) =>
+      work(session),
+    endSession: jest.fn(),
+  };
   const member = {
     _id: objectId(memberId),
     fullName: 'Ada Lovelace',
@@ -371,39 +464,53 @@ function createBorrowingLifecycleFixture(options: { borrowingSave?: jest.Mock } 
     };
     return createdBorrowing;
   }) as unknown as Record<string, unknown>;
+  const overdueQuery = {
+    session: jest.fn().mockResolvedValue(null),
+  };
   (borrowingModel as { exists: jest.Mock }).exists = jest
     .fn()
-    .mockReturnValue({ session: jest.fn().mockResolvedValue(null) });
+    .mockReturnValue(overdueQuery);
+  const memberQuery = createSessionQuery(member);
+  const bookQuery = createSessionQuery(book);
+  const categoryQuery = createSessionQuery(category);
+  const membershipTypeQuery = createSessionQuery(membershipType);
+  const rulesService = new BorrowingsRulesService();
+  jest.spyOn(rulesService, 'assertCanBorrow');
 
   return {
     memberId,
     bookId,
     borrowingId,
+    session,
     member,
     book,
     category,
+    membershipType,
+    memberQuery,
+    bookQuery,
+    categoryQuery,
+    membershipTypeQuery,
+    overdueQuery,
+    rulesService,
     get createdBorrowing() {
       return createdBorrowing;
     },
     borrowingModel,
     dependencies: {
       connection: {
-        startSession: jest.fn().mockResolvedValue({
-          withTransaction: async (work: (value: unknown) => Promise<void>) =>
-            work(session),
-          endSession: jest.fn(),
-        }),
+        startSession: jest.fn().mockResolvedValue(session),
       },
-      bookModel: { findOne: jest.fn().mockReturnValue(createSessionQuery(book)) },
+      bookModel: { findOne: jest.fn().mockReturnValue(bookQuery) },
       bookCategoryModel: {
-        findOne: jest.fn().mockReturnValue(createSessionQuery(category)),
+        findOne: jest.fn().mockReturnValue(categoryQuery),
       },
       memberModel: {
-        findOne: jest.fn().mockReturnValue(createSessionQuery(member)),
+        findOne: jest.fn().mockReturnValue(memberQuery),
       },
       membershipTypeModel: {
-        findOne: jest.fn().mockReturnValue(createSessionQuery(membershipType)),
+        findOne: jest.fn().mockReturnValue(membershipTypeQuery),
       },
+      rulesService,
     },
   };
 }
