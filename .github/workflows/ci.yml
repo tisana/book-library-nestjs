@@ -100,6 +100,11 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci --prefix frontend
 
+      - name: Run frontend lint
+        id: frontend-lint
+        run: npm run lint --prefix frontend
+        continue-on-error: true
+
       - name: Run frontend unit coverage
         run: npm run frontend:test:coverage
         continue-on-error: true
@@ -121,7 +126,12 @@ jobs:
 
       - name: Enforce frontend unit quality gate
         if: always()
-        run: npm run quality:report:frontend-unit -- --check-only
+        run: |
+          npm run quality:report:frontend-unit -- --check-only
+          if [ "${{ steps.frontend-lint.outcome }}" != "success" ]; then
+            echo "Frontend lint failed."
+            exit 1
+          fi
 
   frontend-e2e-quality:
     name: Frontend Playwright e2e
