@@ -303,7 +303,7 @@ npm run frontend:test:coverage
 npm run quality:report:frontend-unit
 npm run frontend:test:e2e:report
 npm run quality:report:frontend-e2e
-npm run lint
+npx eslint "{src,apps,libs,test}/**/*.ts"
 npm run frontend:lint
 npm run build
 npm run frontend:build
