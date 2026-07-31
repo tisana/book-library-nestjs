@@ -56,6 +56,37 @@ Plan 4: Mobile Playwright ───────────────┘
 Plans 1, 2, and 4 may begin from the same clean base in isolated worktrees.
 Plan 3 depends on Plan 2. Plan 5 depends on Plan 3.
 
+## Model Dispatch Policy
+
+Every phase and task in the five implementation plans must name an explicit
+recommended worker model and reasoning level. Dispatchers must not rely on
+inherited model defaults.
+
+Default assignments:
+
+| Work type | Recommended model | Reasoning |
+| --- | --- | --- |
+| Behavior-test implementation and focused fixtures | `gpt-5.6-terra` | high |
+| Task-scoped read-only review | `gpt-5.6-terra` | high |
+| Coverage inventory and deterministic report analysis | `gpt-5.6-terra` | medium |
+| Security, authorization, concurrency, lifecycle, or race-sensitive work | `gpt-5.6-sol` | high |
+| Mutation configuration, surviving-mutant analysis, and runtime optimization | `gpt-5.6-sol` | high |
+| Whole-plan integration review | `gpt-5.6-sol` | high |
+
+Each plan must include:
+
+- A phase-level model table.
+- A `Recommended agent` and `Required reviewer` line for every task.
+- A reason when a task differs from the default assignment.
+- An explicit instruction that implementation and review use separate agent
+  contexts.
+
+If a named model is unavailable, use the newest available coding model with
+equal or greater capability. Record the substituted model, reasoning level,
+reason, and affected task in the plan ledger before work starts. Security,
+concurrency, lifecycle, mutation-analysis, and whole-plan review tasks must not
+be downgraded below the capability of the recommended model.
+
 ## Plan Boundaries
 
 ### Plan 1: Frontend Coverage Uplift
