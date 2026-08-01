@@ -4,7 +4,7 @@ Task 3 — Staff detail workflows
 
 ## Status
 
-in-progress
+fix-round-1-awaiting-scoped-re-review
 
 ## Requested agent
 
@@ -48,23 +48,23 @@ Fresh `npm run frontend:test:coverage` exited 0 after Task 3: 34 files/142 tests
 
 ## Commit hash
 
-Pending the required implementation-boundary commit.
+d3470de6be0a3100439832c03d8c873f76c3fd19
 
 ## Reviewer
 
-Pending controller-owned fresh gpt-5.6-terra/high review; implementer must not spawn the reviewer.
+gpt-5.6-terra, high, fresh context, no substitution — functional/spec approved; scoped metadata re-review pending after fix round 1.
 
 ## Reviewer command and result
 
-Pending controller-owned review.
+Fresh reviewer verified the four exact staff-route test files, real hooks/strict MSW, loading and fallback states, accessible failed-cover fallback, return confirmation/error paths, returned-record lockout with zero POST, measured coverage gains, and scope boundaries. Functional/spec scope was approved at stable implementation SHA `d3470de6be0a3100439832c03d8c873f76c3fd19`; one P2/Important evidence-metadata finding required this fix round.
 
 ## Findings
 
-Self-review: no in-scope functional or test-quality findings. The strict-MSW setup initially used `/catalog`; corrected it to the actual `/book-categories` endpoint before the passing focused and full suites.
+Self-review found no in-scope functional or test-quality issues; the strict-MSW setup initially used `/catalog` and was corrected to the actual `/book-categories` endpoint before the passing focused and full suites. Fresh review found one P2/Important metadata issue: this report still said the implementation commit and reviewer were pending, while `progress.md` also retained pending values.
 
 ## Resolutions
 
-The focused suite passed after the strict-MSW endpoint correction. `git diff --check` reported no whitespace errors. Review findings, if any, remain controller-owned.
+The focused suite passed after the strict-MSW endpoint correction. Fix round 1 records stable implementation SHA `d3470de6be0a3100439832c03d8c873f76c3fd19`, the actual fresh reviewer/model with no substitution, functional/spec approval, measured metrics, and resolution of the stale evidence metadata. Scoped re-review remains pending.
 
 ## Deferred findings
 
@@ -72,4 +72,4 @@ None.
 
 ## Stop/escalation decision
 
-No stop condition. The Task 3 implementation boundary is ready for the required fresh review; Task 4 was not started.
+No stop condition. Task 3 is not complete until the controller-owned scoped re-review confirms fix round 1; Task 4 was not started.
