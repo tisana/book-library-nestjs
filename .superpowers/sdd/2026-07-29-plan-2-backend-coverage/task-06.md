@@ -92,8 +92,10 @@ No implementation concern found. Fresh full tests, e2e, scoped reporting, valida
 
 Review round 1 functionally approved implementation commit `08ea4e8e64a70780c93bbbb0851c63ef0dc79dbd` with no functional, security, scope, test-quality, baseline-isolation, denominator, or generated-artifact defect. It found one Important/P2 documentation issue: the committed Task 6 report and progress ledger still described the stable implementation commit and actual reviewer as pending.
 
-Fix round 1 records the stable implementation SHA and exact reviewer provenance in both evidence files. This correction is metadata-only; the functional approval stands, and final completion remains pending fresh scoped re-review of the corrected evidence.
+Fix round 1 records the stable implementation SHA and exact reviewer provenance in both evidence files. The metadata-only correction was committed as `d57b9df16ce1143f33e8b295e2ecefbff4b117d8`.
+
+Round 2/5 fresh scoped re-review by `/root/plan2_task6_rereview` using gpt-5.6-sol, high reviewed correction commit `d57b9df16ce1143f33e8b295e2ecefbff4b117d8` and returned `APPROVED` with no findings and 0 open findings.
 
 # Reviewer decision
 
-Fresh separate-context review by `/root/plan2_task6_review` using gpt-5.6-sol, high functionally approved the implementation with one P2 stale-metadata finding. Fix round 1 addresses the implementation-commit and reviewer-provenance fields without substitution. Fresh scoped re-review is pending, so Task 6 is not yet recorded as complete.
+Fresh separate-context review by `/root/plan2_task6_review` using gpt-5.6-sol, high functionally approved the implementation with one P2 stale-metadata finding. Fix round 1 addressed the implementation-commit and reviewer-provenance fields without substitution in correction commit `d57b9df16ce1143f33e8b295e2ecefbff4b117d8`. Round 2/5 fresh scoped re-review by `/root/plan2_task6_rereview` using gpt-5.6-sol, high returned `APPROVED` with no findings and 0 open findings. Task 6 is complete and ready for Task 7.

@@ -104,7 +104,7 @@
 
 ### Task 6 — Fresh full evidence and monotonic ratchet
 
-- Status: fix round 1 metadata correction; fresh scoped re-review pending
+- Status: complete; round 2/5 scoped re-review APPROVED
 - Task 5 final evidence commit: `cb67118cccae4ec01a3dc2f8a9352421ceef4949`
 - Working base SHA: `cb67118cccae4ec01a3dc2f8a9352421ceef4949`
 - Requested implementer: gpt-5.6-sol, high
@@ -121,7 +121,9 @@
 - Artifacts: scoped backend summary markdown/JSON generated; `coverage/`, `dist/`, and `test-results/` remain ignored and unstaged.
 - Implementation commit: `08ea4e8e64a70780c93bbbb0851c63ef0dc79dbd`
 - Fresh review: functional approval with no functional, security, scope, test-quality, baseline-isolation, denominator, or generated-artifact defect; one P2 stale-metadata finding because the Task 6 report and ledger still described the stable implementation SHA and actual reviewer as pending.
-- Resolution: fix round 1 records the stable implementation SHA and exact `/root/plan2_task6_review` gpt-5.6-sol high reviewer provenance without substitution. The correction is metadata-only; functional approval stands and fresh scoped re-review remains pending.
+- Resolution: fix round 1 records the stable implementation SHA and exact `/root/plan2_task6_review` gpt-5.6-sol high reviewer provenance without substitution in metadata-only correction commit `d57b9df16ce1143f33e8b295e2ecefbff4b117d8`.
+- Scoped re-review: round 2/5 by fresh `/root/plan2_task6_rereview` using gpt-5.6-sol, high reviewed correction commit `d57b9df16ce1143f33e8b295e2ecefbff4b117d8` and returned `APPROVED` with no findings and 0 open findings.
+- Disposition: Task 6 complete and ready for Task 7.
 
 ## Review and fix log
 
@@ -141,4 +143,6 @@
 - Task 4: complete (commits 399508f..e05afc8, review clean)
 - Task 5: fix round 1/5 (1 addressed, 0 open; provenance parent/base, implementation SHA, and reviewer trace corrected; re-review clean)
 - Task 5: complete (commits 0aecc7f..1092649, review clean)
-- Task 6: fix round 1/5 (1 addressed, 0 open; stable implementation SHA and exact reviewer provenance recorded; fresh scoped re-review pending).
+- Task 6: fix round 1/5 (1 addressed, 0 open; stable implementation SHA and exact reviewer provenance recorded in `d57b9df16ce1143f33e8b295e2ecefbff4b117d8`).
+- Task 6: round 2/5 scoped re-review APPROVED (reviewed correction `d57b9df16ce1143f33e8b295e2ecefbff4b117d8`; no findings, 0 open).
+- Task 6: complete and ready for Task 7 (implementation and correction reviewed clean).
