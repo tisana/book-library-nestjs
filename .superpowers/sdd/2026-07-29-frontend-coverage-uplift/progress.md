@@ -16,3 +16,5 @@
 - Task 1: focused coverage 137/137 statements and 79/79 branches; fresh full coverage 618/1034 statements and 396/729 branches. No rerank: both totals exceed the linear path to 60%; fresh-review P2 on optional key variants resolved.
 - Task 1: fix round 1/5 (1 addressed, 0 open; commits a22e9b9..HEAD)
 - Task 1: complete (commits b9435af..c5ff5d2, review clean) — reviewed implementation+fix range.
+- Task 2: Task 1 final evidence commit f7d0b228d242a6de38bda9a0bbe7bbd4d9413ba5 recorded before Task 2 changes.
+- Task 2: focused suite passed 2 files/11 tests. Fresh full coverage is 685/1034 statements and 473/729 branches (+67/+77); target rows gained 67/68 statements and 76/83 branches. Both global metrics exceed the linear path to 60%, so no rerank is required. Implementation is ready for the required fresh gpt-5.6-terra/high review.
