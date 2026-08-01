@@ -86,7 +86,7 @@
 
 ### Task 5 — Middleware flow and changed-line evidence
 
-- Status: fix round 1 ready for parent-coordinated re-review
+- Status: complete; approved after fix round 1 re-review
 - Task 4 final evidence commit: `0aecc7fb7a831ef6fcd80121e346128aca42d169`
 - Working base SHA: `0aecc7fb7a831ef6fcd80121e346128aca42d169`
 - Requested implementer: gpt-5.6-terra, high
@@ -100,7 +100,7 @@
 - Changed-line result: not-applicable — focused LCOV; Task 6 owns fresh full-source changed-line evidence
 - Implementation commit: `08cc039f69681ef3f1bd6a3c80499f536e4ee222`
 - Fresh review: functional approval with no functional, security, scope, or test-quality defect; one P2 stale-provenance finding in Task 4 parent/working-base and Task 5 implementation-commit metadata.
-- Resolution: fix round 1 corrects the parent and working base to Task 4 completion `0aecc7fb7a831ef6fcd80121e346128aca42d169`, records the stable implementation SHA, and records the actual gpt-5.6-terra high reviewer without substitution. Parent-coordinated re-review is pending.
+- Resolution: fix round 1 corrects the parent and working base to Task 4 completion `0aecc7fb7a831ef6fcd80121e346128aca42d169`, records the stable implementation SHA, and records the actual gpt-5.6-terra high reviewer without substitution. Fresh separate-context re-review approved the resolution with no new findings or open concerns.
 
 ## Review and fix log
 
@@ -118,4 +118,5 @@
 - Task 4: implementation ready for parent-coordinated fresh review; Task 3 final evidence and working base `399508f699a50e8d3b36d8f18698201052e0830f`; required focused Jest RED exit 1 because no owned specs existed, then GREEN exit 0 with 9 tests and 100% statement/branch/function/line coverage for all three controllers; focused lint and `git diff --check` exit 0.
 - Task 4: fix round 1/5 (1 addressed, 0 open; commits 3a76b20..e05afc8; re-review clean)
 - Task 4: complete (commits 399508f..e05afc8, review clean)
-- Task 5: fix round 1/5 (1 addressed, 0 open; provenance parent/base, implementation SHA, and reviewer trace corrected; parent-coordinated re-review pending)
+- Task 5: fix round 1/5 (1 addressed, 0 open; provenance parent/base, implementation SHA, and reviewer trace corrected; re-review clean)
+- Task 5: complete (commits 0aecc7f..1092649, review clean)
