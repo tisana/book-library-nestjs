@@ -102,6 +102,25 @@
 - Fresh review: functional approval with no functional, security, scope, or test-quality defect; one P2 stale-provenance finding in Task 4 parent/working-base and Task 5 implementation-commit metadata.
 - Resolution: fix round 1 corrects the parent and working base to Task 4 completion `0aecc7fb7a831ef6fcd80121e346128aca42d169`, records the stable implementation SHA, and records the actual gpt-5.6-terra high reviewer without substitution. Fresh separate-context re-review approved the resolution with no new findings or open concerns.
 
+### Task 6 — Fresh full evidence and monotonic ratchet
+
+- Status: implementation complete; pending parent-coordinated fresh review
+- Task 5 final evidence commit: `cb67118cccae4ec01a3dc2f8a9352421ceef4949`
+- Working base SHA: `cb67118cccae4ec01a3dc2f8a9352421ceef4949`
+- Requested implementer: gpt-5.6-sol, high
+- Actual implementer: gpt-5.6-sol, high
+- Requested reviewer: separate-context gpt-5.6-sol, high
+- Actual reviewer: pending parent-coordinated fresh review
+- Substitution: none
+- Report: `.superpowers/sdd/2026-07-29-plan-2-backend-coverage/task-06.md`
+- Authoritative commands: `npm run test:cov`, `npm run test:e2e:report`, and `npm run quality:report:backend` each exited 0; 382 unit tests and 242 e2e tests passed with zero failures.
+- Fresh metrics: statements 2,884/3,659 (78.81%), branches 1,995/2,815 (70.87%), functions 483/605 (79.83%), and lines 2,771/3,496 (79.26%). Denominators and the 87-file scope are unchanged.
+- Changed-line result: `not-applicable`, 0/0 eligible lines, reporter coverage 100.00% against the 80.00% minimum; ratchet and check-only used the same Plan 2 diff and full backend LCOV.
+- Validation: validated base-SHA diff block, nonmutating ESLint, build, `git diff --check`, ratchet, and check-only all exited 0.
+- Ratchet: backend values increased monotonically to 78.81/70.87/79.83/79.26; branches exceed 70%; frontend object is byte-identical.
+- Artifacts: scoped backend summary markdown/JSON generated; `coverage/`, `dist/`, and `test-results/` remain ignored and unstaged.
+- Concern: none from implementer self-review; fresh separate-context reviewer decision remains pending parent coordination.
+
 ## Review and fix log
 
 - Task 1: fix round 1/5 (1 addressed, 0 open; commits 38c6dc4..HEAD)
@@ -120,3 +139,4 @@
 - Task 4: complete (commits 399508f..e05afc8, review clean)
 - Task 5: fix round 1/5 (1 addressed, 0 open; provenance parent/base, implementation SHA, and reviewer trace corrected; re-review clean)
 - Task 5: complete (commits 0aecc7f..1092649, review clean)
+- Task 6: implementation complete; fresh full evidence and monotonic backend ratchet verified, pending parent-coordinated fresh review.
