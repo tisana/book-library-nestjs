@@ -81,6 +81,8 @@ Self-review found the changes limited to the three owned specs and Task 3 eviden
 
 # Reviewer decision
 
-Status: functional approval; the sole P2 report-completeness finding is addressed in metadata fix round 1.
+Status: complete; approved after fix round 1 re-review.
 
 Fresh separate-context review by gpt-5.6-terra, high found no functional, security, scope, or test-quality defect in implementation commit `ad67109cef74306bda42fdc6fb094aa2e117e4ec`. It found one Important/P2 evidence issue: the task report omitted the mandatory `Files changed`, `Full-suite commands and exits`, `Changed-line result`, and `Reviewer decision` headings, and still described the existing implementation commit as pending. The report now includes every mandatory heading, records the stable implementation SHA and actual reviewer without substitution, and marks full-suite and changed-line evidence not applicable because Task 6 owns those checks.
+
+Fix round 1 separate-context re-review approved the resolution with no new breakage or open findings.

@@ -49,7 +49,7 @@
 
 ### Task 3 — Readiness, normalized errors, pagination
 
-- Status: functional approval; metadata fix round 1 addressed the sole P2 report-completeness finding
+- Status: complete; approved after fix round 1 re-review
 - Task 2 final evidence commit: `20260dc748c3d6b5cbb828665b50efbdd02d3d36`
 - Working base SHA: `20260dc748c3d6b5cbb828665b50efbdd02d3d36`
 - Requested implementer: gpt-5.6-terra, high
@@ -77,3 +77,4 @@
 - Task 2: complete (commits d35bc57..7dc11c0, review clean)
 - Task 3: implementation ready for controller review; Task 2 final evidence and working base `20260dc748c3d6b5cbb828665b50efbdd02d3d36`; required focused Jest RED exit 1 because no owned specs existed, then GREEN exit 0 with Health 17/18 branches, filter 17/20, and pagination 7/7; focused lint and `git diff --check` exit 0; generated coverage remains untracked.
 - Task 3: fix round 1/5 (1 addressed, 0 open; commits ad67109..HEAD)
+- Task 3: complete (commits 20260dc..5c4a7d6, review clean)
