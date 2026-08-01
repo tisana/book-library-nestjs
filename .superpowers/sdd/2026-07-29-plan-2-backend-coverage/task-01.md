@@ -116,3 +116,13 @@ Fresh whole-branch verification after the assertion fix:
 Fix-round implementation commit: pending at report authoring because this report is part of that commit; the implementer returns the stable SHA out of band for fresh review.
 
 Gate G1 merge readiness is withdrawn and pending a fresh scoped review of this correction. Plan 3 remains blocked and no merge is authorized by this fix round.
+
+## Security assertion fix round 3/5 metadata correction
+
+- Stable fix commit: `20e1e94e969ee4ca83e672cb5201f3f11d328bca` (`test: assert staff credential boundaries`).
+- Fresh reviewer: `/root/plan2_security_assertions_review` using gpt-5.6-sol, high; substitution none.
+- Review result: `CHANGES_REQUIRED` solely for one P2 pending-fix-SHA metadata finding. The reviewer approved the code, tests, security semantics, scope, and all focused/full verification gates with no additional finding.
+- Finding: the fix-round report and ledger still described the stable correction SHA as pending even though commit `20e1e94e969ee4ca83e672cb5201f3f11d328bca` existed.
+- Disposition: 1 addressed, 0 open at the implementer stage by recording the stable fix SHA and exact reviewer provenance/result in the Task 1 report and progress ledger.
+- Fresh scoped metadata review: pending.
+- Gate G1: remains closed until the fresh scoped metadata review accepts this correction. Plan 3 remains blocked and no merge is authorized.

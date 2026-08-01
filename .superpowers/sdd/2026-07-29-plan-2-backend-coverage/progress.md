@@ -10,7 +10,7 @@
 
 ### Task 1 — Reusable fixtures and staff-account lifecycle
 
-- Status: final whole-branch fix round 2 implemented; fresh senior re-review pending
+- Status: security assertion fix round 3 metadata correction implemented; fresh scoped metadata review pending
 - Requested implementer: gpt-5.6-sol, high
 - Actual implementer: gpt-5.6-sol, high
 - Requested reviewer: separate-context gpt-5.6-sol, high
@@ -28,6 +28,10 @@
 - Final whole-branch decision: `CHANGES_REQUIRED` with two test-security findings: successful create did not prove exact DTO-password forwarding/hash-only construction/raw-password absence, and the auth lookup did not assert `select('+passwordHash')`.
 - Fix round 2 disposition: 2 addressed, 0 open at the implementer stage. Boolean-only credential identity prevents secret-bearing Jest failure output; constructor and query-double requests are asserted directly. Fresh senior re-review is pending.
 - Fix round 2 verification: exact focused Task 1 command GREEN with 33/33 tests and 163/180 branches; quality-reporting 68/68, backend unit 382/382, backend e2e 242/242, backend reporting, changed-line reporting, non-fixing ESLint, build, validated scope, whitespace, generated-artifact, and status checks all exited 0.
+- Stable fix commit: `20e1e94e969ee4ca83e672cb5201f3f11d328bca` (`test: assert staff credential boundaries`).
+- Security-fix reviewer: `/root/plan2_security_assertions_review` using gpt-5.6-sol, high; substitution none.
+- Security-fix review result: `CHANGES_REQUIRED` solely for one P2 pending-fix-SHA metadata finding; code, tests, security semantics, scope, and all focused/full gates passed with no additional finding.
+- Fix round 3 disposition: 1 addressed, 0 open at the implementer stage by recording the stable fix SHA and reviewer provenance/result; fresh scoped metadata review remains pending.
 
 ### Task 2 — Shared-auth response and controller adapters
 
@@ -190,7 +194,9 @@
 
 - Senior reviewer: `/root/plan2_final_branch_review` using gpt-5.6-sol, high; substitution none.
 - Decision: `CHANGES_REQUIRED` with two Task 1 findings.
-- Task 1 final whole-branch fix round 2/5: 2 addressed, 0 open at the implementer stage; stable correction commit pending at ledger authoring and returned out of band.
-- Gate G1 merge readiness: withdrawn and pending fresh scoped senior re-review of the correction.
+- Task 1 final whole-branch fix round 2/5: 2 addressed, 0 open at the implementer stage in stable fix commit `20e1e94e969ee4ca83e672cb5201f3f11d328bca`.
+- Security assertion review: `/root/plan2_security_assertions_review` using gpt-5.6-sol, high returned `CHANGES_REQUIRED` solely for one P2 pending-fix-SHA metadata finding; code/tests/security semantics and all full gates passed.
+- Security assertion fix round 3/5 metadata disposition: 1 addressed, 0 open at the implementer stage; fresh scoped metadata review pending.
+- Gate G1 merge readiness: remains withdrawn and closed pending fresh scoped metadata review.
 - Dependency guard: do not merge and do not start Plan 3 until that fresh review restores Gate G1.
 - Final whole-branch fix round 2 evidence: exact focused Task 1 command 33/33 at 163/180 branches; quality-reporting 68/68; backend unit 382/382 at 78.81/70.87/79.83/79.26; backend e2e 242/242; backend report and changed-line gate passed; non-fixing ESLint, build, validated scope, whitespace, generated-artifact, and status checks passed.
