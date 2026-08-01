@@ -57,3 +57,4 @@
 - Task 2: controller fix round 2/5 (1 addressed, 0 open; identifier-only matcher prevents DTO/password serialization while boolean-only credential relationship remains); focused Jest 45/45 at AuthService 188/246 and AuthController 12/24, focused lint and `git diff --check` exit 0.
 - Task 2: controller fix round 3/5 (1 addressed, 0 open; restored Task 1's reviewed fix-round-1 completion status without duplicating Task 2's existing round-2 entry); exact section-scoped ledger consistency check and `git diff --check` exit 0.
 - Task 2: complete (commits d35bc57..7dc11c0, review clean)
+- Task 3: implementation ready for controller review; Task 2 final evidence and working base `20260dc748c3d6b5cbb828665b50efbdd02d3d36`; required focused Jest RED exit 1 because no owned specs existed, then GREEN exit 0 with Health 17/18 branches, filter 17/20, and pagination 7/7; focused lint and `git diff --check` exit 0; generated coverage remains untracked.
