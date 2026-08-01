@@ -4,7 +4,7 @@ Task 2 — Staff dashboard and borrowing console
 
 ## Status
 
-fix-round-1-awaiting-scoped-re-review
+complete
 
 ## Requested agent
 
@@ -52,11 +52,11 @@ Fresh `npm run frontend:test:coverage` exited 0 after Task 2: 30 files/126 tests
 
 ## Reviewer
 
-gpt-5.6-terra, high, fresh context, no substitution — functional/spec scope approved; one metadata P2 found.
+gpt-5.6-terra, high, fresh context, no substitution — approved after fix round 1.
 
 ## Reviewer command and result
 
-Fresh reviewer verified the six independent source blockers at `borrowings.new.tsx:25-36`, the dashboard states and summaries, exact eligible POST, safe 409 handling, strict MSW setup, fresh retry-disabled QueryClients, scope boundaries, and measured coverage. Functional/spec scope was approved at stable implementation SHA `80236ed18730e42979146ff1b0129b7bac0c1719`; scoped metadata re-review is pending.
+Fresh reviewer verified the six independent source blockers at `borrowings.new.tsx:25-36`, the dashboard states and summaries, exact eligible POST, safe 409 handling, strict MSW setup, fresh retry-disabled QueryClients, scope boundaries, and measured coverage. Functional/spec scope was approved at stable implementation SHA `80236ed18730e42979146ff1b0129b7bac0c1719`. Scoped re-review confirmed fix round 1 addressed the metadata finding with no new breakage and approved Task 2.
 
 ## Findings
 
@@ -64,7 +64,7 @@ Fresh review found one P2/Important metadata issue: this report still said the b
 
 ## Resolutions
 
-Corrected the dashboard summary assertions after the first focused run exposed that the value is a sibling of the summary label's parent container, not the label itself; the rerun passed all 11 tests. Fix round 1 records stable implementation SHA `80236ed18730e42979146ff1b0129b7bac0c1719`, the actual fresh reviewer/model with no substitution, functional/spec approval, measured totals/gains, and the single metadata finding/resolution.
+Corrected the dashboard summary assertions after the first focused run exposed that the value is a sibling of the summary label's parent container, not the label itself; the rerun passed all 11 tests. Fix round 1 records stable implementation SHA `80236ed18730e42979146ff1b0129b7bac0c1719`, the actual fresh reviewer/model with no substitution, functional/spec approval, measured totals/gains, and the single metadata finding/resolution. Scoped re-review found no new breakage.
 
 ## Deferred findings
 
@@ -72,4 +72,4 @@ None.
 
 ## Stop/escalation decision
 
-Do not claim final completion until scoped re-review confirms the metadata fix; do not start Task 3.
+No stop condition: Task 2 is complete after clean scoped re-review of the implementation and metadata-fix range. Task 3 was not started.
