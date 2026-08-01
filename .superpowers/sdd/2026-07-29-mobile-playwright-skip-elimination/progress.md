@@ -71,3 +71,14 @@ Task 2: AUTHORIZED RESUME — plan owner approved only `first.textContent = 'fir
 - Fresh `gpt-5.6-terra`, high-reasoning reviewer inspected base-relative and current diffs and reran the direct mobile-only command: 2/2 passed first attempt, 0 skipped/failed/retried.
 - Findings: none. Verdict: approved.
 - Task 2 is ready for commit with subject `test: run seeded staff performance smoke on mobile`; branch remains isolated for Task 4 reconciliation.
+
+## Task 2 immutable completion provenance — fix round 1/5
+
+- Task 1 is pinned to completion commit `f30a70f01f823f5b19e5f4de004a014ae83ef769`; immutable range `05a426ec944d8305edc621b12497d89a5f20457b..f30a70f01f823f5b19e5f4de004a014ae83ef769`. The earlier `05a426e..HEAD` ledger entry is historical and superseded.
+- Task 2 implementation is complete at commit `7a859610de1e2908517f8759843e7500501c00c2` (`test: run seeded staff performance smoke on mobile`).
+- Precommit review: `/root/plan4_task2_impl/task2_fresh_review`, fresh `gpt-5.6-terra`, high reasoning — **Approved**, no findings; direct mobile rerun 2/2 passed first attempt.
+- Postcommit review: `/root/plan4_task2_postcommit_review`, fresh `gpt-5.6-terra`, high reasoning — **CHANGES_REQUIRED for evidence provenance only**; code contract approved.
+- Finding 1 addressed: historical pending reviewer metadata is explicitly superseded and Task 2 completion is pinned to implementation commit `7a859610de1e2908517f8759843e7500501c00c2`.
+- Finding 2 addressed: Task 1 provenance is pinned to `f30a70f01f823f5b19e5f4de004a014ae83ef769` rather than mutable `HEAD`.
+- Review fix round 1/5: 2 addressed, 0 open; fresh scoped re-review pending.
+- Scope of this round is evidence metadata only. No behavior, package, generated artifact, Task 3, merge, or rebase change is included.

@@ -136,3 +136,27 @@ No product source, root package, parser, Playwright configuration, lockfile, cov
 ## Final decision
 
 - Task 2 approved for the required commit. Keep the branch/worktree in place; do not merge or rebase before Task 4 reconciliation.
+
+## Postcommit evidence-provenance correction — fix round 1/5
+
+### Immutable task provenance
+
+- Task 1 completion commit: `f30a70f01f823f5b19e5f4de004a014ae83ef769` (`docs: record mobile Playwright skip baseline`).
+- Task 1 immutable range: `05a426ec944d8305edc621b12497d89a5f20457b..f30a70f01f823f5b19e5f4de004a014ae83ef769`. Any earlier Task 1 range ending in mutable `HEAD` is historical and superseded by this pinned range.
+- Task 2 implementation commit: `7a859610de1e2908517f8759843e7500501c00c2` (`test: run seeded staff performance smoke on mobile`).
+- Task 2 implementation status: complete. The behavior/test contract is approved; no Task 2 behavior change is part of this provenance correction.
+
+### Reviewer provenance
+
+- The earlier top-level `Actual reviewer model and reasoning` value of `Pending fresh review` records the pre-review report-creation state only. It is historical and superseded by the completed review records below.
+- Precommit reviewer identity: `/root/plan4_task2_impl/task2_fresh_review`; fresh `gpt-5.6-terra`, high reasoning, separate agent context. Result: **Approved**, no findings. Its direct mobile rerun passed 2/2 first attempt, 0 skipped/failed/retried.
+- Postcommit reviewer identity: `/root/plan4_task2_postcommit_review`; fresh `gpt-5.6-terra`, high reasoning, separate agent context. Result: **CHANGES_REQUIRED for evidence provenance only**; the code and performance contract were approved.
+- Postcommit finding 1: Task 2 completion/reviewer provenance was not pinned consistently because the report retained historical pending metadata and did not identify implementation commit `7a859610de1e2908517f8759843e7500501c00c2`. Addressed by the immutable task and reviewer provenance above.
+- Postcommit finding 2: the ledger identified Task 1 through a mutable range ending at `HEAD`. Addressed by pinning Task 1 to commit `f30a70f01f823f5b19e5f4de004a014ae83ef769` and immutable range `05a426ec944d8305edc621b12497d89a5f20457b..f30a70f01f823f5b19e5f4de004a014ae83ef769`.
+
+### Fix-round state
+
+- Review fix round: 1/5.
+- Findings addressed: 2.
+- Findings open: 0.
+- Fresh scoped post-fix re-review: pending.
