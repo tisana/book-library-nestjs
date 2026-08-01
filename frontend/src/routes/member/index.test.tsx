@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { http, HttpResponse } from 'msw';
+import { http, HttpResponse, type JsonBodyType } from 'msw';
 import { apiBaseUrl } from '@/lib/api/client';
 import { server } from '@/test/mocks/server';
 import { MemberHomeRoute } from './index';
@@ -80,7 +80,10 @@ function useMemberHandlers(overrides: {
   policy?: Response | (() => Response | Promise<Response>);
   borrowings?: Response | (() => Response | Promise<Response>);
 } = {}) {
-  const respond = (value: Response | (() => Response | Promise<Response>), fallback: unknown) =>
+  const respond = (
+    value: Response | (() => Response | Promise<Response>) | undefined,
+    fallback: JsonBodyType,
+  ) =>
     typeof value === 'function' ? value() : value ?? HttpResponse.json(fallback);
 
   server.use(

@@ -4,7 +4,7 @@ Task 4 — Member home and private detail
 
 ## Status
 
-complete
+repair-round-2-implemented-review-pending
 
 ## Requested agent
 
@@ -28,43 +28,43 @@ aa0aef8976466d2d5a56c5bbd2e9d7fd938b0127
 
 ## RED command and result
 
-`npm run frontend:test:coverage` exited 0 before Task 4 test additions: 34 files/142 tests; statements 751/1034 (72.63%), branches 554/729 (75.99%), functions 312/443 (70.42%), lines 719/988 (72.77%). Target rows: `member-self-service.ts` 14/24 statements and 9/15 branches; `index.tsx` 0/14 and 0/27; `borrowings.$borrowingId.tsx` 0/12 and 0/12.
+Repair round 2 RED: `npm run frontend:build` exited 2 at `87ed3394c19bbd27942ae2d008f9e01037451dfd`, with four Task 4 fixture diagnostics in `frontend/src/routes/member/index.test.tsx`: `unknown` was not assignable to MSW `JsonBodyType` at line 84, and each optional profile, policy, and borrowing override was rejected before the fallback could be applied at lines 87, 89, and 92.
 
 ## GREEN command and result
 
-The literal PowerShell form of the prescribed command needs the dollar-sign filename quoted (`'src/routes/member/borrowings.$borrowingId.test.tsx'`); the unquoted form exits before Vitest with an unset-variable error. The quoted focused command exited 0: 4 files/27 tests. It covers member home loading for each source, each safe source error, missing profile/policy, tier precedence, active/suspended state, allowance/empty-state behavior, and current-list returned exclusion; plus private detail loading, safe unavailable copy, title fallback, book dates/statuses, returned date, and active returned-copy absence. The real self-service hooks use strict MSW with retry-disabled QueryClients, exact paths, raw/envelope array normalization, and no request for an empty detail ID.
+Repair round 2 GREEN: the quoted prescribed focused command `npm run test --prefix frontend -- src/routes/member/index.test.tsx 'src/routes/member/borrowings.$borrowingId.test.tsx' src/features/member-home/member-home.test.tsx src/lib/api/member-self-service.test.ts` exited 0: 4 files/27 tests. `npm run frontend:build` then exited 0. The responder now accepts optional overrides before applying a `JsonBodyType` fallback, matching the existing fixture behavior without changing production code or test assertions.
 
 ## Focused metrics
 
-Fresh full-coverage target rows: `member-self-service.ts` 22/24 statements and 13/15 branches; `index.tsx` 14/14 and 26/27; `borrowings.$borrowingId.tsx` 12/12 and 11/12. Combined Task 4 gain is 34/50 target statements and 41/45 target branches, exceeding the planned 30/38 and 32/45 minimums.
+Repair round 2 focused result: 4 test files/27 tests passed. Existing full-coverage target rows remain the Task 4 evidence because this type-only fixture correction neither changes test behavior nor coverage instrumentation: `member-self-service.ts` 22/24 statements and 13/15 branches; `index.tsx` 14/14 and 26/27; `borrowings.$borrowingId.tsx` 12/12 and 11/12.
 
 ## Full metrics
 
-Fresh `npm run frontend:test:coverage` exited 0 after Task 4: 37 files/162 tests; statements 787/1034 (76.11%, +36), branches 598/729 (82.03%, +44), functions 325/443 (73.36%, +13), lines 754/988 (76.31%, +35). Both statement and branch totals are above 58%, so no LCOV rerank or Task 5 report addition is needed.
+Existing fresh `npm run frontend:test:coverage` evidence remains 37 files/162 tests; statements 787/1034 (76.11%, +36), branches 598/729 (82.03%, +44), functions 325/443 (73.36%, +13), lines 754/988 (76.31%, +35). Repair round 2 instead reran the exact required build: `npm run frontend:build` exited 0 after TypeScript compilation and Vite production build. No coverage rerun is needed for this type-only test fixture change.
 
 ## Files changed
 
-`frontend/src/routes/member/index.test.tsx`, `borrowings.$borrowingId.test.tsx`, `frontend/src/lib/api/member-self-service.test.ts`, this report, and append-only `progress.md` only.
+Repair round 2 changes only `frontend/src/routes/member/index.test.tsx`, this report, and append-only `progress.md`.
 
 ## Commit hash
 
-a4f4fdedab731c6c7527717c3f9ee14da999ca90
+pending repair commit
 
 ## Reviewer
 
-gpt-5.6-terra, high, fresh context, no substitution — approved after fix round 1
+gpt-5.6-terra, high, fresh context, no substitution — repair round 2 review pending
 
 ## Reviewer command and result
 
-Fresh reviewer approved the functional scope and measured coverage at stable implementation SHA `a4f4fdedab731c6c7527717c3f9ee14da999ca90`: 4 focused files/27 tests passed; full coverage was 787/1034 statements and 598/729 branches; target rows gained 34/50 statements and 41/45 branches. The reviewer found one P2 evidence-metadata issue: the report and ledger still said the commit and reviewer were pending after review. Scoped re-review of the metadata-only fix found the P2 addressed and no breakage.
+not-run — repair round 2 requires a fresh reviewer to rerun the quoted focused Task 4 command and `npm run frontend:build` against the repair commit.
 
 ## Findings
 
-self-review found and corrected a test-fixture responder that returned a function instead of its `Response`, corrected the active due-state expectation from `On time` to the actual route label `Open`, and removed an out-of-scope staff-only-copy assertion. Fresh review found one P2/Important metadata issue: this report and `progress.md` retained stale in-progress/pending commit/reviewer values after the stable implementation review.
+Prior rounds corrected the responder return, active due-state label, out-of-scope staff-copy assertion, and stale metadata. Repair round 2 found four blocking TypeScript diagnostics in the same responder: its signature excluded the optional overrides it handled and typed its JSON fallback as `unknown` despite passing it to `HttpResponse.json`.
 
 ## Resolutions
 
-The focused suite and full coverage suite passed cleanly after the fixture and label corrections. Fresh review approved the functional scope and recorded the measured metrics. Fix round 1 updates only the stale Task 4 report and ledger metadata; scoped re-review found the P2 addressed with no breakage. No production, configuration, storage-token, staff-copy, backend, e2e, or baseline files changed.
+Repair round 2 types the optional responder override and its JSON fallback without changing response selection or production behavior. The exact focused suite remains 4 files/27 tests passing; the full frontend build now exits 0. Fresh review remains required before Task 4 can return to complete status. No production, configuration, storage-token, staff-copy, backend, e2e, or baseline files changed.
 
 ## Deferred findings
 
@@ -72,4 +72,4 @@ None.
 
 ## Stop/escalation decision
 
-Task 4 is complete after clean scoped re-review of the metadata-only fix. Task 5 was not started.
+Repair round 2 is implemented with focused tests and build evidence; await the required fresh review. Task 5 and Task 6 were not started by this repair.
