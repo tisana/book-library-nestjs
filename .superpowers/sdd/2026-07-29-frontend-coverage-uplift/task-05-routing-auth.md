@@ -4,7 +4,7 @@ Task 5 — Router, shared-login, and authorization boundaries
 
 ## Status
 
-reconciliation-complete-review-pending
+fix-round-1-implemented-review-pending
 
 ## Requested agent
 
@@ -50,32 +50,34 @@ Task 5 implementation: `frontend/src/app/router.test.tsx`, `frontend/src/routes/
 
 ## Commit hash
 
-df19660761636f7d664a2e5b8749507c4065f9a8 (stable Task 5 implementation commit; reconciliation/evidence is a separate documentation commit)
+df19660761636f7d664a2e5b8749507c4065f9a8 (stable Task 5 implementation commit); reconciliation/evidence commit `59661bf6714e97d8ee39bb86770128f94b1f826e`.
 
 ## Reviewer
 
-/root/plan1_task5_review (gpt-5.6-sol, high, fresh context, no substitution) — authorization scope functionally approved; reconciliation findings required before acceptance. A new fresh gpt-5.6-sol, high review of the reconciliation commit is controller-owned and pending.
+/root/plan1_task5_review (gpt-5.6-sol, high, fresh context, no substitution) — authorization scope functionally approved; reconciliation findings required before acceptance. `/root/plan1_task5_reconcile_review` (gpt-5.6-sol, high, fresh context, no substitution) — all Task 5 functional commands and scope passed; CHANGES_REQUIRED only for the missing formal Task 1 approval chain. A new fresh scoped re-review is pending.
 
 ## Reviewer command and result
 
-Prior fresh reviewer `/root/plan1_task5_review` (`gpt-5.6-sol`, high, fresh context, no substitution) functionally approved the authorization-sensitive router, shared-login, auth-error, memory-only-session, and schema scope. It required reconciliation of three findings: resolve the load-bearing build diagnostics through their owning Tasks 1/3/4 before Task 6, record a stable Task 5 implementation commit, and attribute those diagnostics to their owning tasks rather than Task 5. Fresh post-repair implementer verification now passes the exact 7-file/40-test focused command, full 42-file/182-test coverage command, frontend-unit report, frontend lint, frontend build, and scope/whitespace checks. A new fresh reviewer has not yet reviewed this reconciliation commit and remains required before Task 6.
+Prior fresh reviewer `/root/plan1_task5_review` (`gpt-5.6-sol`, high, fresh context, no substitution) functionally approved the authorization-sensitive router, shared-login, auth-error, memory-only-session, and schema scope. It required reconciliation of three findings: resolve the load-bearing build diagnostics through their owning Tasks 1/3/4 before Task 6, record a stable Task 5 implementation commit, and attribute those diagnostics to their owning tasks rather than Task 5. Fresh post-repair implementer verification passes the exact 7-file/40-test focused command, full 42-file/182-test coverage command, frontend-unit report, frontend lint, frontend build, and scope/whitespace checks.
+
+Fresh reconciliation reviewer `/root/plan1_task5_reconcile_review` (`gpt-5.6-sol`, high, fresh context, no substitution) reviewed stable reconciliation commit `59661bf6714e97d8ee39bb86770128f94b1f826e`, confirmed all Task 5 functional commands and scope passed, and returned CHANGES_REQUIRED solely because the report relied on an informal controller handoff rather than the then-missing formal Task 1 approval chain. Task 1 is now administratively closed at `b595316c7fc185f8be829f98510698d73053994e`; this metadata correction records that chain. Disposition: 1 addressed, 0 open; fresh scoped re-review pending.
 
 ## Findings
 
-Self-review found that the initial disposable-router assertions addressed index children through `routesByPath` instead of guarded parent routes through `routesById`; it also found a synchronous empty-state assertion and teardown-time session clearing that could produce noise. Prior fresh review found three reconciliation issues after functionally approving authorization scope: the load-bearing build diagnostics had to be repaired before Task 6, the report lacked the stable Task 5 implementation SHA, and the report incorrectly grouped the diagnostics as Task 2/4 instead of attributing them to Tasks 1/3/4. Disposition: 3 addressed, 0 open; new fresh reconciliation review pending.
+Self-review found that the initial disposable-router assertions addressed index children through `routesByPath` instead of guarded parent routes through `routesById`; it also found a synchronous empty-state assertion and teardown-time session clearing that could produce noise. Prior fresh review found three reconciliation issues after functionally approving authorization scope: the load-bearing build diagnostics had to be repaired before Task 6, the report lacked the stable Task 5 implementation SHA, and the report incorrectly grouped the diagnostics as Task 2/4 instead of attributing them to Tasks 1/3/4. Those three findings remain addressed with 0 open. Fresh reconciliation review found one evidence-provenance issue: Task 1 approval was attributed only to the controller handoff before its formal review chain was committed. Reconciliation fix round 1/5 disposition: 1 addressed, 0 open; fresh scoped re-review pending.
 
 ## Resolutions
 
 The route assertions now address the guarded parents through `routesById`, explicitly inspect redirect destinations, await the real books empty state, and stub unsupported JSDOM scrolling without production mocks. Memory-only assertions cover both local and session storage.
 
-The load-bearing diagnostics were repaired by their owners after Task 5 implementation: approved Task 1 repair commit `73444ec111ff86dfe681059a8d52e1641c11165f` fixed the `frontend/src/lib/api/borrowings.test.ts` TanStack mutation variables type; approved Task 3 repair commit `bea7c8ca96562261f843ed69c77e80c7603e7696` fixed the `frontend/src/routes/staff/borrowings.$borrowingId.test.tsx` returned-record fixture type; approved Task 4 repair commit `c4b4abf090e98ba23ee6957eae68e13b6040ff24` fixed the `frontend/src/routes/member/index.test.tsx` optional MSW responder/`JsonBodyType` fixture. Task 3 and Task 4 approvals are recorded in their scoped re-review records; Task 1 approval is supplied by the controller handoff for this reconciliation. Those defects and repairs belong to Tasks 1, 3, and 4 respectively; no Task 5 test or production file was involved. Fresh `npm run frontend:build` now exits 0.
+The load-bearing diagnostics were repaired by their owners after Task 5 implementation: approved Task 1 repair commit `73444ec111ff86dfe681059a8d52e1641c11165f` fixed the `frontend/src/lib/api/borrowings.test.ts` TanStack mutation variables type; approved Task 3 repair commit `bea7c8ca96562261f843ed69c77e80c7603e7696` fixed the `frontend/src/routes/staff/borrowings.$borrowingId.test.tsx` returned-record fixture type; approved Task 4 repair commit `c4b4abf090e98ba23ee6957eae68e13b6040ff24` fixed the `frontend/src/routes/member/index.test.tsx` optional MSW responder/`JsonBodyType` fixture. Task 1's `/root/plan1_task1_repair_review` (`gpt-5.6-terra`, high, fresh context, no substitution) approval is formally recorded by administrative closeout `b595316c7fc185f8be829f98510698d73053994e`; Task 3 and Task 4 approvals remain recorded in their scoped re-review chains. Those defects and repairs belong to Tasks 1, 3, and 4 respectively; no Task 5 test or production file was involved. Fresh `npm run frontend:build` exits 0.
 
 Task 5's implementation is stably traced to `df19660761636f7d664a2e5b8749507c4065f9a8`. A scope script validated the base and implementation objects, confirmed `232566e11de65a949b5c8aaf670156da2bdcfd9f` is an ancestor of the implementation and the implementation is an ancestor of current HEAD, confirmed all three repair commits are ancestors of HEAD, and matched the implementation diff to exactly the nine Task 5-owned test/evidence files. `git diff --check 232566e11de65a949b5c8aaf670156da2bdcfd9f..df19660761636f7d664a2e5b8749507c4065f9a8` and the pre-edit working-tree `git diff --check` both exited 0. No production/config/baseline/generated-report file is in the Task 5 implementation or reconciliation scope.
 
 ## Deferred findings
 
-None. Required new fresh review of the reconciliation commit is a workflow gate, not a deferred finding.
+None. Required fresh scoped re-review of this metadata correction is a workflow gate, not a deferred finding.
 
 ## Stop/escalation decision
 
-Task 5 implementation and post-repair reconciliation are complete with 3 prior-review findings addressed and 0 open. Stop before Task 6: a new fresh `gpt-5.6-sol`, high review of the reconciliation commit remains controller-owned and pending; no reviewer was spawned and no model substitution occurred.
+Task 5 implementation and functional reconciliation remain green. Reconciliation fix round 1/5 has its sole approval-provenance finding addressed with 0 open. Stop before Task 6: a fresh `gpt-5.6-sol`, high scoped re-review of this metadata correction remains controller-owned and pending; no reviewer was spawned and no model substitution occurred.
