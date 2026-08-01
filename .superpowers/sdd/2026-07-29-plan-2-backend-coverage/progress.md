@@ -170,3 +170,8 @@
 - Whole-plan finding: no functional, security, scope, baseline, denominator, test, or artifact defect. One P2 evidence-contract issue remains for fresh review: `task-06.md` uses custom headings instead of eight required literal headings even though the underlying evidence is present.
 - Task 7 handoff commit: pending at report authoring; implementer returns the created SHA and the fresh reviewer records it with the decision.
 - Reviewer decision: pending. Gate G1 and Plan 3 dispatch remain pending the required fresh separate-context review and disposition of the Task 6 exact-heading finding.
+- Stable Task 7 handoff evidence commit: `8bf68e18d462c24a0ed47d07f6e68bb24fba9f80`.
+- Task 7 round 1/5 reviewer: `/root/plan2_task7_review` using gpt-5.6-sol, high; substitution none.
+- Task 7 round 1/5 decision: `CHANGES_REQUIRED`; one P2 exact report-contract finding, with all functional, numeric, scope, security, baseline, denominator, test, and artifact checks passed.
+- Task 7 fix round 1/5 disposition: appended the eight required literal headings and mapped existing authoritative Task 6 evidence without deleting or rewriting prior evidence; 1 addressed, 0 open at the implementer fix stage.
+- Fresh scoped re-review: pending. Gate G1 remains closed and Plan 3 must not start until the required reviewer accepts the correction.

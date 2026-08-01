@@ -12,6 +12,8 @@ Plan 2, Task 7 — Whole-plan review and Plan 3 handoff.
 
 - Requested: fresh separate-context gpt-5.6-sol, high
 - Actual: pending fresh separate-context review
+- Round 1 actual: `/root/plan2_task7_review` using gpt-5.6-sol, high
+- Fresh scoped re-review: pending
 - Substitution: none
 
 # Base SHA
@@ -105,6 +107,8 @@ The denominators and expected source-file count remain unchanged at 3,659 statem
 
 Task 7 handoff evidence commit: pending at report authoring because the report is content of that commit. The implementer returns the created SHA out of band; the fresh reviewer must record it with the reviewer decision.
 
+Stable Task 7 handoff evidence commit: `8bf68e18d462c24a0ed47d07f6e68bb24fba9f80`.
+
 ## Plan 3 fixture handoff
 
 Plan 3 must import, not copy, these reviewed exports from `test/support/backend-coverage-fixtures.ts`:
@@ -128,7 +132,10 @@ The 75% branch threshold is 2,112/2,815, so the fresh Plan 2 result leaves 117 b
 - Functional/security/scope finding: none. The implementation stays within owned tests/support/baseline/ledger scope, preserves generic sign-in and readiness contracts, does not touch Plan 3 specs, and does not track generated artifacts.
 - Open evidence finding (P2): `task-06.md` is substantively complete and reviewed, but an exact-heading audit found that it does not contain the mandated literal headings `RED command and exit`, `RED evidence`, `GREEN command and exit`, `GREEN evidence`, `Focused metrics`, `Full-suite commands and exits`, `Changed-line result`, and `Deferred findings`. Its equivalent evidence appears under custom headings. Task 7 does not rewrite the append-only Task 6 report; the fresh reviewer/plan owner must decide and record the compliant correction before Gate G1 acceptance.
 - Task 7 self-reference: the handoff commit SHA cannot be embedded in the commit that creates this report; the fresh reviewer must append the returned SHA with its decision.
+- Round 1 disposition: the single P2 exact-heading finding is addressed by appending the eight literal headings and their existing authoritative evidence to `task-06.md`; 1 addressed, 0 open at the implementer fix stage. No prior Task 6 evidence was deleted or rewritten.
 
 # Reviewer decision
 
 Pending required fresh separate-context gpt-5.6-sol, high review. Numeric Gate G1 requirements, full verification, fixture availability, scope isolation, baseline monotonicity, and artifact exclusion are satisfied; Gate G1 and Plan 3 dispatch remain pending fresh reviewer acceptance and resolution of the Task 6 exact-heading evidence finding.
+
+Round 1/5 review by `/root/plan2_task7_review` using gpt-5.6-sol, high returned `CHANGES_REQUIRED` with one P2 exact report-contract finding and no functional, numeric, scope, security, baseline, denominator, test, or artifact finding. The prescribed append-only Task 6 correction addresses 1 finding with 0 open at the implementer fix stage. Fresh scoped re-review is pending; Gate G1 remains closed and Plan 3 must not start.

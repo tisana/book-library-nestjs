@@ -99,3 +99,48 @@ Round 2/5 fresh scoped re-review by `/root/plan2_task6_rereview` using gpt-5.6-s
 # Reviewer decision
 
 Fresh separate-context review by `/root/plan2_task6_review` using gpt-5.6-sol, high functionally approved the implementation with one P2 stale-metadata finding. Fix round 1 addressed the implementation-commit and reviewer-provenance fields without substitution in correction commit `d57b9df16ce1143f33e8b295e2ecefbff4b117d8`. Round 2/5 fresh scoped re-review by `/root/plan2_task6_rereview` using gpt-5.6-sol, high returned `APPROVED` with no findings and 0 open findings. Task 6 is complete and ready for Task 7.
+
+## Task 7 exact-heading correction
+
+This append-only correction preserves the authoritative Task 6 evidence above and supplies the eight literal report-contract headings identified by the Task 7 round-1 reviewer. It does not change commands, exits, metrics, baselines, or reviewer decisions.
+
+# RED command and exit
+
+not-applicable — Task 6 is a fresh full-evidence and monotonic-ratchet task; it adds no behavior test and therefore has no RED command.
+
+# RED evidence
+
+not-applicable — the behavior tests were implemented and reviewed in Tasks 1–5. Task 6 consumes their committed test suites and regenerates authoritative full-source evidence only.
+
+# GREEN command and exit
+
+`npm run test:cov`, `npm run test:e2e:report`, and `npm run quality:report:backend` each exited 0. The ratchet command with `--write-baseline` and the subsequent `--check-only` command, both using the same validated Plan 2 diff and fresh full backend LCOV, also exited 0.
+
+# GREEN evidence
+
+The authoritative runs passed 35/35 unit suites with 382/382 tests and 29/29 e2e suites with 242/242 tests. Fresh coverage was statements 2,884/3,659 (78.81%), branches 1,995/2,815 (70.87%), functions 483/605 (79.83%), and lines 2,771/3,496 (79.26%); the 87-file scope and all denominators remained unchanged.
+
+# Focused metrics
+
+not-applicable — Task 6 runs the authoritative full-source backend suite rather than a focused coverage command. Its full metrics are statements 2,884/3,659 (78.81%), branches 1,995/2,815 (70.87%), functions 483/605 (79.83%), and lines 2,771/3,496 (79.26%).
+
+# Full-suite commands and exits
+
+- `npm run test:cov` — exit 0; 35/35 suites and 382/382 tests passed.
+- `npm run test:e2e:report` — exit 0; 29/29 suites and 242/242 tests passed with zero final failures.
+- `npm run quality:report:backend` — exit 0; scoped 87-file backend report passed.
+- The exact validated base-SHA diff block — exit 0; wrote `test-results/plan-2-backend.diff`.
+- `npx eslint "{src,apps,libs,test}/**/*.ts"` — exit 0; non-fixing invocation without `--fix`.
+- `npm run build` — exit 0.
+- `git diff --check` — exit 0.
+- `npm run quality:report:backend -- --changed-line-diff test-results/plan-2-backend.diff --changed-line-lcov coverage/backend-unit/lcov.info --write-baseline` — exit 0.
+- `npm run quality:report:backend -- --check-only --changed-line-diff test-results/plan-2-backend.diff --changed-line-lcov coverage/backend-unit/lcov.info` — exit 0.
+- `git diff -- quality/coverage-baselines.json` — exit 0; only the backend metric values changed.
+
+# Changed-line result
+
+`not-applicable`, 0/0 eligible lines, reporter coverage 100.00% against the 80.00% minimum; passed. The ratchet and check-only calls used the same validated Plan 2 diff and fresh full backend LCOV.
+
+# Deferred findings
+
+None from Task 6 functional review. Task 7 round-1 review found one P2 report-contract issue: these eight literal headings were absent even though their evidence existed under custom headings. This append-only correction addresses that finding without changing prior evidence; fresh Task 7 scoped re-review remains pending.
