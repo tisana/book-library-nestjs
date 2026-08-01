@@ -27,7 +27,7 @@
 
 ## Execution status
 
-- Evidence collection and fresh review complete; documentation-only commit pending.
+- Evidence collection and original fresh review are complete. The implementation/evidence record is committed at `f0a638056da4265c78a680d421ce5c727bd6d574`; Task 3 is complete pending scoped metadata re-review.
 
 ## Predecessor merge SHA and working base SHA
 
@@ -90,4 +90,27 @@
 
 ## Remaining risks and explicit handoff notes
 
-- No execution-quality concern observed. Commit only the two documentation files after fresh review; leave generated reports untracked.
+- No execution-quality concern observed. Generated reports remain untracked.
+- Minor provenance/deferred only: no retained command transcript independently proves local command ordering. The evidence order is documented and timestamp-consistent; this is non-blocking and requires no execution, parser, or behavior change.
+
+## Postcommit metadata correction — fix round 1/5
+
+### Immutable task provenance
+
+- Task 3 implementation/evidence commit: `f0a638056da4265c78a680d421ce5c727bd6d574` (`docs: record mobile Playwright quality evidence`).
+- Task 3 execution evidence remains independently approved: the focused repeat is 20/20 first-attempt passes and the fresh full report is 87/87 with each project 29/29 and no failed/flaky/skipped result.
+
+### Postcommit reviewer provenance
+
+- Reviewer: `/root/plan4_task3_postcommit_review`; fresh `gpt-5.6-terra`, high reasoning, separate agent context.
+- Result: **CHANGES_REQUIRED** solely for stale pending metadata. The reviewer independently approved the execution evidence, raw/summary agreement, parser proof, generated-artifact scope, and documentation-only implementation commit.
+- Important finding: the committed evidence records retained historical `review pending` / `commit pending` language after the fresh reviewer and documentation commit were complete.
+- Disposition: 1 addressed, 0 open. The historical pending state is superseded by this immutable commit record and Task 3 is marked committed/complete pending only scoped metadata re-review.
+
+### Fix-round state
+
+- Review fix round: 1/5.
+- Findings addressed: 1.
+- Findings open: 0.
+- Fresh scoped metadata re-review: pending.
+- Scope is metadata only: no generated artifact, parser/test, behavior, package, rebase, or Task 4 change is included.

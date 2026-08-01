@@ -106,3 +106,12 @@ Task 2: AUTHORIZED RESUME — plan owner approved only `first.textContent = 'fir
 - Confirmed 87 raw records/results, all passed; each project has 29 records; 0 failed/flaky/skipped/retries and 0 `expectedStatus: 'skipped'` results. Raw and summary hashes match the Task 3 report; no manual report-field edits were found.
 - Minor non-blocking provenance note: run ordering is documented and timestamp-consistent, but a retained transcript would be needed for independent proof. No remediation is required.
 - Task 3 is approved for the required documentation-only commit; generated artifacts remain untracked.
+
+## Task 3 postcommit metadata correction — fix round 1/5
+
+- Immutable Task 3 implementation/evidence commit: `f0a638056da4265c78a680d421ce5c727bd6d574` (`docs: record mobile Playwright quality evidence`). Task 3 execution evidence is independently approved.
+- Postcommit reviewer: `/root/plan4_task3_postcommit_review`; fresh `gpt-5.6-terra`, high reasoning, separate agent context. Result: **CHANGES_REQUIRED** solely for stale pending metadata; the execution evidence, parser proof, artifact scope, and implementation commit were approved.
+- Important finding: committed records retained historical `review pending` / `commit pending` language after review and commit completion.
+- Disposition: 1 addressed, 0 open. Those historical pending states are explicitly superseded; Task 3 is committed/complete pending fresh scoped metadata re-review.
+- Minor provenance/deferred only: the absence of a retained command transcript limits independent proof of local command order. Documented order is timestamp-consistent; this is non-blocking and needs no behavior, parser, or artifact change.
+- Review fix round 1/5 is metadata only. No generated artifact, parser/test, behavior, package, rebase, or Task 4 change is included.
