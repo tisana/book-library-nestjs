@@ -67,6 +67,8 @@ base.sha, progress.md, task-00-bootstrap.md through task-06-final-ratchet.md
 
 This amended Task 0 commit, superseding reviewed commit `59669ff61343c9ef57962662fc28c2a8ea1a7f06`.
 
+Final Task 0 boundary, recorded by the subsequent ledger-bearing Task 1 handoff: `b9435afa78a6c693b82e0fc151180c1d52194fe6`.
+
 ## Reviewer
 
 gpt-5.6-terra, high, fresh context — approved after fix round 2
@@ -107,17 +109,22 @@ Exit code: `0`. Result: structural verification passed. Output: no output. Revie
 
 Fresh re-review after fix round 2: `gpt-5.6-terra`, high, fresh context. Final verdict: approved; the open Important finding is addressed, no new breakage was found, and the self-referential SHA observation remains properly deferred.
 
+Final senior-review append: `/root/plan1_final_branch_review` (`gpt-5.6-sol`, high, fresh context, no substitution) reviewed the whole branch and reported one Minor Task 0 evidence finding. The final Task 0 boundary is now recorded above from the subsequent Task 1 handoff; finding disposition: 1 addressed, 0 open.
+
 ## Findings
 
 1. Important: Missing evidence for the pristine-worktree/base-capture command meant the committed ledger could not substantiate its clean execution-state claim.
 2. Minor: GREEN claimed a match to the clean HEAD although its displayed command only compared `$recorded` with an unexplained `$base`.
 3. Important: The covering-bootstrap verification evidence claimed output `bootstrap-ledger-verification-passed`, but its exact displayed command produced no output on success.
 
+4. Minor (final senior review): Task 0 retained the exact boundary SHA as deferred even though the subsequent Task 1 handoff had already recorded `b9435afa78a6c693b82e0fc151180c1d52194fe6`.
+
 ## Resolutions
 
 1. Recorded the exact Step 1 command, exit code, no-status result, and full captured base SHA.
 2. Made GREEN self-contained by binding `$base` to the captured SHA and narrowing its result statement to exactly what the command proves.
 3. Corrected the covering-bootstrap verification result to `Output: no output` and added the separately auditable fix-round-2 verification below.
+4. Appended the exact final Task 0 boundary SHA from the subsequent Task 1 ledger-bearing handoff; no historical Task 0 evidence was rewritten.
 
 ### Fix round 2 evidence
 
@@ -147,6 +154,10 @@ Exit code: `0`. Result: passed. Output: `bootstrap-fix-round-2-verification-pass
 
 - Minor: The `Commit hash` field still does not contain an exact commit SHA at task-00-bootstrap.md:68. Note that an exact self-referential SHA cannot be embedded in the commit that contains it and must be recorded by the next ledger-bearing task/handoff.
 
+Final senior-review disposition: addressed. The subsequent ledger-bearing Task 1 handoff recorded the exact final Task 0 boundary as `b9435afa78a6c693b82e0fc151180c1d52194fe6`; there are 0 open Task 0 findings.
+
 ## Stop/escalation decision
 
 No stop or escalation: clean isolated worktree, correct branch, and immutable base recorded.
+
+Final senior-review append: the related Task 4 stale-evidence finding was already fixed at `22b17b0b012c19406e8fbccc5832488e5c5c0ee2`. Task 0 now has 1 addressed final senior-review finding and 0 open. Overall Plan 1 remains pending a fresh scoped review; this documentation-only correction makes no merge claim.
