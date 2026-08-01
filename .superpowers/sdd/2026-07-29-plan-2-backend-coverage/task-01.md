@@ -70,7 +70,9 @@ not-applicable — Task 1 changes test/support and report files only; the plan r
 
 Implementation commit: `38c6dc40f3950e6e72b2f9e7e72b7c9353a02237`
 
-Fix round 1 metadata commit: recorded in the dispatcher handoff after commit creation; the implementation commit above remains independently referenceable.
+Fix round 1 metadata commit: `477986556e0cb3e28e5802fb3ae5b4cfcc599231`
+
+Reviewed completion range: `05a426e..4779865`, covering the reviewed implementation+fix range.
 
 # Deferred findings
 
@@ -78,4 +80,4 @@ None. Self-review confirmed the compensation filter/update, audit prior-value co
 
 # Reviewer decision
 
-Fresh review by gpt-5.6-sol, high found no functional or specification issues. One evidence gap remained: the ledger and report still described the existing implementation commit boundary as pending. Fix round 1 recorded the implementation SHA, reviewer, finding, and resolution. Scoped re-review of this metadata-only change is pending; this report does not claim task completion.
+Approved. Fresh review by gpt-5.6-sol, high found no functional or specification issues beyond the stale commit/status evidence gap. Fix round 1 recorded the implementation SHA, reviewer, finding, and resolution. Scoped re-review found that finding addressed, with no new breakage or out-of-scope observations, across the reviewed implementation+fix range `05a426e..4779865`.
