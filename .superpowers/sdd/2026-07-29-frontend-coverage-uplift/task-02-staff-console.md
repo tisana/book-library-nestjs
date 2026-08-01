@@ -4,7 +4,7 @@ Task 2 — Staff dashboard and borrowing console
 
 ## Status
 
-ready-for-fresh-review
+fix-round-1-awaiting-scoped-re-review
 
 ## Requested agent
 
@@ -48,23 +48,23 @@ Fresh `npm run frontend:test:coverage` exited 0 after Task 2: 30 files/126 tests
 
 ## Commit hash
 
-Pending the required Task 2 boundary commit.
+80236ed18730e42979146ff1b0129b7bac0c1719
 
 ## Reviewer
 
-Required: gpt-5.6-terra, high, fresh context, no substitution — controller dispatch pending.
+gpt-5.6-terra, high, fresh context, no substitution — functional/spec scope approved; one metadata P2 found.
 
 ## Reviewer command and result
 
-Pending fresh review; reviewer must verify the six independent source blockers at `borrowings.new.tsx:25-36`.
+Fresh reviewer verified the six independent source blockers at `borrowings.new.tsx:25-36`, the dashboard states and summaries, exact eligible POST, safe 409 handling, strict MSW setup, fresh retry-disabled QueryClients, scope boundaries, and measured coverage. Functional/spec scope was approved at stable implementation SHA `80236ed18730e42979146ff1b0129b7bac0c1719`; scoped metadata re-review is pending.
 
 ## Findings
 
-Self-review: no findings. `git diff --check` is clean; the diff is restricted to the two owned test files and required evidence files.
+Fresh review found one P2/Important metadata issue: this report still said the boundary commit and reviewer were pending, while the `progress.md` Task 2 row remained `not-started`/`not-run`. No functional/spec findings remain open.
 
 ## Resolutions
 
-Corrected the dashboard summary assertions after the first focused run exposed that the value is a sibling of the summary label's parent container, not the label itself. The rerun passed all 11 tests.
+Corrected the dashboard summary assertions after the first focused run exposed that the value is a sibling of the summary label's parent container, not the label itself; the rerun passed all 11 tests. Fix round 1 records stable implementation SHA `80236ed18730e42979146ff1b0129b7bac0c1719`, the actual fresh reviewer/model with no substitution, functional/spec approval, measured totals/gains, and the single metadata finding/resolution.
 
 ## Deferred findings
 
@@ -72,4 +72,4 @@ None.
 
 ## Stop/escalation decision
 
-No stop condition. Fresh-review dispatch and its findings are intentionally left to the controller.
+Do not claim final completion until scoped re-review confirms the metadata fix; do not start Task 3.
