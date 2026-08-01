@@ -48,23 +48,23 @@ Repair round 2 changes only `frontend/src/routes/member/index.test.tsx`, this re
 
 ## Commit hash
 
-pending repair commit
+c4b4abf090e98ba23ee6957eae68e13b6040ff24
 
 ## Reviewer
 
-gpt-5.6-terra, high, fresh context, no substitution — repair round 2 review pending
+/root/plan1_task4_repair_review (gpt-5.6-terra, high, fresh context, no substitution) — CHANGES_REQUIRED: provenance placeholders; functional approval pending scoped metadata re-review
 
 ## Reviewer command and result
 
-not-run — repair round 2 requires a fresh reviewer to rerun the quoted focused Task 4 command and `npm run frontend:build` against the repair commit.
+Fresh `/root/plan1_task4_repair_review` approved the fixture typing, strict MSW scope, quoted focused suite (4 files/27 tests), and `npm run frontend:build` result at `c4b4abf090e98ba23ee6957eae68e13b6040ff24`. It returned CHANGES_REQUIRED only for one P2 provenance finding: the repair report and ledger retained `pending repair commit` and did not identify the fresh reviewer. Functional approval is pending the scoped metadata re-review.
 
 ## Findings
 
-Prior rounds corrected the responder return, active due-state label, out-of-scope staff-copy assertion, and stale metadata. Repair round 2 found four blocking TypeScript diagnostics in the same responder: its signature excluded the optional overrides it handled and typed its JSON fallback as `unknown` despite passing it to `HttpResponse.json`.
+Prior rounds corrected the responder return, active due-state label, out-of-scope staff-copy assertion, and stale metadata. Repair round 2 found four blocking TypeScript diagnostics in the same responder: its signature excluded the optional overrides it handled and typed its JSON fallback as `unknown` despite passing it to `HttpResponse.json`. Fresh review then found one P2 provenance issue: the report and ledger used a commit placeholder and omitted the reviewer identity.
 
 ## Resolutions
 
-Repair round 2 types the optional responder override and its JSON fallback without changing response selection or production behavior. The exact focused suite remains 4 files/27 tests passing; the full frontend build now exits 0. Fresh review remains required before Task 4 can return to complete status. No production, configuration, storage-token, staff-copy, backend, e2e, or baseline files changed.
+Repair round 2 types the optional responder override and its JSON fallback without changing response selection or production behavior. The exact focused suite remains 4 files/27 tests passing; the full frontend build now exits 0. This metadata-only correction replaces the commit placeholder with `c4b4abf090e98ba23ee6957eae68e13b6040ff24` and records the fresh reviewer; the round finding disposition is 1 addressed, 0 open. Functional approval remains pending the scoped metadata re-review. No production, configuration, storage-token, staff-copy, backend, e2e, or baseline files changed.
 
 ## Deferred findings
 
@@ -72,4 +72,4 @@ None.
 
 ## Stop/escalation decision
 
-Repair round 2 is implemented with focused tests and build evidence; await the required fresh review. Task 5 and Task 6 were not started by this repair.
+Repair round 2 is implemented with focused tests and build evidence. The fresh review's sole provenance finding is addressed, but Task 4 remains pending the required scoped metadata re-review before final approval. Task 5 and Task 6 were not started by this repair.
