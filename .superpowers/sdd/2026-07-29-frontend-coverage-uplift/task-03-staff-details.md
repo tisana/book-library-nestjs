@@ -4,7 +4,7 @@ Task 3 — Staff detail workflows
 
 ## Status
 
-fix-round-2-implemented-review-pending
+complete
 
 ## Requested agent
 
@@ -76,19 +76,19 @@ Original Task 3: `frontend/src/routes/staff/books.test.tsx`, `books.$bookId.test
 
 ## Commit hash
 
-d3470de6be0a3100439832c03d8c873f76c3fd19 (original implementation); fix round 2 repair commit bea7c8ca96562261f843ed69c77e80c7603e7696.
+d3470de6be0a3100439832c03d8c873f76c3fd19 (original implementation); fix round 2 repair commit bea7c8ca96562261f843ed69c77e80c7603e7696; reviewed metadata correction ca6900872c2f96437a07d4ae39886c98295aae02.
 
 ## Reviewer
 
-/root/plan1_task3_repair_review (gpt-5.6-terra, high, fresh context, no substitution) — functional scope approved; CHANGES_REQUIRED only for P2 stale evidence metadata; scoped metadata re-review pending.
+/root/plan1_task3_repair_review (gpt-5.6-terra, high, fresh context, no substitution) — functional scope approved; CHANGES_REQUIRED only for P2 stale evidence metadata. /root/plan1_task3_repair_rereview (gpt-5.6-terra, high, fresh context, no substitution) — APPROVED with no findings after reviewing metadata correction ca6900872c2f96437a07d4ae39886c98295aae02.
 
 ## Reviewer command and result
 
-Fresh reviewer verified the four exact staff-route test files, real hooks/strict MSW, loading and fallback states, accessible failed-cover fallback, return confirmation/error paths, returned-record lockout with zero POST, measured coverage gains, and scope boundaries. Functional/spec scope was approved at stable implementation SHA `d3470de6be0a3100439832c03d8c873f76c3fd19`. Scoped re-review confirmed fix round 1 corrected the evidence metadata with no new breakage and approved Task 3. For fix round 2, `/root/plan1_task3_repair_review` (`gpt-5.6-terra`, high, fresh context, no substitution) approved the code, test, command evidence, and Task 3/4 scope boundaries at repair commit `bea7c8ca96562261f843ed69c77e80c7603e7696`; it returned CHANGES_REQUIRED solely because this report and `progress.md` still recorded the repair commit and reviewer as pending. Final scoped metadata re-review remains pending.
+Fresh reviewer verified the four exact staff-route test files, real hooks/strict MSW, loading and fallback states, accessible failed-cover fallback, return confirmation/error paths, returned-record lockout with zero POST, measured coverage gains, and scope boundaries. Functional/spec scope was approved at stable implementation SHA `d3470de6be0a3100439832c03d8c873f76c3fd19`. Scoped re-review confirmed fix round 1 corrected the evidence metadata with no new breakage and approved Task 3. For fix round 2, `/root/plan1_task3_repair_review` (`gpt-5.6-terra`, high, fresh context, no substitution) approved the code, test, command evidence, and Task 3/4 scope boundaries at repair commit `bea7c8ca96562261f843ed69c77e80c7603e7696`; it returned CHANGES_REQUIRED solely because this report and `progress.md` still recorded the repair commit and reviewer as pending. `/root/plan1_task3_repair_rereview` (`gpt-5.6-terra`, high, fresh context, no substitution) then reviewed metadata correction `ca6900872c2f96437a07d4ae39886c98295aae02` and returned APPROVED with no findings. Round 2/5 is complete with 0 open findings.
 
 ## Findings
 
-Self-review found no in-scope functional or test-quality issues; the strict-MSW setup initially used `/catalog` and was corrected to the actual `/book-categories` endpoint before the passing focused and full suites. Fresh review found one P2/Important metadata issue: this report still said the implementation commit and reviewer were pending, while `progress.md` also retained pending values. Fix round 2 reproduces TS2353 at `borrowings.$borrowingId.test.tsx:81`: the fixture default parameter inferred an exact object type without the optional `BorrowingView.returnedAt` property. Fix round 2 review found one P2 stale-evidence issue: the completed repair SHA and actual fresh reviewer were still marked pending despite functional approval. Disposition: 1 addressed, 0 open; functional approval recorded, pending scoped metadata re-review.
+Self-review found no in-scope functional or test-quality issues; the strict-MSW setup initially used `/catalog` and was corrected to the actual `/book-categories` endpoint before the passing focused and full suites. Fresh review found one P2/Important metadata issue: this report still said the implementation commit and reviewer were pending, while `progress.md` also retained pending values. Fix round 2 reproduces TS2353 at `borrowings.$borrowingId.test.tsx:81`: the fixture default parameter inferred an exact object type without the optional `BorrowingView.returnedAt` property. Fix round 2 review found one P2 stale-evidence issue: the completed repair SHA and actual fresh reviewer were still marked pending despite functional approval. Disposition: 1 addressed, 0 open. Scoped metadata re-review found 0 new findings and returned APPROVED.
 
 ## Resolutions
 
@@ -96,7 +96,7 @@ The focused suite passed after the strict-MSW endpoint correction. Fix round 1 r
 
 Fix round 2 annotates the shared test fixture as `BorrowingView`, preserving its real API response contract while allowing the returned-record test to supply the optional `returnedAt` value. The focused staff-detail suite passes (4 files/16 tests). The exact frontend build no longer emits a Task 3 diagnostic; it remains nonzero only for the four out-of-scope Task 4 `member/index.test.tsx` diagnostics.
 
-The metadata-only review correction records repair commit `bea7c8ca96562261f843ed69c77e80c7603e7696`, the actual fresh reviewer `/root/plan1_task3_repair_review` (`gpt-5.6-terra`, high), its functional approval, and the single P2 disposition. No test or production file changed in this correction; final scoped metadata re-review remains pending.
+The metadata-only review correction records repair commit `bea7c8ca96562261f843ed69c77e80c7603e7696`, the actual fresh reviewer `/root/plan1_task3_repair_review` (`gpt-5.6-terra`, high), its functional approval, and the single P2 disposition. No test or production file changed in this correction. Scoped re-review of correction `ca6900872c2f96437a07d4ae39886c98295aae02` returned APPROVED with no findings, completing round 2/5.
 
 ## Deferred findings
 
@@ -104,4 +104,4 @@ None.
 
 ## Stop/escalation decision
 
-No stop condition: fix round 2 is functionally approved and its sole P2 stale-evidence finding is addressed (1 addressed, 0 open). Task 3 remains pending final scoped metadata re-review. Task 4 and Task 6 were not changed or started.
+No stop condition: fix round 2/5 is APPROVED with its sole P2 stale-evidence finding addressed and 0 open findings. Task 3 repair is complete and ready for the next task. Task 4 and Task 6 were not changed or started.
