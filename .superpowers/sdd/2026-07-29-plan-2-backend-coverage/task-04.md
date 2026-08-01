@@ -11,7 +11,7 @@ Plan 2, Task 4 — Catalog, membership, and staff controller delegation.
 # Reviewer model and reasoning
 
 - Requested: separate-context gpt-5.6-terra, high
-- Actual: pending parent-coordinated fresh review
+- Actual: gpt-5.6-terra, high
 - Substitution: none
 
 # Base SHA
@@ -73,7 +73,7 @@ not-applicable — focused task; Task 6 owns changed-line evidence.
 
 # Commit hash
 
-Pending commit amendment with stable implementation SHA.
+- Stable implementation commit: `3a76b20f8dc3934da8f43fa8d227cef761825e36`
 
 # Deferred findings
 
@@ -81,4 +81,8 @@ Self-review found no functional, security, scope, or test-quality concern. The d
 
 # Reviewer decision
 
-Self-review: approved. Fresh separate-context review remains parent-coordinated as directed; no reviewer was spawned by this implementation task.
+Self-review: approved.
+
+Fresh separate-context review by gpt-5.6-terra, high functionally approved implementation commit `3a76b20f8dc3934da8f43fa8d227cef761825e36` with no functional, security, scope, or test-quality defect. It found one Important/P2 evidence issue: the task report and progress ledger still described the fresh review and stable implementation SHA as pending.
+
+Fix round 1 records the stable implementation SHA, actual reviewer identity without substitution, functional approval, and the stale-trace finding and resolution. Fresh re-review remains pending; Task 4 is not yet marked complete.
