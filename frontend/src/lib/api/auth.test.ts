@@ -2,6 +2,7 @@ import { http, HttpResponse } from 'msw';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   getCurrentAuthUser,
+  login,
   refreshStaffSession,
   staffLogin,
   staffLogout,
@@ -54,6 +55,8 @@ const memberAuthResponse = {
 describe('auth API client', () => {
   beforeEach(() => {
     authSession.clear('signed-out');
+    window.localStorage.clear();
+    window.sessionStorage.clear();
   });
 
   it('stores staff login token metadata and permissions in the memory session', async () => {
@@ -81,6 +84,8 @@ describe('auth API client', () => {
         permissions: ['catalog:read', 'staff-users:read'],
       },
     });
+    expect(window.localStorage).toHaveLength(0);
+    expect(window.sessionStorage).toHaveLength(0);
   });
 
   it('stores member login token metadata and member permissions in the memory session', async () => {
@@ -105,6 +110,8 @@ describe('auth API client', () => {
         permissions: ['member:self:read'],
       },
     });
+    expect(window.localStorage).toHaveLength(0);
+    expect(window.sessionStorage).toHaveLength(0);
   });
 
   it('returns one generic API error for a failed unified login', async () => {
@@ -121,7 +128,7 @@ describe('auth API client', () => {
     );
 
     await expect(
-      staffLogin({ email: 'unknown@example.com', password: 'wrong-password' }),
+      login({ identifier: 'unknown@example.com', password: 'wrong-password' }),
     ).rejects.toMatchObject({ status: 401, message: 'Invalid credentials.' });
   });
 
@@ -142,7 +149,10 @@ describe('auth API client', () => {
       );
 
       await expect(
-        staffLogin({ email: 'unknown@example.com', password: 'wrong-password' }),
+        login({
+          identifier: 'unknown@example.com',
+          password: 'wrong-password',
+        }),
       ).rejects.toMatchObject({ status, message: expectedMessage });
     },
   );
@@ -151,7 +161,7 @@ describe('auth API client', () => {
     server.use(http.post(`${apiBaseUrl}/auth/login`, () => HttpResponse.error()));
 
     await expect(
-      staffLogin({ email: 'unknown@example.com', password: 'wrong-password' }),
+      login({ identifier: 'unknown@example.com', password: 'wrong-password' }),
     ).rejects.toThrow('Something went wrong while contacting the API.');
   });
 

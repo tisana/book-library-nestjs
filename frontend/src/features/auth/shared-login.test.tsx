@@ -54,6 +54,7 @@ describe('SharedLogin', () => {
   it.each([
     ['staff@example.com', 'staff', ['catalog:read'], '/staff'],
     ['M-1001', 'member', ['member:self:read'], '/member'],
+    ['member-no-access@example.com', 'member', [], '/unauthorized'],
     ['no-role@example.com', 'staff', [], '/unauthorized'],
   ] as const)(
     'routes %s from authenticated role area and permissions',
