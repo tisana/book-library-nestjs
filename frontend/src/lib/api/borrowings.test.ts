@@ -53,6 +53,6 @@ describe('borrowings API', () => {
     const list = renderHook(() => useBorrowings(), { wrapper }); const overdue = renderHook(() => useOverdueBorrowings(), { wrapper }); const detail = renderHook(() => useBorrowing('borrowing-1'), { wrapper }); const create = renderHook(() => useCreateBorrowing(), { wrapper }); const returned = renderHook(() => useReturnBorrowing('borrowing-1'), { wrapper });
     await waitFor(() => expect(list.result.current.data).toEqual([borrowing])); await waitFor(() => expect(overdue.result.current.data).toEqual([borrowing])); await waitFor(() => expect(detail.result.current.data).toEqual(borrowing));
     await expect(create.result.current.mutateAsync({ memberId: 'member-1', bookId: 'book-1' })).resolves.toEqual(borrowing);
-    await expect(returned.result.current.mutateAsync()).resolves.toEqual({ ...borrowing, status: 'returned' });
+    await expect(returned.result.current.mutateAsync({})).resolves.toEqual({ ...borrowing, status: 'returned' });
   });
 });
