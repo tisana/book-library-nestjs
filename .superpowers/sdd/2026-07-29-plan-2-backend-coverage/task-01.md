@@ -11,7 +11,7 @@ Plan 2, Task 1 — Reusable fixtures and staff-account lifecycle.
 # Reviewer model and reasoning
 
 - Requested: separate-context gpt-5.6-sol, high
-- Actual: pending fresh review
+- Actual: gpt-5.6-sol, high
 - Substitution: none
 
 # Base SHA
@@ -27,6 +27,7 @@ Plan 2, Task 1 — Reusable fixtures and staff-account lifecycle.
 - `.superpowers/sdd/2026-07-29-plan-2-backend-coverage/task-01.md`
 - `src/staff-users/staff-users.service.spec.ts`
 - `test/support/backend-coverage-fixtures.ts`
+- Fix round 1 metadata-only change: `.superpowers/sdd/2026-07-29-plan-2-backend-coverage/progress.md` and this report.
 
 # RED command and exit
 
@@ -67,7 +68,9 @@ not-applicable — Task 1 changes test/support and report files only; the plan r
 
 # Commit hash
 
-Pending commit boundary. A Git commit cannot embed its own final SHA; the authoritative Task 1 SHA is returned to the dispatcher immediately after the mandated commit.
+Implementation commit: `38c6dc40f3950e6e72b2f9e7e72b7c9353a02237`
+
+Fix round 1 metadata commit: recorded in the dispatcher handoff after commit creation; the implementation commit above remains independently referenceable.
 
 # Deferred findings
 
@@ -75,4 +78,4 @@ None. Self-review confirmed the compensation filter/update, audit prior-value co
 
 # Reviewer decision
 
-Pending fresh review.
+Fresh review by gpt-5.6-sol, high found no functional or specification issues. One evidence gap remained: the ledger and report still described the existing implementation commit boundary as pending. Fix round 1 recorded the implementation SHA, reviewer, finding, and resolution. Scoped re-review of this metadata-only change is pending; this report does not claim task completion.
