@@ -89,3 +89,20 @@ Task 2: AUTHORIZED RESUME — plan owner approved only `first.textContent = 'fir
 - Result: **APPROVED**; both provenance findings addressed, no new issues, 0 open.
 - Task 2 is complete and approved, ready for Task 3.
 - This administrative closeout changes evidence metadata only; no behavior, package, generated artifact, Task 3, merge, or rebase change is included.
+
+## Task 3 start and evidence record
+
+- Requested and actual implementer: `gpt-5.6-terra`, high reasoning; no model substitution.
+- Required fresh reviewer: `gpt-5.6-terra`, high reasoning, separate agent context; review pending.
+- Focused repeat command `npm run test:e2e:mobile-performance:repeat --prefix frontend` exited 0 in 24.847 seconds: 20/20 first-attempt passes, 0 failed, 0 skipped, 0 retries/flakes. No diagnostic rerun was needed.
+- The required fresh full producer then exited 0 (42.308 seconds), parser exited 0 (0.820 seconds), and the exact fail-closed PowerShell assertion exited 0. Raw and parser summary are 87 passed / 0 flaky / 0 failed / 0 skipped / 87 total; desktop/tablet/mobile are 29/29 each with 100% clean and eventual rates.
+- Raw SHA-256: `549C5970C917B2642A5B0817EDDBE876E0F71DC906301BFBF35BA3D0103CE93B`; summary SHA-256: `48F8828F5F96AB15091CC9F08B8708DF91631AB11829B74FC70CD81EA7BF1DA6`.
+- Parser contract Jest command exited 0: 1 suite and 19 tests passed. `task-03.md` is created; reviewer completion and docs-only commit remain pending.
+
+## Task 3 fresh review closeout
+
+- Reviewer: `/root/plan4_task3_impl/task3_fresh_reviewer`; fresh `gpt-5.6-terra`, high reasoning, separate agent context.
+- Verdict: **APPROVED** with 0 blocking findings. It inspected raw JSON, generated JSON/Markdown summaries, hashes, ordering, ignored-artifact state, parser evidence, and documentation-only scope.
+- Confirmed 87 raw records/results, all passed; each project has 29 records; 0 failed/flaky/skipped/retries and 0 `expectedStatus: 'skipped'` results. Raw and summary hashes match the Task 3 report; no manual report-field edits were found.
+- Minor non-blocking provenance note: run ordering is documented and timestamp-consistent, but a retained transcript would be needed for independent proof. No remediation is required.
+- Task 3 is approved for the required documentation-only commit; generated artifacts remain untracked.
