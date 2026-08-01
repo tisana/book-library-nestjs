@@ -10,7 +10,7 @@
 
 ### Task 1 — Reusable fixtures and staff-account lifecycle
 
-- Status: security metadata review round 2 correction implemented; fresh round 3 scoped metadata review pending
+- Status: security assertion fix round complete; ready for renewed final whole-branch review
 - Requested implementer: gpt-5.6-sol, high
 - Actual implementer: gpt-5.6-sol, high
 - Requested reviewer: separate-context gpt-5.6-sol, high
@@ -34,7 +34,11 @@
 - Historical at-authoring fix round 3 disposition: 1 addressed, 0 open at the implementer stage by recording the stable fix SHA and reviewer provenance/result; the pending scoped metadata review was fulfilled by `/root/plan2_security_metadata_rereview` reviewing record `606b6ed34e93f16758880941f744f893689521ca` and returning the round 2 result below.
 - Security metadata round 2 reviewer: `/root/plan2_security_metadata_rereview` using gpt-5.6-sol, high; substitution none.
 - Security metadata round 2 result: `CHANGES_REQUIRED` with one P2 stale-pending-provenance finding and no code, test, security, scope, or gate finding.
-- Security metadata round 2 disposition: 1 addressed, 0 open at the implementer stage by marking every historical pending statement superseded by stable fix `20e1e94e969ee4ca83e672cb5201f3f11d328bca` and review record `606b6ed34e93f16758880941f744f893689521ca`; fresh round 3 scoped metadata review pending.
+- Historical security metadata round 2 disposition: 1 addressed, 0 open at the implementer stage by marking every pending statement superseded by stable fix `20e1e94e969ee4ca83e672cb5201f3f11d328bca` and review record `606b6ed34e93f16758880941f744f893689521ca`; its round 3 review was fulfilled by the approval of correction `909432f9cd38886477610303aebdd89c13d99d20` recorded below.
+- Security metadata round 3 reviewer: `/root/plan2_security_metadata_review3` using gpt-5.6-sol, high; substitution none.
+- Security metadata round 3 reviewed correction: `909432f9cd38886477610303aebdd89c13d99d20`.
+- Security metadata round 3 decision: `APPROVED` with no findings and 0 open findings; round 2 disposition remains 1 addressed, 0 open.
+- Security assertion fix round: complete. Plan 2 is ready for renewed final whole-branch review; Gate G1 remains closed and Plan 3 remains blocked until that review accepts Plan 2.
 
 ### Task 2 — Shared-auth response and controller adapters
 
@@ -201,7 +205,8 @@
 - Security assertion review: `/root/plan2_security_assertions_review` using gpt-5.6-sol, high returned `CHANGES_REQUIRED` solely for one P2 pending-fix-SHA metadata finding; code/tests/security semantics and all full gates passed.
 - Security assertion fix round 3/5 metadata disposition: 1 addressed, 0 open at the implementer stage in review record `606b6ed34e93f16758880941f744f893689521ca`.
 - Security metadata round 2 review: `/root/plan2_security_metadata_rereview` using gpt-5.6-sol, high returned `CHANGES_REQUIRED` for one P2 stale-pending-provenance finding; disposition 1 addressed, 0 open at the implementer stage.
-- Fresh round 3 scoped metadata review: pending.
-- Gate G1 merge readiness: remains withdrawn and closed pending fresh round 3 scoped metadata review.
-- Dependency guard: do not merge and do not start Plan 3 until that fresh review restores Gate G1.
+- Security metadata round 3 review: `/root/plan2_security_metadata_review3` using gpt-5.6-sol, high reviewed correction `909432f9cd38886477610303aebdd89c13d99d20` and returned `APPROVED` with no findings and 0 open findings; round 2 disposition remains 1 addressed, 0 open.
+- Security assertion fix round: complete. Plan 2 is ready for renewed final whole-branch review.
+- Gate G1 merge readiness: remains withdrawn and closed until renewed final whole-branch review accepts Plan 2.
+- Dependency guard: do not merge and do not start Plan 3 until that final whole-branch review restores Gate G1.
 - Final whole-branch fix round 2 evidence: exact focused Task 1 command 33/33 at 163/180 branches; quality-reporting 68/68; backend unit 382/382 at 78.81/70.87/79.83/79.26; backend e2e 242/242; backend report and changed-line gate passed; non-fixing ESLint, build, validated scope, whitespace, generated-artifact, and status checks passed.

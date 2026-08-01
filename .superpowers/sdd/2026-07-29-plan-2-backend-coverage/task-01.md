@@ -115,7 +115,7 @@ Fresh whole-branch verification after the assertion fix:
 
 Historical at-authoring fix-round commit marker: pending because this report was part of that commit. This marker is superseded by stable fix `20e1e94e969ee4ca83e672cb5201f3f11d328bca` and security-fix review record `606b6ed34e93f16758880941f744f893689521ca`; the fix SHA is no longer pending.
 
-Historical fix-round Gate G1 marker: merge readiness was withdrawn pending a fresh scoped review of this correction. That pending review was fulfilled by the security-fix review recorded in `606b6ed34e93f16758880941f744f893689521ca`; the current Gate G1 state is recorded below and remains closed pending round 3. Plan 3 remains blocked and no merge is authorized.
+Historical fix-round Gate G1 marker: merge readiness was withdrawn pending a fresh scoped review of this correction. That review sequence was fulfilled through security-fix review record `606b6ed34e93f16758880941f744f893689521ca` and round 3 approval of correction `909432f9cd38886477610303aebdd89c13d99d20`. The current Gate G1 state is recorded below: closed for renewed final whole-branch review. Plan 3 remains blocked and no merge is authorized.
 
 ## Security assertion fix round 3/5 metadata correction
 
@@ -125,7 +125,7 @@ Historical fix-round Gate G1 marker: merge readiness was withdrawn pending a fre
 - Finding: the fix-round report and ledger still described the stable correction SHA as pending even though commit `20e1e94e969ee4ca83e672cb5201f3f11d328bca` existed.
 - Disposition: 1 addressed, 0 open at the implementer stage by recording the stable fix SHA and exact reviewer provenance/result in the Task 1 report and progress ledger.
 - Historical at-authoring scoped metadata review marker: pending. It was fulfilled by `/root/plan2_security_metadata_rereview` reviewing record `606b6ed34e93f16758880941f744f893689521ca` and returning the round 2 result recorded below.
-- Gate G1: remains closed until the fresh scoped metadata review accepts this correction. Plan 3 remains blocked and no merge is authorized.
+- Historical Gate G1 condition: remained closed until scoped metadata review accepted this correction. That condition was satisfied by the round 3 approval recorded below; Gate G1 remains closed for renewed final whole-branch review, and Plan 3 remains blocked.
 
 ## Security metadata review round 2/5 correction
 
@@ -134,5 +134,15 @@ Historical fix-round Gate G1 marker: merge readiness was withdrawn pending a fre
 - Finding: the historical pending statements in the final whole-branch fix section and progress ledger contradicted the later stable fix/review provenance.
 - Correction: each historical pending statement now explicitly identifies itself as at-authoring history and is superseded by stable fix `20e1e94e969ee4ca83e672cb5201f3f11d328bca` plus security-fix review record `606b6ed34e93f16758880941f744f893689521ca`.
 - Disposition: 1 addressed, 0 open at the implementer stage.
-- Fresh round 3 scoped metadata review: pending.
-- Gate G1 remains closed and Plan 3 remains blocked until that review accepts the correction.
+- Historical round 3 scoped metadata review marker: pending. It was fulfilled by `/root/plan2_security_metadata_review3` reviewing correction `909432f9cd38886477610303aebdd89c13d99d20` and returning the approval recorded below.
+- Historical Gate G1 condition: remained closed until round 3 accepted the correction. Round 3 accepted it; Gate G1 remains closed for renewed final whole-branch review, and Plan 3 remains blocked.
+
+## Security metadata review round 3/5 administrative closeout
+
+- Reviewer: `/root/plan2_security_metadata_review3` using gpt-5.6-sol, high; substitution none.
+- Reviewed correction: `909432f9cd38886477610303aebdd89c13d99d20`.
+- Decision: `APPROVED` with no findings and 0 open findings.
+- Round 2 disposition: 1 addressed, 0 open; every stale pending marker is explicitly historical and superseded by stable provenance.
+- Security assertion fix round status: complete.
+- Plan 2 status: ready for renewed final whole-branch review.
+- Gate G1 remains closed until that final whole-branch review accepts Plan 2; Plan 3 remains blocked and no merge is authorized by this closeout.
