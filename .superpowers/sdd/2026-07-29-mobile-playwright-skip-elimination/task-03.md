@@ -27,6 +27,7 @@
 
 ## Execution status
 
+- Evidence collection and fresh review complete; documentation-only commit pending.
 - Evidence collection and original fresh review are complete. The implementation/evidence record is committed at `f0a638056da4265c78a680d421ce5c727bd6d574`; Task 3 is complete pending scoped metadata re-review.
 
 ## Predecessor merge SHA and working base SHA
@@ -90,6 +91,7 @@
 
 ## Remaining risks and explicit handoff notes
 
+- No execution-quality concern observed. Commit only the two documentation files after fresh review; leave generated reports untracked.
 - No execution-quality concern observed. Generated reports remain untracked.
 - Minor provenance/deferred only: no retained command transcript independently proves local command ordering. The evidence order is documented and timestamp-consistent; this is non-blocking and requires no execution, parser, or behavior change.
 
@@ -114,3 +116,14 @@
 - Findings open: 0.
 - Fresh scoped metadata re-review: pending.
 - Scope is metadata only: no generated artifact, parser/test, behavior, package, rebase, or Task 4 change is included.
+
+## Scoped metadata review — fix round 2/5
+
+- Reviewer: `/root/plan4_task3_rereview`; fresh `gpt-5.6-terra`, high reasoning, separate agent context.
+- Result: **CHANGES_REQUIRED** for evidence-metadata consistency only. The reviewer independently approved the execution evidence.
+- Finding 1: the progress Task reports index retained the historical Task 3 `(pending)` label after the evidence record was committed.
+- Finding 2: correction commit `4e0c0ac0a898857fc9976716c31af112837eda12` replaced two historical lines instead of preserving the record as append-only.
+- Disposition: 2 addressed, 0 open. The historical lines are restored verbatim in their original contexts and an explicit Task reports supersession entry states the current status.
+- Stable evidence provenance remains `f0a638056da4265c78a680d421ce5c727bd6d574` (`docs: record mobile Playwright quality evidence`); correction history remains `4e0c0ac0a898857fc9976716c31af112837eda12` (`docs: pin Plan 4 Task 3 evidence provenance`).
+- Current state: Task 3 is fix-round-2 implemented pending fresh scoped metadata re-review.
+- Minor provenance/deferred only: no retained command transcript independently proves local command ordering; this remains non-blocking and requires no execution, parser, artifact, behavior, package, rebase, or Task 4 change.

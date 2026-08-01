@@ -18,6 +18,12 @@
 - [Task 3 — repetition gate and report/parser proof](task-03.md) (pending)
 - [Task 4 — repository verification and Plan 1 merge contract](task-04.md) (pending)
 
+## Task 3 current status — supersession
+
+- The historical `(pending)` label in the Task reports index above is superseded for Task 3 only.
+- Task 3 is fix-round-2 implemented, with execution evidence committed at `f0a638056da4265c78a680d421ce5c727bd6d574` and the metadata correction history committed at `4e0c0ac0a898857fc9976716c31af112837eda12`.
+- Current state: Task 3 is pending fresh scoped metadata re-review; Task 4 remains pending.
+
 ## Model substitutions
 
 - None. Requested and actual implementer: `gpt-5.6-terra`, medium reasoning. Requested and actual reviewer: fresh `gpt-5.6-terra`, high reasoning.
@@ -115,3 +121,13 @@ Task 2: AUTHORIZED RESUME — plan owner approved only `first.textContent = 'fir
 - Disposition: 1 addressed, 0 open. Those historical pending states are explicitly superseded; Task 3 is committed/complete pending fresh scoped metadata re-review.
 - Minor provenance/deferred only: the absence of a retained command transcript limits independent proof of local command order. Documented order is timestamp-consistent; this is non-blocking and needs no behavior, parser, or artifact change.
 - Review fix round 1/5 is metadata only. No generated artifact, parser/test, behavior, package, rebase, or Task 4 change is included.
+
+## Task 3 scoped metadata review — fix round 2/5
+
+- Reviewer: `/root/plan4_task3_rereview`; fresh `gpt-5.6-terra`, high reasoning, separate agent context.
+- Result: **CHANGES_REQUIRED** for evidence-metadata consistency only. The execution evidence remains independently approved.
+- Finding 1: the Task reports index retained the historical Task 3 `(pending)` label, contradicting the current committed evidence state.
+- Finding 2: correction commit `4e0c0ac0a898857fc9976716c31af112837eda12` replaced two historical Task 3 report lines rather than preserving an append-only record.
+- Disposition: 2 addressed, 0 open. This round restores the two historical lines verbatim, adds the Task reports supersession entry, and records the stable `f0a638056da4265c78a680d421ce5c727bd6d574` implementation/evidence commit plus `4e0c0ac0a898857fc9976716c31af112837eda12` correction history.
+- Current state: Task 3 is fix-round-2 implemented pending fresh scoped metadata re-review.
+- Minor provenance/deferred only: the retained-command-transcript absence remains non-blocking; no execution, parser, artifact, behavior, package, rebase, or Task 4 change is included.
