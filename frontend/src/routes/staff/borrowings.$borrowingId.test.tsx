@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { apiBaseUrl } from '@/lib/api/client';
+import type { BorrowingView } from '@/lib/api/types';
 import { server } from '@/test/mocks/server';
 import { StaffBorrowingDetailRoute } from './borrowings.$borrowingId';
 
@@ -14,7 +15,7 @@ vi.mock('@tanstack/react-router', async () => {
   return { ...actual, useParams: () => ({ bookId: 'book-1', memberId: 'member-1', borrowingId: 'borrowing-1' }) };
 });
 
-const borrowing = {
+const borrowing: BorrowingView = {
   id: 'borrowing-1', memberId: 'member-1', memberDisplayName: 'Member One', memberNumber: 'M-001',
   bookId: 'book-1', bookTitle: 'Refactoring', bookCatalogIdentifier: 'BK-001', bookCategoryId: 'cat-1',
   borrowedAt: '2026-06-01T00:00:00.000Z', dueAt: '2026-06-15T00:00:00.000Z', status: 'active', borrowedByStaffId: 'staff-1',

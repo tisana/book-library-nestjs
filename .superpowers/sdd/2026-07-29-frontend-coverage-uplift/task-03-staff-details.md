@@ -4,7 +4,7 @@ Task 3 — Staff detail workflows
 
 ## Status
 
-complete
+fix-round-2-implemented-review-pending
 
 ## Requested agent
 
@@ -34,6 +34,34 @@ f397bacd8d5621529ee81eaa972fedc3ccbe263b
 
 `npm run test --prefix frontend -- 'src/routes/staff/books.test.tsx' 'src/routes/staff/books.$bookId.test.tsx' 'src/routes/staff/members.$memberId.test.tsx' 'src/routes/staff/borrowings.$borrowingId.test.tsx'` exited 0: 4 files/16 tests. It covers the required empty/search/create/conflict, detail loading/fallback, member policy/history, and return/lockout workflows through real hooks and strict MSW.
 
+Fix round 2 exact focused command and result:
+
+```text
+> npm run test --prefix frontend -- 'src/routes/staff/books.test.tsx' 'src/routes/staff/books.$bookId.test.tsx' 'src/routes/staff/members.$memberId.test.tsx' 'src/routes/staff/borrowings.$borrowingId.test.tsx'
+
+Test Files  4 passed (4)
+     Tests  16 passed (16)
+Exit code: 0
+```
+
+Fix round 2 exact build command and result:
+
+```text
+> npm run frontend:build
+> book-library@0.0.1 frontend:build
+> npm run build --prefix frontend
+> book-library-frontend@0.0.1 build
+> tsc -p tsconfig.json && tsc -p tsconfig.node.json && vite build
+
+src/routes/member/index.test.tsx(84,72): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'JsonBodyType'.
+src/routes/member/index.test.tsx(87,56): error TS2345: Argument of type 'Response | (() => Response | Promise<Response>) | undefined' is not assignable to parameter of type 'Response | (() => Response | Promise<Response>)'.
+src/routes/member/index.test.tsx(89,15): error TS2345: Argument of type 'Response | (() => Response | Promise<Response>) | undefined' is not assignable to parameter of type 'Response | (() => Response | Promise<Response>)'.
+src/routes/member/index.test.tsx(92,15): error TS2345: Argument of type 'Response | (() => Response | Promise<Response>) | undefined' is not assignable to parameter of type 'Response | (() => Response | Promise<Response>)'.
+Exit code: 1
+```
+
+The authoritative Task 3 diagnostic `src/routes/staff/borrowings.$borrowingId.test.tsx(81,44): error TS2353` is absent. The four remaining diagnostics are confined to Task 4's `member/index.test.tsx` and were not changed.
+
 ## Focused metrics
 
 Fresh full-coverage target rows: `books.tsx` 19/22 statements and 14/18 branches; `books.$bookId.tsx` 11/11 and 16/18; `members.$memberId.tsx` 10/13 and 24/29; `borrowings.$borrowingId.tsx` 20/21 and 15/16. Combined Task 3 gain is 60/67 target statements and 69/81 target branches, exceeding the planned 50/68 and 55/81 minimums.
@@ -44,27 +72,29 @@ Fresh `npm run frontend:test:coverage` exited 0 after Task 3: 34 files/142 tests
 
 ## Files changed
 
-`frontend/src/routes/staff/books.test.tsx`, `books.$bookId.test.tsx`, `members.$memberId.test.tsx`, `borrowings.$borrowingId.test.tsx`, this report, and append-only `progress.md` only.
+Original Task 3: `frontend/src/routes/staff/books.test.tsx`, `books.$bookId.test.tsx`, `members.$memberId.test.tsx`, `borrowings.$borrowingId.test.tsx`, this report, and append-only `progress.md` only. Fix round 2 changes only `frontend/src/routes/staff/borrowings.$borrowingId.test.tsx`, this report, and `progress.md`.
 
 ## Commit hash
 
-d3470de6be0a3100439832c03d8c873f76c3fd19
+d3470de6be0a3100439832c03d8c873f76c3fd19 (original implementation); fix round 2 repair commit pending.
 
 ## Reviewer
 
-gpt-5.6-terra, high, fresh context, no substitution — approved after fix round 1.
+gpt-5.6-terra, high, fresh context, no substitution — fix round 2 fresh review pending.
 
 ## Reviewer command and result
 
-Fresh reviewer verified the four exact staff-route test files, real hooks/strict MSW, loading and fallback states, accessible failed-cover fallback, return confirmation/error paths, returned-record lockout with zero POST, measured coverage gains, and scope boundaries. Functional/spec scope was approved at stable implementation SHA `d3470de6be0a3100439832c03d8c873f76c3fd19`. Scoped re-review confirmed fix round 1 corrected the evidence metadata with no new breakage and approved Task 3.
+Fresh reviewer verified the four exact staff-route test files, real hooks/strict MSW, loading and fallback states, accessible failed-cover fallback, return confirmation/error paths, returned-record lockout with zero POST, measured coverage gains, and scope boundaries. Functional/spec scope was approved at stable implementation SHA `d3470de6be0a3100439832c03d8c873f76c3fd19`. Scoped re-review confirmed fix round 1 corrected the evidence metadata with no new breakage and approved Task 3. A new fresh review is pending for the type-only repair round.
 
 ## Findings
 
-Self-review found no in-scope functional or test-quality issues; the strict-MSW setup initially used `/catalog` and was corrected to the actual `/book-categories` endpoint before the passing focused and full suites. Fresh review found one P2/Important metadata issue: this report still said the implementation commit and reviewer were pending, while `progress.md` also retained pending values.
+Self-review found no in-scope functional or test-quality issues; the strict-MSW setup initially used `/catalog` and was corrected to the actual `/book-categories` endpoint before the passing focused and full suites. Fresh review found one P2/Important metadata issue: this report still said the implementation commit and reviewer were pending, while `progress.md` also retained pending values. Fix round 2 reproduces TS2353 at `borrowings.$borrowingId.test.tsx:81`: the fixture default parameter inferred an exact object type without the optional `BorrowingView.returnedAt` property.
 
 ## Resolutions
 
 The focused suite passed after the strict-MSW endpoint correction. Fix round 1 records stable implementation SHA `d3470de6be0a3100439832c03d8c873f76c3fd19`, the actual fresh reviewer/model with no substitution, functional/spec approval, measured metrics, and resolution of the stale evidence metadata. Scoped re-review found no new breakage.
+
+Fix round 2 annotates the shared test fixture as `BorrowingView`, preserving its real API response contract while allowing the returned-record test to supply the optional `returnedAt` value. The focused staff-detail suite passes (4 files/16 tests). The exact frontend build no longer emits a Task 3 diagnostic; it remains nonzero only for the four out-of-scope Task 4 `member/index.test.tsx` diagnostics.
 
 ## Deferred findings
 
@@ -72,4 +102,4 @@ None.
 
 ## Stop/escalation decision
 
-No stop condition: Task 3 is complete after clean scoped re-review of the implementation and metadata-fix range. Task 4 was not started.
+No stop condition: the Task 3 repair is limited to its owned test fixture and evidence records. Task 4 was not changed. Fresh review of fix round 2 remains pending.
