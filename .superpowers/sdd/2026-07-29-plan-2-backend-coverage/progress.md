@@ -210,3 +210,11 @@
 - Gate G1 merge readiness: remains withdrawn and closed until renewed final whole-branch review accepts Plan 2.
 - Dependency guard: do not merge and do not start Plan 3 until that final whole-branch review restores Gate G1.
 - Final whole-branch fix round 2 evidence: exact focused Task 1 command 33/33 at 163/180 branches; quality-reporting 68/68; backend unit 382/382 at 78.81/70.87/79.83/79.26; backend e2e 242/242; backend report and changed-line gate passed; non-fixing ESLint, build, validated scope, whitespace, generated-artifact, and status checks passed.
+- Renewed final senior whole-branch reviewer: `/root/plan2_final_branch_rereview` using gpt-5.6-sol, high; substitution none.
+- Renewed final reviewed head: `dc42a12e91529da35f362aa545ff704d89dcdf4d`.
+- Renewed final decision: Ready to merge `YES`; no Critical, Important, or Minor findings and 0 open findings.
+- Prior security findings: closed. The Task 1 credential-boundary assertions and the security-review provenance chain are included in the reviewed head with no remaining finding.
+- Renewed fresh full gates: focused Task 1 33/33 at 163/180 branches; quality-reporting 68/68; backend unit 382/382 at 78.81/70.87/79.83/79.26; backend e2e 242/242; backend report, changed-line gate, non-fixing ESLint, build, validated scope, whitespace, generated-artifact, and clean-status checks all passed.
+- Gate G1: reopened and evidence satisfied. Task 7 and Plan 2 are complete and ready to merge after this administrative record.
+- Final provenance: no SHA, finding, or reviewer decision remains pending; this closeout records reviewed head `dc42a12e91529da35f362aa545ff704d89dcdf4d` without a self-referential administrative commit field.
+- Wave B dependency guard: Plan 3 remains blocked until the reviewed Plan 2 merge SHA is recorded in the Plan 3 ledger and Wave B is explicitly authorized; no Plan 3 work has started.
