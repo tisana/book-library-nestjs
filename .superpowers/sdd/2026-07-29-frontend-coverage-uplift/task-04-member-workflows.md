@@ -4,7 +4,7 @@ Task 4 — Member home and private detail
 
 ## Status
 
-repair-round-2-implemented-review-pending
+complete
 
 ## Requested agent
 
@@ -52,19 +52,19 @@ c4b4abf090e98ba23ee6957eae68e13b6040ff24
 
 ## Reviewer
 
-/root/plan1_task4_repair_review (gpt-5.6-terra, high, fresh context, no substitution) — CHANGES_REQUIRED: provenance placeholders; functional approval pending scoped metadata re-review
+/root/plan1_task4_repair_rereview (gpt-5.6-terra, high, fresh context, no substitution) — APPROVED after round 2/5
 
 ## Reviewer command and result
 
-Fresh `/root/plan1_task4_repair_review` approved the fixture typing, strict MSW scope, quoted focused suite (4 files/27 tests), and `npm run frontend:build` result at `c4b4abf090e98ba23ee6957eae68e13b6040ff24`. It returned CHANGES_REQUIRED only for one P2 provenance finding: the repair report and ledger retained `pending repair commit` and did not identify the fresh reviewer. Functional approval is pending the scoped metadata re-review.
+Fresh scoped `/root/plan1_task4_repair_rereview` reviewed the metadata correction `c6e51c16c543ff00d6876735a45bc044dd41f218` and returned APPROVED with no findings. It confirmed the repair commit `c4b4abf090e98ba23ee6957eae68e13b6040ff24`, reviewer provenance, round disposition, and Task 4 status are recorded consistently.
 
 ## Findings
 
-Prior rounds corrected the responder return, active due-state label, out-of-scope staff-copy assertion, and stale metadata. Repair round 2 found four blocking TypeScript diagnostics in the same responder: its signature excluded the optional overrides it handled and typed its JSON fallback as `unknown` despite passing it to `HttpResponse.json`. Fresh review then found one P2 provenance issue: the report and ledger used a commit placeholder and omitted the reviewer identity.
+Prior rounds corrected the responder return, active due-state label, out-of-scope staff-copy assertion, and stale metadata. Repair round 2 found four blocking TypeScript diagnostics in the same responder: its signature excluded the optional overrides it handled and typed its JSON fallback as `unknown` despite passing it to `HttpResponse.json`. The first fresh review found one P2 provenance issue: the report and ledger used a commit placeholder and omitted the reviewer identity. The scoped metadata re-review found no additional findings.
 
 ## Resolutions
 
-Repair round 2 types the optional responder override and its JSON fallback without changing response selection or production behavior. The exact focused suite remains 4 files/27 tests passing; the full frontend build now exits 0. This metadata-only correction replaces the commit placeholder with `c4b4abf090e98ba23ee6957eae68e13b6040ff24` and records the fresh reviewer; the round finding disposition is 1 addressed, 0 open. Functional approval remains pending the scoped metadata re-review. No production, configuration, storage-token, staff-copy, backend, e2e, or baseline files changed.
+Repair round 2 types the optional responder override and its JSON fallback without changing response selection or production behavior. The exact focused suite remains 4 files/27 tests passing; the full frontend build exits 0. Metadata correction `c6e51c16c543ff00d6876735a45bc044dd41f218` records the repair commit and first fresh reviewer; the round finding disposition is 1 addressed, 0 open. Scoped metadata re-review approved the correction with no findings. No production, configuration, storage-token, staff-copy, backend, e2e, or baseline files changed.
 
 ## Deferred findings
 
@@ -72,4 +72,4 @@ None.
 
 ## Stop/escalation decision
 
-Repair round 2 is implemented with focused tests and build evidence. The fresh review's sole provenance finding is addressed, but Task 4 remains pending the required scoped metadata re-review before final approval. Task 5 and Task 6 were not started by this repair.
+Task 4 repair round 2/5 is complete after approved scoped metadata re-review and is ready for Task 5 reconciliation. Task 5 and Task 6 were not changed by this repair.
