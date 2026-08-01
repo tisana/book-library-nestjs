@@ -4,7 +4,7 @@ Task 1: API, query-key, and invalidation contracts
 
 ## Status
 
-implemented-awaiting-scoped-re-review
+complete
 
 ## Requested agent
 
@@ -52,11 +52,11 @@ a22e9b90d5ac8da08022ed9d9427b3c6a1786098
 
 ## Reviewer
 
-gpt-5.6-terra, high, fresh context, no substitution — functional/spec scope approved; scoped evidence re-review pending
+gpt-5.6-terra, high, fresh context, no substitution — approved after fix round 1
 
 ## Reviewer command and result
 
-Fresh reviewer `gpt-5.6-terra`, high, no substitution, reran the equivalent focused frontend-directory coverage command: 7 files/26 tests, 100.00% statements/functions/lines and 94.93% branches before the optional-key review fix; all public API/cache contracts passed and functional/spec scope was approved. The post-fix equivalent focused command recorded above passed at 100.00% for all four metrics.
+Fresh reviewer `gpt-5.6-terra`, high, no substitution, reran the equivalent focused frontend-directory coverage command: 7 files/26 tests, 100.00% statements/functions/lines and 94.93% branches before the optional-key review fix; all public API/cache contracts passed and functional/spec scope was approved. The post-fix equivalent focused command recorded above passed at 100.00% for all four metrics. Scoped re-review covered the reviewed implementation+fix range `b9435af..c5ff5d2`, confirmed the evidence finding addressed with no new breakage, and approved Task 1.
 
 ## Findings
 
@@ -64,7 +64,7 @@ Fresh functional review found P2: `query-keys.test.ts` did not assert both absen
 
 ## Resolutions
 
-Added real retry-disabled TanStack Query hook coverage and all absent/present optional-key assertions, then reran focused and full coverage successfully before implementation commit `a22e9b90d5ac8da08022ed9d9427b3c6a1786098`. Fix round 1 records that stable implementation SHA, the actual fresh reviewer/model with no substitution, functional/spec approval, equivalent focused-command evidence, and the evidence finding. Final completion remains pending scoped re-review of this metadata-only fix.
+Added real retry-disabled TanStack Query hook coverage and all absent/present optional-key assertions, then reran focused and full coverage successfully before implementation commit `a22e9b90d5ac8da08022ed9d9427b3c6a1786098`. Fix round 1 records that stable implementation SHA, the actual fresh reviewer/model with no substitution, functional/spec approval, equivalent focused-command evidence, and the evidence finding. Scoped re-review approved the reviewed implementation+fix range with no new breakage.
 
 ## Deferred findings
 
@@ -72,4 +72,4 @@ The literal root-level `--prefix` coverage form cannot resolve the repository's 
 
 ## Stop/escalation decision
 
-No stop condition: the evidence finding is addressed with a metadata-only commit; do not claim final Task 1 completion until scoped re-review.
+No stop condition: Task 1 is complete after clean scoped re-review of the implementation+fix range.

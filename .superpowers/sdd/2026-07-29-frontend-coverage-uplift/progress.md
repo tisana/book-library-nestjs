@@ -3,7 +3,7 @@
 | Task | Status | Requested agent | Actual agent | Reasoning | Starting commit | Commit | Reviewer | Findings resolved |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Task 0 — Freeze execution base and create the SDD evidence contract | completed | gpt-5.6-terra, medium | gpt-5.6-terra, medium | Deterministic repository and report inventory. | 05a426ec944d8305edc621b12497d89a5f20457b | b9435afa78a6c693b82e0fc151180c1d52194fe6 | gpt-5.6-terra, high, fresh context — approved after fix round 2 | 3/3 in-scope; 1 deferred minor |
-| Task 1 | implemented-awaiting-scoped-re-review | gpt-5.6-terra, high | gpt-5.6-terra, high | Public API, query-key, and invalidation coverage; Task 0 final SHA handoff b9435afa78a6c693b82e0fc151180c1d52194fe6 recorded before test changes. Fresh full coverage: 618/1034 statements and 396/729 branches. | b9435afa78a6c693b82e0fc151180c1d52194fe6 | a22e9b90d5ac8da08022ed9d9427b3c6a1786098 | gpt-5.6-terra, high, fresh context, no substitution — functional/spec approved; scoped evidence re-review pending | functional P2 resolved before implementation commit; evidence P2 addressed in fix round 1 |
+| Task 1 | complete | gpt-5.6-terra, high | gpt-5.6-terra, high | Public API, query-key, and invalidation coverage; Task 0 final SHA handoff b9435afa78a6c693b82e0fc151180c1d52194fe6 recorded before test changes. Fresh full coverage: 618/1034 statements and 396/729 branches. | b9435afa78a6c693b82e0fc151180c1d52194fe6 | a22e9b90d5ac8da08022ed9d9427b3c6a1786098 | gpt-5.6-terra, high, fresh context, no substitution — approved after fix round 1 | functional P2 and evidence P2 resolved; scoped re-review clean |
 | Task 2 | not-started | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | Task 3 | not-started | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | Task 4 | not-started | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
@@ -15,3 +15,4 @@
 - Task 1: Task 0 final commit handoff recorded as b9435afa78a6c693b82e0fc151180c1d52194fe6 before Task 1 test changes.
 - Task 1: focused coverage 137/137 statements and 79/79 branches; fresh full coverage 618/1034 statements and 396/729 branches. No rerank: both totals exceed the linear path to 60%; fresh-review P2 on optional key variants resolved.
 - Task 1: fix round 1/5 (1 addressed, 0 open; commits a22e9b9..HEAD)
+- Task 1: complete (commits b9435af..c5ff5d2, review clean) — reviewed implementation+fix range.
