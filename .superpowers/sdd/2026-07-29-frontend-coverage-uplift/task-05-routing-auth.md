@@ -4,7 +4,7 @@ Task 5 — Router, shared-login, and authorization boundaries
 
 ## Status
 
-fix-round-1-implemented-review-pending
+complete
 
 ## Requested agent
 
@@ -50,21 +50,23 @@ Task 5 implementation: `frontend/src/app/router.test.tsx`, `frontend/src/routes/
 
 ## Commit hash
 
-df19660761636f7d664a2e5b8749507c4065f9a8 (stable Task 5 implementation commit); reconciliation/evidence commit `59661bf6714e97d8ee39bb86770128f94b1f826e`.
+df19660761636f7d664a2e5b8749507c4065f9a8 (stable Task 5 implementation commit); reconciliation/evidence commit `59661bf6714e97d8ee39bb86770128f94b1f826e`; reviewed metadata correction `2095932cbdd3d093880541daa1c0f0e6f17fc365`.
 
 ## Reviewer
 
-/root/plan1_task5_review (gpt-5.6-sol, high, fresh context, no substitution) — authorization scope functionally approved; reconciliation findings required before acceptance. `/root/plan1_task5_reconcile_review` (gpt-5.6-sol, high, fresh context, no substitution) — all Task 5 functional commands and scope passed; CHANGES_REQUIRED only for the missing formal Task 1 approval chain. A new fresh scoped re-review is pending.
+/root/plan1_task5_reconcile_rereview (gpt-5.6-sol, high, fresh context, no substitution) — APPROVED reviewed correction `2095932cbdd3d093880541daa1c0f0e6f17fc365` after round 2/5 with no findings.
 
 ## Reviewer command and result
 
 Prior fresh reviewer `/root/plan1_task5_review` (`gpt-5.6-sol`, high, fresh context, no substitution) functionally approved the authorization-sensitive router, shared-login, auth-error, memory-only-session, and schema scope. It required reconciliation of three findings: resolve the load-bearing build diagnostics through their owning Tasks 1/3/4 before Task 6, record a stable Task 5 implementation commit, and attribute those diagnostics to their owning tasks rather than Task 5. Fresh post-repair implementer verification passes the exact 7-file/40-test focused command, full 42-file/182-test coverage command, frontend-unit report, frontend lint, frontend build, and scope/whitespace checks.
 
-Fresh reconciliation reviewer `/root/plan1_task5_reconcile_review` (`gpt-5.6-sol`, high, fresh context, no substitution) reviewed stable reconciliation commit `59661bf6714e97d8ee39bb86770128f94b1f826e`, confirmed all Task 5 functional commands and scope passed, and returned CHANGES_REQUIRED solely because the report relied on an informal controller handoff rather than the then-missing formal Task 1 approval chain. Task 1 is now administratively closed at `b595316c7fc185f8be829f98510698d73053994e`; this metadata correction records that chain. Disposition: 1 addressed, 0 open; fresh scoped re-review pending.
+Fresh reconciliation reviewer `/root/plan1_task5_reconcile_review` (`gpt-5.6-sol`, high, fresh context, no substitution) reviewed stable reconciliation commit `59661bf6714e97d8ee39bb86770128f94b1f826e`, confirmed all Task 5 functional commands and scope passed, and returned CHANGES_REQUIRED solely because the report relied on an informal controller handoff rather than the then-missing formal Task 1 approval chain. Task 1 is now administratively closed at `b595316c7fc185f8be829f98510698d73053994e`; metadata correction `2095932cbdd3d093880541daa1c0f0e6f17fc365` recorded that chain. Disposition: 1 addressed, 0 open.
+
+Fresh scoped re-review `/root/plan1_task5_reconcile_rereview` (`gpt-5.6-sol`, high, fresh context, no substitution) reviewed correction `2095932cbdd3d093880541daa1c0f0e6f17fc365` and returned APPROVED with no findings. Round 2/5 is complete with 0 open findings.
 
 ## Findings
 
-Self-review found that the initial disposable-router assertions addressed index children through `routesByPath` instead of guarded parent routes through `routesById`; it also found a synchronous empty-state assertion and teardown-time session clearing that could produce noise. Prior fresh review found three reconciliation issues after functionally approving authorization scope: the load-bearing build diagnostics had to be repaired before Task 6, the report lacked the stable Task 5 implementation SHA, and the report incorrectly grouped the diagnostics as Task 2/4 instead of attributing them to Tasks 1/3/4. Those three findings remain addressed with 0 open. Fresh reconciliation review found one evidence-provenance issue: Task 1 approval was attributed only to the controller handoff before its formal review chain was committed. Reconciliation fix round 1/5 disposition: 1 addressed, 0 open; fresh scoped re-review pending.
+Self-review found that the initial disposable-router assertions addressed index children through `routesByPath` instead of guarded parent routes through `routesById`; it also found a synchronous empty-state assertion and teardown-time session clearing that could produce noise. Prior fresh review found three reconciliation issues after functionally approving authorization scope: the load-bearing build diagnostics had to be repaired before Task 6, the report lacked the stable Task 5 implementation SHA, and the report incorrectly grouped the diagnostics as Task 2/4 instead of attributing them to Tasks 1/3/4. Those three findings remain addressed with 0 open. Fresh reconciliation review found one evidence-provenance issue: Task 1 approval was attributed only to the controller handoff before its formal review chain was committed. Reconciliation fix round 1/5 disposition: 1 addressed, 0 open. Scoped re-review found no additional findings and APPROVED round 2/5; 0 findings remain open.
 
 ## Resolutions
 
@@ -76,8 +78,8 @@ Task 5's implementation is stably traced to `df19660761636f7d664a2e5b8749507c406
 
 ## Deferred findings
 
-None. Required fresh scoped re-review of this metadata correction is a workflow gate, not a deferred finding.
+None.
 
 ## Stop/escalation decision
 
-Task 5 implementation and functional reconciliation remain green. Reconciliation fix round 1/5 has its sole approval-provenance finding addressed with 0 open. Stop before Task 6: a fresh `gpt-5.6-sol`, high scoped re-review of this metadata correction remains controller-owned and pending; no reviewer was spawned and no model substitution occurred.
+No stop condition: scoped re-review APPROVED reviewed correction `2095932cbdd3d093880541daa1c0f0e6f17fc365` after round 2/5 with 0 open findings. Task 5 is complete and ready for Task 6. Task 6 was not started by this administrative closeout.
