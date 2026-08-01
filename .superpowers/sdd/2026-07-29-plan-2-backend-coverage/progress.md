@@ -65,6 +65,22 @@
 - Fresh review: functional approval with no functional, security, scope, or test-quality defect; one P2 task-report completeness finding.
 - Resolution: added every mandatory heading, stable implementation SHA, actual reviewer identity, functional approval, and not-applicable ownership reasons for full-suite and changed-line evidence.
 
+### Task 4 — Catalog, membership, staff controller delegation
+
+- Status: implementation complete; self-review clean, fresh review pending parent coordination
+- Task 3 final evidence commit: `399508f699a50e8d3b36d8f18698201052e0830f`
+- Working base SHA: `399508f699a50e8d3b36d8f18698201052e0830f`
+- Requested implementer: gpt-5.6-terra, high
+- Actual implementer: gpt-5.6-terra, high
+- Requested reviewer: separate-context gpt-5.6-terra, high
+- Actual reviewer: pending parent-coordinated fresh review
+- Substitution: none
+- Report: `.superpowers/sdd/2026-07-29-plan-2-backend-coverage/task-04.md`
+- RED: exact focused Jest command exited 1 because no owned specs existed.
+- GREEN: exact focused Jest command exited 0; 9 tests passed and each controller reached 100% statements, branches, functions, and lines.
+- Focused lint and `git diff --check`: exit 0.
+- Fresh review: pending parent coordination; implementer self-review found no functional, security, scope, or test-quality concern.
+
 ## Review and fix log
 
 - Task 1: fix round 1/5 (1 addressed, 0 open; commits 38c6dc4..HEAD)
@@ -78,3 +94,4 @@
 - Task 3: implementation ready for controller review; Task 2 final evidence and working base `20260dc748c3d6b5cbb828665b50efbdd02d3d36`; required focused Jest RED exit 1 because no owned specs existed, then GREEN exit 0 with Health 17/18 branches, filter 17/20, and pagination 7/7; focused lint and `git diff --check` exit 0; generated coverage remains untracked.
 - Task 3: fix round 1/5 (1 addressed, 0 open; commits ad67109..HEAD)
 - Task 3: complete (commits 20260dc..5c4a7d6, review clean)
+- Task 4: implementation ready for parent-coordinated fresh review; Task 3 final evidence and working base `399508f699a50e8d3b36d8f18698201052e0830f`; required focused Jest RED exit 1 because no owned specs existed, then GREEN exit 0 with 9 tests and 100% statement/branch/function/line coverage for all three controllers; focused lint and `git diff --check` exit 0.
