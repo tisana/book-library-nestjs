@@ -10,7 +10,7 @@
 
 ### Task 1 — Reusable fixtures and staff-account lifecycle
 
-- Status: complete; fix round 1 scoped re-review clean
+- Status: complete; fix round 2 matcher redaction addressed
 - Requested implementer: gpt-5.6-sol, high
 - Actual implementer: gpt-5.6-sol, high
 - Requested reviewer: separate-context gpt-5.6-sol, high
@@ -54,3 +54,4 @@
 - Task 2: pre-commit review fix round (2 addressed, 0 open; content committed as `f5067889b4f4e36df5277e1e3eb1fd29184e058b`)
 - Task 2: implementation commit `f5067889b4f4e36df5277e1e3eb1fd29184e058b`; reviewed range `d35bc57751cc6c9a8ce96cb8aefa0204737b34b6..f5067889b4f4e36df5277e1e3eb1fd29184e058b`
 - Task 2: controller fix round 1/5 (2 addressed, 0 open; credential relationship and commit trace)
+- Task 2: controller fix round 2/5 (1 addressed, 0 open; identifier-only matcher prevents DTO/password serialization while boolean-only credential relationship remains); focused Jest 45/45 at AuthService 188/246 and AuthController 12/24, focused lint and `git diff --check` exit 0.
