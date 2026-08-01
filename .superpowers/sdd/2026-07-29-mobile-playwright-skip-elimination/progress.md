@@ -82,3 +82,10 @@ Task 2: AUTHORIZED RESUME — plan owner approved only `first.textContent = 'fir
 - Finding 2 addressed: Task 1 provenance is pinned to `f30a70f01f823f5b19e5f4de004a014ae83ef769` rather than mutable `HEAD`.
 - Review fix round 1/5: 2 addressed, 0 open; fresh scoped re-review pending.
 - Scope of this round is evidence metadata only. No behavior, package, generated artifact, Task 3, merge, or rebase change is included.
+
+## Task 2 scoped re-review closeout — round 1/5
+
+- Fresh scoped reviewer `/root/plan4_task2_rereview`, `gpt-5.6-terra`, high reasoning, reviewed correction commit `9b7b8ee356df53ec6b6f922b29386eb190b16152`.
+- Result: **APPROVED**; both provenance findings addressed, no new issues, 0 open.
+- Task 2 is complete and approved, ready for Task 3.
+- This administrative closeout changes evidence metadata only; no behavior, package, generated artifact, Task 3, merge, or rebase change is included.

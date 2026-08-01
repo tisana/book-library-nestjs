@@ -160,3 +160,11 @@ No product source, root package, parser, Playwright configuration, lockfile, cov
 - Findings addressed: 2.
 - Findings open: 0.
 - Fresh scoped post-fix re-review: pending.
+
+## Scoped post-fix re-review — round 1/5
+
+- Reviewer identity: `/root/plan4_task2_rereview`; fresh `gpt-5.6-terra`, high reasoning, separate agent context.
+- Reviewed evidence-correction commit: `9b7b8ee356df53ec6b6f922b29386eb190b16152` (`docs: pin Plan 4 Task 2 test provenance`).
+- Result: **APPROVED**. Both round 1 provenance findings are addressed, with no new issues.
+- Round 1/5 closeout: 2 addressed, 0 open.
+- Task 2 status: complete and approved; ready for Task 3.
