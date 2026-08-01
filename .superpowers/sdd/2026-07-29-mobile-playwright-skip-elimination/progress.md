@@ -24,6 +24,11 @@
 - Task 3 is fix-round-2 implemented, with execution evidence committed at `f0a638056da4265c78a680d421ce5c727bd6d574` and the metadata correction history committed at `4e0c0ac0a898857fc9976716c31af112837eda12`.
 - Current state: Task 3 is pending fresh scoped metadata re-review; Task 4 remains pending.
 
+## Task 3 current status — round 2 closeout supersession
+
+- The interim Task 3 current-status entry above is superseded by the approved scoped re-review closeout recorded below.
+- Task 3 is complete and ready for controller rebase and Task 4; Task 4 remains pending.
+
 ## Model substitutions
 
 - None. Requested and actual implementer: `gpt-5.6-terra`, medium reasoning. Requested and actual reviewer: fresh `gpt-5.6-terra`, high reasoning.
@@ -131,3 +136,12 @@ Task 2: AUTHORIZED RESUME — plan owner approved only `first.textContent = 'fir
 - Disposition: 2 addressed, 0 open. This round restores the two historical lines verbatim, adds the Task reports supersession entry, and records the stable `f0a638056da4265c78a680d421ce5c727bd6d574` implementation/evidence commit plus `4e0c0ac0a898857fc9976716c31af112837eda12` correction history.
 - Current state: Task 3 is fix-round-2 implemented pending fresh scoped metadata re-review.
 - Minor provenance/deferred only: the retained-command-transcript absence remains non-blocking; no execution, parser, artifact, behavior, package, rebase, or Task 4 change is included.
+
+## Task 3 scoped metadata re-review closeout — round 2/5
+
+- Reviewer: `/root/plan4_task3_review3`; fresh `gpt-5.6-terra`, high reasoning, separate agent context.
+- Reviewed correction: `e431a25e60e8dca07aa0d24ae4621e197e11fc08` (`docs: restore Task 3 append-only provenance`).
+- Result: **APPROVED**. All round-2 findings are addressed; no new issues were found.
+- Round 2/5 closeout: 2 addressed, 0 open.
+- Task 3 is complete and ready for controller rebase and Task 4.
+- This administrative closeout is additions-only metadata; no artifact, parser/test, behavior, package, rebase, or Task 4 change is included.
