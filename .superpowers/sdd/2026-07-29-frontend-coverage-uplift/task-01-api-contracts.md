@@ -4,7 +4,7 @@ Task 1: API, query-key, and invalidation contracts
 
 ## Status
 
-fix-round-2-implemented-review-pending
+complete
 
 ## Requested agent
 
@@ -91,15 +91,15 @@ Original Task 1: `frontend/src/lib/api/books.test.ts`, `members.test.ts`, `borro
 
 ## Commit hash
 
-a22e9b90d5ac8da08022ed9d9427b3c6a1786098
+Implementation: a22e9b90d5ac8da08022ed9d9427b3c6a1786098. Reviewed repair: 73444ec111ff86dfe681059a8d52e1641c11165f.
 
 ## Reviewer
 
-gpt-5.6-terra, high, fresh context, no substitution — approved after fix round 1
+`/root/plan1_task1_repair_review` (`gpt-5.6-terra`, high, fresh context, no substitution) — APPROVED fix round 2 with 0 findings
 
 ## Reviewer command and result
 
-Fresh reviewer `gpt-5.6-terra`, high, no substitution, reran the equivalent focused frontend-directory coverage command: 7 files/26 tests, 100.00% statements/functions/lines and 94.93% branches before the optional-key review fix; all public API/cache contracts passed and functional/spec scope was approved. The post-fix equivalent focused command recorded above passed at 100.00% for all four metrics. Scoped re-review covered the reviewed implementation+fix range `b9435af..c5ff5d2`, confirmed the evidence finding addressed with no new breakage, and approved Task 1.
+Fresh reviewer `gpt-5.6-terra`, high, no substitution, reran the equivalent focused frontend-directory coverage command: 7 files/26 tests, 100.00% statements/functions/lines and 94.93% branches before the optional-key review fix; all public API/cache contracts passed and functional/spec scope was approved. The post-fix equivalent focused command recorded above passed at 100.00% for all four metrics. Scoped re-review covered the reviewed implementation+fix range `b9435af..c5ff5d2`, confirmed the evidence finding addressed with no new breakage, and approved Task 1. Fix round 2 reviewer `/root/plan1_task1_repair_review` (`gpt-5.6-terra`, high, fresh context, no substitution) freshly reviewed stable repair commit `73444ec111ff86dfe681059a8d52e1641c11165f` and returned APPROVED with no findings: the focused borrowing API suite passed 5/5 and the Task 1 `TS2554` diagnostic was absent.
 
 ## Findings
 
@@ -107,11 +107,15 @@ Fresh functional review found P2: `query-keys.test.ts` did not assert both absen
 
 Fix round 2 found a load-bearing integration TypeScript error at `borrowings.test.ts:56`: TanStack Query's `mutateAsync` type requires a variables argument even though the hook mutation function defaults its input to `{}`. The direct API contract test independently calls `returnBorrowing('borrowing-1')` and asserts the exact `{}` request body.
 
+Fix round 2 fresh review returned 0 findings; no Task 1 repair issue remains open.
+
 ## Resolutions
 
 Added real retry-disabled TanStack Query hook coverage and all absent/present optional-key assertions, then reran focused and full coverage successfully before implementation commit `a22e9b90d5ac8da08022ed9d9427b3c6a1786098`. Fix round 1 records that stable implementation SHA, the actual fresh reviewer/model with no substitution, functional/spec approval, equivalent focused-command evidence, and the evidence finding. Scoped re-review approved the reviewed implementation+fix range with no new breakage.
 
 Fix round 2 passes an explicit typed empty input to `mutateAsync({})`, preserving the hook request behavior while the direct API test continues to prove the default argument serializes exactly `{}`. The focused test passes, and the exact build no longer reports any Task 1 diagnostic.
+
+Stable repair commit `73444ec111ff86dfe681059a8d52e1641c11165f` was freshly reviewed and approved with no findings; Task 1 repair is complete.
 
 ## Deferred findings
 
@@ -119,4 +123,4 @@ The literal root-level `--prefix` coverage form cannot resolve the repository's 
 
 ## Stop/escalation decision
 
-Task 1 fix round 2 is implemented and focused-green. Final build success remains blocked only by the recorded out-of-scope Task 3/4 diagnostics; no Task 3/4 or Task 5 file was changed. Scoped re-review of this fix remains pending.
+Task 1 fix round 2 is complete after fresh approval of stable repair commit `73444ec111ff86dfe681059a8d52e1641c11165f`; 0 findings remain open.
