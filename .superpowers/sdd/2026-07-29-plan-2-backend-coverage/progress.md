@@ -84,6 +84,22 @@
 - Resolution: recorded the stable implementation SHA, actual gpt-5.6-terra high reviewer without substitution, and functional approval; scoped fresh re-review approved the resolution with no new breakage or open findings.
 - Reviewed completion range: `399508f..e05afc8` is the reviewed implementation+fix range.
 
+### Task 5 — Middleware flow and changed-line evidence
+
+- Status: implementation ready for parent-coordinated fresh review
+- Task 4 final evidence commit: `e05afc833223358046a8d66b12868bc88d750fd0`
+- Working base SHA: `e05afc833223358046a8d66b12868bc88d750fd0`
+- Requested implementer: gpt-5.6-terra, high
+- Actual implementer: gpt-5.6-terra, high
+- Requested reviewer: separate-context gpt-5.6-terra, high
+- Actual reviewer: pending parent-coordinated fresh review
+- Substitution: none
+- Report: `.superpowers/sdd/2026-07-29-plan-2-backend-coverage/task-05.md`
+- RED: exact focused Jest command exited 0, but the definition-only baseline left the public request-flow lines uncovered (71.42% statements, 50% functions, 60% lines).
+- GREEN: exact focused Jest command exited 0; 2 tests passed and `logger.middleware.ts` reached 100% statements, branches, functions, and lines.
+- Changed-line result: not-applicable — focused LCOV; Task 6 owns fresh full-source changed-line evidence
+- Implementation commit: pending
+
 ## Review and fix log
 
 - Task 1: fix round 1/5 (1 addressed, 0 open; commits 38c6dc4..HEAD)
