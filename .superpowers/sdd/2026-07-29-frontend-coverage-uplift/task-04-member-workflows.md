@@ -4,7 +4,7 @@ Task 4 — Member home and private detail
 
 ## Status
 
-re-review-pending
+complete
 
 ## Requested agent
 
@@ -52,11 +52,11 @@ a4f4fdedab731c6c7527717c3f9ee14da999ca90
 
 ## Reviewer
 
-gpt-5.6-terra, high, fresh context, no substitution — functional approval; metadata fix round 1 requires scoped re-review
+gpt-5.6-terra, high, fresh context, no substitution — approved after fix round 1
 
 ## Reviewer command and result
 
-Fresh reviewer approved the functional scope and measured coverage at stable implementation SHA `a4f4fdedab731c6c7527717c3f9ee14da999ca90`: 4 focused files/27 tests passed; full coverage was 787/1034 statements and 598/729 branches; target rows gained 34/50 statements and 41/45 branches. The reviewer found one P2 evidence-metadata issue: the report and ledger still said the commit and reviewer were pending after review.
+Fresh reviewer approved the functional scope and measured coverage at stable implementation SHA `a4f4fdedab731c6c7527717c3f9ee14da999ca90`: 4 focused files/27 tests passed; full coverage was 787/1034 statements and 598/729 branches; target rows gained 34/50 statements and 41/45 branches. The reviewer found one P2 evidence-metadata issue: the report and ledger still said the commit and reviewer were pending after review. Scoped re-review of the metadata-only fix found the P2 addressed and no breakage.
 
 ## Findings
 
@@ -64,12 +64,12 @@ self-review found and corrected a test-fixture responder that returned a functio
 
 ## Resolutions
 
-The focused suite and full coverage suite passed cleanly after the fixture and label corrections. Fresh review approved the functional scope and recorded the measured metrics. Fix round 1 updates only the stale Task 4 report and ledger metadata; no production, configuration, storage-token, staff-copy, backend, e2e, or baseline files changed.
+The focused suite and full coverage suite passed cleanly after the fixture and label corrections. Fresh review approved the functional scope and recorded the measured metrics. Fix round 1 updates only the stale Task 4 report and ledger metadata; scoped re-review found the P2 addressed with no breakage. No production, configuration, storage-token, staff-copy, backend, e2e, or baseline files changed.
 
 ## Deferred findings
 
-scoped re-review of this metadata-only fix is required before Task 4 completion
+None.
 
 ## Stop/escalation decision
 
-No stop condition: functional scope is approved and this metadata-only fix is ready for scoped re-review; Task 4 is not complete until that re-review succeeds.
+Task 4 is complete after clean scoped re-review of the metadata-only fix. Task 5 was not started.
