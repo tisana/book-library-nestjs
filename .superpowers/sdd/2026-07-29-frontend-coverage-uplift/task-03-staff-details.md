@@ -4,7 +4,7 @@ Task 3 — Staff detail workflows
 
 ## Status
 
-fix-round-1-awaiting-scoped-re-review
+complete
 
 ## Requested agent
 
@@ -52,11 +52,11 @@ d3470de6be0a3100439832c03d8c873f76c3fd19
 
 ## Reviewer
 
-gpt-5.6-terra, high, fresh context, no substitution — functional/spec approved; scoped metadata re-review pending after fix round 1.
+gpt-5.6-terra, high, fresh context, no substitution — approved after fix round 1.
 
 ## Reviewer command and result
 
-Fresh reviewer verified the four exact staff-route test files, real hooks/strict MSW, loading and fallback states, accessible failed-cover fallback, return confirmation/error paths, returned-record lockout with zero POST, measured coverage gains, and scope boundaries. Functional/spec scope was approved at stable implementation SHA `d3470de6be0a3100439832c03d8c873f76c3fd19`; one P2/Important evidence-metadata finding required this fix round.
+Fresh reviewer verified the four exact staff-route test files, real hooks/strict MSW, loading and fallback states, accessible failed-cover fallback, return confirmation/error paths, returned-record lockout with zero POST, measured coverage gains, and scope boundaries. Functional/spec scope was approved at stable implementation SHA `d3470de6be0a3100439832c03d8c873f76c3fd19`. Scoped re-review confirmed fix round 1 corrected the evidence metadata with no new breakage and approved Task 3.
 
 ## Findings
 
@@ -64,7 +64,7 @@ Self-review found no in-scope functional or test-quality issues; the strict-MSW 
 
 ## Resolutions
 
-The focused suite passed after the strict-MSW endpoint correction. Fix round 1 records stable implementation SHA `d3470de6be0a3100439832c03d8c873f76c3fd19`, the actual fresh reviewer/model with no substitution, functional/spec approval, measured metrics, and resolution of the stale evidence metadata. Scoped re-review remains pending.
+The focused suite passed after the strict-MSW endpoint correction. Fix round 1 records stable implementation SHA `d3470de6be0a3100439832c03d8c873f76c3fd19`, the actual fresh reviewer/model with no substitution, functional/spec approval, measured metrics, and resolution of the stale evidence metadata. Scoped re-review found no new breakage.
 
 ## Deferred findings
 
@@ -72,4 +72,4 @@ None.
 
 ## Stop/escalation decision
 
-No stop condition. Task 3 is not complete until the controller-owned scoped re-review confirms fix round 1; Task 4 was not started.
+No stop condition: Task 3 is complete after clean scoped re-review of the implementation and metadata-fix range. Task 4 was not started.
