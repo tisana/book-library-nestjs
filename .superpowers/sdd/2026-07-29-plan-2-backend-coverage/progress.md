@@ -25,7 +25,26 @@
 - Resolution: recorded the implementation SHA and fresh reviewer; scoped re-review found the evidence gap addressed with no new breakage or out-of-scope observations.
 - Reviewed completion range: `05a426e..4779865` is the reviewed implementation+fix range.
 
+### Task 2 — Shared-auth response and controller adapters
+
+- Status: complete; fix round 1 scoped re-review clean
+- Task 1 final evidence commit: `d35bc57751cc6c9a8ce96cb8aefa0204737b34b6`
+- Working base SHA: `d35bc57751cc6c9a8ce96cb8aefa0204737b34b6`
+- Requested implementer: gpt-5.6-sol, high
+- Actual implementer: gpt-5.6-sol, high
+- Requested reviewer: separate-context gpt-5.6-sol, high
+- Actual reviewer: gpt-5.6-sol, high
+- Substitution: none
+- Report: `.superpowers/sdd/2026-07-29-plan-2-backend-coverage/task-02.md`
+- RED: exact focused Jest command exit 0 but coverage-floor RED at AuthService 168/246 and AuthController 0/24.
+- GREEN: exact focused Jest command exit 0; 45 tests passed, AuthService reached 188/246, and AuthController reached 12/24.
+- Focused lint and `git diff --check`: exit 0.
+- Fresh review: two P2 test-quality gaps found in password-forwarding coverage and case-sensitive redaction checking.
+- Resolution: both test assertions corrected; focused service/controller reruns passed, and scoped re-review found no remaining issues.
+
 ## Review and fix log
 
 - Task 1: fix round 1/5 (1 addressed, 0 open; commits 38c6dc4..HEAD)
 - Task 1: complete (commits 05a426e..4779865, review clean)
+- Task 2: fix round 1/5 (2 addressed, 0 open; uncommitted Task 2 range)
+- Task 2: complete (fresh separate-context review clean before implementation commit)

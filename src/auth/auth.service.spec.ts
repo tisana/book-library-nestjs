@@ -14,6 +14,10 @@ import {
   AuthIdentifierSubjectType,
 } from './schemas/auth-identifier.schema';
 import { AuthIdentifierOperationStatus } from './schemas/auth-identifier-operation.schema';
+import {
+  createStaffDocument,
+  queryResult,
+} from '../../test/support/backend-coverage-fixtures';
 
 function loadAuthService(): any | undefined {
   try {
@@ -441,15 +445,14 @@ describe('AuthService shared login resolution', () => {
   const describeIfImplemented = AuthService ? describe : describe.skip;
 
   describeIfImplemented('when identifier reservations are available', () => {
-    const staff = {
+    const staff = createStaffDocument({
       id: 'staff-1',
-      email: 'staff@example.com',
-      displayName: 'Staff One',
-      passwordHash: 'staff-hash',
-      roles: [StaffRole.Staff],
+      email: 'admin@example.test',
+      displayName: 'Admin One',
+      roles: [StaffRole.Admin],
       status: StaffUserStatus.Active,
       authVersion: 2,
-    };
+    });
     const member = {
       id: 'member-1',
       memberNumber: 'M-1001',
@@ -462,22 +465,34 @@ describe('AuthService shared login resolution', () => {
       authVersion: 3,
     };
 
-    function query<T>(value: T) {
-      const result = {
-        exec: jest.fn().mockResolvedValue(value),
-        select: jest.fn(),
-      };
-      result.select.mockReturnValue(result);
-      return result;
-    }
-
     function createService(input?: {
       reservation?: Record<string, unknown> | null;
       gateStatus?: AuthIdentifierOperationStatus | null;
-      staffUser?: typeof staff | null;
-      memberUser?: typeof member | null;
+      staffUser?: {
+        id: string;
+        email: string;
+        displayName: string;
+        passwordHash: string;
+        roles: StaffRole[];
+        status: StaffUserStatus;
+        authVersion?: number;
+      } | null;
+      memberUser?: Omit<typeof member, 'authVersion'> & {
+        authVersion?: number;
+      } | null;
       passwordValid?: boolean;
       staffRoles?: StaffRole[];
+      memberProfile?: {
+        membershipTypeCode: string;
+        membershipTypeName: string;
+      } | null;
+      identifierModelAvailable?: boolean;
+      operationModelAvailable?: boolean;
+      membersServiceAvailable?: boolean;
+      dedicatedFailureRecorder?: boolean;
+      auditCurrentVersion?: number | false;
+      auditRingVersion?: number;
+      keyMaterial?: Buffer | string;
     }) {
       const reservation =
         input && 'reservation' in input
@@ -495,6 +510,9 @@ describe('AuthService shared login resolution', () => {
         : null;
       const securityActivity = {
         record: jest.fn().mockResolvedValue(undefined),
+        ...(input?.dedicatedFailureRecorder
+          ? { recordFailedSignIn: jest.fn().mockResolvedValue(undefined) }
+          : {}),
       };
       const tokenSession = {
         createFamily: jest.fn().mockResolvedValue({
@@ -503,13 +521,13 @@ describe('AuthService shared login resolution', () => {
         }),
       };
       const identifierModel = {
-        findOne: jest.fn().mockReturnValue(query(reservation)),
+        findOne: jest.fn().mockReturnValue(queryResult(reservation)),
       };
       const operationModel = {
         findOne: jest
           .fn()
           .mockReturnValue(
-            query(
+            queryResult(
               input?.gateStatus
                 ? { status: input.gateStatus }
                 : input?.gateStatus === null
@@ -518,53 +536,94 @@ describe('AuthService shared login resolution', () => {
             ),
           ),
       };
-      const service = new AuthService(
-        {
-          findByEmailWithPassword: jest.fn().mockResolvedValue(resolvedStaff),
-          touchLastLogin: jest.fn().mockResolvedValue(undefined),
-        },
-        {
+      const staffUsersService = {
+        findByEmailWithPassword: jest.fn().mockResolvedValue(resolvedStaff),
+        touchLastLogin: jest.fn().mockResolvedValue(undefined),
+      };
+      const membersService = {
           findByLoginIdentifierWithPassword: jest
             .fn()
             .mockResolvedValue(
               input && 'memberUser' in input ? input.memberUser : member,
             ),
           touchLastLogin: jest.fn().mockResolvedValue(undefined),
-          findSelfServiceProfile: jest.fn().mockResolvedValue({
-            membershipTypeCode: 'STANDARD',
-            membershipTypeName: 'Standard',
-          }),
-        },
+          findSelfServiceProfile: jest.fn().mockResolvedValue(
+            input && 'memberProfile' in input
+              ? input.memberProfile
+              : {
+                  membershipTypeCode: 'STANDARD',
+                  membershipTypeName: 'Standard',
+                },
+          ),
+        };
+      const configService = {
+        get: jest.fn((key: string) => {
+          if (key === 'auth.refreshTokenTtlSeconds') return 2_592_000;
+          if (key === 'auth.accessTokenTtlSeconds') return 900;
+          if (key === 'auth.auditCorrelationKeyVersion') {
+            return input?.auditCurrentVersion === false
+              ? undefined
+              : (input?.auditCurrentVersion ?? 7);
+          }
+          if (key === 'auth.auditCorrelationKeyRing.currentVersion') {
+            return input?.auditRingVersion;
+          }
+          return undefined;
+        }),
+      };
+      const identifierKeyPolicy = {
+        getKeyMaterial: jest
+          .fn()
+          .mockReturnValue(input?.keyMaterial ?? Buffer.alloc(32, 7)),
+      };
+      const service = new AuthService(
+        staffUsersService,
+        input?.membersServiceAvailable === false ? undefined : membersService,
         { verify: jest.fn().mockResolvedValue(input?.passwordValid ?? true) },
         { signAsync: jest.fn().mockResolvedValue('access-token') },
-        {
-          get: jest.fn((key: string) => {
-            if (key === 'auth.refreshTokenTtlSeconds') return 2_592_000;
-            if (key === 'auth.accessTokenTtlSeconds') return 900;
-            if (key === 'auth.auditCorrelationKeyVersion') return 7;
-            return undefined;
-          }),
-        },
+        configService,
         tokenSession,
+        securityActivity,
+        input?.identifierModelAvailable === false
+          ? undefined
+          : identifierModel,
+        input?.operationModelAvailable === false ? undefined : operationModel,
+        identifierKeyPolicy,
+      );
+      return {
+        service,
         securityActivity,
         identifierModel,
         operationModel,
-        { getKeyMaterial: jest.fn().mockReturnValue(Buffer.alloc(32, 7)) },
-      );
-      return { service, securityActivity, identifierModel, operationModel };
+        staffUsersService,
+        membersService,
+      };
     }
 
-    it('resolves staff and member reservations into discriminated sessions', async () => {
+    it('uses the normalized reserved staff identity and server role area', async () => {
       const staffFixture = createService();
-      await expect(
-        staffFixture.service.createSharedSession({
-          identifier: ' STAFF@EXAMPLE.COM ',
-          password: 'correct-password',
-        }),
-      ).resolves.toMatchObject({
-        response: { roleArea: 'staff', user: { id: staff.id } },
+      const result = await staffFixture.service.createSharedSession({
+        identifier: ' ADMIN@EXAMPLE.TEST ',
+        password: 'pw',
       });
 
+      expect(result.response).toMatchObject({
+        roleArea: 'staff',
+        user: {
+          id: 'staff-1',
+          email: 'admin@example.test',
+          roles: [StaffRole.Admin],
+        },
+      });
+      expect(staffFixture.identifierModel.findOne).toHaveBeenCalledWith({
+        normalizedIdentifier: 'admin@example.test',
+      });
+      expect(
+        staffFixture.staffUsersService.findByEmailWithPassword,
+      ).toHaveBeenCalledWith('admin@example.test');
+    });
+
+    it('uses empty membership type fields when the member profile is absent', async () => {
       const memberFixture = createService({
         reservation: {
           normalizedIdentifier: 'm-1001',
@@ -572,14 +631,21 @@ describe('AuthService shared login resolution', () => {
           subjectType: AuthIdentifierSubjectType.Member,
           subjectId: member.id,
         },
+        memberProfile: null,
       });
-      await expect(
-        memberFixture.service.createSharedSession({
-          identifier: 'M-1001',
-          password: 'correct-password',
-        }),
-      ).resolves.toMatchObject({
-        response: { roleArea: 'member', member: { id: member.id } },
+
+      const result = await memberFixture.service.createSharedSession({
+        identifier: 'M-1001',
+        password: 'pw',
+      });
+
+      expect(result.response).toMatchObject({
+        roleArea: 'member',
+        member: {
+          id: member.id,
+          membershipTypeCode: '',
+          membershipTypeName: '',
+        },
       });
     });
 
@@ -596,7 +662,7 @@ describe('AuthService shared login resolution', () => {
           reservation: gatedReservation,
         }).service.createSharedSession({
           identifier: staff.email,
-          password: 'correct-password',
+          password: 'pw',
         }),
       ).resolves.toMatchObject({ response: { roleArea: 'staff' } });
 
@@ -605,71 +671,336 @@ describe('AuthService shared login resolution', () => {
         AuthIdentifierOperationStatus.Finalizing,
         AuthIdentifierOperationStatus.FailedTerminal,
       ]) {
-        await expect(
-          createService({
-            reservation: gatedReservation,
-            gateStatus,
-          }).service.createSharedSession({
-            identifier: staff.email,
-            password: 'correct-password',
-          }),
-        ).rejects.toMatchObject({
-          message: 'Invalid credentials',
+        const fixture = createService({
+          reservation: gatedReservation,
+          gateStatus,
         });
-      }
-    });
-
-    it('denies unresolved and ambiguous identifiers with HMAC-only audit correlation', async () => {
-      for (const reservation of [
-        null,
-        {
-          normalizedIdentifier: 'ambiguous@example.com',
-          status: AuthIdentifierStatus.Conflict,
-          conflictingSubjects: [
-            {
-              subjectType: AuthIdentifierSubjectType.Staff,
-              subjectId: 'staff-1',
-            },
-            {
-              subjectType: AuthIdentifierSubjectType.Member,
-              subjectId: 'member-1',
-            },
-          ],
-        },
-      ]) {
-        const fixture = createService({ reservation });
         await expect(
           fixture.service.createSharedSession({
-            identifier: 'ambiguous@example.com',
-            password: 'wrong-password',
+            identifier: staff.email,
+            password: 'pw',
           }),
-        ).rejects.toMatchObject({ message: 'Invalid credentials' });
-        const calls = fixture.securityActivity.record.mock.calls;
-        const event = calls[calls.length - 1]?.[0];
+        ).rejects.toEqual(new UnauthorizedException('Invalid credentials'));
+        const event = fixture.securityActivity.record.mock.lastCall?.[0];
         expect(event).toMatchObject({
-          identifierCorrelationHash: expect.any(String),
-          correlationKeyVersion: 7,
+          reasonCategory: 'activation-gate-incomplete',
         });
-        expect(event).not.toHaveProperty('subjectId');
-        expect(JSON.stringify(event)).not.toContain('ambiguous@example.com');
+        expect(JSON.stringify(event)).not.toContain(staff.email);
       }
     });
 
-    it('adds an opaque subject reference only after exact-one resolution', async () => {
-      const fixture = createService({ passwordValid: false });
+    it.each([
+      {
+        name: 'inactive reservation',
+        reservation: {
+          normalizedIdentifier: staff.email,
+          status: AuthIdentifierStatus.Released,
+          subjectType: AuthIdentifierSubjectType.Staff,
+          subjectId: staff.id,
+        },
+      },
+      {
+        name: 'active reservation without a subject type',
+        reservation: {
+          normalizedIdentifier: staff.email,
+          status: AuthIdentifierStatus.Active,
+          subjectId: staff.id,
+        },
+      },
+      {
+        name: 'active reservation without a subject id',
+        reservation: {
+          normalizedIdentifier: staff.email,
+          status: AuthIdentifierStatus.Active,
+          subjectType: AuthIdentifierSubjectType.Staff,
+        },
+      },
+    ])('fails a $name generically with a redacted request', async ({
+      reservation,
+    }) => {
+      const fixture = createService({ reservation });
+
       await expect(
         fixture.service.createSharedSession({
           identifier: staff.email,
-          password: 'wrong-password',
+          password: 'pw',
         }),
-      ).rejects.toMatchObject({ message: 'Invalid credentials' });
-      expect(fixture.securityActivity.record).toHaveBeenLastCalledWith(
-        expect.objectContaining({
-          subjectType: 'staff',
-          subjectId: staff.id,
-          reasonCategory: 'invalid-credentials',
-        }),
+      ).rejects.toEqual(new UnauthorizedException('Invalid credentials'));
+      const event = fixture.securityActivity.record.mock.lastCall?.[0];
+      expect(event).toMatchObject({ reasonCategory: 'unresolved-identifier' });
+      expect(JSON.stringify(event)).not.toContain(staff.email);
+    });
+
+    it.each([
+      {
+        name: 'unresolved identifier',
+        input: { reservation: null },
+        identifier: 'missing@example.test',
+        reasonCategory: 'unresolved-identifier',
+      },
+      {
+        name: 'conflicting identifier',
+        input: {
+          reservation: {
+            normalizedIdentifier: 'ambiguous@example.test',
+            status: AuthIdentifierStatus.Conflict,
+          },
+        },
+        identifier: 'ambiguous@example.test',
+        reasonCategory: 'legacy-ambiguous-identifier',
+      },
+      {
+        name: 'mismatched staff reservation',
+        input: { staffUser: { ...staff, id: 'different-staff' } },
+        identifier: staff.email,
+        reasonCategory: 'invalid-credentials',
+      },
+      {
+        name: 'inactive staff account',
+        input: {
+          staffUser: { ...staff, status: StaffUserStatus.Inactive },
+        },
+        identifier: staff.email,
+        reasonCategory: 'invalid-credentials',
+      },
+      {
+        name: 'invalid staff password',
+        input: { passwordValid: false },
+        identifier: staff.email,
+        reasonCategory: 'invalid-credentials',
+      },
+      {
+        name: 'mismatched member reservation',
+        input: {
+          reservation: {
+            normalizedIdentifier: member.memberNumber.toLowerCase(),
+            status: AuthIdentifierStatus.Active,
+            subjectType: AuthIdentifierSubjectType.Member,
+            subjectId: member.id,
+          },
+          memberUser: { ...member, id: 'different-member' },
+        },
+        identifier: member.memberNumber,
+        reasonCategory: 'invalid-credentials',
+      },
+      {
+        name: 'inactive member account',
+        input: {
+          reservation: {
+            normalizedIdentifier: member.memberNumber.toLowerCase(),
+            status: AuthIdentifierStatus.Active,
+            subjectType: AuthIdentifierSubjectType.Member,
+            subjectId: member.id,
+          },
+          memberUser: { ...member, status: MemberStatus.Inactive },
+        },
+        identifier: member.memberNumber,
+        reasonCategory: 'invalid-credentials',
+      },
+      {
+        name: 'locked member authentication',
+        input: {
+          reservation: {
+            normalizedIdentifier: member.memberNumber.toLowerCase(),
+            status: AuthIdentifierStatus.Active,
+            subjectType: AuthIdentifierSubjectType.Member,
+            subjectId: member.id,
+          },
+          memberUser: { ...member, authStatus: MemberAuthStatus.Locked },
+        },
+        identifier: member.memberNumber,
+        reasonCategory: 'invalid-credentials',
+      },
+      {
+        name: 'member without a password credential',
+        input: {
+          reservation: {
+            normalizedIdentifier: member.memberNumber.toLowerCase(),
+            status: AuthIdentifierStatus.Active,
+            subjectType: AuthIdentifierSubjectType.Member,
+            subjectId: member.id,
+          },
+          memberUser: { ...member, passwordHash: '' },
+        },
+        identifier: member.memberNumber,
+        reasonCategory: 'invalid-credentials',
+      },
+      {
+        name: 'invalid member password',
+        input: {
+          reservation: {
+            normalizedIdentifier: member.memberNumber.toLowerCase(),
+            status: AuthIdentifierStatus.Active,
+            subjectType: AuthIdentifierSubjectType.Member,
+            subjectId: member.id,
+          },
+          passwordValid: false,
+        },
+        identifier: member.memberNumber,
+        reasonCategory: 'invalid-credentials',
+      },
+    ])('keeps $name generic and records only a redacted category', async ({
+      input,
+      identifier,
+      reasonCategory,
+    }) => {
+      const fixture = createService(input);
+
+      await expect(
+        fixture.service.createSharedSession({ identifier, password: 'pw' }),
+      ).rejects.toEqual(new UnauthorizedException('Invalid credentials'));
+
+      const event = fixture.securityActivity.record.mock.lastCall?.[0];
+      expect(event).toMatchObject({ reasonCategory });
+      expect(JSON.stringify(event).toLowerCase()).not.toContain(
+        identifier.toLowerCase(),
       );
+    });
+
+    it('fails a non-string identifier generically without querying reservations', async () => {
+      const fixture = createService();
+
+      await expect(
+        fixture.service.createSharedSession({
+          identifier: 42,
+          password: 'pw',
+        } as never),
+      ).rejects.toEqual(new UnauthorizedException('Invalid credentials'));
+      expect(fixture.identifierModel.findOne).not.toHaveBeenCalled();
+      expect(fixture.securityActivity.record).toHaveBeenCalledWith(
+        expect.objectContaining({ reasonCategory: 'unresolved-identifier' }),
+      );
+    });
+
+    it('fails generically when identifier reservations are unavailable', async () => {
+      const fixture = createService({ identifierModelAvailable: false });
+
+      await expect(
+        fixture.service.createSharedSession({
+          identifier: staff.email,
+          password: 'pw',
+        }),
+      ).rejects.toEqual(new UnauthorizedException('Invalid credentials'));
+      expect(fixture.identifierModel.findOne).not.toHaveBeenCalled();
+      const event = fixture.securityActivity.record.mock.lastCall?.[0];
+      expect(event).toMatchObject({ reasonCategory: 'unresolved-identifier' });
+      expect(JSON.stringify(event)).not.toContain(staff.email);
+    });
+
+    it('keeps dedicated failed-sign-in recording behind the generic response', async () => {
+      const fixture = createService({
+        reservation: null,
+        dedicatedFailureRecorder: true,
+      });
+
+      await expect(
+        fixture.service.createSharedSession({
+          identifier: 'missing@example.test',
+          password: 'pw',
+        }),
+      ).rejects.toEqual(new UnauthorizedException('Invalid credentials'));
+      expect(fixture.securityActivity.record).not.toHaveBeenCalled();
+    });
+
+    it('normalizes a non-string password into the same generic denial', async () => {
+      const fixture = createService({ passwordValid: false });
+
+      await expect(
+        fixture.service.createSharedSession({
+          identifier: staff.email,
+          password: 42,
+        } as never),
+      ).rejects.toEqual(new UnauthorizedException('Invalid credentials'));
+    });
+
+    it('fails a gated reservation when the operation model is unavailable', async () => {
+      const fixture = createService({
+        reservation: {
+          normalizedIdentifier: staff.email,
+          status: AuthIdentifierStatus.Active,
+          subjectType: AuthIdentifierSubjectType.Staff,
+          subjectId: staff.id,
+          activationGateOperationId: 'repair-1',
+        },
+        operationModelAvailable: false,
+      });
+
+      await expect(
+        fixture.service.createSharedSession({
+          identifier: staff.email,
+          password: 'pw',
+        }),
+      ).rejects.toEqual(new UnauthorizedException('Invalid credentials'));
+      expect(fixture.operationModel.findOne).not.toHaveBeenCalled();
+    });
+
+    it('uses zero auth versions when reserved account versions are absent', async () => {
+      const staffFixture = createService({
+        staffUser: { ...staff, authVersion: undefined },
+      });
+      await expect(
+        staffFixture.service.createSharedSession({
+          identifier: staff.email,
+          password: 'pw',
+        }),
+      ).resolves.toMatchObject({ response: { roleArea: 'staff' } });
+
+      const memberFixture = createService({
+        reservation: {
+          normalizedIdentifier: member.memberNumber.toLowerCase(),
+          status: AuthIdentifierStatus.Active,
+          subjectType: AuthIdentifierSubjectType.Member,
+          subjectId: member.id,
+        },
+        memberUser: { ...member, authVersion: undefined },
+      });
+      await expect(
+        memberFixture.service.createSharedSession({
+          identifier: member.memberNumber,
+          password: 'pw',
+        }),
+      ).resolves.toMatchObject({ response: { roleArea: 'member' } });
+    });
+
+    it('keeps unresolved activity redacted with fallback-version string key material', async () => {
+      const fixture = createService({
+        reservation: null,
+        auditCurrentVersion: false,
+        auditRingVersion: 8,
+        keyMaterial: Buffer.alloc(32, 8).toString('base64url'),
+      });
+
+      await expect(
+        fixture.service.createSharedSession({
+          identifier: 'missing@example.test',
+          password: 'pw',
+        }),
+      ).rejects.toEqual(new UnauthorizedException('Invalid credentials'));
+      const event = fixture.securityActivity.record.mock.lastCall?.[0];
+      expect(event).toMatchObject({
+        identifierCorrelationHash: expect.any(String),
+        correlationKeyVersion: 8,
+      });
+      expect(JSON.stringify(event)).not.toContain('missing@example.test');
+    });
+
+    it('fails a reserved member generically when member auth is unavailable', async () => {
+      const fixture = createService({
+        reservation: {
+          normalizedIdentifier: member.memberNumber.toLowerCase(),
+          status: AuthIdentifierStatus.Active,
+          subjectType: AuthIdentifierSubjectType.Member,
+          subjectId: member.id,
+        },
+        membersServiceAvailable: false,
+      });
+
+      await expect(
+        fixture.service.createSharedSession({
+          identifier: member.memberNumber,
+          password: 'pw',
+        }),
+      ).rejects.toEqual(new UnauthorizedException('Invalid credentials'));
     });
 
     it('authenticates a staff identity with no roles but issues no permissions', async () => {
@@ -677,7 +1008,7 @@ describe('AuthService shared login resolution', () => {
       await expect(
         fixture.service.createSharedSession({
           identifier: staff.email,
-          password: 'correct-password',
+          password: 'pw',
         }),
       ).resolves.toMatchObject({
         response: { roleArea: 'staff', permissions: [], user: { roles: [] } },
