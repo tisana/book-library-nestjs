@@ -84,6 +84,8 @@ None. Implementer self-review found the owned changes limited to Task 2 tests an
 
 # Reviewer decision
 
+Status: complete; approved after fix round 3 re-review. The ledger-placement finding is addressed, the reviewed completion range is `d35bc57751cc6c9a8ce96cb8aefa0204737b34b6..7dc11c047a0e20086ef8ea06980b4272ee3356a7`, and re-review found no new breakage.
+
 Approved after fix round 1. Fresh separate-context review by gpt-5.6-sol, high found two P2 test-quality gaps: controller adapter assertions did not prove password forwarding without exposing a raw secret, and a redaction assertion could miss an uppercase identifier leak. Both were fixed and independently focused-tested. Scoped re-review found both findings addressed with no remaining functional, security, scope, or evidence issues. Fresh final verification remained 45 passing tests, AuthService 188/246 branches, AuthController 12/24 branches, focused lint exit 0, and `git diff --check` exit 0.
 
 The subsequent controller review by gpt-5.6-sol, high opened two P2 findings against implementation commit `f5067889b4f4e36df5277e1e3eb1fd29184e058b`: accepting any string did not prove the DTO password was forwarded unchanged, and the report/ledger retained pre-commit trace wording. Fix round 1 now inspects the recorded shared-session request and asserts `Object.is(forwardedDto.password, dto.password)` is true, so failure output is boolean-only while exact identifier/result assertions remain. The report and ledger now record the stable implementation SHA and reviewed range `d35bc57751cc6c9a8ce96cb8aefa0204737b34b6..f5067889b4f4e36df5277e1e3eb1fd29184e058b`. Required focused Jest, lint, and diff checks all exited 0 after the fixes.
