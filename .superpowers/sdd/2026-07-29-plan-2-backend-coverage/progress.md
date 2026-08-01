@@ -10,7 +10,7 @@
 
 ### Task 1 — Reusable fixtures and staff-account lifecycle
 
-- Status: security assertion fix round 3 metadata correction implemented; fresh scoped metadata review pending
+- Status: security metadata review round 2 correction implemented; fresh round 3 scoped metadata review pending
 - Requested implementer: gpt-5.6-sol, high
 - Actual implementer: gpt-5.6-sol, high
 - Requested reviewer: separate-context gpt-5.6-sol, high
@@ -26,12 +26,15 @@
 - Reviewed completion range: `05a426e..4779865` is the reviewed implementation+fix range.
 - Final whole-branch senior reviewer: `/root/plan2_final_branch_review` using gpt-5.6-sol, high; substitution none.
 - Final whole-branch decision: `CHANGES_REQUIRED` with two test-security findings: successful create did not prove exact DTO-password forwarding/hash-only construction/raw-password absence, and the auth lookup did not assert `select('+passwordHash')`.
-- Fix round 2 disposition: 2 addressed, 0 open at the implementer stage. Boolean-only credential identity prevents secret-bearing Jest failure output; constructor and query-double requests are asserted directly. Fresh senior re-review is pending.
+- Historical at-authoring fix round 2 disposition: 2 addressed, 0 open at the implementer stage. Boolean-only credential identity prevents secret-bearing Jest failure output; constructor and query-double requests are asserted directly. The pending senior re-review marker is superseded by stable fix `20e1e94e969ee4ca83e672cb5201f3f11d328bca` and security-fix review record `606b6ed34e93f16758880941f744f893689521ca`.
 - Fix round 2 verification: exact focused Task 1 command GREEN with 33/33 tests and 163/180 branches; quality-reporting 68/68, backend unit 382/382, backend e2e 242/242, backend reporting, changed-line reporting, non-fixing ESLint, build, validated scope, whitespace, generated-artifact, and status checks all exited 0.
 - Stable fix commit: `20e1e94e969ee4ca83e672cb5201f3f11d328bca` (`test: assert staff credential boundaries`).
 - Security-fix reviewer: `/root/plan2_security_assertions_review` using gpt-5.6-sol, high; substitution none.
 - Security-fix review result: `CHANGES_REQUIRED` solely for one P2 pending-fix-SHA metadata finding; code, tests, security semantics, scope, and all focused/full gates passed with no additional finding.
-- Fix round 3 disposition: 1 addressed, 0 open at the implementer stage by recording the stable fix SHA and reviewer provenance/result; fresh scoped metadata review remains pending.
+- Historical at-authoring fix round 3 disposition: 1 addressed, 0 open at the implementer stage by recording the stable fix SHA and reviewer provenance/result; the pending scoped metadata review was fulfilled by `/root/plan2_security_metadata_rereview` reviewing record `606b6ed34e93f16758880941f744f893689521ca` and returning the round 2 result below.
+- Security metadata round 2 reviewer: `/root/plan2_security_metadata_rereview` using gpt-5.6-sol, high; substitution none.
+- Security metadata round 2 result: `CHANGES_REQUIRED` with one P2 stale-pending-provenance finding and no code, test, security, scope, or gate finding.
+- Security metadata round 2 disposition: 1 addressed, 0 open at the implementer stage by marking every historical pending statement superseded by stable fix `20e1e94e969ee4ca83e672cb5201f3f11d328bca` and review record `606b6ed34e93f16758880941f744f893689521ca`; fresh round 3 scoped metadata review pending.
 
 ### Task 2 — Shared-auth response and controller adapters
 
@@ -196,7 +199,9 @@
 - Decision: `CHANGES_REQUIRED` with two Task 1 findings.
 - Task 1 final whole-branch fix round 2/5: 2 addressed, 0 open at the implementer stage in stable fix commit `20e1e94e969ee4ca83e672cb5201f3f11d328bca`.
 - Security assertion review: `/root/plan2_security_assertions_review` using gpt-5.6-sol, high returned `CHANGES_REQUIRED` solely for one P2 pending-fix-SHA metadata finding; code/tests/security semantics and all full gates passed.
-- Security assertion fix round 3/5 metadata disposition: 1 addressed, 0 open at the implementer stage; fresh scoped metadata review pending.
-- Gate G1 merge readiness: remains withdrawn and closed pending fresh scoped metadata review.
+- Security assertion fix round 3/5 metadata disposition: 1 addressed, 0 open at the implementer stage in review record `606b6ed34e93f16758880941f744f893689521ca`.
+- Security metadata round 2 review: `/root/plan2_security_metadata_rereview` using gpt-5.6-sol, high returned `CHANGES_REQUIRED` for one P2 stale-pending-provenance finding; disposition 1 addressed, 0 open at the implementer stage.
+- Fresh round 3 scoped metadata review: pending.
+- Gate G1 merge readiness: remains withdrawn and closed pending fresh round 3 scoped metadata review.
 - Dependency guard: do not merge and do not start Plan 3 until that fresh review restores Gate G1.
 - Final whole-branch fix round 2 evidence: exact focused Task 1 command 33/33 at 163/180 branches; quality-reporting 68/68; backend unit 382/382 at 78.81/70.87/79.83/79.26; backend e2e 242/242; backend report and changed-line gate passed; non-fixing ESLint, build, validated scope, whitespace, generated-artifact, and status checks passed.

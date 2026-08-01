@@ -88,7 +88,7 @@ Approved. Fresh review by gpt-5.6-sol, high found no functional or specification
 - Senior decision: `CHANGES_REQUIRED` with two Task 1 test-security findings.
 - Finding 1: the successful create coverage did not prove that the exact raw DTO password is sent only to the password hasher, that only the `hashed-value` sentinel reaches the constructed staff document, or that the raw `password` property is absent from that constructor input.
 - Finding 2: the authentication lookup coverage named password-hash selection but did not assert that the returned query double received `select('+passwordHash')`.
-- Implementation disposition: 2 addressed, 0 open at the implementer fix stage; fresh senior re-review remains pending.
+- Historical at-authoring implementation disposition: 2 addressed, 0 open at the implementer fix stage; fresh senior re-review was pending. This pending marker is superseded by stable fix `20e1e94e969ee4ca83e672cb5201f3f11d328bca` and security-fix review record `606b6ed34e93f16758880941f744f893689521ca`.
 - Scope: only `src/staff-users/staff-users.service.spec.ts` plus this Task 1 report and `progress.md`; no production, fixture, baseline, configuration, frontend, migration, generated-artifact, or other-test change.
 
 The create-success test now keeps the source DTO, verifies one hasher call, and uses boolean-only `Object.is` to prove the forwarded argument is the DTO password without allowing a failed expectation to serialize the credential. It separately proves the recorded constructor input contains `passwordHash: 'hashed-value'` and has no own `password` property. The authentication lookup test obtains the returned query double from `staff.model.findOne.mock.results[0].value` and verifies `select('+passwordHash')`.
@@ -113,9 +113,9 @@ Fresh whole-branch verification after the assertion fix:
 - `npm run build`: exit 0.
 - Validated base-to-working-tree scope and `git diff --check`: exit 0; this round contained only the owned spec before this report/ledger update, and generated `coverage/`, `dist/`, and `test-results/` remained untracked.
 
-Fix-round implementation commit: pending at report authoring because this report is part of that commit; the implementer returns the stable SHA out of band for fresh review.
+Historical at-authoring fix-round commit marker: pending because this report was part of that commit. This marker is superseded by stable fix `20e1e94e969ee4ca83e672cb5201f3f11d328bca` and security-fix review record `606b6ed34e93f16758880941f744f893689521ca`; the fix SHA is no longer pending.
 
-Gate G1 merge readiness is withdrawn and pending a fresh scoped review of this correction. Plan 3 remains blocked and no merge is authorized by this fix round.
+Historical fix-round Gate G1 marker: merge readiness was withdrawn pending a fresh scoped review of this correction. That pending review was fulfilled by the security-fix review recorded in `606b6ed34e93f16758880941f744f893689521ca`; the current Gate G1 state is recorded below and remains closed pending round 3. Plan 3 remains blocked and no merge is authorized.
 
 ## Security assertion fix round 3/5 metadata correction
 
@@ -124,5 +124,15 @@ Gate G1 merge readiness is withdrawn and pending a fresh scoped review of this c
 - Review result: `CHANGES_REQUIRED` solely for one P2 pending-fix-SHA metadata finding. The reviewer approved the code, tests, security semantics, scope, and all focused/full verification gates with no additional finding.
 - Finding: the fix-round report and ledger still described the stable correction SHA as pending even though commit `20e1e94e969ee4ca83e672cb5201f3f11d328bca` existed.
 - Disposition: 1 addressed, 0 open at the implementer stage by recording the stable fix SHA and exact reviewer provenance/result in the Task 1 report and progress ledger.
-- Fresh scoped metadata review: pending.
+- Historical at-authoring scoped metadata review marker: pending. It was fulfilled by `/root/plan2_security_metadata_rereview` reviewing record `606b6ed34e93f16758880941f744f893689521ca` and returning the round 2 result recorded below.
 - Gate G1: remains closed until the fresh scoped metadata review accepts this correction. Plan 3 remains blocked and no merge is authorized.
+
+## Security metadata review round 2/5 correction
+
+- Reviewer: `/root/plan2_security_metadata_rereview` using gpt-5.6-sol, high; substitution none.
+- Review result: `CHANGES_REQUIRED` with one P2 stale-pending-provenance finding and no code, test, security, scope, or gate finding.
+- Finding: the historical pending statements in the final whole-branch fix section and progress ledger contradicted the later stable fix/review provenance.
+- Correction: each historical pending statement now explicitly identifies itself as at-authoring history and is superseded by stable fix `20e1e94e969ee4ca83e672cb5201f3f11d328bca` plus security-fix review record `606b6ed34e93f16758880941f744f893689521ca`.
+- Disposition: 1 addressed, 0 open at the implementer stage.
+- Fresh round 3 scoped metadata review: pending.
+- Gate G1 remains closed and Plan 3 remains blocked until that review accepts the correction.
