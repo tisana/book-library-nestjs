@@ -1,9 +1,9 @@
 {
   "backend": {
-    "statements": 68.24,
-    "branches": 65.64,
-    "functions": 70.57,
-    "lines": 68.82
+    "statements": 78.81,
+    "branches": 70.87,
+    "functions": 79.83,
+    "lines": 79.26
   },
   "frontend": {
     "statements": 47,
