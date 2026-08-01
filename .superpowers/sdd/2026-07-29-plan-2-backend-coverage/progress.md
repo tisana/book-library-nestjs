@@ -10,7 +10,7 @@
 
 ### Task 1 — Reusable fixtures and staff-account lifecycle
 
-- Status: complete; fix round 1 scoped re-review clean
+- Status: final whole-branch fix round 2 implemented; fresh senior re-review pending
 - Requested implementer: gpt-5.6-sol, high
 - Actual implementer: gpt-5.6-sol, high
 - Requested reviewer: separate-context gpt-5.6-sol, high
@@ -24,6 +24,10 @@
 - Fresh review: functional/spec findings none; one evidence gap found in stale commit/status metadata.
 - Resolution: recorded the implementation SHA and fresh reviewer; scoped re-review found the evidence gap addressed with no new breakage or out-of-scope observations.
 - Reviewed completion range: `05a426e..4779865` is the reviewed implementation+fix range.
+- Final whole-branch senior reviewer: `/root/plan2_final_branch_review` using gpt-5.6-sol, high; substitution none.
+- Final whole-branch decision: `CHANGES_REQUIRED` with two test-security findings: successful create did not prove exact DTO-password forwarding/hash-only construction/raw-password absence, and the auth lookup did not assert `select('+passwordHash')`.
+- Fix round 2 disposition: 2 addressed, 0 open at the implementer stage. Boolean-only credential identity prevents secret-bearing Jest failure output; constructor and query-double requests are asserted directly. Fresh senior re-review is pending.
+- Fix round 2 verification: exact focused Task 1 command GREEN with 33/33 tests and 163/180 branches; quality-reporting 68/68, backend unit 382/382, backend e2e 242/242, backend reporting, changed-line reporting, non-fixing ESLint, build, validated scope, whitespace, generated-artifact, and status checks all exited 0.
 
 ### Task 2 — Shared-auth response and controller adapters
 
@@ -178,6 +182,15 @@
 - Task 7 round 2/5 fresh scoped reviewer: `/root/plan2_task7_rereview` using gpt-5.6-sol, high; substitution none.
 - Task 7 round 2/5 reviewed correction: `723a86749d1e41a235cdf96091d64b3c7be361c4`.
 - Task 7 round 2/5 decision: `APPROVED` with no findings and 0 open findings; round 1 disposition remains 1 addressed, 0 open.
-- Task 7 final status: complete. Gate G1 evidence requirements are satisfied, and Plan 2 is ready for final whole-branch review and merge.
+- Task 7 historical closeout status: complete before final whole-branch review; superseded by the reopened Gate G1 status below.
 - Task 7 provenance status: historical pending/self-reference markers are superseded by stable handoff `8bf68e18d462c24a0ed47d07f6e68bb24fba9f80` and reviewed correction `723a86749d1e41a235cdf96091d64b3c7be361c4`; no SHA or reviewer decision remains pending.
 - Wave B dependency guard: Plan 3 remains blocked until the reviewed Plan 2 merge SHA is recorded in its ledger and Wave B is explicitly authorized; no Plan 3 work has started.
+
+## Final whole-branch review status
+
+- Senior reviewer: `/root/plan2_final_branch_review` using gpt-5.6-sol, high; substitution none.
+- Decision: `CHANGES_REQUIRED` with two Task 1 findings.
+- Task 1 final whole-branch fix round 2/5: 2 addressed, 0 open at the implementer stage; stable correction commit pending at ledger authoring and returned out of band.
+- Gate G1 merge readiness: withdrawn and pending fresh scoped senior re-review of the correction.
+- Dependency guard: do not merge and do not start Plan 3 until that fresh review restores Gate G1.
+- Final whole-branch fix round 2 evidence: exact focused Task 1 command 33/33 at 163/180 branches; quality-reporting 68/68; backend unit 382/382 at 78.81/70.87/79.83/79.26; backend e2e 242/242; backend report and changed-line gate passed; non-fixing ESLint, build, validated scope, whitespace, generated-artifact, and status checks passed.

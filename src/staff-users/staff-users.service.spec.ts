@@ -71,13 +71,18 @@ describe('StaffUsersService staff-account lifecycle', () => {
         startSession: jest.fn().mockResolvedValue(session),
       });
       const identifier = createIdentifierModelHarness();
-      const { service } = createService({ staff, identifier });
+      const { service, passwordHasher } = createService({ staff, identifier });
+      const dto = createDto();
 
-      const result = await service.create(createDto(), {
+      const result = await service.create(dto, {
         id: 'actor-1',
         email: 'actor@example.test',
         roles: [StaffRole.Admin],
       });
+      const constructorInput = staff.calls.constructorInputs[0] as Record<
+        string,
+        unknown
+      >;
 
       expect(result).toMatchObject({
         email: 'admin@example.test',
@@ -85,6 +90,14 @@ describe('StaffUsersService staff-account lifecycle', () => {
         status: StaffUserStatus.Active,
       });
       expect(result).not.toHaveProperty('passwordHash');
+      expect(passwordHasher.hash).toHaveBeenCalledTimes(1);
+      expect(
+        Object.is(passwordHasher.hash.mock.calls[0]?.[0], dto.password),
+      ).toBe(true);
+      expect(constructorInput.passwordHash).toBe('hashed-value');
+      expect(
+        Object.prototype.hasOwnProperty.call(constructorInput, 'password'),
+      ).toBe(false);
       expect(staff.calls.constructorInputs).toEqual([
         expect.objectContaining({
           email: 'admin@example.test',
@@ -805,6 +818,10 @@ describe('StaffUsersService staff-account lifecycle', () => {
       expect(staff.calls.findOneFilters).toEqual([
         { email: { $eq: 'staff@example.test' } },
       ]);
+      const findQuery = staff.model.findOne.mock.results[0]?.value as {
+        select: jest.Mock;
+      };
+      expect(findQuery.select).toHaveBeenCalledWith('+passwordHash');
     });
 
     it('sends an empty filter when optional findAll filters are absent', async () => {

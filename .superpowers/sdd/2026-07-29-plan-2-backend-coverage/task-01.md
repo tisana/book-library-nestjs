@@ -81,3 +81,38 @@ None. Self-review confirmed the compensation filter/update, audit prior-value co
 # Reviewer decision
 
 Approved. Fresh review by gpt-5.6-sol, high found no functional or specification issues beyond the stale commit/status evidence gap. Fix round 1 recorded the implementation SHA, reviewer, finding, and resolution. Scoped re-review found that finding addressed, with no new breakage or out-of-scope observations, across the reviewed implementation+fix range `05a426e..4779865`.
+
+## Final whole-branch fix round 2/5
+
+- Senior reviewer: `/root/plan2_final_branch_review` using gpt-5.6-sol, high; substitution none.
+- Senior decision: `CHANGES_REQUIRED` with two Task 1 test-security findings.
+- Finding 1: the successful create coverage did not prove that the exact raw DTO password is sent only to the password hasher, that only the `hashed-value` sentinel reaches the constructed staff document, or that the raw `password` property is absent from that constructor input.
+- Finding 2: the authentication lookup coverage named password-hash selection but did not assert that the returned query double received `select('+passwordHash')`.
+- Implementation disposition: 2 addressed, 0 open at the implementer fix stage; fresh senior re-review remains pending.
+- Scope: only `src/staff-users/staff-users.service.spec.ts` plus this Task 1 report and `progress.md`; no production, fixture, baseline, configuration, frontend, migration, generated-artifact, or other-test change.
+
+The create-success test now keeps the source DTO, verifies one hasher call, and uses boolean-only `Object.is` to prove the forwarded argument is the DTO password without allowing a failed expectation to serialize the credential. It separately proves the recorded constructor input contains `passwordHash: 'hashed-value'` and has no own `password` property. The authentication lookup test obtains the returned query double from `staff.model.findOne.mock.results[0].value` and verifies `select('+passwordHash')`.
+
+The exact focused Task 1 command was used for every RED and GREEN run:
+
+`npx jest --runInBand staff-users/staff-users.service.spec.ts --coverage --collectCoverageFrom=staff-users/staff-users.service.ts --coverageReporters=text`
+
+- RED A: exit 1 after clearing only the recorded hasher and query-double `select` calls; 2 expected failures and 31 passes proved both call assertions. Output contained call counts and the non-secret selector only.
+- RED B: exit 1 after changing only the recorded constructor hash to `unexpected-hash`; 1 expected failure and 32 passes proved only the hasher sentinel is accepted by the constructor assertion.
+- RED C: exit 1 after adding only a boolean `password` property to the recorded constructor input; 1 expected failure and 32 passes proved raw-password-property rejection with boolean-only failure output.
+- GREEN: exit 0 after removing every test-local mutation; 33/33 tests passed. StaffUsersService remained at 163/180 branches (90.55%), 98.80% statements, 100% functions, and 100% lines.
+
+Fresh whole-branch verification after the assertion fix:
+
+- `npm run test:quality-reporting`: exit 0; 4/4 suites and 68/68 tests passed.
+- `npm run test:cov`: exit 0; 35/35 suites and 382/382 tests passed. Coverage remained 2,884/3,659 statements (78.81%), 1,995/2,815 branches (70.87%), 483/605 functions (79.83%), and 2,771/3,496 lines (79.26%) across the unchanged 87-file source scope.
+- `npm run test:e2e:report`: exit 0; 29/29 suites and 242/242 tests passed with zero failures, flaky tests, or skips.
+- `npm run quality:report:backend`: exit 0.
+- Validated-base changed-line backend report: exit 0; `not-applicable`, 0/0 eligible lines, 100.00% against the 80.00% minimum.
+- `npx eslint "{src,apps,libs,test}/**/*.ts"`: exit 0 and non-fixing.
+- `npm run build`: exit 0.
+- Validated base-to-working-tree scope and `git diff --check`: exit 0; this round contained only the owned spec before this report/ledger update, and generated `coverage/`, `dist/`, and `test-results/` remained untracked.
+
+Fix-round implementation commit: pending at report authoring because this report is part of that commit; the implementer returns the stable SHA out of band for fresh review.
+
+Gate G1 merge readiness is withdrawn and pending a fresh scoped review of this correction. Plan 3 remains blocked and no merge is authorized by this fix round.
