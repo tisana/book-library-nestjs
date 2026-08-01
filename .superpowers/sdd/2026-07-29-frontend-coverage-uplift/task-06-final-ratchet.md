@@ -4,7 +4,7 @@ Task 6 — Fresh ratchet and whole-plan review
 
 ## Status
 
-implementation-complete; fresh-review-pending
+complete; ready-for-final-whole-branch-review
 
 ## Requested agent
 
@@ -16,7 +16,7 @@ gpt-5.6-sol, high
 
 ## Reasoning
 
-Frontend-only baseline and integration risk verification. No model substitution. Required fresh reviewer: gpt-5.6-sol, high, controller-owned and pending.
+Frontend-only baseline and integration risk verification. No model substitution. The required fresh `gpt-5.6-sol`, high Task 6 review chain is complete with all findings addressed and zero open.
 
 ## Base SHA
 
@@ -113,23 +113,35 @@ Independent frontend Playwright E2E: 86 passed, 0 failed, 0 flaky, 1 pre-existin
 
 Exactly `quality/coverage-baselines.json`, this report, and append-only `progress.md`. No production, frontend test, backend, E2E, mutation, package/configuration, reporting-script, workflow, or generated artifact is changed by Task 6.
 
+Review repair append: `1c5f6739468b7493c3b84a9d862764baaef53bfb` and `e3ec90beb9214f1bccce6a07ef51f87a332026c1` changed only Task 4 evidence and `progress.md`. This administrative closeout changes only this Task 6 report and `progress.md`.
+
 ## Commit hash
 
-Pending the exact Task 6 boundary commit that contains this report. Prescribed subject: `test: ratchet frontend coverage baseline`. The exact SHA is returned to the controller and must be recorded by the fresh reviewer because a commit cannot contain its own SHA.
+Task 6 boundary: `a9ccff2a6b3e0142db9f7406c3a8c77d16713412` (`test: ratchet frontend coverage baseline`). Review repairs: `1c5f6739468b7493c3b84a9d862764baaef53bfb` (`docs: preserve Task 4 append-only evidence`) and `e3ec90beb9214f1bccce6a07ef51f87a332026c1` (`docs: record Task 4 reviewed closeout provenance`).
 
 ## Reviewer
 
-Required fresh `gpt-5.6-sol`, high reviewer: pending controller dispatch; no substitution authorized.
+Review chain, all `gpt-5.6-sol`, high, fresh context, no substitution:
+
+1. `/root/plan1_task6_review` — `CHANGES_REQUIRED`, one P2 append-only evidence finding.
+2. `/root/plan1_task6_rereview` — `CHANGES_REQUIRED`, one P2 reviewed-closeout provenance omission.
+3. `/root/plan1_task6_review3` — `APPROVED` at `e3ec90beb9214f1bccce6a07ef51f87a332026c1`, no findings and zero open.
 
 ## Reviewer command and result
 
-Pending. The fresh reviewer must rerun Steps 1–3, inspect reports, prohibited-file scope, fixed denominator, authorization guards, baseline provenance, generated-artifact exclusion, and this backlog before acceptance.
+`/root/plan1_task6_review` reviewed the Task 6 boundary and found that later Task 4 repair evidence had replaced rather than appended the original reviewed evidence. Repair `1c5f6739468b7493c3b84a9d862764baaef53bfb` restored the original RED/GREEN evidence, metrics, file scope, implementation commit, and reviewer provenance verbatim, then appended the repair history.
+
+`/root/plan1_task6_rereview` reviewed that repair and found the explicit sequence still omitted original reviewed Task 4 closeout `232566e11de65a949b5c8aaf670156da2bdcfd9f`. Repair `e3ec90beb9214f1bccce6a07ef51f87a332026c1` recorded the exact five-commit Task 4 provenance sequence.
+
+Fresh scoped reviewer `/root/plan1_task6_review3` (`gpt-5.6-sol`, high, no substitution) reviewed repaired head `e3ec90beb9214f1bccce6a07ef51f87a332026c1` and returned `APPROVED` with no findings. Final disposition: 2 findings addressed, 0 open.
 
 ## Findings
 
 1. Changed-line coverage is `not-applicable` because the immutable-base-to-HEAD diff contains no eligible frontend production lines; the reporter accepted 0/0 without weakening its 80% threshold.
 2. Full Playwright reproduction has one pre-existing mobile performance skip (86 passed/87 total) and zero failures/flakes. Plan 4 owns skip elimination; Plan 1 made no E2E change and did not start Plan 4.
 3. The post-plan frontend metrics exceed the originally deferred 75% numerator targets, leaving zero numeric residual to 776 statements/547 branches; remaining uncovered behavior is still quantified above.
+4. Task 6 original fresh review found one P2 append-only evidence violation in Task 4: later repair metadata had overwritten original reviewed evidence.
+5. Task 6 scoped re-review found one P2 provenance omission: original reviewed Task 4 closeout `232566e11de65a949b5c8aaf670156da2bdcfd9f` was absent from the explicit implementation-to-repair sequence.
 
 ## Resolutions
 
@@ -137,11 +149,13 @@ Pending. The fresh reviewer must rerun Steps 1–3, inspect reports, prohibited-
 2. Preserved Plan 4 ownership, recorded the independent E2E result, and made no skip/test/performance-budget change.
 3. Used the verified reporter's `--write-baseline` path and audited that only the frontend object increased; the backend object stayed exactly 68.24/65.64/70.57/68.82.
 4. Scope audit matched exactly the three allowed tracked files. Coverage, test result, report, build, and changed-line-diff artifacts are all ignored and remain uncommitted.
+5. Repair `1c5f6739468b7493c3b84a9d862764baaef53bfb` restored append-only Task 4 evidence and appended the later repair chain; disposition 1 addressed, 0 open.
+6. Repair `e3ec90beb9214f1bccce6a07ef51f87a332026c1` added original reviewed closeout `232566e11de65a949b5c8aaf670156da2bdcfd9f` to the exact provenance sequence; `/root/plan1_task6_review3` approved the repaired head with no findings. Final Task 6 review disposition: 2 addressed, 0 open.
 
 ## Deferred findings
 
-Fresh whole-plan review remains required before Task 6 acceptance. The one Playwright mobile performance skip remains owned by Plan 4 and is not addressed or claimed complete here.
+No Task 6 reviewer findings remain open. Plan 1 is ready for the controller-owned final whole-branch review required before sequential merge. The one Playwright mobile performance skip remains independently owned by paused, unmerged Plan 4 and is not addressed or claimed complete here.
 
 ## Stop/escalation decision
 
-No implementation stop condition: all Task 6 commands, ratchet, denominator, lint, build, reporting, scope, and whitespace gates passed without production/config/E2E/mutation changes. Task 6 remains review-pending and Plan 4 was not started.
+Task 6 is complete after fresh round-3 approval with 2 review findings addressed and 0 open. Plan 1 is ready for the required final whole-branch review and, only after that review accepts it, the prescribed sequential merge. Plan 4 remains paused and unmerged; no Plan 4 work was started here.
