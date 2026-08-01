@@ -48,3 +48,26 @@
 ## Deferred findings
 
 - Plan 1 is concurrently unmerged. Its frontend-unit rerun is a future integration handoff requirement only; Task 1 makes no Plan 1 integration or success claim.
+
+## Task 2 start record
+
+- Requested and actual implementer: `gpt-5.6-terra`, high reasoning.
+- Requested reviewer: fresh `gpt-5.6-terra`, high reasoning; review pending.
+- No substitution is authorized or used.
+
+Task 2: BLOCKED — exact mandated RED probe creates zero-size empty `<p>` locators, so first visibility wait times out instead of elapsed assertion; changing probe requires plan-owner direction.
+
+Task 2: AUTHORIZED RESUME — plan owner approved only `first.textContent = 'first ready';` and `second.textContent = 'second ready';` in the temporary uncommitted RED probe; all timing, readiness, fixture, project, and reporting contracts remain unchanged.
+
+## Task 2 resumed execution
+
+- Valid RED: literal root command ran all projects because nested npm consumed the selector; all three staff cases reached the named shared-deadline assertion. Mobile elapsed was `2121.1347` ms. The direct mobile-only command reached the same named assertion at `2109.8413` ms; both independent readiness waits resolved first.
+- GREEN: direct mobile-only run passed 2/2 first attempt; exact all-project run passed 6/6 first attempt with one staff and one member pass in each project, 0 skipped, 0 failed, 0 flaky, and no retries. Fresh final-tree all-project verification also passed 6/6.
+- No Plan 1 committed or working-tree `frontend/package.json` conflict exists. The exact one-worker, ten-repetition convenience script was added without changing normal suite behavior or a lockfile.
+- Scope remains four Task 2 owned files only; Task 3 and Task 4 work is not started.
+
+## Task 2 review and decision
+
+- Fresh `gpt-5.6-terra`, high-reasoning reviewer inspected base-relative and current diffs and reran the direct mobile-only command: 2/2 passed first attempt, 0 skipped/failed/retried.
+- Findings: none. Verdict: approved.
+- Task 2 is ready for commit with subject `test: run seeded staff performance smoke on mobile`; branch remains isolated for Task 4 reconciliation.
