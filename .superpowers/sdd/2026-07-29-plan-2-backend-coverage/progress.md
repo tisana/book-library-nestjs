@@ -146,3 +146,27 @@
 - Task 6: fix round 1/5 (1 addressed, 0 open; stable implementation SHA and exact reviewer provenance recorded in `d57b9df16ce1143f33e8b295e2ecefbff4b117d8`).
 - Task 6: round 2/5 scoped re-review APPROVED (reviewed correction `d57b9df16ce1143f33e8b295e2ecefbff4b117d8`; no findings, 0 open).
 - Task 6: complete and ready for Task 7 (implementation and correction reviewed clean).
+
+### Task 7 — Whole-plan review and Plan 3 handoff
+
+- Status: implementation verification and handoff record complete; required fresh separate-context review pending.
+- Task 6 completion commit and working base: `eb8f78479134734913c20003d4f206542b288cc4`.
+- Validated Plan 2 diff base: `05a426ec944d8305edc621b12497d89a5f20457b`.
+- Requested implementer: gpt-5.6-sol, high.
+- Actual implementer: gpt-5.6-sol, high.
+- Requested reviewer: fresh separate-context gpt-5.6-sol, high.
+- Actual reviewer: pending.
+- Substitution: none.
+- Report: `.superpowers/sdd/2026-07-29-plan-2-backend-coverage/task-07.md`.
+- Scope review: exact validated base block, `git diff --name-only "$plan2BaseSha...HEAD"`, and `git diff --check "$plan2BaseSha...HEAD"` exited 0; only owned tests, support fixture, backend baseline, and ledger files appear.
+- Fresh verification: `npm run test:quality-reporting`, `npm run test:cov`, `npm run test:e2e:report`, `npm run quality:report:backend`, the validated changed-line diff block, changed-line backend reporter, non-fixing ESLint, build, and `git diff --check` all exited 0.
+- Test outcomes: 68/68 quality-reporting tests, 382/382 backend unit tests, and 242/242 backend e2e tests passed; zero failed, flaky, or skipped tests.
+- Fresh metrics: statements 2,884/3,659 (78.81%), branches 1,995/2,815 (70.87%), functions 483/605 (79.83%), and lines 2,771/3,496 (79.26%); 87-file source scope and all denominators unchanged.
+- Changed-line result: `not-applicable`, 0/0 eligible lines, reporter coverage 100.00% against the 80.00% minimum; passed.
+- Baseline isolation: backend values remain 78.81/70.87/79.83/79.26 and the frontend object remains unchanged at 47/44.03/41.08/48.27.
+- Generated artifacts: `coverage/`, `dist/`, and `test-results/` remain untracked and unstaged.
+- Plan 3 fixture handoff: import `deferred`, `queryResult`, `createStaffDocument`, `createStaffModelHarness`, and `createIdentifierModelHarness` from `test/support/backend-coverage-fixtures.ts`; do not copy them or edit Plan 2 tests without a demonstrated export defect.
+- Quantified 75% backlog: current gap 117 branches to 2,112/2,815; Plan 3 mandatory +72 leaves 45, and the +3 borrowing stretch leaves 42; fresh Plan 3 evidence is authoritative.
+- Whole-plan finding: no functional, security, scope, baseline, denominator, test, or artifact defect. One P2 evidence-contract issue remains for fresh review: `task-06.md` uses custom headings instead of eight required literal headings even though the underlying evidence is present.
+- Task 7 handoff commit: pending at report authoring; implementer returns the created SHA and the fresh reviewer records it with the decision.
+- Reviewer decision: pending. Gate G1 and Plan 3 dispatch remain pending the required fresh separate-context review and disposition of the Task 6 exact-heading finding.
