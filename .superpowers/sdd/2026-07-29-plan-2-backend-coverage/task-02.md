@@ -12,6 +12,7 @@ Plan 2, Task 2 — Shared-auth response and controller adapters.
 
 - Requested: separate-context gpt-5.6-sol, high
 - Actual: gpt-5.6-sol, high
+- Actual controller reviewer: gpt-5.6-sol, high
 - Substitution: none
 
 # Base SHA
@@ -57,6 +58,9 @@ Exit: 0
 - AuthController delta: +12 covered branches; required floor 12/24, met exactly.
 - Focused lint: `npx eslint src/auth/auth.service.spec.ts src/auth/auth.controller.spec.ts test/support/backend-coverage-fixtures.ts`, exit 0.
 - Whitespace validation: `git diff --check`, exit 0.
+- Fix round 1 focused command: `npx jest --runInBand auth/auth.service.spec.ts auth/auth.controller.spec.ts --coverage --collectCoverageFrom=auth/auth.service.ts --collectCoverageFrom=auth/auth.controller.ts --coverageReporters=text`, exit 0; 45 tests passed in two suites with zero failures and zero snapshots; AuthService remained 188/246 branches (76.42%) and AuthController remained 12/24 branches (50.00%).
+- Fix round 1 focused lint: `npx eslint src/auth/auth.service.spec.ts src/auth/auth.controller.spec.ts test/support/backend-coverage-fixtures.ts`, exit 0.
+- Fix round 1 whitespace validation: `git diff --check`, exit 0.
 
 # Full-suite commands and exits
 
@@ -68,7 +72,8 @@ not-applicable — Task 2 changes test and report files only; the plan runs the 
 
 # Commit hash
 
-Implementation commit is assigned by the required commit after this report is staged; the exact SHA is returned to the orchestrator at handoff.
+- Implementation commit: `f5067889b4f4e36df5277e1e3eb1fd29184e058b`
+- Reviewed implementation range: `d35bc57751cc6c9a8ce96cb8aefa0204737b34b6..f5067889b4f4e36df5277e1e3eb1fd29184e058b`
 
 # Deferred findings
 
@@ -77,3 +82,5 @@ None. Implementer self-review found the owned changes limited to Task 2 tests an
 # Reviewer decision
 
 Approved after fix round 1. Fresh separate-context review by gpt-5.6-sol, high found two P2 test-quality gaps: controller adapter assertions did not prove password forwarding without exposing a raw secret, and a redaction assertion could miss an uppercase identifier leak. Both were fixed and independently focused-tested. Scoped re-review found both findings addressed with no remaining functional, security, scope, or evidence issues. Fresh final verification remained 45 passing tests, AuthService 188/246 branches, AuthController 12/24 branches, focused lint exit 0, and `git diff --check` exit 0.
+
+The subsequent controller review by gpt-5.6-sol, high opened two P2 findings against implementation commit `f5067889b4f4e36df5277e1e3eb1fd29184e058b`: accepting any string did not prove the DTO password was forwarded unchanged, and the report/ledger retained pre-commit trace wording. Fix round 1 now inspects the recorded shared-session request and asserts `Object.is(forwardedDto.password, dto.password)` is true, so failure output is boolean-only while exact identifier/result assertions remain. The report and ledger now record the stable implementation SHA and reviewed range `d35bc57751cc6c9a8ce96cb8aefa0204737b34b6..f5067889b4f4e36df5277e1e3eb1fd29184e058b`. Required focused Jest, lint, and diff checks all exited 0 after the fixes.

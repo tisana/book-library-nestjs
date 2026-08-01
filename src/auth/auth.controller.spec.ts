@@ -144,12 +144,12 @@ describe('AuthController shared authentication adapters', () => {
       );
 
       expect(result).toEqual(sessionResponse);
-      expect(fixture.authService.createSharedSession).toHaveBeenCalledWith(
-        expect.objectContaining({
-          identifier: expectedIdentifier,
-          password: expect.any(String),
-        }),
+      const forwardedDto = fixture.authService.createSharedSession.mock
+        .calls[0]?.[0] as { identifier?: string; password?: string };
+      expect(forwardedDto).toEqual(
+        expect.objectContaining({ identifier: expectedIdentifier }),
       );
+      expect(Object.is(forwardedDto.password, dto.password)).toBe(true);
       expect(fixture.response.cookie).toHaveBeenCalledWith(
         refreshCookieName,
         expect.any(String),

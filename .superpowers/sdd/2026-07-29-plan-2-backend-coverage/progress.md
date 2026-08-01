@@ -39,12 +39,18 @@
 - RED: exact focused Jest command exit 0 but coverage-floor RED at AuthService 168/246 and AuthController 0/24.
 - GREEN: exact focused Jest command exit 0; 45 tests passed, AuthService reached 188/246, and AuthController reached 12/24.
 - Focused lint and `git diff --check`: exit 0.
+- Implementation commit: `f5067889b4f4e36df5277e1e3eb1fd29184e058b`
+- Reviewed implementation range: `d35bc57751cc6c9a8ce96cb8aefa0204737b34b6..f5067889b4f4e36df5277e1e3eb1fd29184e058b`
+- Actual controller reviewer: gpt-5.6-sol, high
 - Fresh review: two P2 test-quality gaps found in password-forwarding coverage and case-sensitive redaction checking.
 - Resolution: both test assertions corrected; focused service/controller reruns passed, and scoped re-review found no remaining issues.
+- Controller review finding: accepting any string did not prove unchanged DTO password forwarding, and Task 2 commit trace still described pre-commit state.
+- Controller review resolution: boolean-only `Object.is` relates each forwarded password to its source DTO without exposing it; stable implementation SHA and exact reviewed base/head range are now recorded. The required focused Jest command passed 45 tests at AuthService 188/246 and AuthController 12/24; focused lint and `git diff --check` exited 0.
 
 ## Review and fix log
 
 - Task 1: fix round 1/5 (1 addressed, 0 open; commits 38c6dc4..HEAD)
 - Task 1: complete (commits 05a426e..4779865, review clean)
-- Task 2: fix round 1/5 (2 addressed, 0 open; uncommitted Task 2 range)
-- Task 2: complete (fresh separate-context review clean before implementation commit)
+- Task 2: pre-commit review fix round (2 addressed, 0 open; content committed as `f5067889b4f4e36df5277e1e3eb1fd29184e058b`)
+- Task 2: implementation commit `f5067889b4f4e36df5277e1e3eb1fd29184e058b`; reviewed range `d35bc57751cc6c9a8ce96cb8aefa0204737b34b6..f5067889b4f4e36df5277e1e3eb1fd29184e058b`
+- Task 2: controller fix round 1/5 (2 addressed, 0 open; credential relationship and commit trace)
