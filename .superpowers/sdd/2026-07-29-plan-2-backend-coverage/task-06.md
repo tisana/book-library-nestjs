@@ -11,7 +11,7 @@ Plan 2, Task 6 — Fresh full evidence and monotonic ratchet.
 # Reviewer model and reasoning
 
 - Requested: separate-context gpt-5.6-sol, high
-- Actual: pending parent-coordinated fresh review
+- Actual: `/root/plan2_task6_review` using gpt-5.6-sol, high
 - Substitution: none
 
 # Base SHA
@@ -84,12 +84,16 @@ Both reporter calls used the same Plan 2 diff and full backend LCOV. The authori
 
 # Commit hash
 
-- Pending exact commit `test: ratchet backend coverage baseline`.
+- Stable implementation commit: `08ea4e8e64a70780c93bbbb0851c63ef0dc79dbd`
 
 # Deferred findings and self-review
 
-No implementation concern found. Fresh full tests, e2e, scoped reporting, validated changed-line input, nonmutating lint, build, whitespace, ratchet, and check-only all exited 0. No denominator, test, production, configuration, script, CI, threshold, or frontend change occurred. Generated artifacts remain ignored and must not be staged. Fresh separate-context reviewer decision is pending parent coordination.
+No implementation concern found. Fresh full tests, e2e, scoped reporting, validated changed-line input, nonmutating lint, build, whitespace, ratchet, and check-only all exited 0. No denominator, test, production, configuration, script, CI, threshold, or frontend change occurred. Generated artifacts remain ignored and must not be staged.
+
+Review round 1 functionally approved implementation commit `08ea4e8e64a70780c93bbbb0851c63ef0dc79dbd` with no functional, security, scope, test-quality, baseline-isolation, denominator, or generated-artifact defect. It found one Important/P2 documentation issue: the committed Task 6 report and progress ledger still described the stable implementation commit and actual reviewer as pending.
+
+Fix round 1 records the stable implementation SHA and exact reviewer provenance in both evidence files. This correction is metadata-only; the functional approval stands, and final completion remains pending fresh scoped re-review of the corrected evidence.
 
 # Reviewer decision
 
-Pending fresh separate-context gpt-5.6-sol, high review. No reviewer substitution is authorized.
+Fresh separate-context review by `/root/plan2_task6_review` using gpt-5.6-sol, high functionally approved the implementation with one P2 stale-metadata finding. Fix round 1 addresses the implementation-commit and reviewer-provenance fields without substitution. Fresh scoped re-review is pending, so Task 6 is not yet recorded as complete.

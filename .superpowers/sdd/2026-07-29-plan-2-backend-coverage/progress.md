@@ -104,13 +104,13 @@
 
 ### Task 6 — Fresh full evidence and monotonic ratchet
 
-- Status: implementation complete; pending parent-coordinated fresh review
+- Status: fix round 1 metadata correction; fresh scoped re-review pending
 - Task 5 final evidence commit: `cb67118cccae4ec01a3dc2f8a9352421ceef4949`
 - Working base SHA: `cb67118cccae4ec01a3dc2f8a9352421ceef4949`
 - Requested implementer: gpt-5.6-sol, high
 - Actual implementer: gpt-5.6-sol, high
 - Requested reviewer: separate-context gpt-5.6-sol, high
-- Actual reviewer: pending parent-coordinated fresh review
+- Actual reviewer: `/root/plan2_task6_review` using gpt-5.6-sol, high
 - Substitution: none
 - Report: `.superpowers/sdd/2026-07-29-plan-2-backend-coverage/task-06.md`
 - Authoritative commands: `npm run test:cov`, `npm run test:e2e:report`, and `npm run quality:report:backend` each exited 0; 382 unit tests and 242 e2e tests passed with zero failures.
@@ -119,7 +119,9 @@
 - Validation: validated base-SHA diff block, nonmutating ESLint, build, `git diff --check`, ratchet, and check-only all exited 0.
 - Ratchet: backend values increased monotonically to 78.81/70.87/79.83/79.26; branches exceed 70%; frontend object is byte-identical.
 - Artifacts: scoped backend summary markdown/JSON generated; `coverage/`, `dist/`, and `test-results/` remain ignored and unstaged.
-- Concern: none from implementer self-review; fresh separate-context reviewer decision remains pending parent coordination.
+- Implementation commit: `08ea4e8e64a70780c93bbbb0851c63ef0dc79dbd`
+- Fresh review: functional approval with no functional, security, scope, test-quality, baseline-isolation, denominator, or generated-artifact defect; one P2 stale-metadata finding because the Task 6 report and ledger still described the stable implementation SHA and actual reviewer as pending.
+- Resolution: fix round 1 records the stable implementation SHA and exact `/root/plan2_task6_review` gpt-5.6-sol high reviewer provenance without substitution. The correction is metadata-only; functional approval stands and fresh scoped re-review remains pending.
 
 ## Review and fix log
 
@@ -139,4 +141,4 @@
 - Task 4: complete (commits 399508f..e05afc8, review clean)
 - Task 5: fix round 1/5 (1 addressed, 0 open; provenance parent/base, implementation SHA, and reviewer trace corrected; re-review clean)
 - Task 5: complete (commits 0aecc7f..1092649, review clean)
-- Task 6: implementation complete; fresh full evidence and monotonic backend ratchet verified, pending parent-coordinated fresh review.
+- Task 6: fix round 1/5 (1 addressed, 0 open; stable implementation SHA and exact reviewer provenance recorded; fresh scoped re-review pending).
