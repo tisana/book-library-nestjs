@@ -139,3 +139,13 @@ The 75% branch threshold is 2,112/2,815, so the fresh Plan 2 result leaves 117 b
 Pending required fresh separate-context gpt-5.6-sol, high review. Numeric Gate G1 requirements, full verification, fixture availability, scope isolation, baseline monotonicity, and artifact exclusion are satisfied; Gate G1 and Plan 3 dispatch remain pending fresh reviewer acceptance and resolution of the Task 6 exact-heading evidence finding.
 
 Round 1/5 review by `/root/plan2_task7_review` using gpt-5.6-sol, high returned `CHANGES_REQUIRED` with one P2 exact report-contract finding and no functional, numeric, scope, security, baseline, denominator, test, or artifact finding. The prescribed append-only Task 6 correction addresses 1 finding with 0 open at the implementer fix stage. Fresh scoped re-review is pending; Gate G1 remains closed and Plan 3 must not start.
+
+## Round 2/5 administrative closeout
+
+- Fresh scoped reviewer: `/root/plan2_task7_rereview` using gpt-5.6-sol, high; substitution none.
+- Reviewed correction commit: `723a86749d1e41a235cdf96091d64b3c7be361c4`.
+- Decision: `APPROVED` with no findings and 0 open findings.
+- Round 1 disposition: 1 addressed, 0 open; the exact Task 6 report contract is satisfied without changing functional evidence.
+- Task 7 status: complete. Gate G1 evidence requirements are satisfied, and Plan 2 is ready for final whole-branch review and merge.
+- Provenance status: the historical at-authoring pending markers above are superseded by stable handoff commit `8bf68e18d462c24a0ed47d07f6e68bb24fba9f80` and reviewed correction commit `723a86749d1e41a235cdf96091d64b3c7be361c4`; no Task 7 SHA or reviewer decision remains pending.
+- Dependency guard: Plan 3 remains blocked until the reviewed Plan 2 merge SHA is recorded in the Plan 3 ledger and Wave B is explicitly authorized. This closeout does not start Plan 3.

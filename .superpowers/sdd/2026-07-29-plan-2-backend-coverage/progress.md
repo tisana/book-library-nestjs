@@ -175,3 +175,9 @@
 - Task 7 round 1/5 decision: `CHANGES_REQUIRED`; one P2 exact report-contract finding, with all functional, numeric, scope, security, baseline, denominator, test, and artifact checks passed.
 - Task 7 fix round 1/5 disposition: appended the eight required literal headings and mapped existing authoritative Task 6 evidence without deleting or rewriting prior evidence; 1 addressed, 0 open at the implementer fix stage.
 - Fresh scoped re-review: pending. Gate G1 remains closed and Plan 3 must not start until the required reviewer accepts the correction.
+- Task 7 round 2/5 fresh scoped reviewer: `/root/plan2_task7_rereview` using gpt-5.6-sol, high; substitution none.
+- Task 7 round 2/5 reviewed correction: `723a86749d1e41a235cdf96091d64b3c7be361c4`.
+- Task 7 round 2/5 decision: `APPROVED` with no findings and 0 open findings; round 1 disposition remains 1 addressed, 0 open.
+- Task 7 final status: complete. Gate G1 evidence requirements are satisfied, and Plan 2 is ready for final whole-branch review and merge.
+- Task 7 provenance status: historical pending/self-reference markers are superseded by stable handoff `8bf68e18d462c24a0ed47d07f6e68bb24fba9f80` and reviewed correction `723a86749d1e41a235cdf96091d64b3c7be361c4`; no SHA or reviewer decision remains pending.
+- Wave B dependency guard: Plan 3 remains blocked until the reviewed Plan 2 merge SHA is recorded in its ledger and Wave B is explicitly authorized; no Plan 3 work has started.
