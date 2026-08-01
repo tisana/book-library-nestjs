@@ -4,7 +4,7 @@ Task 6 — Fresh ratchet and whole-plan review
 
 ## Status
 
-complete; ready-for-final-whole-branch-review
+complete; final-whole-branch-review-approved; ready-for-controller-sequential-merge
 
 ## Requested agent
 
@@ -16,7 +16,7 @@ gpt-5.6-sol, high
 
 ## Reasoning
 
-Frontend-only baseline and integration risk verification. No model substitution. The required fresh `gpt-5.6-sol`, high Task 6 review chain is complete with all findings addressed and zero open.
+Frontend-only baseline and integration risk verification. No model substitution. The Task 6 and final whole-branch `gpt-5.6-sol`, high review chains are complete with all findings addressed, zero open, and final reviewer result `Ready to merge: YES`.
 
 ## Base SHA
 
@@ -115,9 +115,11 @@ Exactly `quality/coverage-baselines.json`, this report, and append-only `progres
 
 Review repair append: `1c5f6739468b7493c3b84a9d862764baaef53bfb` and `e3ec90beb9214f1bccce6a07ef51f87a332026c1` changed only Task 4 evidence and `progress.md`. This administrative closeout changes only this Task 6 report and `progress.md`.
 
+Final whole-branch fix append: `22b17b0b012c19406e8fbccc5832488e5c5c0ee2` changed only Task 4 evidence and `progress.md`; `06fd82e76f63d41fe9ce753946c4da34186addff` changed only Task 0 evidence and `progress.md`. This terminal administrative closeout changes only this Task 6 report and `progress.md`.
+
 ## Commit hash
 
-Task 6 boundary: `a9ccff2a6b3e0142db9f7406c3a8c77d16713412` (`test: ratchet frontend coverage baseline`). Review repairs: `1c5f6739468b7493c3b84a9d862764baaef53bfb` (`docs: preserve Task 4 append-only evidence`) and `e3ec90beb9214f1bccce6a07ef51f87a332026c1` (`docs: record Task 4 reviewed closeout provenance`).
+Task 6 boundary: `a9ccff2a6b3e0142db9f7406c3a8c77d16713412` (`test: ratchet frontend coverage baseline`). Task 6 review repairs: `1c5f6739468b7493c3b84a9d862764baaef53bfb` (`docs: preserve Task 4 append-only evidence`) and `e3ec90beb9214f1bccce6a07ef51f87a332026c1` (`docs: record Task 4 reviewed closeout provenance`). Final whole-branch fixes: `22b17b0b012c19406e8fbccc5832488e5c5c0ee2` (`docs: record Task 4 round-3 approval`) and terminal reviewed head `06fd82e76f63d41fe9ce753946c4da34186addff` (`docs: close Task 0 boundary evidence`).
 
 ## Reviewer
 
@@ -127,6 +129,11 @@ Review chain, all `gpt-5.6-sol`, high, fresh context, no substitution:
 2. `/root/plan1_task6_rereview` — `CHANGES_REQUIRED`, one P2 reviewed-closeout provenance omission.
 3. `/root/plan1_task6_review3` — `APPROVED` at `e3ec90beb9214f1bccce6a07ef51f87a332026c1`, no findings and zero open.
 
+Final whole-branch chain, both `gpt-5.6-sol`, high, fresh context, no substitution:
+
+1. `/root/plan1_final_branch_review` — one Important stale Task 4 approval-evidence finding and one Minor Task 0 boundary-evidence finding.
+2. `/root/plan1_final_fixes_review` — reviewed `06fd82e76f63d41fe9ce753946c4da34186addff`; `Ready to merge: YES`; no Critical, Important, or Minor findings.
+
 ## Reviewer command and result
 
 `/root/plan1_task6_review` reviewed the Task 6 boundary and found that later Task 4 repair evidence had replaced rather than appended the original reviewed evidence. Repair `1c5f6739468b7493c3b84a9d862764baaef53bfb` restored the original RED/GREEN evidence, metrics, file scope, implementation commit, and reviewer provenance verbatim, then appended the repair history.
@@ -135,6 +142,10 @@ Review chain, all `gpt-5.6-sol`, high, fresh context, no substitution:
 
 Fresh scoped reviewer `/root/plan1_task6_review3` (`gpt-5.6-sol`, high, no substitution) reviewed repaired head `e3ec90beb9214f1bccce6a07ef51f87a332026c1` and returned `APPROVED` with no findings. Final disposition: 2 findings addressed, 0 open.
 
+Final senior whole-branch reviewer `/root/plan1_final_branch_review` (`gpt-5.6-sol`, high, fresh context, no substitution) found that Task 4 itself had not recorded the already-approved round-3 result and that Task 0 retained a self-referential boundary placeholder instead of the exact subsequent Task 1 handoff SHA. Fix `22b17b0b012c19406e8fbccc5832488e5c5c0ee2` appended the Task 4 round-3 approval; fix `06fd82e76f63d41fe9ce753946c4da34186addff` appended the exact Task 0 final boundary `b9435afa78a6c693b82e0fc151180c1d52194fe6`.
+
+Fresh final-fixes reviewer `/root/plan1_final_fixes_review` (`gpt-5.6-sol`, high, fresh context, no substitution) reviewed head `06fd82e76f63d41fe9ce753946c4da34186addff` and returned `Ready to merge: YES` with no Critical, Important, or Minor findings. Final whole-branch disposition: 2 addressed, 0 open.
+
 ## Findings
 
 1. Changed-line coverage is `not-applicable` because the immutable-base-to-HEAD diff contains no eligible frontend production lines; the reporter accepted 0/0 without weakening its 80% threshold.
@@ -142,6 +153,8 @@ Fresh scoped reviewer `/root/plan1_task6_review3` (`gpt-5.6-sol`, high, no subst
 3. The post-plan frontend metrics exceed the originally deferred 75% numerator targets, leaving zero numeric residual to 776 statements/547 branches; remaining uncovered behavior is still quantified above.
 4. Task 6 original fresh review found one P2 append-only evidence violation in Task 4: later repair metadata had overwritten original reviewed evidence.
 5. Task 6 scoped re-review found one P2 provenance omission: original reviewed Task 4 closeout `232566e11de65a949b5c8aaf670156da2bdcfd9f` was absent from the explicit implementation-to-repair sequence.
+6. Final senior whole-branch review found one Important stale Task 4 evidence issue: Task 4 itself did not yet record the already-approved round-3 result.
+7. Final senior whole-branch review found one Minor Task 0 evidence issue: its exact final boundary was still represented by a self-referential placeholder rather than the subsequent Task 1 handoff SHA.
 
 ## Resolutions
 
@@ -151,11 +164,13 @@ Fresh scoped reviewer `/root/plan1_task6_review3` (`gpt-5.6-sol`, high, no subst
 4. Scope audit matched exactly the three allowed tracked files. Coverage, test result, report, build, and changed-line-diff artifacts are all ignored and remain uncommitted.
 5. Repair `1c5f6739468b7493c3b84a9d862764baaef53bfb` restored append-only Task 4 evidence and appended the later repair chain; disposition 1 addressed, 0 open.
 6. Repair `e3ec90beb9214f1bccce6a07ef51f87a332026c1` added original reviewed closeout `232566e11de65a949b5c8aaf670156da2bdcfd9f` to the exact provenance sequence; `/root/plan1_task6_review3` approved the repaired head with no findings. Final Task 6 review disposition: 2 addressed, 0 open.
+7. Fix `22b17b0b012c19406e8fbccc5832488e5c5c0ee2` appended the approved round-3 identity, model, reviewed head, result, and zero-open disposition to Task 4; Important finding addressed, 0 open.
+8. Fix `06fd82e76f63d41fe9ce753946c4da34186addff` appended exact Task 0 final boundary `b9435afa78a6c693b82e0fc151180c1d52194fe6`; Minor finding addressed, 0 open. `/root/plan1_final_fixes_review` approved the complete repaired head with no findings and `Ready to merge: YES`.
 
 ## Deferred findings
 
-No Task 6 reviewer findings remain open. Plan 1 is ready for the controller-owned final whole-branch review required before sequential merge. The one Playwright mobile performance skip remains independently owned by paused, unmerged Plan 4 and is not addressed or claimed complete here.
+No Task 6 or final whole-branch reviewer findings remain open. Controller-owned work remains: merge Plan 1 sequentially, then regenerate the frontend unit coverage/report artifacts from the merged state before resuming Plan 4 integration. The one Playwright mobile performance skip remains independently owned by paused, unmerged Plan 4 and is not addressed or claimed complete here.
 
 ## Stop/escalation decision
 
-Task 6 is complete after fresh round-3 approval with 2 review findings addressed and 0 open. Plan 1 is ready for the required final whole-branch review and, only after that review accepts it, the prescribed sequential merge. Plan 4 remains paused and unmerged; no Plan 4 work was started here.
+Task 6 and the final whole-branch review are complete. `/root/plan1_final_fixes_review` returned `Ready to merge: YES` at `06fd82e76f63d41fe9ce753946c4da34186addff`, with the prior Important Task 4 and Minor Task 0 findings addressed and no findings open. Plan 1 is ready for the controller-owned sequential merge followed by frontend unit coverage/report regeneration. Plan 4 remains paused and unmerged; frontend unit, backend, frontend E2E, and mutation metrics remain separate.
