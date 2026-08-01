@@ -67,7 +67,7 @@
 
 ### Task 4 — Catalog, membership, staff controller delegation
 
-- Status: fix round 1 recorded; fresh re-review pending
+- Status: complete; approved after fix round 1 re-review
 - Task 3 final evidence commit: `399508f699a50e8d3b36d8f18698201052e0830f`
 - Working base SHA: `399508f699a50e8d3b36d8f18698201052e0830f`
 - Requested implementer: gpt-5.6-terra, high
@@ -81,7 +81,8 @@
 - Focused lint and `git diff --check`: exit 0.
 - Implementation commit: `3a76b20f8dc3934da8f43fa8d227cef761825e36`
 - Fresh review: functional approval with no functional, security, scope, or test-quality defect; one P2 stale-trace finding in pending reviewer/commit metadata.
-- Resolution: recorded the stable implementation SHA, actual gpt-5.6-terra high reviewer without substitution, and functional approval; fresh re-review remains pending.
+- Resolution: recorded the stable implementation SHA, actual gpt-5.6-terra high reviewer without substitution, and functional approval; scoped fresh re-review approved the resolution with no new breakage or open findings.
+- Reviewed completion range: `399508f..e05afc8` is the reviewed implementation+fix range.
 
 ## Review and fix log
 
@@ -97,4 +98,5 @@
 - Task 3: fix round 1/5 (1 addressed, 0 open; commits ad67109..HEAD)
 - Task 3: complete (commits 20260dc..5c4a7d6, review clean)
 - Task 4: implementation ready for parent-coordinated fresh review; Task 3 final evidence and working base `399508f699a50e8d3b36d8f18698201052e0830f`; required focused Jest RED exit 1 because no owned specs existed, then GREEN exit 0 with 9 tests and 100% statement/branch/function/line coverage for all three controllers; focused lint and `git diff --check` exit 0.
-- Task 4: fix round 1/5 (1 addressed, 0 open; commits 3a76b20..HEAD; fresh re-review pending)
+- Task 4: fix round 1/5 (1 addressed, 0 open; commits 3a76b20..e05afc8; re-review clean)
+- Task 4: complete (commits 399508f..e05afc8, review clean)
