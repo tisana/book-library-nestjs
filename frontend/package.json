@@ -13,7 +13,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:report": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:mobile-performance:repeat": "playwright test tests/e2e/performance-smoke.spec.ts --project=mobile-chromium --workers=1 --repeat-each=10"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.5",

@@ -553,3 +553,19 @@ Ordinary failing focused tests are not blockers: inspect route setup, click/read
 - [ ] Existing parser tests still verify skips, flakiness, failures, malformed data, and per-project reporting.
 - [ ] Required lint, build, quality, e2e, changed-line, whitespace, review, commit, and ledger evidence is complete.
 - [ ] Plan 1 parallel/merge contract has been recorded and, when applicable, both frontend reporting streams were rerun from the merged tree.
+
+## Approved amendment — 2026-08-07
+
+The user approved a narrowly scoped amendment after the first Task 4 verification attempt stopped at the exact `npm run frontend:build` gate. That command is the amendment RED evidence and failed with:
+
+```text
+tests/e2e/performance-smoke.spec.ts(1,29): error TS2307: Cannot find module 'node:perf_hooks' or its corresponding type declarations.
+```
+
+Root cause: `frontend/tsconfig.json` compiles `tests` within the browser-oriented frontend boundary, supplies the `DOM` library, and intentionally limits ambient types to `vite/client` and `vitest/globals`. The Playwright spec's explicit `node:perf_hooks` import therefore required a Node type surface that the frontend compilation boundary does not provide. This is a type-boundary incompatibility, not a performance-readiness or timing-algorithm defect.
+
+Approved implementation: remove only `import { performance } from 'node:perf_hooks'` from `frontend/tests/e2e/performance-smoke.spec.ts` and replace every `performance.now()` call in that file with `globalThis.performance.now()`. Do not change TypeScript configuration, dependencies, lockfiles, coverage baselines, parser behavior, fixture scale, retries, projects, readiness locators, or the `2_000` ms budget. The existing one shared monotonic deadline continues to bound the action and all sequential useful-content readiness waits.
+
+The focused amendment GREEN command is exactly `npm run frontend:build`. After that command exits 0, Task 4 restarts from its first ordered verification command and runs the complete stream again; the earlier partial stream remains historical blocked evidence and is not reused as final acceptance evidence.
+
+This amendment supersedes only the load-bearing wording in Task 4 Step 4 check (3) that requires a `node:perf_hooks` import. The amended final-review check is: `globalThis.performance.now()` is used for the start time, remaining-budget calculations, diagnostic elapsed time, and final elapsed time; one shared monotonic deadline bounds the action and every sequential readiness wait; no `node:perf_hooks` import and no legacy wall-clock timing call remains in the spec. All other ten-check requirements and all historical RED/GREEN facts remain unchanged.
