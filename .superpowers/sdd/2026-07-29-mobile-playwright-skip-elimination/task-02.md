@@ -168,3 +168,61 @@ No product source, root package, parser, Playwright configuration, lockfile, cov
 - Result: **APPROVED**. Both round 1 provenance findings are addressed, with no new issues.
 - Round 1/5 closeout: 2 addressed, 0 open.
 - Task 2 status: complete and approved; ready for Task 3.
+
+### Canonical report contract closeout — 2026-08-07
+
+The following append-only block supplies the plan-mandated canonical heading contract. It preserves the initial blocked probe, authorized resume, later review corrections, and all historical states above.
+
+## Task
+
+- Task 2 — Execute the seeded-scale staff performance contract on mobile while retaining all desktop/tablet behavior and quality contracts.
+
+## Base SHA
+
+- Immutable Plan 4 working base: `05a426ec944d8305edc621b12497d89a5f20457b`.
+- Original Task 1 completion `f30a70f01f823f5b19e5f4de004a014ae83ef769` maps to rebased `570ac78aeabd35275108b7e4a1fdd01459348312`.
+- Original Task 2 implementation `7a859610de1e2908517f8759843e7500501c00c2` maps to rebased `2b58ec14ea5cc6f30717c65565fb8d2a2dca568f`.
+- Original provenance correction `9b7b8ee356df53ec6b6f922b29386eb190b16152` maps to `1163420efc23c9cf23c7637ea591207cf9fe6df6`; original scoped closeout `26c45dbcea8b05074f12390f961a0b091931f8a1` maps to `f90b08566f4441e695b037d4c8fefda14e5c8ee1`.
+
+## Implementer model and reasoning
+
+- Requested and actual: `gpt-5.6-terra`, high reasoning. Substitution: none.
+
+## Reviewer model and reasoning
+
+- Precommit reviewer `/root/plan4_task2_impl/task2_fresh_review`, postcommit reviewer `/root/plan4_task2_postcommit_review`, and scoped reviewer `/root/plan4_task2_rereview`: fresh `gpt-5.6-terra`, high reasoning, separate contexts. Substitution: none.
+
+## Commands and results
+
+- Initial literal and direct RED probes — exit 1 at the first hidden empty locator, excluded evidence; Task 2 stopped and requested direction.
+- Authorized resumed literal RED — exit 1; 3 staff failures reached the named shared-deadline assertion and 3 member cases passed. Mobile elapsed `2121.1347` ms.
+- Authorized resumed direct mobile RED — exit 1; staff reached the named shared-deadline assertion at `2109.8413` ms and member passed.
+- Literal GREEN command — exit 0; 6/6 passed across desktop/tablet/mobile, 0 skipped/failed/retries.
+- Direct mobile GREEN — exit 0; 2/2 passed first attempt.
+- Exact all-project performance command and fresh final-tree repetition of it — exit 0; 6/6 each, one staff and one member pass per project, no skip/failure/flaky/retry.
+- Reviewer direct mobile rerun — exit 0; 2/2 passed first attempt.
+- `npm --prefix frontend pkg get "scripts.test:e2e:mobile-performance:repeat"` — exit 0 and returned the exact one-worker ten-repetition Playwright command.
+
+## Changed files
+
+- `frontend/tests/e2e/performance-smoke.spec.ts`.
+- `frontend/package.json`.
+- `.superpowers/sdd/2026-07-29-mobile-playwright-skip-elimination/task-02.md`.
+- `.superpowers/sdd/2026-07-29-mobile-playwright-skip-elimination/progress.md`.
+- No product source, root package, lockfile, Playwright configuration, parser, coverage baseline, denominator, or generated artifact changed.
+
+## Assumptions
+
+- The plan-owner-authorized visible text was used only in the temporary uncommitted RED probe and removed before GREEN.
+- The 2,000 ms budget, 100/50/35 seeded fixture, three projects, meaningful readiness, reporters, viewports, and retries remained fixed.
+- At Task 2 execution time Plan 1 was unmerged; Task 4 owned later structural reconciliation.
+
+## Follow-ups
+
+- Task 3 owned the exact one-worker ten-repetition gate plus fresh full producer/parser restoration.
+- Task 4 owned Plan 1/2 integration, independent frontend/backend coverage reruns, the final full e2e report, builds, changed-line gates, and review.
+- The root selector-forwarding discrepancy remains documented; it does not alter the direct mobile or full-suite evidence.
+
+## Reviewer verdict
+
+- approved. The implementation contract was approved precommit; two postcommit provenance findings were addressed in round 1/5 and the fresh scoped re-review closed with 2 addressed, 0 open.

@@ -99,3 +99,56 @@ Approved.
 - The final plan contract is exactly 87/87 first-attempt passes, with three 29/29 project rows; Task 1 does not claim that outcome.
 - Plan 1 is concurrently unmerged. Record only the future integration dependency: rerun its frontend-unit evidence after an eventual merge; no predecessor merge applies to this Wave A task.
 - Non-blocking follow-up: the root-level focused command does not preserve Playwright selection arguments through `npm run test:e2e --prefix frontend`; task execution used the unchanged equivalent direct frontend command only to capture the intended mobile-only JSON, then reran the full producer/parser to restore the authoritative 87-test artifacts. Future tasks must use an invocation that demonstrably reaches Playwright when they require mobile-only selection; Task 1 does not authorize a script change.
+
+### Canonical report contract closeout — 2026-08-07
+
+The following append-only block supplies the plan-mandated canonical heading contract. It summarizes, but does not replace or rewrite, the historical Task 1 evidence above.
+
+## Task
+
+- Task 1 — Capture the clean baseline and define deterministic readiness for Plan 4 mobile Playwright skip elimination.
+
+## Base SHA
+
+- Immutable Plan 4 working base: `05a426ec944d8305edc621b12497d89a5f20457b`.
+- Approved design ancestor: `d057d6efc40f55ed871e9fb407246e9f4f87d880`.
+- Original Task 1 completion `f30a70f01f823f5b19e5f4de004a014ae83ef769` was rewritten during controller rebase as `570ac78aeabd35275108b7e4a1fdd01459348312` with the same subject, `docs: record mobile Playwright skip baseline`.
+
+## Implementer model and reasoning
+
+- Requested and actual: `gpt-5.6-terra`, medium reasoning. Substitution: none.
+
+## Reviewer model and reasoning
+
+- Requested and actual: fresh `gpt-5.6-terra`, high reasoning. Substitution: none.
+
+## Commands and results
+
+- Initial clean-worktree, base-SHA, and approved-design ancestry checks — exit 0.
+- `npm run frontend:test:e2e -- --project=mobile-chromium tests/e2e/performance-smoke.spec.ts` — exit 0; nested npm consumed the selector, so 5 passed and 1 skipped across 6 cross-project cases.
+- `npm --prefix frontend run test:e2e -- --project=mobile-chromium tests/e2e/performance-smoke.spec.ts` — Playwright exit 0; intended mobile result 1 passed, 1 skipped, 2 total. The later outer evidence wrapper timeout is historical and did not change the completed Playwright result.
+- `npm run frontend:test:e2e:report` and `npm run quality:report:frontend-e2e` — both exit 0; restored authoritative baseline 86 passed, 1 skipped, 0 failed/flaky, 87 total; desktop/tablet 29/29, mobile 28 passed plus 1 skipped/29.
+- No coverage, mutation, or final-quality claim was made from the baseline stream.
+
+## Changed files
+
+- `.superpowers/sdd/2026-07-29-mobile-playwright-skip-elimination/base.sha`.
+- `.superpowers/sdd/2026-07-29-mobile-playwright-skip-elimination/progress.md`.
+- `.superpowers/sdd/2026-07-29-mobile-playwright-skip-elimination/task-01.md`.
+- No product, test-behavior, parser, producer configuration, package, lockfile, or baseline file changed.
+
+## Assumptions
+
+- Wave A had no predecessor merge at Task 1 execution time.
+- The explicit staff mobile skip was baseline evidence only, not acceptable final quality evidence.
+- Immediate local route fixtures and the documented meaningful locators were the intended deterministic readiness contract.
+
+## Follow-ups
+
+- Task 2 owned removal of the staff mobile exclusion under the unchanged 2,000 ms and 100/50/35 contracts.
+- The root selector-forwarding discrepancy remains a transparent non-blocking historical note; direct frontend invocation supplied the intended mobile-only baseline, followed by a fresh full producer/parser restoration.
+- Plan 1 integration reruns were deferred to Task 4 and are now recorded in the final Plan 4 evidence.
+
+## Reviewer verdict
+
+- approved. The baseline/readiness evidence was accepted with no findings and no metric conflation.

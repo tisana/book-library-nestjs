@@ -203,3 +203,24 @@ A read-only PowerShell attempt to recursively inspect the large raw JSON hit the
 - The reviewer confirmed original blocked evidence remains present, corrections are append-only, initial `CHANGES_REQUIRED` and `1 Important addressed / 0 open` dispositions are retained, pending scope is exactly `task-04.md` plus `progress.md`, no staged or substantive drift exists, and `git diff --check` is clean.
 - Retained Minor: Task 3 has no independent command transcript for its historical repeat-to-producer ordering. This is non-blocking and requires no source, parser, artifact, or evidence rewrite.
 - Final reviewer verdict for the superseded restarted acceptance candidate: **approved**. The exact documentation-only commit may proceed.
+
+## Immutable postcommit provenance closeout — 2026-08-07
+
+- Governing integration base: `7a98bffade79254df41e86e55c64e8fdf881ac6d` (`merge: frontend coverage uplift`). It contains actual Plan 2 merge `e52711c7f6fd1174f4ff85280152ced174724bfe` (`merge: backend coverage uplift`).
+- Immutable Plan 4 base: `05a426ec944d8305edc621b12497d89a5f20457b`; approved design ancestor: `d057d6efc40f55ed871e9fb407246e9f4f87d880`.
+- Verified rewritten Plan 4 sequence:
+  - Task 1: `f30a70f01f823f5b19e5f4de004a014ae83ef769` -> `570ac78aeabd35275108b7e4a1fdd01459348312` (`docs: record mobile Playwright skip baseline`).
+  - Task 2 implementation: `7a859610de1e2908517f8759843e7500501c00c2` -> `2b58ec14ea5cc6f30717c65565fb8d2a2dca568f` (`test: run seeded staff performance smoke on mobile`).
+  - Task 2 provenance: `9b7b8ee356df53ec6b6f922b29386eb190b16152` -> `1163420efc23c9cf23c7637ea591207cf9fe6df6` (`docs: pin Plan 4 Task 2 test provenance`).
+  - Task 2 closeout: `26c45dbcea8b05074f12390f961a0b091931f8a1` -> `f90b08566f4441e695b037d4c8fefda14e5c8ee1` (`docs: close Plan 4 Task 2 scoped review`).
+  - Task 3 evidence: `f0a638056da4265c78a680d421ce5c727bd6d574` -> `156eac26957c24473137af03ccfee6e4a7fef2fb` (`docs: record mobile Playwright quality evidence`).
+  - Task 3 provenance: `4e0c0ac0a898857fc9976716c31af112837eda12` -> `ab671d073606e16b9709b96dfd5ea5675902624e` (`docs: pin Plan 4 Task 3 evidence provenance`).
+  - Task 3 append-only restoration: `e431a25e60e8dca07aa0d24ae4621e197e11fc08` -> `549677241a8907c93df0e352f4d6a8869859c79b` (`docs: restore Task 3 append-only provenance`).
+  - Task 3 closeout: `5bac11a843a7f559fced3fc8d74e69f2d34d6e1a` -> `7cc48242bbb575330826d82d6ff18ca4da517450` (`docs: close Task 3 evidence review`).
+- Verified post-rebase Task 4 commits:
+  - Amendment: `efd2daa29a79fa914b90d4b7a513d1c56ed76f3f` (`test: use frontend-compatible monotonic timing`).
+  - Governing final evidence commit: `73887f98d2b4e53e7e4b85038e96a835eea0364d` (`docs: complete mobile Playwright skip elimination`).
+- Every listed object and subject was resolved directly with Git, and every rebased/amendment commit is an ancestor of the governing final evidence commit. The supplemental evidence-contract repair commit intentionally does not self-reference.
+- All earlier `pending`, `blocked`, authorization, precommit, and commit-prohibited markers remain historical facts at the time they were written. They are superseded for current status by the completed approvals, verified rewritten sequence, amendment, and governing final evidence commit above. Tasks 1–4 are complete; no authorization remains pending.
+- Final branch review result before this repair: 0 Critical, 2 Important evidence-contract findings. Both are addressed by the canonical Task 1–3 heading blocks and this immutable provenance closeout; 0 Important remain open.
+- Retained non-blocking Minor: Task 3 has no independent command transcript proving its historical repeat-to-producer order. The documented ordering remains internally/timestamp consistent and is preserved without rewrite.
