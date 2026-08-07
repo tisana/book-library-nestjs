@@ -1,4 +1,3 @@
-import { performance } from 'node:perf_hooks';
 import { expect, type Locator, test } from '@playwright/test';
 import {
   createPerformanceDataset,
@@ -14,14 +13,14 @@ async function assertUsefulContentWithinBudget(
   action: (timeoutMs: number) => Promise<void>,
   ready: readonly Locator[],
 ): Promise<void> {
-  const start = performance.now();
+  const start = globalThis.performance.now();
   const deadline = start + PERFORMANCE_BUDGET_MS;
 
   const remainingBudget = (step: string): number => {
-    const remaining = deadline - performance.now();
+    const remaining = deadline - globalThis.performance.now();
     if (remaining < 1) {
       throw new Error(
-        `${name} exceeded ${PERFORMANCE_BUDGET_MS} ms before ${step}; elapsed=${(performance.now() - start).toFixed(1)} ms`,
+        `${name} exceeded ${PERFORMANCE_BUDGET_MS} ms before ${step}; elapsed=${(globalThis.performance.now() - start).toFixed(1)} ms`,
       );
     }
     return Math.floor(remaining);
@@ -35,7 +34,7 @@ async function assertUsefulContentWithinBudget(
     });
   }
 
-  const elapsed = performance.now() - start;
+  const elapsed = globalThis.performance.now() - start;
   expect(
     elapsed,
     `${name} exceeded ${PERFORMANCE_BUDGET_MS} ms; elapsed=${elapsed.toFixed(1)} ms`,
