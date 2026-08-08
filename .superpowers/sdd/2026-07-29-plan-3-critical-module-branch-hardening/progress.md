@@ -14,7 +14,7 @@ This ledger is append-only evidence for Plan 3. Existing evidence is preserved; 
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task1_implementer`) | high | e52711c7f6fd1174f4ff85280152ced174724bfe | 25e37048c05c2b3dd81256d1ab31eb21bad192ec | gpt-5.6-sol, high (`/root/plan3_task1_review`) | 25e37048c05c2b3dd81256d1ab31eb21bad192ec | approved | 0 |
 | 2 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task2_implementer`) | high | b05b9e90a8669adf69970014927335d01cff2a63 | fbfc378dd1c002aa4bff3456c4e99fc32b6ee308 | gpt-5.6-sol, high (`/root/plan3_task2_review`) | fbfc378dd1c002aa4bff3456c4e99fc32b6ee308 | approved | 0 |
-| 3 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
+| 3 | in-progress | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task3_implementer`) | high | 1cf23a49aca3df4023b0c6f93208432bbef5d6c6 | not-run | gpt-5.6-sol, high (separate context; actual not-run) | not-run | not-run | not-run |
 | 4 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 5 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 6 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
@@ -50,3 +50,17 @@ Task 1: complete (commits e52711c..25e3704, review clean)
 - Controller resolution: the review's verification-boundary warning is not a gap because SDD reviewer policy prohibits redundant suite reruns absent a concrete code-reading doubt; the implementer report retains exact RED, GREEN, focused lint, diff-check, and full-suite evidence.
 
 Task 2: complete (commits b05b9e9..fbfc378, review clean)
+
+## Task 3 evidence chronology
+
+- Starting commit: `1cf23a49aca3df4023b0c6f93208432bbef5d6c6`; requested/actual implementer `gpt-5.6-sol`, high, identity `/root/plan3_task3_implementer`; substitution none.
+- RED: the exact focused repair command exited 1 with 5 failed and 41 passed. The missing-staff, missing-member, already-assigned, staff/member field-selection, and no-retained-subject cases failed at the absent aggregate `findById` harness boundary; repair branches were `92/110`.
+- GREEN: the exact focused repair command exited 0 with `46/46` tests; repair-service branches reached `103/110`, exceeding the Task 3 floor of `94/110`.
+- Transaction and recovery proof: public `apply`/`cancel` coverage verifies mismatched checkpoints before aggregate mutation, activation-state rejection, required transaction support, replacement error mapping, unchanged nonduplicate failures, missing aggregates, idempotent aggregate writes, staff/member field selection, first-subject original release, and bounded compensation skips.
+- Ordering, cleanup, and privacy proof: completed and failed terminal events precede their parent terminal updates; transaction sessions end on successful and failing paths; exact terminal-event assertions contain only fixed redacted metadata and no identifier or secret fields.
+- Test-only harness: read-only Plan 2 `createStaffModelHarness` and `queryResult` imports are consumed locally; only the repair spec extends the staff model with `findById` and a one-method `lean()` adapter. No Plan 2 helper contract was widened or copied.
+- Non-fixing focused ESLint and `git diff --check` exited 0.
+- Full backend unit coverage regression exited 0 with `35/35` suites and `412/412` tests; overall statements `2919/3659`, branches `2034/2815`, functions `487/605`, lines `2800/3496`.
+- Implementer scope review found no production, configuration, baseline, Plan 2 fixture/test, permission test, e2e, frontend, generated-output, private-method-access, raw-identifier-assertion, or secret-assertion change. Generated coverage and test-result outputs remain unstaged.
+- Task 3 implementation commit uses subject `test: harden repair transaction recovery`; immutable SHA is returned in the implementer handoff for dispatcher/reviewer backfill.
+- Final separate-context reviewer, review commit, verdict, and findings resolved remain `not-run`.
