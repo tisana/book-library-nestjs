@@ -1,4 +1,6 @@
 import { Logger, UnauthorizedException } from '@nestjs/common';
+import { deferred } from '../../test/support/backend-coverage-fixtures';
+import { createReplayMarker } from '../../test/support/critical-auth-fixtures';
 import {
   AuthSubjectType,
   RefreshTokenFamilyStatus,
@@ -74,16 +76,29 @@ class FakeSingleQuery<T> {
 
 class FakeModel {
   documents: Record<string, any>[] = [];
+  nextCreate?: (
+    document: Record<string, any>,
+  ) => Promise<Record<string, any>>;
+  nextFindOne?: (
+    filter: Record<string, any>,
+  ) => Record<string, any> | undefined;
   failNextCreate = false;
   failNextCommit = false;
   failNextCas = false;
+  failNextCasAfterUpdate = false;
   returnNullNextCommit = false;
   returnNullNextCas = false;
+  returnNullNextTakeover = false;
   failNextFindOne = false;
   lastLimit?: number;
   selectedProjections: Record<string, number>[] = [];
 
   async create(document: Record<string, any>) {
+    if (this.nextCreate) {
+      const create = this.nextCreate;
+      this.nextCreate = undefined;
+      return create(document);
+    }
     if (this.failNextCreate) {
       this.failNextCreate = false;
       throw new Error('write failed');
@@ -106,8 +121,12 @@ class FakeModel {
   findOne(filter: Record<string, any>) {
     const error = this.failNextFindOne ? new Error('query failed') : undefined;
     this.failNextFindOne = false;
+    const findOne = this.nextFindOne;
+    this.nextFindOne = undefined;
     return new FakeSingleQuery(
-      this.documents.find((value) => matches(value, filter)),
+      findOne
+        ? findOne(filter)
+        : this.documents.find((value) => matches(value, filter)),
       error,
       this,
     );
@@ -120,8 +139,27 @@ class FakeModel {
           this.failNextCas = false;
           throw new Error('uncertain CAS');
         }
+        if (
+          update.$set?.lastRotationOperationId &&
+          this.failNextCasAfterUpdate
+        ) {
+          this.failNextCasAfterUpdate = false;
+          const document = this.documents.find((value) =>
+            matches(value, filter),
+          );
+          if (document) applyUpdate(document, update);
+          throw new Error('uncertain CAS');
+        }
         if (update.$set?.lastRotationOperationId && this.returnNullNextCas) {
           this.returnNullNextCas = false;
+          return null;
+        }
+        if (
+          update.$set?.rotationOperationId &&
+          !update.$set?.lastRotationOperationId &&
+          this.returnNullNextTakeover
+        ) {
+          this.returnNullNextTakeover = false;
           return null;
         }
         if (update.$set?.status === 'committed' && this.failNextCommit) {
@@ -228,6 +266,37 @@ describe('TokenSessionService', () => {
     expect(families.documents[0].status).toBe(RefreshTokenFamilyStatus.Active);
   });
 
+  it('denies a lost duplicate-marker race without mutating the family', async () => {
+    const created = await createFamily();
+    const family = families.documents[0];
+    const originalHash = family.currentTokenHash;
+    const insertStarted = deferred<void>();
+    Object.assign(markers, {
+      nextCreate: async () => {
+        insertStarted.resolve(undefined);
+        Object.assign(markers, { nextFindOne: () => undefined });
+        throw Object.assign(new Error('duplicate'), { code: 11000 });
+      },
+    });
+
+    const rotation = service.rotate(created.refreshToken);
+    const insertionStartedBeforeCompletion = await Promise.race([
+      insertStarted.promise.then(() => true),
+      rotation.then(
+        () => false,
+        () => false,
+      ),
+    ]);
+
+    expect(insertionStartedBeforeCompletion).toBe(true);
+    await expect(rotation).rejects.toEqual(
+      new UnauthorizedException('Invalid refresh session'),
+    );
+    expect(family.currentTokenHash).toBe(originalHash);
+    expect(family.status).toBe(RefreshTokenFamilyStatus.Active);
+    expect(family).not.toHaveProperty('lastRotationOperationId');
+  });
+
   it('denies an active pending lease without mutating the family', async () => {
     const created = await createFamily();
     const family = families.documents[0];
@@ -267,6 +336,53 @@ describe('TokenSessionService', () => {
     expect(family.lastRotationOperationId).toBe(
       markers.documents[0].rotationOperationId,
     );
+  });
+
+  it('finalizes and revokes a pending marker whose lease is missing', async () => {
+    const created = await createFamily();
+    const family = families.documents[0];
+    const marker = {
+      ...createReplayMarker({
+        tokenHash: family.currentTokenHash,
+        familyId: family.familyId,
+        rotationOperationId: 'missing-lease-owner',
+        leaseExpiresAt: undefined,
+        expiresAt: family.expiresAt,
+      }),
+    };
+    markers.documents.push(marker);
+
+    await expect(service.rotate(created.refreshToken)).rejects.toEqual(
+      new UnauthorizedException('Invalid refresh session'),
+    );
+    expect(marker.status).toBe('committed');
+    expect(marker).not.toHaveProperty('leaseExpiresAt');
+    expect(family.status).toBe(RefreshTokenFamilyStatus.Revoked);
+  });
+
+  it('denies a lost expired-marker takeover without creating a successor', async () => {
+    const created = await createFamily();
+    const family = families.documents[0];
+    const originalHash = family.currentTokenHash;
+    const marker = {
+      ...createReplayMarker({
+        tokenHash: originalHash,
+        familyId: family.familyId,
+        rotationOperationId: 'expired-owner',
+        leaseExpiresAt: new Date(0),
+        expiresAt: family.expiresAt,
+      }),
+    };
+    markers.documents.push(marker);
+    Object.assign(markers, { returnNullNextTakeover: true });
+
+    await expect(service.rotate(created.refreshToken)).rejects.toEqual(
+      new UnauthorizedException('Invalid refresh session'),
+    );
+    expect(family.currentTokenHash).toBe(originalHash);
+    expect(family.status).toBe(RefreshTokenFamilyStatus.Active);
+    expect(family).not.toHaveProperty('lastRotationOperationId');
+    expect(marker.status).toBe('pending');
   });
 
   it('revokes on replay from any committed generation', async () => {
@@ -310,7 +426,7 @@ describe('TokenSessionService', () => {
     expect(markers.documents[0].status).toBe('pending');
   });
 
-  it('leaves a confirmed pre-CAS interruption pending for lease takeover', async () => {
+  it('leaves an uncertain family CAS pending and takeover-eligible', async () => {
     const created = await createFamily();
     const originalHash = families.documents[0].currentTokenHash;
     families.failNextCas = true;
@@ -322,10 +438,23 @@ describe('TokenSessionService', () => {
     expect(families.documents[0].currentTokenHash).toBe(originalHash);
     expect(markers.documents[0].status).toBe('pending');
 
-    markers.documents[0].leaseExpiresAt = new Date(Date.now() - 1);
+    markers.documents[0].leaseExpiresAt = new Date(0);
     await expect(service.rotate(created.refreshToken)).resolves.toEqual(
       expect.objectContaining({ familyId: families.documents[0].familyId }),
     );
+  });
+
+  it('finalizes an uncertain family CAS that installed a successor', async () => {
+    const created = await createFamily();
+    const family = families.documents[0];
+    Object.assign(families, { failNextCasAfterUpdate: true });
+
+    await expect(service.rotate(created.refreshToken)).rejects.toEqual(
+      new UnauthorizedException('Invalid refresh session'),
+    );
+    expect(family.status).toBe(RefreshTokenFamilyStatus.Revoked);
+    expect(markers.documents[0].status).toBe('committed');
+    expect(markers.documents[0]).not.toHaveProperty('leaseExpiresAt');
   });
 
   it('fails closed when the family compare-and-swap returns no successor', async () => {

@@ -2,6 +2,20 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { Model } from 'mongoose';
 import {
+  AuthIdentifierStatus,
+  AuthIdentifierSubjectType,
+  AuthIdentifierType,
+} from '../auth/schemas/auth-identifier.schema';
+import {
+  AuthSubjectType,
+  RefreshTokenFamilyStatus,
+} from '../auth/schemas/refresh-token-family.schema';
+import {
+  SecurityActivityActorType,
+  SecurityActivityEventType,
+  SecurityActivityOutcome,
+} from '../auth/schemas/security-activity-event.schema';
+import {
   LibraryItemStatus,
   MemberAuthStatus,
   MemberStatus,
@@ -10,6 +24,8 @@ import {
 import { MembershipTypesService } from '../membership-types/membership-types.service';
 import { MembersService } from './members.service';
 import { MemberDocument } from './schemas/member.schema';
+import { queryResult } from '../../test/support/backend-coverage-fixtures';
+import { createMemberDocument as createSharedMemberDocument } from '../../test/support/critical-auth-fixtures';
 
 describe('MembersService', () => {
   const validMemberId = '665f4d3b8f4c8a001f5f0a12';
@@ -68,6 +84,32 @@ describe('MembersService', () => {
       validateActivePolicy: jest.fn().mockResolvedValue(activeMembershipType),
       ...overrides,
     } as unknown as MembershipTypesService;
+  }
+
+  function createServiceWithMember(
+    member: MemberDocument,
+    overrides?: {
+      model?: MockMemberModel;
+      membershipTypesService?: MembershipTypesService;
+      identifierModel?: ReturnType<typeof createIdentifierModel>;
+      refreshTokenFamilyModel?: { updateMany: jest.Mock };
+      securityActivityService?: { record: jest.Mock };
+      installExists?: boolean;
+    },
+  ): MembersService {
+    const model = overrides?.model ?? (jest.fn() as MockMemberModel);
+    model.findOne ??= jest.fn().mockReturnValue(queryResult(member));
+    if (overrides?.installExists !== false) {
+      model.exists ??= jest.fn().mockResolvedValue(null);
+    }
+
+    return new MembersService(
+      asModel(model),
+      overrides?.membershipTypesService ?? createMembershipTypesService(),
+      overrides?.identifierModel as never,
+      overrides?.refreshTokenFamilyModel as never,
+      overrides?.securityActivityService as never,
+    );
   }
 
   it('creates active members with normalized member number, active policy validation, and audit actor', async () => {
@@ -440,6 +482,250 @@ describe('MembersService', () => {
     expect(member).not.toHaveProperty('password');
   });
 
+  it('keeps a same-owner active identifier idempotent without a prior member login', async () => {
+    const member = createSharedMemberDocument({
+      id: 'member-id',
+      loginIdentifier: undefined,
+      authVersion: 4,
+    });
+    member.save = jest.fn().mockResolvedValue(member);
+    const identifierModel = createIdentifierModel({
+      _id: 'identifier-1',
+      status: AuthIdentifierStatus.Active,
+      subjectType: AuthIdentifierSubjectType.Member,
+      subjectId: 'member-id',
+    });
+    const service = createServiceWithMember(member, { identifierModel });
+
+    await service.setMemberCredentials(
+      validMemberId,
+      ' ADA@EXAMPLE.TEST ',
+      'replacement-password',
+      actor,
+    );
+
+    expect(identifierModel.findOne).toHaveBeenCalledTimes(1);
+    expect(identifierModel.findOne).toHaveBeenCalledWith({
+      normalizedIdentifier: 'ada@example.test',
+    });
+    expect(identifierModel.create).not.toHaveBeenCalled();
+    expect(identifierModel.updateOne).not.toHaveBeenCalled();
+    expect(member.authVersion).toBe(5);
+  });
+
+  it.each([
+    ['another member', AuthIdentifierSubjectType.Member],
+    ['staff', AuthIdentifierSubjectType.Staff],
+  ])(
+    'rejects an active identifier owned by %s',
+    async (_owner, subjectType) => {
+      const member = createSharedMemberDocument({ id: 'member-id' });
+      const identifierModel = createIdentifierModel({
+        _id: 'identifier-1',
+        status: AuthIdentifierStatus.Active,
+        subjectType,
+        subjectId: 'foreign-subject-id',
+      });
+      const service = createServiceWithMember(member, { identifierModel });
+
+      await expect(
+        service.setMemberCredentials(
+          validMemberId,
+          'reserved@example.test',
+          'replacement-password',
+          actor,
+        ),
+      ).rejects.toThrow('Sign-in identifier is already reserved');
+
+      expect(identifierModel.findOne).toHaveBeenCalledTimes(1);
+      expect(identifierModel.findOne).toHaveBeenCalledWith({
+        normalizedIdentifier: 'reserved@example.test',
+      });
+      expect(member.save).not.toHaveBeenCalled();
+      expect(identifierModel.updateOne).not.toHaveBeenCalled();
+    },
+  );
+
+  it('reactivates a released reservation with member ownership and no release timestamp', async () => {
+    const member = createSharedMemberDocument({
+      id: 'member-id',
+      authVersion: 2,
+    });
+    const identifierModel = createIdentifierModel({
+      _id: 'identifier-1',
+      status: AuthIdentifierStatus.Released,
+      subjectType: AuthIdentifierSubjectType.Staff,
+      subjectId: 'former-owner-id',
+      releasedAt: new Date('2026-01-01T00:00:00.000Z'),
+    });
+    const service = createServiceWithMember(member, { identifierModel });
+
+    await service.setMemberCredentials(
+      validMemberId,
+      'reactivated@example.test',
+      'replacement-password',
+      actor,
+    );
+
+    expect(identifierModel.findOne).toHaveBeenCalledTimes(1);
+    expect(identifierModel.findOne).toHaveBeenCalledWith({
+      normalizedIdentifier: 'reactivated@example.test',
+    });
+    expect(identifierModel.updateOne).toHaveBeenCalledWith(
+      { _id: 'identifier-1', status: AuthIdentifierStatus.Released },
+      {
+        $set: {
+          status: AuthIdentifierStatus.Active,
+          identifierType: AuthIdentifierType.LoginIdentifier,
+          subjectType: AuthIdentifierSubjectType.Member,
+          subjectId: 'member-id',
+          updatedBy: 'staff-user-id',
+        },
+        $unset: { releasedAt: '' },
+      },
+    );
+  });
+
+  it('maps an identifier create duplicate-key rejection to the fixed conflict', async () => {
+    const member = createSharedMemberDocument({ id: 'member-id' });
+    const identifierModel = createIdentifierModel(null);
+    identifierModel.create.mockRejectedValue({ code: 11000 });
+    const service = createServiceWithMember(member, { identifierModel });
+
+    await expect(
+      service.setMemberCredentials(
+        validMemberId,
+        'new@example.test',
+        'replacement-password',
+        actor,
+      ),
+    ).rejects.toThrow('Sign-in identifier is already reserved');
+
+    expect(identifierModel.findOne).toHaveBeenCalledTimes(1);
+    expect(identifierModel.findOne).toHaveBeenCalledWith({
+      normalizedIdentifier: 'new@example.test',
+    });
+    expect(member.save).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['nonduplicate coded object', { code: 42, reason: 'write-rejected' }],
+    ['nonduplicate object without a code', new Error('write-rejected')],
+    ['string primitive', 'write-rejected'],
+    ['null primitive', null],
+  ])('propagates an identifier create %s rejection unchanged', async (_shape, rejection) => {
+    const member = createSharedMemberDocument({ id: 'member-id' });
+    const identifierModel = createIdentifierModel(null);
+    identifierModel.create.mockRejectedValue(rejection);
+    const service = createServiceWithMember(member, { identifierModel });
+
+    await expect(
+      service.setMemberCredentials(
+        validMemberId,
+        'new@example.test',
+        'replacement-password',
+        actor,
+      ),
+    ).rejects.toBe(rejection);
+
+    expect(identifierModel.findOne).toHaveBeenCalledTimes(1);
+    expect(identifierModel.findOne).toHaveBeenCalledWith({
+      normalizedIdentifier: 'new@example.test',
+    });
+    expect(member.save).not.toHaveBeenCalled();
+  });
+
+  it('does not release its active reservation when credentials keep the same normalized identifier', async () => {
+    const member = createSharedMemberDocument({
+      id: 'member-id',
+      loginIdentifier: 'ada@example.test',
+      authVersion: 1,
+    });
+    const identifierModel = createIdentifierModel({
+      _id: 'identifier-1',
+      status: AuthIdentifierStatus.Active,
+      subjectType: AuthIdentifierSubjectType.Member,
+      subjectId: 'member-id',
+    });
+    const service = createServiceWithMember(member, { identifierModel });
+
+    await service.setMemberCredentials(
+      validMemberId,
+      ' ADA@EXAMPLE.TEST ',
+      'replacement-password',
+      actor,
+    );
+
+    expect(identifierModel.findOne).toHaveBeenCalledTimes(1);
+    expect(identifierModel.findOne).toHaveBeenCalledWith({
+      normalizedIdentifier: 'ada@example.test',
+    });
+    expect(member.save).toHaveBeenCalledTimes(1);
+    expect(identifierModel.create).not.toHaveBeenCalled();
+    expect(identifierModel.updateOne).not.toHaveBeenCalled();
+    expect(member.authVersion).toBe(2);
+  });
+
+  it('releases only the newly acquired reservation when credential persistence fails', async () => {
+    const persistenceError = new Error('member write rejected');
+    const member = createSharedMemberDocument({
+      id: 'member-id',
+      loginIdentifier: 'previous@example.test',
+      save: jest.fn().mockRejectedValue(persistenceError),
+    });
+    const identifierModel = createIdentifierModel(null);
+    const service = createServiceWithMember(member, { identifierModel });
+
+    await expect(
+      service.setMemberCredentials(
+        validMemberId,
+        'new@example.test',
+        'replacement-password',
+        actor,
+      ),
+    ).rejects.toBe(persistenceError);
+
+    expect(identifierModel.create).toHaveBeenCalledTimes(1);
+    expect(identifierModel.updateOne).toHaveBeenCalledTimes(1);
+    expect(identifierModel.updateOne).toHaveBeenCalledWith(
+      {
+        normalizedIdentifier: 'new@example.test',
+        subjectType: AuthIdentifierSubjectType.Member,
+        subjectId: 'member-id',
+        status: AuthIdentifierStatus.Active,
+      },
+      {
+        $set: expect.objectContaining({
+          status: AuthIdentifierStatus.Released,
+          releasedAt: expect.any(Date),
+        }),
+      },
+    );
+  });
+
+  it('saves hashed and versioned credentials without the optional identifier model', async () => {
+    const member = createSharedMemberDocument({
+      id: 'member-id',
+      loginIdentifier: 'previous@example.test',
+      authVersion: 6,
+    });
+    const service = createServiceWithMember(member);
+
+    await service.setMemberCredentials(
+      validMemberId,
+      ' ADA@EXAMPLE.TEST ',
+      'replacement-password',
+      actor,
+    );
+
+    expect(member.save).toHaveBeenCalledTimes(1);
+    expect(member.loginIdentifier).toBe('ada@example.test');
+    await expect(
+      bcrypt.compare('replacement-password', member.passwordHash!),
+    ).resolves.toBe(true);
+    expect(member.authVersion).toBe(7);
+  });
+
   it('leaves member credentials unchanged when the normalized login identifier conflicts', async () => {
     const member = createMemberDocument({
       authVersion: 2,
@@ -680,11 +966,332 @@ describe('MembersService', () => {
       expect.objectContaining({ $set: expect.objectContaining({ releasedAt: expect.any(Date) }) }),
     );
   });
+
+  it.each([0, 2])(
+    'creates without an optional exists method and preserves activeLoanCount %i',
+    async (activeLoanCount) => {
+      const modelRequests: Array<Record<string, unknown>> = [];
+      const model: MockMemberModel = jest
+        .fn()
+        .mockImplementation((request: Record<string, unknown>) => {
+          modelRequests.push(request);
+          const saved = createSharedMemberDocument({
+            id: 'member-id',
+            memberNumber: request.memberNumber as string,
+            fullName: request.fullName as string,
+            email: request.email as string | undefined,
+            phone: request.phone as string | undefined,
+            membershipTypeId: request.membershipTypeId as string,
+            status: request.status as MemberStatus,
+            activeLoanCount: request.activeLoanCount as number,
+          });
+          return { save: jest.fn().mockResolvedValue(saved) };
+        });
+      const service = new MembersService(
+        asModel(model),
+        createMembershipTypesService(),
+      );
+
+      const result = await service.create({
+        memberNumber: ' mem-0001 ',
+        fullName: 'Ada Lovelace',
+        membershipTypeId: '64f000000000000000000001',
+        activeLoanCount,
+      });
+
+      expect(model.exists).toBeUndefined();
+      expect(JSON.parse(JSON.stringify(modelRequests[0]))).toEqual({
+        memberNumber: 'MEM-0001',
+        fullName: 'Ada Lovelace',
+        membershipTypeId: '64f000000000000000000001',
+        status: MemberStatus.Active,
+        activeLoanCount,
+        authVersion: 0,
+      });
+      expect(JSON.parse(JSON.stringify(result))).toEqual({
+        id: 'member-id',
+        memberNumber: 'MEM-0001',
+        fullName: 'Ada Lovelace',
+        membershipTypeId: '64f000000000000000000001',
+        status: MemberStatus.Active,
+        activeLoanCount,
+      });
+    },
+  );
+
+  it('clears email without reserving an empty identifier and revokes sessions', async () => {
+    const member = createSharedMemberDocument({
+      id: 'member-id',
+      email: 'ada@example.test',
+      authVersion: 0,
+    });
+    const identifierModel = createIdentifierModel(null);
+    const refreshTokenFamilyModel = {
+      updateMany: jest.fn().mockResolvedValue({ modifiedCount: 2 }),
+    };
+    const securityActivityService = {
+      record: jest.fn().mockResolvedValue(undefined),
+    };
+    const service = createServiceWithMember(member, {
+      identifierModel,
+      refreshTokenFamilyModel,
+      securityActivityService,
+    });
+
+    const result = await service.update(validMemberId, { email: '   ' });
+
+    expect(result).toEqual({
+      id: 'member-id',
+      memberNumber: 'MEM-0001',
+      fullName: 'Library Member',
+      email: '',
+      phone: '+15550000001',
+      membershipTypeId: '507f1f77bcf86cd799439024',
+      status: MemberStatus.Active,
+      activeLoanCount: 0,
+    });
+    expect(member.authVersion).toBe(1);
+    expect(member.updatedBy).toBeUndefined();
+    expect(identifierModel.findOne).not.toHaveBeenCalled();
+    expect(identifierModel.create).not.toHaveBeenCalled();
+    expect(identifierModel.updateOne).toHaveBeenCalledTimes(1);
+    expect(identifierModel.updateOne).toHaveBeenCalledWith(
+      {
+        normalizedIdentifier: 'ada@example.test',
+        subjectType: AuthIdentifierSubjectType.Member,
+        subjectId: 'member-id',
+        status: AuthIdentifierStatus.Active,
+      },
+      {
+        $set: {
+          status: AuthIdentifierStatus.Released,
+          releasedAt: expect.any(Date),
+          updatedBy: 'system',
+        },
+      },
+    );
+    expect(refreshTokenFamilyModel.updateMany).toHaveBeenCalledWith(
+      {
+        subjectType: AuthSubjectType.Member,
+        subjectId: 'member-id',
+        status: RefreshTokenFamilyStatus.Active,
+      },
+      {
+        $set: {
+          status: RefreshTokenFamilyStatus.Revoked,
+          revokedAt: expect.any(Date),
+          revokedReason: 'member-account-updated',
+        },
+        $unset: { currentTokenHash: '', previousTokenHash: '' },
+      },
+    );
+    expect(securityActivityService.record).toHaveBeenCalledTimes(1);
+    expect(securityActivityService.record).toHaveBeenCalledWith({
+      actorType: SecurityActivityActorType.System,
+      actorId: undefined,
+      targetType: 'member',
+      targetId: 'member-id',
+      subjectType: 'member',
+      subjectId: 'member-id',
+      outcome: SecurityActivityOutcome.Success,
+      eventType: SecurityActivityEventType.IdentifierReservationRecovered,
+      reasonCategory: 'member-identifier-updated',
+    });
+    expect(JSON.stringify(securityActivityService.record.mock.calls)).not.toContain(
+      'ada@example.test',
+    );
+  });
+
+  it('skips identifier and lifecycle effects for the same normalized email', async () => {
+    const member = createSharedMemberDocument({
+      id: 'member-id',
+      email: 'ada@example.test',
+      authVersion: 4,
+    });
+    const identifierModel = createIdentifierModel(null);
+    const refreshTokenFamilyModel = {
+      updateMany: jest.fn().mockResolvedValue({ modifiedCount: 0 }),
+    };
+    const securityActivityService = {
+      record: jest.fn().mockResolvedValue(undefined),
+    };
+    const service = createServiceWithMember(member, {
+      identifierModel,
+      refreshTokenFamilyModel,
+      securityActivityService,
+    });
+
+    const result = await service.update(validMemberId, {
+      email: ' ADA@EXAMPLE.TEST ',
+    });
+
+    expect(result).toEqual({
+      id: 'member-id',
+      memberNumber: 'MEM-0001',
+      fullName: 'Library Member',
+      email: 'ada@example.test',
+      phone: '+15550000001',
+      membershipTypeId: '507f1f77bcf86cd799439024',
+      status: MemberStatus.Active,
+      activeLoanCount: 0,
+    });
+    expect(member.authVersion).toBe(4);
+    expect(identifierModel.findOne).not.toHaveBeenCalled();
+    expect(identifierModel.create).not.toHaveBeenCalled();
+    expect(identifierModel.updateOne).not.toHaveBeenCalled();
+    expect(refreshTokenFamilyModel.updateMany).not.toHaveBeenCalled();
+    expect(securityActivityService.record).not.toHaveBeenCalled();
+  });
+
+  it('initializes an absent auth version and revokes only active member families on status change', async () => {
+    const member = createSharedMemberDocument({
+      id: 'member-id',
+      status: MemberStatus.Active,
+      authVersion: undefined,
+    });
+    const identifierModel = createIdentifierModel(null);
+    const refreshTokenFamilyModel = {
+      updateMany: jest.fn().mockResolvedValue({ modifiedCount: 1 }),
+    };
+    const securityActivityService = {
+      record: jest.fn().mockResolvedValue(undefined),
+    };
+    const service = createServiceWithMember(member, {
+      identifierModel,
+      refreshTokenFamilyModel,
+      securityActivityService,
+    });
+
+    const result = await service.update(validMemberId, {
+      status: MemberStatus.Suspended,
+    });
+
+    expect(result).toEqual({
+      id: 'member-id',
+      memberNumber: 'MEM-0001',
+      fullName: 'Library Member',
+      email: 'member@example.test',
+      phone: '+15550000001',
+      membershipTypeId: '507f1f77bcf86cd799439024',
+      status: MemberStatus.Suspended,
+      activeLoanCount: 0,
+    });
+    expect(member.authVersion).toBe(1);
+    expect(identifierModel.findOne).not.toHaveBeenCalled();
+    expect(identifierModel.create).not.toHaveBeenCalled();
+    expect(identifierModel.updateOne).not.toHaveBeenCalled();
+    expect(refreshTokenFamilyModel.updateMany).toHaveBeenCalledWith(
+      {
+        subjectType: AuthSubjectType.Member,
+        subjectId: 'member-id',
+        status: RefreshTokenFamilyStatus.Active,
+      },
+      {
+        $set: {
+          status: RefreshTokenFamilyStatus.Revoked,
+          revokedAt: expect.any(Date),
+          revokedReason: 'member-account-updated',
+        },
+        $unset: { currentTokenHash: '', previousTokenHash: '' },
+      },
+    );
+    expect(securityActivityService.record).toHaveBeenCalledTimes(1);
+    expect(securityActivityService.record).toHaveBeenCalledWith({
+      actorType: SecurityActivityActorType.System,
+      actorId: undefined,
+      targetType: 'member',
+      targetId: 'member-id',
+      subjectType: 'member',
+      subjectId: 'member-id',
+      outcome: SecurityActivityOutcome.Success,
+      eventType: SecurityActivityEventType.AccountStatusChanged,
+      reasonCategory: 'member-status-updated',
+    });
+    expect(JSON.stringify(securityActivityService.record.mock.calls)).not.toContain(
+      'stored-password-hash',
+    );
+  });
+
+  it('completes the owned member update when every optional integration is absent', async () => {
+    const member = createSharedMemberDocument({
+      id: 'member-id',
+      email: 'old@example.test',
+      authVersion: 2,
+    });
+    const service = createServiceWithMember(member, {
+      identifierModel: undefined,
+      refreshTokenFamilyModel: undefined,
+      securityActivityService: undefined,
+      installExists: false,
+    });
+
+    const result = await service.update(validMemberId, {
+      email: 'new@example.test',
+      status: MemberStatus.Inactive,
+    });
+
+    expect(member.save).toHaveBeenCalledTimes(1);
+    expect(member.authVersion).toBe(4);
+    expect(result).toEqual({
+      id: 'member-id',
+      memberNumber: 'MEM-0001',
+      fullName: 'Library Member',
+      email: 'new@example.test',
+      phone: '+15550000001',
+      membershipTypeId: '507f1f77bcf86cd799439024',
+      status: MemberStatus.Inactive,
+      activeLoanCount: 0,
+    });
+  });
+
+  it.each([
+    ['absent', undefined],
+    ['locked', MemberAuthStatus.Locked],
+    ['reset-required', MemberAuthStatus.ResetRequired],
+  ])(
+    'uses the same public active-member error for %s auth status',
+    async (_label, authStatus) => {
+      const member = createSharedMemberDocument({
+        status: MemberStatus.Active,
+        authStatus,
+      });
+      const service = createServiceWithMember(member);
+
+      await expect(service.findActiveById(validMemberId)).rejects.toThrow(
+        'Active member not found',
+      );
+    },
+  );
+
+  it('clamps remaining policy allowance at zero above the tier maximum', async () => {
+    const member = createSharedMemberDocument({
+      id: 'member-id',
+      activeLoanCount: 5,
+      status: MemberStatus.Active,
+    });
+    const service = createServiceWithMember(member);
+
+    await expect(service.getPolicyStatus(validMemberId)).resolves.toEqual({
+      memberId: 'member-id',
+      status: MemberStatus.Active,
+      membershipTypeId: '507f1f77bcf86cd799439024',
+      maxActiveLoans: 3,
+      activeLoanCount: 5,
+      remainingAllowance: 0,
+      eligibleByStatus: true,
+      withinLimit: false,
+      limitReached: true,
+    });
+  });
 });
 
-function createIdentifierModel(existing: unknown) {
+function createIdentifierModel(existing: unknown | unknown[]) {
+  const results = Array.isArray(existing) ? [...existing] : [existing];
+
   return {
-    findOne: jest.fn().mockReturnValue({ exec: jest.fn().mockResolvedValue(existing) }),
+    findOne: jest
+      .fn()
+      .mockImplementation(() => queryResult(results.shift() ?? null)),
     create: jest.fn().mockResolvedValue(undefined),
     updateOne: jest.fn().mockResolvedValue({}),
   };
