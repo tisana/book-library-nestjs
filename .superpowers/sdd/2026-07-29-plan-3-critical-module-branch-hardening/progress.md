@@ -17,7 +17,7 @@ This ledger is append-only evidence for Plan 3. Existing evidence is preserved; 
 | 3 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task3_implementer`) | high | 1cf23a49aca3df4023b0c6f93208432bbef5d6c6 | b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb | gpt-5.6-sol, high (`/root/plan3_task3_review`) | b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb | approved | 1 |
 | 4 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task4_implementer`) | high | c6735fc56c40fa0f51b691c0dc2e3c4831dfb0d7 | 5bffafdf4224b5c7e22e945f0ae322900af46384 | gpt-5.6-sol, high (`/root/plan3_task4_review`) | 5bffafdf4224b5c7e22e945f0ae322900af46384 | approved | 1 |
 | 5 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task5_implementer`) | high | 38491688015d4e7945a7ed63f0f6fc8cb2cc98ab | 11c14bc11b7636382ed367f5eba4ec6297363de4 | gpt-5.6-sol, high (`/root/plan3_task5_review`) | 11c14bc11b7636382ed367f5eba4ec6297363de4 | approved | 3 |
-| 6 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
+| 6 | in-progress | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task6_implementer`) | high | 76af392e25141b91c088596c44dc10cba7a4c9c6 | not-run | gpt-5.6-sol, high (separate context; actual not-run) | not-run | not-run | not-run |
 | 7 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 8 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 9 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
@@ -138,3 +138,16 @@ Task 5: fix round 1/5 (3 addressed, 0 open pending re-review — terminal TTL or
 Task 5: fix round 1/5 (3 addressed, 0 open — terminal TTL ordering and recovery/cleanup selectors; commits 0c94b1a..11c14bc)
 
 Task 5: complete (commits 3849168..11c14bc, review clean)
+
+## Task 6 evidence chronology
+
+- Starting commit: `76af392e25141b91c088596c44dc10cba7a4c9c6`; requested/actual implementer `gpt-5.6-sol`, high, identity `/root/plan3_task6_implementer`; substitution none.
+- RED: the exact focused members command exited `1` before execution at the intentionally absent test-local `createServiceWithMember` seam referenced by the new boundary cases; production code was unchanged.
+- GREEN: the exact focused members command exited `0` with `34/34` tests; member-service branches reached `152/188`, exceeding the Task 6 floor of `151/188` with the denominator unchanged.
+- Identifier proof: public member operations cover same-owner idempotency, foreign member/staff denial, released-owner reactivation with `releasedAt` cleared, duplicate-key normalization, and unchanged propagation of nonduplicate object and primitive rejections.
+- Credential proof: public credential updates cover same-normalized no-self-release behavior, compensation limited to a newly acquired reservation, and successful hash/save/version behavior without the optional identifier model. Verification uses `bcrypt.compare`; credential and token material is absent from snapshots and evidence.
+- Approved fixtures: Plan 3 `createMemberDocument` is used only for new Task 6 documents; Plan 2 `queryResult` supplies the exact default `findOne().exec()` service-factory query. Both imports remain read-only and no chain implementation is copied.
+- Focused non-fixing ESLint and `git diff --check` exited `0`.
+- Full backend unit coverage regression exited `0` with `35/35` suites and `457/457` tests; overall statements `2959/3659`, branches `2088/2815`, functions `492/605`, lines `2840/3496`.
+- Implementer scope review found no production, configuration, baseline, Plan 2 fixture/test, permission test, e2e, frontend, generated-output, private-method-access, snapshot, or credential/token disclosure change. Generated coverage and test-result outputs remain unstaged.
+- Task 6 implementation commit uses subject `test: cover member identifier boundaries`; immutable SHA is returned in the implementer handoff. Separate-context reviewer, review commit, verdict, and findings resolved remain `not-run`.
