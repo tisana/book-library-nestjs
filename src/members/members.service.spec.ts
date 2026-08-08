@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import {
   AuthIdentifierStatus,
   AuthIdentifierSubjectType,
+  AuthIdentifierType,
 } from '../auth/schemas/auth-identifier.schema';
 import {
   LibraryItemStatus,
@@ -469,10 +470,10 @@ describe('MembersService', () => {
     expect(member).not.toHaveProperty('password');
   });
 
-  it('keeps a same-owner active identifier idempotent', async () => {
+  it('keeps a same-owner active identifier idempotent without a prior member login', async () => {
     const member = createSharedMemberDocument({
       id: 'member-id',
-      loginIdentifier: 'ada@example.test',
+      loginIdentifier: undefined,
       authVersion: 4,
     });
     member.save = jest.fn().mockResolvedValue(member);
@@ -491,6 +492,10 @@ describe('MembersService', () => {
       actor,
     );
 
+    expect(identifierModel.findOne).toHaveBeenCalledTimes(1);
+    expect(identifierModel.findOne).toHaveBeenCalledWith({
+      normalizedIdentifier: 'ada@example.test',
+    });
     expect(identifierModel.create).not.toHaveBeenCalled();
     expect(identifierModel.updateOne).not.toHaveBeenCalled();
     expect(member.authVersion).toBe(5);
@@ -520,6 +525,10 @@ describe('MembersService', () => {
         ),
       ).rejects.toThrow('Sign-in identifier is already reserved');
 
+      expect(identifierModel.findOne).toHaveBeenCalledTimes(1);
+      expect(identifierModel.findOne).toHaveBeenCalledWith({
+        normalizedIdentifier: 'reserved@example.test',
+      });
       expect(member.save).not.toHaveBeenCalled();
       expect(identifierModel.updateOne).not.toHaveBeenCalled();
     },
@@ -546,14 +555,20 @@ describe('MembersService', () => {
       actor,
     );
 
+    expect(identifierModel.findOne).toHaveBeenCalledTimes(1);
+    expect(identifierModel.findOne).toHaveBeenCalledWith({
+      normalizedIdentifier: 'reactivated@example.test',
+    });
     expect(identifierModel.updateOne).toHaveBeenCalledWith(
       { _id: 'identifier-1', status: AuthIdentifierStatus.Released },
       {
-        $set: expect.objectContaining({
+        $set: {
           status: AuthIdentifierStatus.Active,
+          identifierType: AuthIdentifierType.LoginIdentifier,
           subjectType: AuthIdentifierSubjectType.Member,
           subjectId: 'member-id',
-        }),
+          updatedBy: 'staff-user-id',
+        },
         $unset: { releasedAt: '' },
       },
     );
@@ -574,6 +589,10 @@ describe('MembersService', () => {
       ),
     ).rejects.toThrow('Sign-in identifier is already reserved');
 
+    expect(identifierModel.findOne).toHaveBeenCalledTimes(1);
+    expect(identifierModel.findOne).toHaveBeenCalledWith({
+      normalizedIdentifier: 'new@example.test',
+    });
     expect(member.save).not.toHaveBeenCalled();
   });
 
@@ -597,6 +616,10 @@ describe('MembersService', () => {
       ),
     ).rejects.toBe(rejection);
 
+    expect(identifierModel.findOne).toHaveBeenCalledTimes(1);
+    expect(identifierModel.findOne).toHaveBeenCalledWith({
+      normalizedIdentifier: 'new@example.test',
+    });
     expect(member.save).not.toHaveBeenCalled();
   });
 
@@ -621,6 +644,12 @@ describe('MembersService', () => {
       actor,
     );
 
+    expect(identifierModel.findOne).toHaveBeenCalledTimes(1);
+    expect(identifierModel.findOne).toHaveBeenCalledWith({
+      normalizedIdentifier: 'ada@example.test',
+    });
+    expect(member.save).toHaveBeenCalledTimes(1);
+    expect(identifierModel.create).not.toHaveBeenCalled();
     expect(identifierModel.updateOne).not.toHaveBeenCalled();
     expect(member.authVersion).toBe(2);
   });

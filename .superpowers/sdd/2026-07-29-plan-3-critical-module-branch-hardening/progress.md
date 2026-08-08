@@ -151,3 +151,14 @@ Task 5: complete (commits 3849168..11c14bc, review clean)
 - Full backend unit coverage regression exited `0` with `35/35` suites and `457/457` tests; overall statements `2959/3659`, branches `2088/2815`, functions `492/605`, lines `2840/3496`.
 - Implementer scope review found no production, configuration, baseline, Plan 2 fixture/test, permission test, e2e, frontend, generated-output, private-method-access, snapshot, or credential/token disclosure change. Generated coverage and test-result outputs remain unstaged.
 - Task 6 implementation commit uses subject `test: cover member identifier boundaries`; immutable SHA is returned in the implementer handoff. Separate-context reviewer, review commit, verdict, and findings resolved remain `not-run`.
+
+## Task 6 Fix Round 1
+
+- Review of implementation commit `75cb4f501dfa8d878a85bd1fa30ba2aa6f2a8ca2` requested changes with Important I1-I2 and no Critical or Minor findings.
+- I1 is addressed with exact normalized reservation lookup selectors across owner, recovery, and create-error paths, plus the complete released-reservation reactivation `$set` and exact `releasedAt` unset.
+- I2 is addressed by removing the prior member login from the reservation-idempotency fixture while retaining it in the same-normalized post-save cleanup case; the latter also proves the save completed and no identifier create/update occurred.
+- The exact focused members command exited `0` after I1 and again after the combined I1+I2 fix; final result `34/34` tests with member branches `152/188` and the denominator unchanged.
+- Focused non-fixing ESLint and `git diff --check` exited `0`.
+- Reviewer-authored `task-06-review.md` is preserved unchanged. Fix Round 1 status: pending separate-context re-review; reviewer verdict and findings-resolved fields remain unchanged.
+
+Task 6: fix round 1/5 (2 addressed, 0 open pending re-review — exact reservation selectors and distinct cleanup evidence)

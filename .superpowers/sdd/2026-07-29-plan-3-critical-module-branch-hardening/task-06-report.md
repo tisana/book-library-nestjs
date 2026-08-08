@@ -101,3 +101,28 @@ Pending; the immutable implementation SHA and exact subject `test: cover member 
 - Every new case invokes only public `create`, `update`, or `setMemberCredentials` behavior; no private member-service method is accessed.
 - Separate-context review is intentionally deferred; reviewer identity, review commit, verdict, and findings remain `not-run`.
 - Implementer concerns: none.
+
+## Fix Round 1
+
+### Status
+Important findings I1 and I2 addressed; separate-context re-review remains pending.
+
+### Findings addressed
+- I1 adds exact `{ normalizedIdentifier }` lookup assertions to the same-owner, foreign-owner, released-reservation, duplicate-key, nonduplicate-error, and same-normalized public credential cases. Released-reservation recovery now asserts the complete `$set`, including login-identifier type and staff audit attribution, plus the exact `releasedAt` unset.
+- I2 separates the two success contracts: `keeps a same-owner active identifier idempotent without a prior member login` proves reservation idempotency when no old login can trigger cleanup, while `does not release its active reservation when credentials keep the same normalized identifier` retains the prior login and proves the completed save causes no post-save self-release.
+
+### Covering file and titles
+- File: `src/members/members.service.spec.ts`.
+- I1: `keeps a same-owner active identifier idempotent without a prior member login`; `rejects an active identifier owned by another member`; `rejects an active identifier owned by staff`; `reactivates a released reservation with member ownership and no release timestamp`; `maps an identifier create duplicate-key rejection to the fixed conflict`; the nonduplicate object/primitive rejection matrix; and `does not release its active reservation when credentials keep the same normalized identifier`.
+- I2: `keeps a same-owner active identifier idempotent without a prior member login`; `does not release its active reservation when credentials keep the same normalized identifier`.
+
+### Commands and outputs
+- After I1: `npx jest --runInBand members/members.service.spec.ts --coverage --collectCoverageFrom=members/members.service.ts --coverageReporters=text` exited `0`; `34/34` tests passed and member-service branches remained `152/188` (`80.85%`).
+- Final I1+I2: the same exact focused command exited `0`; `1/1` suite and `34/34` tests passed. Statements were `152/154`, branches `152/188`, functions `21/21`, and lines `145/147`; the required branch denominator remains exactly `188`.
+- `npx eslint src/members/members.service.spec.ts --no-fix`: exit `0`; focused non-fixing lint.
+- `git diff --check`: exit `0`.
+
+### Review state
+- Reviewer `/root/plan3_task6_review`, `gpt-5.6-sol`, high, requested I1 and I2 against `75cb4f501dfa8d878a85bd1fa30ba2aa6f2a8ca2`; Critical `0`, Important `2`, Minor `0`.
+- Reviewer-authored `task-06-review.md` is preserved unchanged.
+- Fix Round 1 verdict remains pending separate-context re-review; open findings are recorded as addressed by the implementer, not yet reviewer-verified.
