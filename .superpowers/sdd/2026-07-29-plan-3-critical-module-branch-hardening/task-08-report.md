@@ -106,3 +106,23 @@ Pending; the immutable implementation SHA and exact subject `test: cover borrowi
 - Every new case invokes only public `returnBorrowing`; no private service method is accessed, and creation, duplicate-return, and ownership cases are not duplicated.
 - Separate-context review is intentionally deferred; reviewer identity, review commit, verdict, and findings remain `not-run`.
 - Implementer concerns: none.
+
+## Final review closeout
+
+### Status
+Complete; approved by separate-context review with no findings.
+
+### Commits
+- Implementation and reviewed commit: `04a5d6d74800be30d6a247011475605d326dc0eb` (`test: cover borrowing return boundaries`).
+- Starting commit: `6fdd9888fb04bcc089e4fc9681b0f806cb7e0ea5`.
+
+### Final review
+- Reviewer: `gpt-5.6-sol`, high, identity `/root/plan3_task8_review`; substitution none.
+- Verdict: approved at implementation commit `04a5d6d74800be30d6a247011475605d326dc0eb`.
+- Independent focused verification: borrowing `22/22` tests and `105/116` branches; permission `11/11` tests and `69/74` branches.
+- Findings: Critical `0`, Important `0`, Minor `0`, open `0`, resolved `0`.
+
+### Controller resolution
+- The brief's literal focused permission expectation of `71/74` is inaccurate: implementation and independent review both reproduce `69/74` for the isolated permission spec.
+- This is not an implementation gap. Permission source/spec are unchanged, and established real-service calls in `src/auth/permissions.guard.spec.ts` at lines `55` and `89` cover the line `131` roles default and line `133` auth-version default omitted by the focused permission spec.
+- Fresh authoritative full-source evidence remains exactly `71/74` (`95.94%`), so Task 8 satisfied the monitor intent without mutating permission tests or source.
