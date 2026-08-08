@@ -19,7 +19,7 @@ This ledger is append-only evidence for Plan 3. Existing evidence is preserved; 
 | 5 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task5_implementer`) | high | 38491688015d4e7945a7ed63f0f6fc8cb2cc98ab | 11c14bc11b7636382ed367f5eba4ec6297363de4 | gpt-5.6-sol, high (`/root/plan3_task5_review`) | 11c14bc11b7636382ed367f5eba4ec6297363de4 | approved | 3 |
 | 6 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task6_implementer`) | high | 76af392e25141b91c088596c44dc10cba7a4c9c6 | 59b2d60fdf9539adee0c600785144f9bfb29c007 | gpt-5.6-sol, high (`/root/plan3_task6_review`) | 59b2d60fdf9539adee0c600785144f9bfb29c007 | approved | 2 |
 | 7 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task7_implementer`) | high | 2e278c81e2650f540350adf9c9d0168ab1b63064 | 114cdffc95f127d0bd2d3bcca054b4d4d074a9f6 | gpt-5.6-sol, high (`/root/plan3_task7_review`) | 114cdffc95f127d0bd2d3bcca054b4d4d074a9f6 | approved | 0 |
-| 8 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
+| 8 | implementation-complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task8_implementer`) | high | 6fdd9888fb04bcc089e4fc9681b0f806cb7e0ea5 | pending implementer handoff | gpt-5.6-sol, high (separate context; actual not-run) | not-run | not-run | not-run |
 | 9 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 10 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 
@@ -184,3 +184,16 @@ Task 6: complete (commits 76af392..59b2d60, review clean)
 - Final review: approved by separate-context `gpt-5.6-sol`, high, identity `/root/plan3_task7_review`, against implementation commit `114cdffc95f127d0bd2d3bcca054b4d4d074a9f6`; Critical `0`, Important `0`, Minor `0`, open findings `0`, resolved `0`. Independent focused verification passed `44/44` tests with member-service branches exactly `164/188`.
 
 Task 7: complete (commits 2e278c8..114cdff, review clean)
+
+## Task 8 evidence chronology
+
+- Starting commit: `6fdd9888fb04bcc089e4fc9681b0f806cb7e0ea5`; requested/actual implementer `gpt-5.6-sol`, high, identity `/root/plan3_task8_implementer`; substitution none.
+- RED: the exact focused borrowing command exited `1` before test execution with `TS2353` at both intentionally absent deterministic `existingBorrowing` lifecycle-fixture options; production code was unchanged.
+- GREEN: the exact focused borrowing command exited `0` with `22/22` tests; borrowing-service branches reached `105/116`, meeting the Task 8 floor with the denominator unchanged.
+- Return-boundary proof: the public overdue return preserves exact `2026-07-31T05:00:00.000Z`, increments availability, clamps a zero loan count at zero, and returns the stable `_id` fallback when the optional document `id` virtual is absent. The non-returned cancelled state rejects with fixed `Borrowing record cannot be returned`, performs no borrowing/book/member save, and ends the session exactly once.
+- The two initially specified cases reached `104/116` because the earlier active-return case already covered the explicit-time branch. The distinct public response fallback was added inside the overdue case, not as a third scenario, and raised the pair to `105/116` without source/configuration/denominator changes.
+- Focused permission monitoring passed `11/11` tests but measured `69/74`; read-only diagnosis proved permission source/spec are unchanged from the Plan 3 base and showed the focused spec alone omits defaults at lines `131` and `133` that established cross-spec execution covers.
+- Full `npm run test:cov` exited `0` with `35/35` suites and `469/469` tests; overall statements `2960/3659`, branches `2103/2815`, functions `492/605`, lines `2841/3496`. Fresh full-source permission coverage is the planning baseline `71/74` (`95.94%`), with only lines `89`, `99`, and `132` uncovered.
+- Focused non-fixing ESLint and `git diff --check` exited `0` before report append; final post-report verification follows before staging.
+- Implementer scope review found no production, configuration, baseline, Plan 2, permission, e2e, frontend, generated-output, or private-method-access change. Generated coverage and test-result outputs remain unstaged.
+- Task 8 implementation commit uses subject `test: cover borrowing return boundaries`; immutable SHA is returned in the implementer handoff. Separate-context reviewer, review commit, verdict, and findings resolved remain `not-run`.

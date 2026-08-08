@@ -13,6 +13,7 @@ import {
   MemberStatus,
 } from '../common/enums/library-status.enum';
 import { BorrowingQueryDto } from './dto/borrowing.dto';
+import { createBorrowingDocument as createSharedBorrowingDocument } from '../../test/support/critical-auth-fixtures';
 
 describe('BorrowingsService', () => {
   const actor = { id: 'staff-1', email: 'staff@example.com', roles: [] };
@@ -256,6 +257,50 @@ describe('BorrowingsService', () => {
     expect(fixture.member.activeLoanCount).toBe(0);
   });
 
+  it('returns an overdue loan at the supplied time without a negative loan count', async () => {
+    const returnedAt = '2026-07-31T05:00:00.000Z';
+    const fixture = createBorrowingLifecycleFixture({
+      existingBorrowing: {
+        id: undefined,
+        status: LoanState.Overdue,
+        save: jest.fn().mockResolvedValue(undefined),
+      },
+    });
+    const service = createService(fixture.borrowingModel, fixture.dependencies);
+
+    const result = await service.returnBorrowing(
+      fixture.borrowingId,
+      { returnedAt },
+      actor,
+    );
+
+    expect(result.returnedAt).toBe(returnedAt);
+    expect(result.id).toBe(fixture.borrowingId);
+    expect(fixture.member.activeLoanCount).toBe(0);
+    expect(fixture.book.availableQuantity).toBe(3);
+  });
+
+  it('denies a non-returned loan in an illegal state without writes', async () => {
+    const borrowingSave = jest.fn();
+    const fixture = createBorrowingLifecycleFixture({
+      existingBorrowing: {
+        status: LoanState.Cancelled,
+        returnedAt: undefined,
+        save: borrowingSave,
+      },
+    });
+    const service = createService(fixture.borrowingModel, fixture.dependencies);
+
+    await expect(
+      service.returnBorrowing(fixture.borrowingId, {}, actor),
+    ).rejects.toMatchObject({ message: 'Borrowing record cannot be returned' });
+
+    expect(borrowingSave).not.toHaveBeenCalled();
+    expect(fixture.book.save).not.toHaveBeenCalled();
+    expect(fixture.member.save).not.toHaveBeenCalled();
+    expect(fixture.session.endSession).toHaveBeenCalledTimes(1);
+  });
+
   it('rejects a duplicate return without changing availability or loan count', async () => {
     const fixture = createBorrowingLifecycleFixture();
     const borrowing = createBorrowingDocument({
@@ -441,7 +486,12 @@ function objectId(value: string) {
   return { toString: () => value };
 }
 
-function createBorrowingLifecycleFixture(options: { borrowingSave?: jest.Mock } = {}) {
+function createBorrowingLifecycleFixture(
+  options: {
+    borrowingSave?: jest.Mock;
+    existingBorrowing?: Record<string, unknown>;
+  } = {},
+) {
   const memberId = '665f4d3b8f4c8a001f5f0a12';
   const bookId = '665f4d3b8f4c8a001f5f0a13';
   const categoryId = '665f4d3b8f4c8a001f5f0a14';
@@ -499,6 +549,19 @@ function createBorrowingLifecycleFixture(options: { borrowingSave?: jest.Mock } 
   (borrowingModel as { exists: jest.Mock }).exists = jest
     .fn()
     .mockReturnValue(overdueQuery);
+  if (options.existingBorrowing) {
+    const existingBorrowing = createSharedBorrowingDocument({
+      _id: objectId(borrowingId),
+      id: borrowingId,
+      memberId: member._id,
+      bookId: book._id,
+      bookCategoryId: category._id,
+      ...options.existingBorrowing,
+    } as never);
+    (borrowingModel as { findOne: jest.Mock }).findOne = jest
+      .fn()
+      .mockReturnValue(createSessionQuery(existingBorrowing));
+  }
   const memberQuery = createSessionQuery(member);
   const bookQuery = createSessionQuery(book);
   const categoryQuery = createSessionQuery(category);
