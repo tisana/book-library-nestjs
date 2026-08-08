@@ -41,5 +41,22 @@ Task 3 — Offline repair transaction, aggregate, and compensation recovery.
 - Verified terminal event callbacks precede the corresponding parent terminal update callbacks on success and cancellation (`src/auth/auth-identifier-repair.service.spec.ts:1484`, `:1506`, `:1575`, `:1608`).
 - Verified session cleanup assertions cover checkpoint, transaction-support, null/duplicate/nonduplicate/missing-subject failures and successful apply/cancel paths (`src/auth/auth-identifier-repair.service.spec.ts:1123`, `:1178`, `:1206`, `:1234`, `:1261`, `:1318`, `:1365`, `:1454`, `:1557`, `:1651`).
 
+## Fix Round 1 Re-review
+
+### Finding Verdicts
+
+- Important TQ-1: **ADDRESSED** at `src/auth/auth-identifier-repair.service.spec.ts:1632`. The cancellation test now compares the complete `identifierModel.updateOne.mock.calls` sequence to the sole permitted final conflict-reset request. Any additional reservation release, including a request filtered by `{ _id: undefined }`, changes the sequence and fails the assertion.
+- Relied-on fix evidence: scoped diff `235b4cbd39ad089454a4decc405fdf25226c51de..b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb` read once, exit 0; appended fix report read, exit 0; focused repair Jest exit 0 (`46/46`, `103/110` branches); focused non-fixing ESLint exit 0; `git diff --check` exit 0. No broad suite was rerun by the reviewer.
+
+### New Breakage
+
+- Critical: none.
+- Important: none. The fix is confined to the observable cancellation assertion and Task 3 ledgers/review history; it does not change production behavior or weaken another Task 3 assertion.
+
+### Out-of-Scope
+
+- Prior Minor TQ-2 remains deferred to final whole-branch triage as directed. The fix does not touch the `expect.any(String)` aggregate-value assertions, and that Minor does not block this scoped fix-round verdict.
+- The scoped package also carries the previously authored reviewer ledger and appended implementation/progress evidence. Those changes preserve review history and do not create a new Critical or Important issue.
+
 ## Verdict
-changes requested — Important `1`, Minor `1`, open findings `2`; not approved.
+approved — Fix Round 1 Important TQ-1 is addressed; new Critical `0`, new Important `0`. Prior Minor TQ-2 is deferred and out of this fix loop.

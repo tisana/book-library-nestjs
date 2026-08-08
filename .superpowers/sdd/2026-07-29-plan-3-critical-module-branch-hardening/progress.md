@@ -14,7 +14,7 @@ This ledger is append-only evidence for Plan 3. Existing evidence is preserved; 
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task1_implementer`) | high | e52711c7f6fd1174f4ff85280152ced174724bfe | 25e37048c05c2b3dd81256d1ab31eb21bad192ec | gpt-5.6-sol, high (`/root/plan3_task1_review`) | 25e37048c05c2b3dd81256d1ab31eb21bad192ec | approved | 0 |
 | 2 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task2_implementer`) | high | b05b9e90a8669adf69970014927335d01cff2a63 | fbfc378dd1c002aa4bff3456c4e99fc32b6ee308 | gpt-5.6-sol, high (`/root/plan3_task2_review`) | fbfc378dd1c002aa4bff3456c4e99fc32b6ee308 | approved | 0 |
-| 3 | in-progress | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task3_implementer`) | high | 1cf23a49aca3df4023b0c6f93208432bbef5d6c6 | not-run | gpt-5.6-sol, high (separate context; actual not-run) | not-run | not-run | not-run |
+| 3 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task3_implementer`) | high | 1cf23a49aca3df4023b0c6f93208432bbef5d6c6 | b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb | gpt-5.6-sol, high (`/root/plan3_task3_review`) | b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb | approved | 1 |
 | 4 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 5 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 6 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
@@ -73,3 +73,8 @@ Task 2: complete (commits b05b9e9..fbfc378, review clean)
 - Focused non-fixing ESLint and `git diff --check` exited 0.
 - Fix Round 1 status: pending separate-context re-review; reviewer ledger is preserved as written.
 - Task 3: minor (deferred): aggregate assertions accept any string instead of exact replacement/original identifiers
+- Final scoped re-review: approved by separate-context `gpt-5.6-sol`, high, identity `/root/plan3_task3_review`, at fix head `b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb`; Important TQ-1 addressed, new Critical `0`, new Important `0`, open blocking findings `0`, findings resolved `1`.
+
+Task 3: fix round 1/5 (1 addressed, 0 open — missing-target compensation skip; commits 235b4cb..b4f0fa1)
+
+Task 3: complete (commits 1cf23a4..b4f0fa1, review clean)

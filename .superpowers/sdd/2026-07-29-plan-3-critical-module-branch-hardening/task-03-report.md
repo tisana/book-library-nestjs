@@ -4,7 +4,7 @@
 Task 3 — Offline repair transaction, aggregate, and compensation recovery.
 
 ## Status
-implementation complete; separate-context review not-run
+complete; final separate-context Fix Round 1 review approved with one Important addressed and the prior Minor deferred
 
 ## Base SHA
 `1cf23a49aca3df4023b0c6f93208432bbef5d6c6`
@@ -52,7 +52,8 @@ The missing-staff, missing-member, already-assigned, staff/member field-selectio
 not-run; the consolidated changed-line quality gate belongs to Task 9.
 
 ## Commit hash
-Returned in the implementer handoff for immutable dispatcher/reviewer backfill; subject `test: harden repair transaction recovery`.
+- Initial implementation: `235b4cbd39ad089454a4decc405fdf25226c51de` (`test: harden repair transaction recovery`).
+- Fix and final reviewed head: `b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb` (`test: assert repair compensation skips`).
 
 ## Assumptions
 - The dispatcher-provided Task 3 assignment row and starting commit are authoritative and preserved.
@@ -60,7 +61,8 @@ Returned in the implementer handoff for immutable dispatcher/reviewer backfill; 
 - The fresh separate-context reviewer owns `task-03-review.md`, the final verdict, and immutable commit-SHA backfill.
 
 ## Deferred findings
-- Final separate-context reviewer and verdict: not-run.
+- Final separate-context reviewer `/root/plan3_task3_review`, `gpt-5.6-sol`, high: approved Fix Round 1 at `b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb`; Important addressed `1`, open Critical/Important `0`.
+- Task 3: minor (deferred): aggregate assertions accept any string instead of exact replacement/original identifiers
 - Implementer findings: none.
 
 ## Fix Round 1
@@ -85,3 +87,10 @@ The test now asserts the complete observable `identifierModel.updateOne.mock.cal
 
 ### Deferred Minor
 Task 3: minor (deferred): aggregate assertions accept any string instead of exact replacement/original identifiers
+
+## Final Review
+
+- Reviewer: separate-context `gpt-5.6-sol`, high, identity `/root/plan3_task3_review`.
+- Reviewed fix head: `b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb`.
+- Verdict: approved; Fix Round 1 Important TQ-1 addressed, new Critical `0`, new Important `0`, open blocking findings `0`.
+- Findings resolved: `1`; prior Minor TQ-2 remains deferred to final whole-branch triage.
