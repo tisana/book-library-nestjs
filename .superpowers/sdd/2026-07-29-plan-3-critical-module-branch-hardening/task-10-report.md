@@ -108,7 +108,7 @@ Candidate Plan 3 handoff records are ready for the required fresh whole-plan rev
 
 ### Step 1 scope and duplication review
 - The exact validated base-SHA block, `git diff --name-only "$plan3Base...HEAD"`, and `git diff --check "$plan3Base...HEAD"` exited `0`.
-- The base-to-starting-HEAD inventory contains exactly `28` paths: the Plan 3 base/ledger/task reports and reviews, the five owned critical specs, `test/support/critical-auth-fixtures.ts`, and the backend object in `quality/coverage-baselines.json`.
+- The base-to-starting-HEAD inventory contains exactly `29` paths: `22` Plan 3 record files, the five owned critical specs, `test/support/critical-auth-fixtures.ts`, and Task 9's backend baseline path `quality/coverage-baselines.json`.
 - The only `src/` paths are `src/auth/token-session.service.spec.ts`, `src/auth/auth-identifier-repair.service.spec.ts`, `src/auth/auth-identifier-reconciliation.service.spec.ts`, `src/members/members.service.spec.ts`, and `src/borrowings/borrowings.service.spec.ts`.
 - Every Plan 2 report, every Plan 3 task/review report, every added direct or parameterized test title, and every added assertion was inspected against the pre-Plan-3 critical specs. No added behavior duplicates a pre-Plan-3 critical assertion or Plan 2 behavior; each isolates a distinct uncovered race, validation, transaction, recovery, lifecycle, ownership, cleanup, or return-state branch.
 - No production source, source-set/reporting configuration, script, CI, e2e spec, frontend file, Plan 2 test/fixture, or permission source/spec changed. Generated `coverage/`, `test-results/`, and `dist/` artifacts remain ignored and unstaged.
@@ -207,3 +207,10 @@ createCriticalModelHarnesses
 - Owned-file audit: only `task-10-report.md` and `progress.md` are modified; `task-10-review.md` has no diff and remains reviewer-owned.
 - Append-only ledger audit: the Task 10 assignment row change was present at implementer entry and is preserved; Task 10 evidence was added only as a new tail section after Task 9. No prior chronology was deleted or rewritten by the Task 10 implementer.
 - `git diff --check` after the handoff write exited `0`; the only output was the existing LF-to-CRLF working-copy warning for the two owned records.
+
+### Fix Round 1 — exact scope-count correction
+- Fresh whole-plan reviewer `/root/plan3_task10_implementer/plan3_task10_review`, `gpt-5.6-sol`, high, returned `CHANGES_REQUIRED` against candidate `f2498e66a64826c66970228f03bc2c9b8e5c2600` with Critical `0`, Important `1`, blocking Minor `0`, and deferred non-blocking Minor `1`.
+- Important I1: this report and `progress.md` recorded `28` base-to-candidate paths, but the exact inventory is `29`. The allowed scope classes, candidate two-file scope, duplication result, verification evidence, metrics, exports, mutation boundary, permission monitor, invariants, and deferred-Minor disposition were otherwise approved.
+- `git diff --name-only e52711c7f6fd1174f4ff85280152ced174724bfe...f2498e66a64826c66970228f03bc2c9b8e5c2600` exited `0` and returned exactly `29` paths: `22` Plan 3 record files (`base.sha`, `progress.md`, and `20` task report/review files), five critical specs, `test/support/critical-auth-fixtures.ts`, and Task 9-owned backend baseline path `quality/coverage-baselines.json`.
+- The two inaccurate `28` statements are corrected to `29`. Reviewer-authored `task-10-review.md` and its non-load-bearing deferred Task 3 Minor ruling are preserved unchanged.
+- This is an evidence-only fix. Producer tests, coverage, e2e, reporting, ESLint, and build are not rerun; their fresh accepted evidence remains unchanged. Task 10 remains pending scoped re-review and Plan 5 remains closed.
