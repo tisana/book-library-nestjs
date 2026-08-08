@@ -62,3 +62,26 @@ Returned in the implementer handoff for immutable dispatcher/reviewer backfill; 
 ## Deferred findings
 - Final separate-context reviewer and verdict: not-run.
 - Implementer findings: none.
+
+## Fix Round 1
+
+### Status
+Important TQ-1 addressed; pending separate-context re-review. Minor TQ-2 is deferred to final whole-branch triage as directed.
+
+### Finding addressed
+The cancellation case previously excluded only the concrete reservation id on the unmapped assignment. That matcher would not fail if the mapped assignment without `targetReservationId` incorrectly emitted `identifierModel.updateOne({ _id: undefined }, ...)`.
+
+### Test file and title
+- File: `src/auth/auth-identifier-repair.service.spec.ts`.
+- Test: `skips non-releasable cancellation assignments and still records a redacted failed terminal event first`.
+
+### Change
+The test now asserts the complete observable `identifierModel.updateOne.mock.calls` sequence. Its only permitted request is the final conflict reset, so any extra reservation-release request, including an undefined target filter, fails the test.
+
+### Commands and outputs
+- `npx jest --runInBand auth/auth-identifier-repair.service.spec.ts --coverage --collectCoverageFrom=auth/auth-identifier-repair.service.ts --coverageReporters=text`: exit 0; `1/1` suite and `46/46` tests passed; repair statements `222/226`, branches `103/110`, functions `37/37`, lines `209/213`.
+- `npx eslint src/auth/auth-identifier-repair.service.spec.ts`: exit 0; non-fixing focused lint.
+- `git diff --check`: exit 0.
+
+### Deferred Minor
+Task 3: minor (deferred): aggregate assertions accept any string instead of exact replacement/original identifiers

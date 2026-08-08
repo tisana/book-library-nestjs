@@ -64,3 +64,12 @@ Task 2: complete (commits b05b9e9..fbfc378, review clean)
 - Implementer scope review found no production, configuration, baseline, Plan 2 fixture/test, permission test, e2e, frontend, generated-output, private-method-access, raw-identifier-assertion, or secret-assertion change. Generated coverage and test-result outputs remain unstaged.
 - Task 3 implementation commit uses subject `test: harden repair transaction recovery`; immutable SHA is returned in the implementer handoff for dispatcher/reviewer backfill.
 - Final separate-context reviewer, review commit, verdict, and findings resolved remain `not-run`.
+
+## Task 3 Fix Round 1
+
+- Review of implementation commit `235b4cbd39ad089454a4decc405fdf25226c51de` requested changes with Important TQ-1 and Minor TQ-2.
+- Important TQ-1 addressed in `skips non-releasable cancellation assignments and still records a redacted failed terminal event first`: the test now asserts the complete identifier-model update request sequence, allowing only the final conflict reset and therefore rejecting any missing-target release request with an undefined filter.
+- Exact focused repair command exited 0 with `46/46` tests and repair branches `103/110`; the denominator remains unchanged.
+- Focused non-fixing ESLint and `git diff --check` exited 0.
+- Fix Round 1 status: pending separate-context re-review; reviewer ledger is preserved as written.
+- Task 3: minor (deferred): aggregate assertions accept any string instead of exact replacement/original identifiers

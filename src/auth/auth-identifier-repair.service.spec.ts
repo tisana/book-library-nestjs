@@ -1629,11 +1629,17 @@ describe('AuthIdentifierRepairService', () => {
       { session },
     );
     expect(fixture.staffUserModel.updateOne).not.toHaveBeenCalled();
-    expect(fixture.identifierModel.updateOne).not.toHaveBeenCalledWith(
-      { _id: 'reservation-unmapped' },
-      expect.anything(),
-      expect.anything(),
-    );
+    expect(fixture.identifierModel.updateOne.mock.calls).toEqual([
+      [
+        { _id: oneMemberManifest.conflictId },
+        {
+          $set: {
+            status: AuthIdentifierStatus.Conflict,
+            conflictResolutionStatus: 'manual-repair-required',
+          },
+        },
+      ],
+    ]);
     expect(terminalOrder).toEqual(['event', 'operation']);
     expect(
       fixture.securityActivity.recordIdentifierOperationTerminal,
