@@ -15,7 +15,7 @@ This ledger is append-only evidence for Plan 3. Existing evidence is preserved; 
 | 1 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task1_implementer`) | high | e52711c7f6fd1174f4ff85280152ced174724bfe | 25e37048c05c2b3dd81256d1ab31eb21bad192ec | gpt-5.6-sol, high (`/root/plan3_task1_review`) | 25e37048c05c2b3dd81256d1ab31eb21bad192ec | approved | 0 |
 | 2 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task2_implementer`) | high | b05b9e90a8669adf69970014927335d01cff2a63 | fbfc378dd1c002aa4bff3456c4e99fc32b6ee308 | gpt-5.6-sol, high (`/root/plan3_task2_review`) | fbfc378dd1c002aa4bff3456c4e99fc32b6ee308 | approved | 0 |
 | 3 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task3_implementer`) | high | 1cf23a49aca3df4023b0c6f93208432bbef5d6c6 | b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb | gpt-5.6-sol, high (`/root/plan3_task3_review`) | b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb | approved | 1 |
-| 4 | in-progress | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task4_implementer`) | high | c6735fc56c40fa0f51b691c0dc2e3c4831dfb0d7 | not-run | gpt-5.6-sol, high (separate context; actual not-run) | not-run | not-run | not-run |
+| 4 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task4_implementer`) | high | c6735fc56c40fa0f51b691c0dc2e3c4831dfb0d7 | 5bffafdf4224b5c7e22e945f0ae322900af46384 | gpt-5.6-sol, high (`/root/plan3_task4_review`) | 5bffafdf4224b5c7e22e945f0ae322900af46384 | approved | 1 |
 | 5 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 6 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 7 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
@@ -102,3 +102,9 @@ Task 3: complete (commits 1cf23a4..b4f0fa1, review clean)
 - Fix Round 1 status: pending separate-context re-review; reviewer-authored `task-04-review.md` is preserved as written.
 
 Task 4: fix round 1/5 (1 addressed, 0 open pending re-review — in-flight stale readiness generation)
+
+- Final scoped re-review: approved by separate-context `gpt-5.6-sol`, high, identity `/root/plan3_task4_review`, at fix head `5bffafdf4224b5c7e22e945f0ae322900af46384`; the lifecycle-generation finding is addressed, new Critical/Important breakage `0`, out-of-scope observations `0`, open findings `0`, findings resolved `1`.
+
+Task 4: fix round 1/5 (1 addressed, 0 open — stale lifecycle readiness; commits 05d9e1d..5bffafd)
+
+Task 4: complete (commits c6735fc..5bffafd, review clean)

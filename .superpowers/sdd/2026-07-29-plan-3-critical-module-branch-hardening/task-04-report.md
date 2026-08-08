@@ -4,7 +4,7 @@
 Task 4 — Reconciliation startup, scheduling, claim, and lease races.
 
 ## Status
-implementation complete; final separate-context review not-run
+complete; Fix Round 1 approved by separate-context re-review with one Important addressed and zero open findings
 
 ## Base SHA
 `c6735fc56c40fa0f51b691c0dc2e3c4831dfb0d7`
@@ -53,7 +53,8 @@ TypeScript reported `TS2304: Cannot find name 'createReconciliationService'` at 
 not-run; the consolidated changed-line quality gate belongs to Task 9
 
 ## Commit hash
-pending; the immutable implementation SHA for `test: cover reconciliation scheduling races` is returned in the implementer handoff
+- Implementation: `05d9e1d929b7b11d3423faf506adf9a11c2834c4` (`test: cover reconciliation scheduling races`).
+- Fix and final reviewed head: `5bffafdf4224b5c7e22e945f0ae322900af46384` (`test: prove reconciliation lifecycle restart`).
 
 ## Assumptions
 - The dispatcher-provided Task 4 assignment row and starting commit are authoritative and preserved.
@@ -62,14 +63,14 @@ pending; the immutable implementation SHA for `test: cover reconciliation schedu
 - The fresh separate-context reviewer owns `task-04-review.md`, the final verdict, and immutable commit-SHA backfill.
 
 ## Deferred findings
-- Final separate-context reviewer: not-run.
-- Reviewer verdict: not-run.
+- Final separate-context reviewer `/root/plan3_task4_review`, `gpt-5.6-sol`, high: approved Fix Round 1 at `5bffafdf4224b5c7e22e945f0ae322900af46384`.
+- Reviewer verdict: approved; findings addressed `1`, open Critical/Important/Minor `0`.
 - Implementer findings: none.
 
 ## Fix Round 1
 
 ### Status
-Important lifecycle-generation finding addressed; pending separate-context re-review.
+Important lifecycle-generation finding addressed; separate-context re-review approved.
 
 ### Finding addressed
 The original restart case settled its first readiness result before shutdown, so it could not fail when stale in-flight readiness escaped lifecycle-generation invalidation. The replacement keeps the first Mongo readiness promise pending across shutdown and the restarted bootstrap.
@@ -89,4 +90,4 @@ The public test now starts the original bootstrap against deferred readiness, sh
 ### Review state
 - Reviewer `/root/plan3_task4_review` requested this Important fix against `05d9e1d929b7b11d3423faf506adf9a11c2834c4`; no Critical or Minor findings were open.
 - `task-04-review.md` is preserved as reviewer-written evidence.
-- Fix Round 1 re-review and final verdict remain pending.
+- Scoped re-review approved fix head `5bffafdf4224b5c7e22e945f0ae322900af46384`; the Important finding is addressed, new Critical/Important breakage is `0`, out-of-scope observations are `0`, and findings resolved are `1`.
