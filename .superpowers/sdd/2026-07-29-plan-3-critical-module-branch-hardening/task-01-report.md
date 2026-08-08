@@ -6,7 +6,7 @@ Task 1 — Refresh rotation race boundaries and critical builders; Step 0 ledger
 Steps 1–5 — public refresh-rotation race coverage, shared critical fixture builders, verification, and implementation commit.
 
 ## Status
-implementation-complete; bootstrap-approved; final task review not-run
+complete; bootstrap-approved; final task review approved
 
 ## Base SHA
 `e52711c7f6fd1174f4ff85280152ced174724bfe`
@@ -57,12 +57,13 @@ implementation-complete; bootstrap-approved; final task review not-run
 - Bootstrap hygiene: `base.sha` is exactly 40 bytes with no newline; `git status --short` shows only the new Plan 3 ledger directory; `git diff --check` exits 0.
 - `npx eslint src/auth/token-session.service.spec.ts test/support/critical-auth-fixtures.ts`: exit 0; non-fixing focused lint.
 - `npm run test:cov`: exit 0; `35/35` suites and `386/386` tests passed. Coverage statements `2888/3659`, branches `2000/2815`, functions `483/605`, lines `2775/3496`.
+- Closeout lifecycle note (non-finding): the exact Step 0 bootstrap block now exits 1 at its intentional `base.sha == HEAD` guard because reviewed Task 1 commit `25e37048c05c2b3dd81256d1ab31eb21bad192ec` follows fixed Plan 3 base `e52711c7f6fd1174f4ff85280152ced174724bfe`. The post-bootstrap equivalent validates the base commit and ancestry, all `10/10` report/review files and headings, approved verdict, exact completion line, scoped status, and `git diff --check` with exit 0.
 
 ## Changed-line result
 not-run; the consolidated changed-line quality gate belongs to Task 9.
 
 ## Commit hash
-pending current commit with subject `test: harden refresh rotation races`; the final SHA is returned to the dispatcher and recorded by the final reviewer because a commit cannot contain its own hash.
+`25e37048c05c2b3dd81256d1ab31eb21bad192ec` (`test: harden refresh rotation races`)
 
 ## Assumptions
 - The dispatcher-provided Plan 2 predecessor, merge, ancestry, and Gate G1 evidence is authoritative for this bootstrap.
@@ -71,5 +72,5 @@ pending current commit with subject `test: harden refresh rotation races`; the f
 
 ## Deferred findings
 - Fresh separate-context Task 1 bootstrap review: approved with no findings.
-- Final Task 1 review: not-run.
+- Final Task 1 review: approved by `/root/plan3_task1_review` using `gpt-5.6-sol`, high, against `25e37048c05c2b3dd81256d1ab31eb21bad192ec`; findings none.
 - Implementer findings: none.

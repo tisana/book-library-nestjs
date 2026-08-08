@@ -12,7 +12,7 @@ This ledger is append-only evidence for Plan 3. Existing evidence is preserved; 
 
 | Task | Status | Requested implementer | Actual implementer | Reasoning | Starting commit | Task commit | Reviewer | Review commit | Verdict | Findings resolved |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | implementation-complete; final task review not-run | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task1_implementer`) | high | e52711c7f6fd1174f4ff85280152ced174724bfe | pending current commit (`test: harden refresh rotation races`) | gpt-5.6-sol (`/root/plan3_task1_bootstrap_review`); final reviewer not-run | e52711c7f6fd1174f4ff85280152ced174724bfe (bootstrap reviewed); final review commit not-run | bootstrap-approved; final task review not-run | none (bootstrap); final task review not-run |
+| 1 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task1_implementer`) | high | e52711c7f6fd1174f4ff85280152ced174724bfe | 25e37048c05c2b3dd81256d1ab31eb21bad192ec | gpt-5.6-sol, high (`/root/plan3_task1_review`) | 25e37048c05c2b3dd81256d1ab31eb21bad192ec | approved | 0 |
 | 2 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 3 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 4 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
@@ -31,3 +31,6 @@ This ledger is append-only evidence for Plan 3. Existing evidence is preserved; 
 - Non-fixing focused ESLint for the two changed TypeScript files exited 0.
 - Full backend unit coverage regression exited 0 with `35/35` suites and `386/386` tests; overall statements `2888/3659`, branches `2000/2815`, functions `483/605`, lines `2775/3496`.
 - Implementer self-review found no production, configuration, baseline, e2e, frontend, Plan 2 fixture, private-method, denial-text, raw-token-storage, or unstable-value change.
+- Final review: approved by separate-context `gpt-5.6-sol`, high, identity `/root/plan3_task1_review`, against implementation commit `25e37048c05c2b3dd81256d1ab31eb21bad192ec`; findings `0`, resolved `0`.
+
+Task 1: complete (commits e52711c..25e3704, review clean)
