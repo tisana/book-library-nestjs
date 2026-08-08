@@ -17,7 +17,7 @@ This ledger is append-only evidence for Plan 3. Existing evidence is preserved; 
 | 3 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task3_implementer`) | high | 1cf23a49aca3df4023b0c6f93208432bbef5d6c6 | b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb | gpt-5.6-sol, high (`/root/plan3_task3_review`) | b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb | approved | 1 |
 | 4 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task4_implementer`) | high | c6735fc56c40fa0f51b691c0dc2e3c4831dfb0d7 | 5bffafdf4224b5c7e22e945f0ae322900af46384 | gpt-5.6-sol, high (`/root/plan3_task4_review`) | 5bffafdf4224b5c7e22e945f0ae322900af46384 | approved | 1 |
 | 5 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task5_implementer`) | high | 38491688015d4e7945a7ed63f0f6fc8cb2cc98ab | 11c14bc11b7636382ed367f5eba4ec6297363de4 | gpt-5.6-sol, high (`/root/plan3_task5_review`) | 11c14bc11b7636382ed367f5eba4ec6297363de4 | approved | 3 |
-| 6 | in-progress | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task6_implementer`) | high | 76af392e25141b91c088596c44dc10cba7a4c9c6 | not-run | gpt-5.6-sol, high (separate context; actual not-run) | not-run | not-run | not-run |
+| 6 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task6_implementer`) | high | 76af392e25141b91c088596c44dc10cba7a4c9c6 | 59b2d60fdf9539adee0c600785144f9bfb29c007 | gpt-5.6-sol, high (`/root/plan3_task6_review`) | 59b2d60fdf9539adee0c600785144f9bfb29c007 | approved | 2 |
 | 7 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 8 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 9 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
@@ -162,3 +162,9 @@ Task 5: complete (commits 3849168..11c14bc, review clean)
 - Reviewer-authored `task-06-review.md` is preserved unchanged. Fix Round 1 status: pending separate-context re-review; reviewer verdict and findings-resolved fields remain unchanged.
 
 Task 6: fix round 1/5 (2 addressed, 0 open pending re-review — exact reservation selectors and distinct cleanup evidence)
+
+- Final scoped re-review: approved by separate-context `gpt-5.6-sol`, high, identity `/root/plan3_task6_review`, at fix head `59b2d60fdf9539adee0c600785144f9bfb29c007`; I1/I2 are addressed, new Critical/Important breakage `0`, open findings `0`, findings resolved `2`.
+
+Task 6: fix round 1/5 (2 addressed, 0 open — exact reservation selectors and distinct contracts; commits 75cb4f5..59b2d60)
+
+Task 6: complete (commits 76af392..59b2d60, review clean)
