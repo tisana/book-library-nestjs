@@ -1,0 +1,33 @@
+# SDD ledger — plan: docs/superpowers/plans/2026-07-31-critical-module-branch-hardening.md
+
+This ledger is append-only evidence for Plan 3. Existing evidence is preserved; later task execution and review results are appended to their assigned fields.
+
+- Reviewed Plan 2 handoff commit: `f7836f5f9671b86d1478e87ced01d55d9a65a0d2`.
+- Reviewed Plan 2 merge commit: `e52711c7f6fd1174f4ff85280152ced174724bfe`.
+- Plan 3 working base and HEAD before Task 1 work: `e52711c7f6fd1174f4ff85280152ced174724bfe`.
+- Ancestry evidence: `git merge-base --is-ancestor` succeeded for both the Plan 2 handoff and reviewed merge commit against the integration HEAD.
+- Gate G1 at the exact Plan 3 base: PASS. Quality `68/68`; backend unit `382/382`; backend e2e `242/242`; coverage statements `2884/3659`, branches `1995/2815`, functions `483/605`, lines `2771/3496`; expected files `87`.
+- Task 1 requested reviewer: separate-context `gpt-5.6-sol`, high. Actual bootstrap reviewer: `gpt-5.6-sol`, high; identity `/root/plan3_task1_bootstrap_review`.
+- Model substitution: none.
+
+| Task | Status | Requested implementer | Actual implementer | Reasoning | Starting commit | Task commit | Reviewer | Review commit | Verdict | Findings resolved |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | implementation-complete; final task review not-run | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task1_implementer`) | high | e52711c7f6fd1174f4ff85280152ced174724bfe | pending current commit (`test: harden refresh rotation races`) | gpt-5.6-sol (`/root/plan3_task1_bootstrap_review`); final reviewer not-run | e52711c7f6fd1174f4ff85280152ced174724bfe (bootstrap reviewed); final review commit not-run | bootstrap-approved; final task review not-run | none (bootstrap); final task review not-run |
+| 2 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
+| 3 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
+| 4 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
+| 5 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
+| 6 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
+| 7 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
+| 8 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
+| 9 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
+| 10 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
+
+## Task 1 evidence chronology
+
+- Bootstrap review: approved by separate-context `gpt-5.6-sol`, high, identity `/root/plan3_task1_bootstrap_review`; findings none; final task review remains `not-run`.
+- RED: the exact focused Jest command exited 1 for the missing `critical-auth-fixtures` module; after the fixture module was added, it exited 1 with `denies a lost duplicate-marker race without mutating the family` and `denies a lost expired-marker takeover without creating a successor` failing; the complementary uncertain-CAS micro-cycle exited 1 with `finalizes an uncertain family CAS that installed a successor` failing.
+- GREEN: the exact focused Jest command exited 0 with `25/25` tests and token-session branches `89/103`.
+- Non-fixing focused ESLint for the two changed TypeScript files exited 0.
+- Full backend unit coverage regression exited 0 with `35/35` suites and `386/386` tests; overall statements `2888/3659`, branches `2000/2815`, functions `483/605`, lines `2775/3496`.
+- Implementer self-review found no production, configuration, baseline, e2e, frontend, Plan 2 fixture, private-method, denial-text, raw-token-storage, or unstable-value change.
