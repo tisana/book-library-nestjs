@@ -4,7 +4,7 @@
 Task 5 — Reconciliation recovery, terminal ordering, and bounded cleanup.
 
 ## Status
-Fix Round 1 addressed; separate-context re-review pending
+complete; Fix Round 1 approved by separate-context re-review with three Important findings addressed and zero open findings
 
 ## Base SHA
 `38491688015d4e7945a7ed63f0f6fc8cb2cc98ab`
@@ -52,7 +52,8 @@ After correcting a test-only TypeScript library-target incompatibility, the beha
 not-run; the consolidated changed-line quality gate belongs to Task 9
 
 ## Commit hash
-The implementation commit uses subject `test: harden identifier recovery transitions`; immutable SHA is returned in the implementer handoff for dispatcher/reviewer backfill.
+- Implementation: `0c94b1aa845e6efda4d8f1d9d3d2d6e2e3b6f5a9` (`test: harden identifier recovery transitions`).
+- Fix and final reviewed head: `11c14bc11b7636382ed367f5eba4ec6297363de4` (`test: assert reconciliation ordering and selectors`).
 
 ## Assumptions
 - The dispatcher-provided Task 5 assignment row and starting commit are authoritative and preserved.
@@ -62,13 +63,13 @@ The implementation commit uses subject `test: harden identifier recovery transit
 - The separate-context reviewer owns `task-05-review.md`, the final verdict, and immutable commit-SHA backfill.
 
 ## Deferred findings
-- Initial separate-context reviewer `/root/plan3_task5_review`, `gpt-5.6-sol`, high, requested changes with three Important findings; Fix Round 1 re-review and final verdict remain pending.
+- Final separate-context reviewer `/root/plan3_task5_review`, `gpt-5.6-sol`, high: approved Fix Round 1 at `11c14bc11b7636382ed367f5eba4ec6297363de4`; findings addressed `3`, open Critical/Important/Minor `0`.
 - Implementer findings: none.
 
 ## Fix Round 1
 
 ### Status
-Important findings I1-I3 addressed; separate-context re-review pending.
+Important findings I1-I3 addressed; separate-context re-review approved.
 
 ### Findings addressed
 - I1 adds public clean-finalization proof that the idempotent terminal event is recorded before the terminal operation write and that the same write contains terminal fields plus the bounded 90-day retention TTL.
@@ -90,4 +91,4 @@ Important findings I1-I3 addressed; separate-context re-review pending.
 ### Review state
 - Reviewer `/root/plan3_task5_review`, `gpt-5.6-sol`, high, requested three Important fixes against `0c94b1aa845e6efda4d8f1d9d3d2d6e2e3b6f5a9`; no Critical or Minor findings were reported.
 - `task-05-review.md` is preserved as reviewer-written evidence.
-- Fix Round 1 re-review, final verdict, review commit, and findings-resolved backfill remain pending.
+- Scoped re-review approved fix head `11c14bc11b7636382ed367f5eba4ec6297363de4`; I1, I2, and I3 are ADDRESSED, no new Critical/Important breakage was found, findings resolved are `3`, and open Critical/Important/Minor findings are `0`.

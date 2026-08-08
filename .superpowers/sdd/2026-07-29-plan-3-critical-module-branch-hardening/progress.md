@@ -16,7 +16,7 @@ This ledger is append-only evidence for Plan 3. Existing evidence is preserved; 
 | 2 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task2_implementer`) | high | b05b9e90a8669adf69970014927335d01cff2a63 | fbfc378dd1c002aa4bff3456c4e99fc32b6ee308 | gpt-5.6-sol, high (`/root/plan3_task2_review`) | fbfc378dd1c002aa4bff3456c4e99fc32b6ee308 | approved | 0 |
 | 3 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task3_implementer`) | high | 1cf23a49aca3df4023b0c6f93208432bbef5d6c6 | b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb | gpt-5.6-sol, high (`/root/plan3_task3_review`) | b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb | approved | 1 |
 | 4 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task4_implementer`) | high | c6735fc56c40fa0f51b691c0dc2e3c4831dfb0d7 | 5bffafdf4224b5c7e22e945f0ae322900af46384 | gpt-5.6-sol, high (`/root/plan3_task4_review`) | 5bffafdf4224b5c7e22e945f0ae322900af46384 | approved | 1 |
-| 5 | in-progress | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task5_implementer`) | high | 38491688015d4e7945a7ed63f0f6fc8cb2cc98ab | not-run | gpt-5.6-sol, high (separate context; actual not-run) | not-run | not-run | not-run |
+| 5 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task5_implementer`) | high | 38491688015d4e7945a7ed63f0f6fc8cb2cc98ab | 11c14bc11b7636382ed367f5eba4ec6297363de4 | gpt-5.6-sol, high (`/root/plan3_task5_review`) | 11c14bc11b7636382ed367f5eba4ec6297363de4 | approved | 3 |
 | 6 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 7 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 8 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
@@ -132,3 +132,9 @@ Task 4: complete (commits c6735fc..5bffafd, review clean)
 - Fix Round 1 status: pending separate-context re-review; reviewer-authored `task-05-review.md` is preserved as written.
 
 Task 5: fix round 1/5 (3 addressed, 0 open pending re-review — terminal TTL ordering and reservation/cleanup selectors)
+
+- Final scoped re-review: approved by separate-context `gpt-5.6-sol`, high, identity `/root/plan3_task5_review`, at fix head `11c14bc11b7636382ed367f5eba4ec6297363de4`; I1/I2/I3 are addressed, new Critical/Important breakage `0`, open findings `0`, findings resolved `3`.
+
+Task 5: fix round 1/5 (3 addressed, 0 open — terminal TTL ordering and recovery/cleanup selectors; commits 0c94b1a..11c14bc)
+
+Task 5: complete (commits 3849168..11c14bc, review clean)
