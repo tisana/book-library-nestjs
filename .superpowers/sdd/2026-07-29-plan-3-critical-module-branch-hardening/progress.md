@@ -120,3 +120,15 @@ Task 4: complete (commits c6735fc..5bffafd, review clean)
 - Full backend unit coverage regression exited 0 with `35/35` suites and `444/444` tests; overall statements `2954/3659`, branches `2077/2815`, functions `492/605`, lines `2835/3496`.
 - Implementer scope review found no production, configuration, baseline, Plan 2 fixture/test, permission test, e2e, frontend, generated-output, new private-method-access, raw-identifier-write, or fabricated-correlation change. Generated coverage and test-result outputs remain unstaged.
 - Task 5 implementation commit uses subject `test: harden identifier recovery transitions`; immutable SHA is returned in the implementer handoff. Separate-context reviewer, review commit, verdict, and findings resolved remain `not-run`.
+
+## Task 5 Fix Round 1
+
+- Review of implementation commit `0c94b1aa845e6efda4d8f1d9d3d2d6e2e3b6f5a9` requested changes with Important I1-I3 and no Critical or Minor findings.
+- I1 is addressed by public clean-finalization coverage that records event/write order and verifies the terminal write includes terminal fields plus the bounded 90-day retention TTL.
+- I2 is addressed by exact reservation discovery filter/limit assertions and exact sequenced `findById` identifier assertions.
+- I3 is addressed by exact operation-owned gate/batch `find` and remainder `exists` selector assertions across failed/completed cleanup, capacity exhaustion, remaining work, and empty completion.
+- Fix-round RED exited 1 with `1` failed and `55` passed; the new clean-finalization ordering case failed at the intentionally absent terminal-write observation. Fix-round GREEN exited 0 with `56/56` tests and reconciliation branches `181/191`; the denominator remains unchanged.
+- Focused non-fixing ESLint and `git diff --check` exited 0. No production source or private reconciliation method was changed or accessed.
+- Fix Round 1 status: pending separate-context re-review; reviewer-authored `task-05-review.md` is preserved as written.
+
+Task 5: fix round 1/5 (3 addressed, 0 open pending re-review — terminal TTL ordering and reservation/cleanup selectors)

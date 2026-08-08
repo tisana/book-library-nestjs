@@ -1217,6 +1217,14 @@ describe('AuthIdentifierReconciliationService', () => {
         { $set: { status: AuthIdentifierOperationStatus.FailedRetryable } },
       );
       expect(identifiers.updateOne).not.toHaveBeenCalled();
+      expect(identifiers.findById).toHaveBeenNthCalledWith(
+        1,
+        missingReservationId,
+      );
+      expect(identifiers.findById).toHaveBeenNthCalledWith(
+        2,
+        mismatchedReservationId,
+      );
     });
 
     it.each([
@@ -1290,6 +1298,7 @@ describe('AuthIdentifierReconciliationService', () => {
 
     it('attaches an HMAC-only reservation reference under the requested key version', async () => {
       const reservationId = new Types.ObjectId();
+      const discoveryCapture: { limit?: number } = {};
       const candidate = operation({
         operationId: 'operation-hmac',
         manifestKeyVersion: 7,
@@ -1309,7 +1318,7 @@ describe('AuthIdentifierReconciliationService', () => {
             subjectType: AuthIdentifierSubjectType.Member,
             subjectId: 'member-1',
           },
-        ]),
+        ], discoveryCapture),
       );
 
       await expect(service.reconcileOnce()).resolves.toMatchObject({
@@ -1318,6 +1327,10 @@ describe('AuthIdentifierReconciliationService', () => {
       });
 
       expect(policy.getKeyMaterial).toHaveBeenCalledWith(7);
+      expect(identifiers.find).toHaveBeenCalledWith({
+        pendingOperationId: 'operation-hmac',
+      });
+      expect(discoveryCapture.limit).toBe(3);
       expect(operations.updateOne).toHaveBeenCalledWith(
         expect.any(Object),
         expect.objectContaining({
@@ -1518,6 +1531,53 @@ describe('AuthIdentifierReconciliationService', () => {
       expect(terminalSet).not.toHaveProperty('expiresAt');
     });
 
+    it('records the terminal event before clean terminal state and retention TTL', async () => {
+      const candidate = operation({
+        operationId: 'operation-clean-finalize',
+        status: AuthIdentifierOperationStatus.Finalizing,
+        cleanupStatus: AuthIdentifierOperationCleanupStatus.NotRequired,
+        assignments: [
+          assignment({ status: AuthIdentifierAssignmentStatus.Applied }),
+        ],
+      });
+      const ordering: string[] = [];
+      operations.find.mockReturnValueOnce(criticalQueryResult([candidate]));
+      operations.findOneAndUpdate
+        .mockResolvedValueOnce(candidate)
+        .mockImplementationOnce(async () => {
+          ordering.push('operation');
+          return candidate;
+        });
+      identifiers.find.mockReturnValueOnce(criticalQueryResult([]));
+      events.recordIdentifierOperationTerminal.mockImplementationOnce(
+        async () => {
+          ordering.push('event');
+          return 'event-clean-finalize';
+        },
+      );
+
+      await expect(service.reconcileOnce()).resolves.toMatchObject({
+        claimed: 1,
+        processed: 1,
+      });
+
+      expect(ordering).toEqual(['event', 'operation']);
+      const terminalSet = operations.findOneAndUpdate.mock.calls[1][1][0].$set;
+      expect(terminalSet).toMatchObject({
+        status: AuthIdentifierOperationStatus.Completed,
+        terminalEventId: 'event-clean-finalize',
+        terminalEventRecordedAt: '$$NOW',
+        completedAt: '$$NOW',
+        expiresAt: {
+          $dateAdd: {
+            startDate: '$$NOW',
+            unit: 'day',
+            amount: 90,
+          },
+        },
+      });
+    });
+
     it.each([
       [
         AuthIdentifierOperationStatus.FailedTerminal,
@@ -1566,6 +1626,20 @@ describe('AuthIdentifierReconciliationService', () => {
         );
         expect(gateCapture.limit).toBe(2);
         expect(batchCapture.limit).toBe(1);
+        expect(identifiers.find).toHaveBeenCalledWith({
+          activationGateOperationId: candidate.operationId,
+        });
+        expect(batches.find).toHaveBeenCalledWith({
+          parentOperationId: candidate.operationId,
+          expiresAt: { $exists: false },
+        });
+        expect(identifiers.exists).toHaveBeenCalledWith({
+          activationGateOperationId: candidate.operationId,
+        });
+        expect(batches.exists).toHaveBeenCalledWith({
+          parentOperationId: candidate.operationId,
+          expiresAt: { $exists: false },
+        });
       },
     );
 
@@ -1599,6 +1673,16 @@ describe('AuthIdentifierReconciliationService', () => {
       expect(batches.find).not.toHaveBeenCalled();
       expect(batches.updateMany).not.toHaveBeenCalled();
       expect(gateCapture.limit).toBe(2);
+      expect(identifiers.find).toHaveBeenCalledWith({
+        activationGateOperationId: candidate.operationId,
+      });
+      expect(identifiers.exists).toHaveBeenCalledWith({
+        activationGateOperationId: candidate.operationId,
+      });
+      expect(batches.exists).toHaveBeenCalledWith({
+        parentOperationId: candidate.operationId,
+        expiresAt: { $exists: false },
+      });
       expect(operations.findOneAndUpdate).toHaveBeenCalledTimes(2);
     });
 
@@ -1630,6 +1714,20 @@ describe('AuthIdentifierReconciliationService', () => {
         [{ $set: { expiresAt: '$$NOW' } }],
         { updatePipeline: true },
       );
+      expect(identifiers.find).toHaveBeenCalledWith({
+        activationGateOperationId: candidate.operationId,
+      });
+      expect(batches.find).toHaveBeenCalledWith({
+        parentOperationId: candidate.operationId,
+        expiresAt: { $exists: false },
+      });
+      expect(identifiers.exists).toHaveBeenCalledWith({
+        activationGateOperationId: candidate.operationId,
+      });
+      expect(batches.exists).toHaveBeenCalledWith({
+        parentOperationId: candidate.operationId,
+        expiresAt: { $exists: false },
+      });
       expect(operations.findOneAndUpdate).toHaveBeenCalledTimes(2);
     });
 
@@ -1672,6 +1770,20 @@ describe('AuthIdentifierReconciliationService', () => {
           },
         },
       );
+      expect(identifiers.find).toHaveBeenCalledWith({
+        activationGateOperationId: candidate.operationId,
+      });
+      expect(batches.find).toHaveBeenCalledWith({
+        parentOperationId: candidate.operationId,
+        expiresAt: { $exists: false },
+      });
+      expect(identifiers.exists).toHaveBeenCalledWith({
+        activationGateOperationId: candidate.operationId,
+      });
+      expect(batches.exists).toHaveBeenCalledWith({
+        parentOperationId: candidate.operationId,
+        expiresAt: { $exists: false },
+      });
     });
 
     it('releases every claimed lease when one public operation recovery fails', async () => {
