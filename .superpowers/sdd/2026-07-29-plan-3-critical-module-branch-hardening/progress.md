@@ -13,7 +13,7 @@ This ledger is append-only evidence for Plan 3. Existing evidence is preserved; 
 | Task | Status | Requested implementer | Actual implementer | Reasoning | Starting commit | Task commit | Reviewer | Review commit | Verdict | Findings resolved |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task1_implementer`) | high | e52711c7f6fd1174f4ff85280152ced174724bfe | 25e37048c05c2b3dd81256d1ab31eb21bad192ec | gpt-5.6-sol, high (`/root/plan3_task1_review`) | 25e37048c05c2b3dd81256d1ab31eb21bad192ec | approved | 0 |
-| 2 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
+| 2 | in-progress | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task2_implementer`) | high | b05b9e90a8669adf69970014927335d01cff2a63 | not-run | gpt-5.6-sol, high (separate context; actual not-run) | not-run | not-run | not-run |
 | 3 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 4 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 5 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
@@ -34,3 +34,15 @@ This ledger is append-only evidence for Plan 3. Existing evidence is preserved; 
 - Final review: approved by separate-context `gpt-5.6-sol`, high, identity `/root/plan3_task1_review`, against implementation commit `25e37048c05c2b3dd81256d1ab31eb21bad192ec`; findings `0`, resolved `0`.
 
 Task 1: complete (commits e52711c..25e3704, review clean)
+
+## Task 2 evidence chronology
+
+- Starting commit: `b05b9e90a8669adf69970014927335d01cff2a63`; requested/actual implementer `gpt-5.6-sol`, high, identity `/root/plan3_task2_implementer`; substitution none.
+- RED: the exact focused repair command exited 1 with 3 failed and 31 passed. The wrong operation-type, manifest-key-version, and manifest-hash cases all failed at the missing `findOne().lean().exec()` public query shape before the approved query adapter was installed.
+- GREEN: the exact focused repair command exited 0 with `34/34` tests; repair-service branches reached `80/110`, meeting the Task 2 floor.
+- Failure-path proof: unstable resume ids reject before mutation authorization; missing key configuration rejects before operation lookup/create; operation conflicts, indistinguishable missing/non-conflict reservations, invalid claimant accounting, and missing persisted operations expose only fixed public errors and make zero model mutation calls.
+- Approved shared fixtures: `criticalQueryResult` models the dry-run query, `createIdentifierOperation` models persisted operation states, and the read-only Plan 2 `createStaffDocument` builder supplies the stable active actor subject.
+- Non-fixing focused ESLint and `git diff --check` exited 0.
+- Full backend unit coverage regression exited 0 with `35/35` suites and `400/400` tests; overall statements `2899/3659`, branches `2010/2815`, functions `485/605`, lines `2784/3496`.
+- Implementer scope review found no production, configuration, baseline, Plan 2 fixture, Plan 2 test, permission test, e2e, frontend, or generated-artifact change. Generated coverage and test-result outputs remain unstaged.
+- Task 2 implementation commit SHA is returned in the implementer handoff for immutable reviewer/dispatcher backfill. Final reviewer, review commit, verdict, and findings resolved remain `not-run`.

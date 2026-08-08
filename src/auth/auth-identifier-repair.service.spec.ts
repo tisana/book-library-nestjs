@@ -1,5 +1,13 @@
-import { UnauthorizedException } from '@nestjs/common';
+import {
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import {
+  createIdentifierOperation,
+  criticalQueryResult,
+} from '../../test/support/critical-auth-fixtures';
+import { createStaffDocument } from '../../test/support/backend-coverage-fixtures';
 import { AuthIdentifierRepairService } from './auth-identifier-repair.service';
 import { hashRepairManifest } from './auth-identifier-repair-manifest';
 import {
@@ -38,6 +46,7 @@ describe('AuthIdentifierRepairService', () => {
   };
 
   function createFixture() {
+    const adminActor = createStaffDocument({ id: 'admin-2' });
     const operationModel = {
       updateOne: jest.fn().mockResolvedValue({ modifiedCount: 1 }),
       findOne: jest.fn(),
@@ -55,6 +64,7 @@ describe('AuthIdentifierRepairService', () => {
       updateOne: jest.fn().mockResolvedValue({ modifiedCount: 1 }),
     };
     const identifierModel = {
+      findById: jest.fn(),
       updateOne: jest.fn(),
       updateMany: jest.fn().mockResolvedValue({ modifiedCount: 1 }),
       findOneAndUpdate: jest.fn(),
@@ -62,8 +72,18 @@ describe('AuthIdentifierRepairService', () => {
     const staffUserModel = { updateOne: jest.fn() };
     const memberModel = { updateOne: jest.fn() };
     const authorization = {
-      authorizeDryRun: jest.fn().mockResolvedValue({ subjectId: 'admin-1' }),
-      authorizeMutation: jest.fn().mockResolvedValue({ subjectId: 'admin-2' }),
+      authorizeDryRun: jest.fn().mockResolvedValue({
+        subjectType: AuthIdentifierSubjectType.Staff,
+        subjectId: adminActor.id,
+        authVersion: adminActor.authVersion,
+        expiresAt: 1_800_000_000,
+      }),
+      authorizeMutation: jest.fn().mockResolvedValue({
+        subjectType: AuthIdentifierSubjectType.Staff,
+        subjectId: adminActor.id,
+        authVersion: adminActor.authVersion,
+        expiresAt: 1_800_000_000,
+      }),
     };
     const keyPolicy = {
       repairWorkerDecision: jest.fn().mockReturnValue({ allowed: true }),
@@ -73,11 +93,10 @@ describe('AuthIdentifierRepairService', () => {
       recordIdentifierRepairResumed: jest.fn(),
       recordIdentifierOperationTerminal: jest.fn().mockResolvedValue('event-1'),
     };
-    const config = {
-      get: jest.fn((key: string) =>
-        key === 'auth.identifierMaxOperationAssignments' ? 2 : 1,
-      ),
-    } as unknown as ConfigService;
+    const configGet = jest.fn((key: string) =>
+      key === 'auth.identifierMaxOperationAssignments' ? 2 : 1,
+    );
+    const config = { get: configGet } as unknown as ConfigService;
     const service = new AuthIdentifierRepairService(
       operationModel as never,
       repairBatchModel as never,
@@ -98,11 +117,216 @@ describe('AuthIdentifierRepairService', () => {
       identifierModel,
       staffUserModel,
       memberModel,
+      configGet,
       authorization,
       keyPolicy,
       securityActivity,
     };
   }
+
+  function expectNoModelMutations(fixture: ReturnType<typeof createFixture>) {
+    expect(fixture.operationModel.create).not.toHaveBeenCalled();
+    expect(fixture.operationModel.updateOne).not.toHaveBeenCalled();
+    expect(fixture.repairBatchModel.create).not.toHaveBeenCalled();
+    expect(fixture.repairBatchModel.updateOne).not.toHaveBeenCalled();
+    expect(fixture.identifierModel.updateOne).not.toHaveBeenCalled();
+    expect(fixture.identifierModel.updateMany).not.toHaveBeenCalled();
+    expect(fixture.identifierModel.findOneAndUpdate).not.toHaveBeenCalled();
+    expect(fixture.staffUserModel.updateOne).not.toHaveBeenCalled();
+    expect(fixture.memberModel.updateOne).not.toHaveBeenCalled();
+  }
+
+  function conflictReservation(status = AuthIdentifierStatus.Conflict) {
+    return {
+      _id: manifest.conflictId,
+      status,
+      conflictingSubjects: [manifest.retainedSubject, ...manifest.reassignments],
+    };
+  }
+
+  it.each([undefined, '', '   '])(
+    'rejects unstable resume id %p before authorization or mutation',
+    async (resumeId) => {
+      const fixture = createFixture();
+      try {
+        await fixture.service.apply({
+          token: 'redacted-admin-token',
+          operationId: 'repair-1',
+          manifest,
+          resumeId,
+        });
+        fail('Expected apply to reject an unstable resume id');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnprocessableEntityException);
+        expect(error).toMatchObject({
+          message: 'A stable resume id is required',
+        });
+        expect((error as UnprocessableEntityException).getStatus()).toBe(422);
+      }
+      expect(fixture.authorization.authorizeMutation).not.toHaveBeenCalled();
+      expectNoModelMutations(fixture);
+    },
+  );
+
+  it('rejects a missing current key version before operation lookup or creation', async () => {
+    const fixture = createFixture();
+    fixture.configGet.mockImplementation((key: string) =>
+      key === 'auth.identifierMaxOperationAssignments' ? 2 : undefined,
+    );
+    fixture.identifierModel.findById.mockResolvedValue(conflictReservation());
+
+    await expect(
+      fixture.service.dryRun({
+        token: 'redacted-admin-token',
+        operationId: 'repair-key-missing',
+        manifest,
+      }),
+    ).rejects.toMatchObject({ message: 'repair-key-required' });
+
+    expect(fixture.operationModel.findOne).not.toHaveBeenCalled();
+    expectNoModelMutations(fixture);
+  });
+
+  it.each([
+    [
+      'operation type',
+      createIdentifierOperation({
+        operationId: 'repair-existing-type',
+        operationType: AuthIdentifierOperationType.Claim,
+        manifestKeyVersion: 1,
+        manifestHash: hashRepairManifest(manifest, Buffer.alloc(32, 4), 1)
+          .manifestHash,
+      }),
+    ],
+    [
+      'manifest key version',
+      createIdentifierOperation({
+        operationId: 'repair-existing-version',
+        operationType: AuthIdentifierOperationType.OfflineRepair,
+        manifestKeyVersion: 2,
+        manifestHash: hashRepairManifest(manifest, Buffer.alloc(32, 4), 1)
+          .manifestHash,
+      }),
+    ],
+    [
+      'manifest hash',
+      createIdentifierOperation({
+        operationId: 'repair-existing-hash',
+        operationType: AuthIdentifierOperationType.OfflineRepair,
+        manifestKeyVersion: 1,
+        manifestHash: 'mismatched-manifest-hash',
+      }),
+    ],
+  ])(
+    'rejects an existing operation with a wrong %s without mutation',
+    async (_case, operation) => {
+      const fixture = createFixture();
+      fixture.identifierModel.findById.mockResolvedValue(conflictReservation());
+      fixture.operationModel.findOne.mockReturnValue(criticalQueryResult(operation));
+
+      await expect(
+        fixture.service.dryRun({
+          token: 'redacted-admin-token',
+          operationId: operation.operationId,
+          manifest,
+        }),
+      ).rejects.toMatchObject({
+        message: 'Repair operation id is already in use',
+      });
+
+      expectNoModelMutations(fixture);
+    },
+  );
+
+  it.each([
+    ['missing conflict', null],
+    ['non-conflict reservation', conflictReservation(AuthIdentifierStatus.Active)],
+  ])('returns the same public error for a %s', async (_case, reservation) => {
+    const fixture = createFixture();
+    fixture.identifierModel.findById.mockResolvedValue(reservation);
+
+    await expect(
+      fixture.service.dryRun({
+        token: 'redacted-admin-token',
+        operationId: 'repair-conflict-missing',
+        manifest,
+      }),
+    ).rejects.toMatchObject({ message: 'Identifier conflict not found' });
+
+    expect(fixture.operationModel.findOne).not.toHaveBeenCalled();
+    expectNoModelMutations(fixture);
+  });
+
+  it.each([
+    [
+      'an omitted claimant',
+      { ...manifest, reassignments: manifest.reassignments.slice(0, 2) },
+    ],
+    [
+      'a foreign claimant',
+      {
+        ...manifest,
+        reassignments: [
+          ...manifest.reassignments.slice(0, 2),
+          { ...manifest.reassignments[2], subjectId: 'member-foreign' },
+        ],
+      },
+    ],
+    [
+      'a duplicate claimant',
+      {
+        ...manifest,
+        reassignments: [
+          ...manifest.reassignments.slice(0, 2),
+          {
+            ...manifest.reassignments[2],
+            subjectId: manifest.reassignments[1].subjectId,
+          },
+        ],
+      },
+    ],
+  ])(
+    'rejects a manifest with %s before operation mutation',
+    async (_case, invalidManifest) => {
+      const fixture = createFixture();
+      fixture.identifierModel.findById.mockResolvedValue(conflictReservation());
+
+      await expect(
+        fixture.service.dryRun({
+          token: 'redacted-admin-token',
+          operationId: 'repair-invalid-manifest',
+          manifest: invalidManifest,
+        }),
+      ).rejects.toMatchObject({
+        message: 'Repair manifest must account for every conflict claimant',
+      });
+
+      expect(fixture.operationModel.findOne).not.toHaveBeenCalled();
+      expectNoModelMutations(fixture);
+    },
+  );
+
+  it.each([
+    ['apply', 'stable-resume-missing'],
+    ['cancel', undefined],
+  ] as const)(
+    'returns the same public error when %s cannot find its operation',
+    async (method, resumeId) => {
+      const fixture = createFixture();
+      fixture.operationModel.findOne.mockResolvedValue(null);
+
+      await expect(
+        fixture.service[method]({
+          token: 'redacted-admin-token',
+          operationId: 'repair-operation-missing',
+          manifest,
+          resumeId,
+        }),
+      ).rejects.toMatchObject({ message: 'Repair operation not found' });
+
+      expectNoModelMutations(fixture);
+    },
+  );
 
   it('uses bounded unique batches, reauthorizes each mutation boundary, and completes atomically', async () => {
     const fixture = createFixture();
@@ -282,17 +506,17 @@ describe('AuthIdentifierRepairService', () => {
   it('dry-runs an existing matching operation without mutating any model', async () => {
     const fixture = createFixture();
     const manifestHash = hashRepairManifest(manifest, Buffer.alloc(32, 4), 1);
-    fixture.operationModel.findOne.mockReturnValue({
-      lean: () => ({
-        exec: jest.fn().mockResolvedValue({
+    fixture.operationModel.findOne.mockReturnValue(
+      criticalQueryResult(
+        createIdentifierOperation({
           operationId: 'repair-dry-run',
           operationType: AuthIdentifierOperationType.OfflineRepair,
           status: AuthIdentifierOperationStatus.Pending,
           manifestKeyVersion: 1,
           manifestHash: manifestHash.manifestHash,
         }),
-      }),
-    });
+      ),
+    );
     jest
       .spyOn(fixture.service as never, 'loadConflict' as never)
       .mockResolvedValue({
