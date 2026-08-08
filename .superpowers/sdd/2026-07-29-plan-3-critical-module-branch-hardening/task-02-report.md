@@ -4,7 +4,7 @@
 Task 2 — Offline repair validation and fail-closed preconditions.
 
 ## Status
-complete; final separate-context review not-run
+complete; final separate-context review approved with no findings
 
 ## Base SHA
 `b05b9e90a8669adf69970014927335d01cff2a63`
@@ -52,7 +52,7 @@ The titled cases `rejects an existing operation with a wrong operation type with
 not-run; the consolidated changed-line quality gate belongs to Task 9.
 
 ## Commit hash
-pending at report-write time; the immutable implementation SHA is returned in the implementer handoff for reviewer/dispatcher backfill.
+`fbfc378dd1c002aa4bff3456c4e99fc32b6ee308` (`test: cover repair validation boundaries`)
 
 ## Assumptions
 - The dispatcher-provided in-progress Task 2 row and starting commit are authoritative and are preserved.
@@ -60,5 +60,6 @@ pending at report-write time; the immutable implementation SHA is returned in th
 - The fresh separate-context reviewer owns `task-02-review.md`, the final verdict, and immutable commit-SHA backfill.
 
 ## Deferred findings
-- Final separate-context Task 2 review: not-run.
+- Final separate-context Task 2 review: approved by `/root/plan3_task2_review` using `gpt-5.6-sol`, high, against `fbfc378dd1c002aa4bff3456c4e99fc32b6ee308`; Critical `0`, Important `0`, Minor `0`, open findings `0`.
+- Controller resolution: the review's verification-boundary warning is not a gap. The SDD reviewer policy forbids redundant suite reruns without a concrete code-reading doubt, and this report records the exact implementer RED, GREEN, focused lint, diff-check, and full-suite commands and results.
 - Implementer findings: none.

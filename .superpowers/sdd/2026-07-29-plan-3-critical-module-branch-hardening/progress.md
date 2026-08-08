@@ -13,7 +13,7 @@ This ledger is append-only evidence for Plan 3. Existing evidence is preserved; 
 | Task | Status | Requested implementer | Actual implementer | Reasoning | Starting commit | Task commit | Reviewer | Review commit | Verdict | Findings resolved |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task1_implementer`) | high | e52711c7f6fd1174f4ff85280152ced174724bfe | 25e37048c05c2b3dd81256d1ab31eb21bad192ec | gpt-5.6-sol, high (`/root/plan3_task1_review`) | 25e37048c05c2b3dd81256d1ab31eb21bad192ec | approved | 0 |
-| 2 | in-progress | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task2_implementer`) | high | b05b9e90a8669adf69970014927335d01cff2a63 | not-run | gpt-5.6-sol, high (separate context; actual not-run) | not-run | not-run | not-run |
+| 2 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task2_implementer`) | high | b05b9e90a8669adf69970014927335d01cff2a63 | fbfc378dd1c002aa4bff3456c4e99fc32b6ee308 | gpt-5.6-sol, high (`/root/plan3_task2_review`) | fbfc378dd1c002aa4bff3456c4e99fc32b6ee308 | approved | 0 |
 | 3 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 4 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 5 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
@@ -46,3 +46,7 @@ Task 1: complete (commits e52711c..25e3704, review clean)
 - Full backend unit coverage regression exited 0 with `35/35` suites and `400/400` tests; overall statements `2899/3659`, branches `2010/2815`, functions `485/605`, lines `2784/3496`.
 - Implementer scope review found no production, configuration, baseline, Plan 2 fixture, Plan 2 test, permission test, e2e, frontend, or generated-artifact change. Generated coverage and test-result outputs remain unstaged.
 - Task 2 implementation commit SHA is returned in the implementer handoff for immutable reviewer/dispatcher backfill. Final reviewer, review commit, verdict, and findings resolved remain `not-run`.
+- Final review: approved by separate-context `gpt-5.6-sol`, high, identity `/root/plan3_task2_review`, against implementation commit `fbfc378dd1c002aa4bff3456c4e99fc32b6ee308`; Critical `0`, Important `0`, Minor `0`, open findings `0`, resolved `0`.
+- Controller resolution: the review's verification-boundary warning is not a gap because SDD reviewer policy prohibits redundant suite reruns absent a concrete code-reading doubt; the implementer report retains exact RED, GREEN, focused lint, diff-check, and full-suite evidence.
+
+Task 2: complete (commits b05b9e9..fbfc378, review clean)
