@@ -17,6 +17,7 @@ import {
   AuthIdentifierAssignmentAction,
   AuthIdentifierAssignmentStatus,
   AuthIdentifierOperationCleanupStatus,
+  AuthIdentifierOperationResultOutcome,
   AuthIdentifierOperationStatus,
   AuthIdentifierOperationType,
 } from './schemas/auth-identifier-operation.schema';
@@ -37,6 +38,17 @@ function operation(overrides: Record<string, unknown> = {}) {
     },
     ...overrides,
   });
+}
+
+function assignment(overrides: Record<string, unknown> = {}) {
+  return {
+    assignmentId: 'assignment-1',
+    subjectType: AuthIdentifierSubjectType.Member,
+    subjectId: 'member-1',
+    action: AuthIdentifierAssignmentAction.Claim,
+    status: AuthIdentifierAssignmentStatus.Pending,
+    ...overrides,
+  };
 }
 
 describe('AuthIdentifierReconciliationService', () => {
@@ -1014,5 +1026,703 @@ describe('AuthIdentifierReconciliationService', () => {
       expect.objectContaining({ status: AuthIdentifierOperationStatus.Compensating }),
       { $set: { status: AuthIdentifierOperationStatus.FailedRetryable } },
     );
+  });
+
+  describe('public recovery matrix', () => {
+    it('does not run cleanup mutations for a clean terminal operation', async () => {
+      const candidate = operation({
+        status: AuthIdentifierOperationStatus.Completed,
+        cleanupStatus: AuthIdentifierOperationCleanupStatus.Completed,
+      });
+      operations.find.mockReturnValueOnce(criticalQueryResult([candidate]));
+      operations.findOneAndUpdate.mockResolvedValueOnce(candidate);
+
+      await expect(service.reconcileOnce()).resolves.toEqual({
+        examined: 1,
+        claimed: 1,
+        processed: 1,
+        skippedMissingKey: 0,
+      });
+
+      expect(identifiers.find).not.toHaveBeenCalled();
+      expect(identifiers.updateMany).not.toHaveBeenCalled();
+      expect(batches.find).not.toHaveBeenCalled();
+      expect(batches.updateMany).not.toHaveBeenCalled();
+      expect(operations.findOneAndUpdate).toHaveBeenCalledTimes(1);
+      expect(operations.updateOne).toHaveBeenCalledTimes(1);
+    });
+
+    it('retries toward compensation when any assignment is compensated and toward application otherwise', async () => {
+      const compensating = operation({
+        _id: new Types.ObjectId('507f1f77bcf86cd799439051'),
+        operationId: 'operation-retry-compensating',
+        status: AuthIdentifierOperationStatus.FailedRetryable,
+        assignments: [
+          assignment({
+            assignmentId: 'assignment-compensated',
+            status: AuthIdentifierAssignmentStatus.Compensated,
+          }),
+        ],
+      });
+      const applying = operation({
+        _id: new Types.ObjectId('507f1f77bcf86cd799439052'),
+        operationId: 'operation-retry-applying',
+        status: AuthIdentifierOperationStatus.FailedRetryable,
+        assignments: [assignment({ assignmentId: 'assignment-pending' })],
+      });
+      operations.find.mockReturnValueOnce(
+        criticalQueryResult([compensating, applying]),
+      );
+      operations.findOneAndUpdate
+        .mockResolvedValueOnce(compensating)
+        .mockResolvedValueOnce(applying);
+      identifiers.find
+        .mockReturnValueOnce(criticalQueryResult([]))
+        .mockReturnValueOnce(criticalQueryResult([]));
+
+      await expect(service.reconcileOnce()).resolves.toMatchObject({
+        claimed: 2,
+        processed: 2,
+      });
+
+      expect(operations.updateOne).toHaveBeenCalledWith(
+        expect.objectContaining({
+          operationId: 'operation-retry-compensating',
+          status: AuthIdentifierOperationStatus.FailedRetryable,
+        }),
+        { $set: { status: AuthIdentifierOperationStatus.Compensating } },
+      );
+      expect(operations.updateOne).toHaveBeenCalledWith(
+        expect.objectContaining({
+          operationId: 'operation-retry-applying',
+          status: AuthIdentifierOperationStatus.FailedRetryable,
+        }),
+        { $set: { status: AuthIdentifierOperationStatus.Applying } },
+      );
+    });
+
+    it('skips already-applied and already-compensated assignments during recovery', async () => {
+      const applying = operation({
+        _id: new Types.ObjectId('507f1f77bcf86cd799439053'),
+        operationId: 'operation-skip-applied',
+        status: AuthIdentifierOperationStatus.Applying,
+        assignments: [
+          assignment({
+            assignmentId: 'assignment-applied',
+            status: AuthIdentifierAssignmentStatus.Applied,
+          }),
+        ],
+      });
+      const compensating = operation({
+        _id: new Types.ObjectId('507f1f77bcf86cd799439054'),
+        operationId: 'operation-skip-compensated',
+        status: AuthIdentifierOperationStatus.Compensating,
+        assignments: [
+          assignment({
+            assignmentId: 'assignment-compensated',
+            status: AuthIdentifierAssignmentStatus.Compensated,
+          }),
+        ],
+      });
+      operations.find.mockReturnValueOnce(
+        criticalQueryResult([applying, compensating]),
+      );
+      operations.findOneAndUpdate
+        .mockResolvedValueOnce(applying)
+        .mockResolvedValueOnce(compensating);
+      identifiers.find
+        .mockReturnValueOnce(criticalQueryResult([]))
+        .mockReturnValueOnce(criticalQueryResult([]));
+
+      await expect(service.reconcileOnce()).resolves.toMatchObject({
+        claimed: 2,
+        processed: 2,
+      });
+
+      expect(identifiers.findById).not.toHaveBeenCalled();
+      expect(identifiers.findOne).not.toHaveBeenCalled();
+      expect(identifiers.updateOne).not.toHaveBeenCalled();
+      expect(operations.updateOne).toHaveBeenCalledWith(
+        expect.objectContaining({
+          operationId: 'operation-skip-applied',
+          status: AuthIdentifierOperationStatus.Applying,
+        }),
+        { $set: { status: AuthIdentifierOperationStatus.Finalizing } },
+      );
+      expect(operations.updateOne).toHaveBeenCalledWith(
+        expect.objectContaining({
+          operationId: 'operation-skip-compensated',
+          status: AuthIdentifierOperationStatus.Compensating,
+        }),
+        { $set: { status: AuthIdentifierOperationStatus.Finalizing } },
+      );
+    });
+
+    it('returns missing application and operation-mismatched compensation reservations to retryable', async () => {
+      const missingReservationId = new Types.ObjectId(
+        '507f1f77bcf86cd799439055',
+      );
+      const mismatchedReservationId = new Types.ObjectId(
+        '507f1f77bcf86cd799439056',
+      );
+      const applying = operation({
+        _id: new Types.ObjectId('507f1f77bcf86cd799439057'),
+        operationId: 'operation-missing-reservation',
+        status: AuthIdentifierOperationStatus.Applying,
+        assignments: [
+          assignment({ targetReservationId: missingReservationId }),
+        ],
+      });
+      const compensating = operation({
+        _id: new Types.ObjectId('507f1f77bcf86cd799439058'),
+        operationId: 'operation-mismatched-reservation',
+        status: AuthIdentifierOperationStatus.Compensating,
+        assignments: [
+          assignment({ targetReservationId: mismatchedReservationId }),
+        ],
+      });
+      operations.find.mockReturnValueOnce(
+        criticalQueryResult([applying, compensating]),
+      );
+      operations.findOneAndUpdate
+        .mockResolvedValueOnce(applying)
+        .mockResolvedValueOnce(compensating);
+      identifiers.find
+        .mockReturnValueOnce(criticalQueryResult([]))
+        .mockReturnValueOnce(criticalQueryResult([]));
+      identifiers.findById
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({
+          _id: mismatchedReservationId,
+          pendingOperationId: 'another-operation',
+        });
+
+      await expect(service.reconcileOnce()).resolves.toMatchObject({
+        claimed: 2,
+        processed: 2,
+      });
+
+      expect(operations.updateOne).toHaveBeenCalledWith(
+        expect.objectContaining({
+          operationId: 'operation-missing-reservation',
+          status: AuthIdentifierOperationStatus.Applying,
+        }),
+        { $set: { status: AuthIdentifierOperationStatus.FailedRetryable } },
+      );
+      expect(operations.updateOne).toHaveBeenCalledWith(
+        expect.objectContaining({
+          operationId: 'operation-mismatched-reservation',
+          status: AuthIdentifierOperationStatus.Compensating,
+        }),
+        { $set: { status: AuthIdentifierOperationStatus.FailedRetryable } },
+      );
+      expect(identifiers.updateOne).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      [AuthIdentifierAssignmentAction.Retain, AuthIdentifierStatus.Conflict],
+      [AuthIdentifierAssignmentAction.Release, AuthIdentifierStatus.Active],
+      [AuthIdentifierAssignmentAction.Replace, AuthIdentifierStatus.Released],
+    ])('restores %s compensation to %s', async (action, restoredStatus) => {
+      const reservationId = new Types.ObjectId();
+      const candidate = operation({
+        operationId: `operation-compensate-${action}`,
+        status: AuthIdentifierOperationStatus.Compensating,
+        assignments: [assignment({ action, targetReservationId: reservationId })],
+      });
+      operations.find.mockReturnValueOnce(criticalQueryResult([candidate]));
+      operations.findOneAndUpdate.mockResolvedValueOnce(candidate);
+      identifiers.find.mockReturnValueOnce(criticalQueryResult([]));
+      identifiers.findById.mockResolvedValueOnce({
+        _id: reservationId,
+        pendingOperationId: candidate.operationId,
+      });
+
+      await expect(service.reconcileOnce()).resolves.toMatchObject({
+        claimed: 1,
+        processed: 1,
+      });
+
+      expect(identifiers.updateOne).toHaveBeenCalledWith(
+        { _id: reservationId, pendingOperationId: candidate.operationId },
+        {
+          $set: {
+            status: restoredStatus,
+            lastOperationId: candidate.operationId,
+          },
+          $unset: { pendingOperationId: '', pendingAction: '' },
+        },
+      );
+    });
+
+    it('ignores an unmatched discovered reservation without mutating assignments', async () => {
+      const candidate = operation({
+        status: AuthIdentifierOperationStatus.Pending,
+        assignments: [assignment()],
+      });
+      operations.find.mockReturnValueOnce(criticalQueryResult([candidate]));
+      operations.findOneAndUpdate.mockResolvedValueOnce(candidate);
+      identifiers.find.mockReturnValueOnce(
+        criticalQueryResult([
+          {
+            _id: new Types.ObjectId(),
+            normalizedIdentifier: 'unmatched@example.test',
+            pendingOperationId: candidate.operationId,
+            pendingAction: AuthIdentifierPendingAction.Replace,
+            subjectType: AuthIdentifierSubjectType.Staff,
+            subjectId: 'different-subject',
+          },
+        ]),
+      );
+
+      await expect(service.reconcileOnce()).resolves.toMatchObject({
+        claimed: 1,
+        processed: 1,
+      });
+
+      expect(
+        operations.updateOne.mock.calls.some(
+          ([filter]: [{ 'assignments.assignmentId'?: string }]) =>
+            filter['assignments.assignmentId'] === 'assignment-1',
+        ),
+      ).toBe(false);
+    });
+
+    it('attaches an HMAC-only reservation reference under the requested key version', async () => {
+      const reservationId = new Types.ObjectId();
+      const candidate = operation({
+        operationId: 'operation-hmac',
+        manifestKeyVersion: 7,
+        assignments: [
+          assignment({ action: AuthIdentifierAssignmentAction.Replace }),
+        ],
+      });
+      operations.find.mockReturnValueOnce(criticalQueryResult([candidate]));
+      operations.findOneAndUpdate.mockResolvedValueOnce(candidate);
+      identifiers.find.mockReturnValueOnce(
+        criticalQueryResult([
+          {
+            _id: reservationId,
+            normalizedIdentifier: 'secret@example.test',
+            pendingOperationId: 'operation-hmac',
+            pendingAction: AuthIdentifierPendingAction.Replace,
+            subjectType: AuthIdentifierSubjectType.Member,
+            subjectId: 'member-1',
+          },
+        ]),
+      );
+
+      await expect(service.reconcileOnce()).resolves.toMatchObject({
+        claimed: 1,
+        processed: 1,
+      });
+
+      expect(policy.getKeyMaterial).toHaveBeenCalledWith(7);
+      expect(operations.updateOne).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.objectContaining({
+          $set: expect.objectContaining({
+            'assignments.$.targetReservationId': reservationId,
+            'assignments.$.identifierCorrelationHash': expect.any(String),
+            'assignments.$.correlationKeyVersion': 7,
+          }),
+        }),
+      );
+      expect(JSON.stringify(operations.updateOne.mock.calls)).not.toContain(
+        'secret@example.test',
+      );
+      expect(
+        JSON.stringify(events.recordIdentifierOperationTerminal.mock.calls),
+      ).not.toContain('secret@example.test');
+    });
+
+    it.each([
+      ['missing requested key version', undefined, 'audit-key-material'],
+      ['missing requested key material', 7, undefined],
+    ])(
+      'attaches only the reservation ID with %s',
+      async (_case, manifestKeyVersion, keyMaterial) => {
+        const reservationId = new Types.ObjectId();
+        const candidate = operation({
+          operationId: `operation-${manifestKeyVersion ?? 'no-version'}`,
+          manifestKeyVersion,
+          assignments: [assignment()],
+        });
+        operations.find.mockReturnValueOnce(criticalQueryResult([candidate]));
+        operations.findOneAndUpdate.mockResolvedValueOnce(candidate);
+        identifiers.find.mockReturnValueOnce(
+          criticalQueryResult([
+            {
+              _id: reservationId,
+              normalizedIdentifier: 'private@example.test',
+              pendingOperationId: candidate.operationId,
+              pendingAction: AuthIdentifierPendingAction.Claim,
+              subjectType: AuthIdentifierSubjectType.Member,
+              subjectId: 'member-1',
+            },
+          ]),
+        );
+        (policy.getKeyMaterial as jest.Mock).mockReturnValue(keyMaterial);
+        if (manifestKeyVersion === undefined) {
+          const noVersionConfig = { get: jest.fn() } as unknown as ConfigService;
+          service = createReconciliationService({ config: noVersionConfig });
+        }
+
+        await expect(service.reconcileOnce()).resolves.toMatchObject({
+          claimed: 1,
+          processed: 1,
+        });
+
+        const assignmentWrite = operations.updateOne.mock.calls.find(
+          ([filter]: [{ 'assignments.assignmentId'?: string }]) =>
+            filter['assignments.assignmentId'] === 'assignment-1',
+        );
+        expect(assignmentWrite?.[1]).toEqual({
+          $set: { 'assignments.$.targetReservationId': reservationId },
+        });
+        expect(JSON.stringify(assignmentWrite)).not.toContain(
+          'identifierCorrelationHash',
+        );
+        expect(JSON.stringify(assignmentWrite)).not.toContain(
+          'correlationKeyVersion',
+        );
+      },
+    );
+
+    it.each([
+      {
+        name: 'explicit failure result',
+        requestedBy: {
+          subjectType: AuthIdentifierSubjectType.Member,
+          subjectId: 'member-requester',
+        },
+        assignments: [
+          assignment({ status: AuthIdentifierAssignmentStatus.Applied }),
+        ],
+        result: {
+          outcome: AuthIdentifierOperationResultOutcome.Failure,
+          reasonCategory: 'identifier-conflict',
+          httpStatus: 409,
+        },
+        terminalStatus: AuthIdentifierOperationStatus.FailedTerminal,
+        actorType: 'member',
+        outcome: 'failure',
+        reasonCategory: 'identifier-conflict',
+      },
+      {
+        name: 'all-compensated fallback',
+        requestedBy: {
+          subjectType: AuthIdentifierSubjectType.Staff,
+          subjectId: 'staff-requester',
+        },
+        assignments: [
+          assignment({ status: AuthIdentifierAssignmentStatus.Compensated }),
+        ],
+        terminalStatus: AuthIdentifierOperationStatus.FailedTerminal,
+        actorType: 'staff',
+        outcome: 'failure',
+        reasonCategory: 'identifier-operation-compensated',
+      },
+      {
+        name: 'successful system recovery',
+        requestedBy: { subjectType: 'system', subjectId: 'system-requester' },
+        assignments: [
+          assignment({ status: AuthIdentifierAssignmentStatus.Applied }),
+        ],
+        terminalStatus: AuthIdentifierOperationStatus.Completed,
+        actorType: 'staff',
+        outcome: 'success',
+        reasonCategory: 'identifier-operation-recovered',
+      },
+    ])(
+      'records terminal actor, outcome, and reason for $name',
+      async ({
+        name,
+        requestedBy,
+        assignments,
+        result,
+        terminalStatus,
+        actorType,
+        outcome,
+        reasonCategory,
+      }) => {
+        const candidate = operation({
+          operationId: `operation-${name.replace(/ /g, '-')}`,
+          status: AuthIdentifierOperationStatus.Finalizing,
+          requestedBy,
+          assignments,
+          result,
+        });
+        operations.find.mockReturnValueOnce(criticalQueryResult([candidate]));
+        operations.findOneAndUpdate
+          .mockResolvedValueOnce(candidate)
+          .mockResolvedValueOnce(candidate);
+        identifiers.find.mockReturnValueOnce(criticalQueryResult([]));
+
+        await expect(service.reconcileOnce()).resolves.toMatchObject({
+          claimed: 1,
+          processed: 1,
+        });
+
+        expect(events.recordIdentifierOperationTerminal).toHaveBeenCalledWith(
+          expect.objectContaining({
+            operationId: candidate.operationId,
+            terminalStatus,
+            actor: { actorType, actorId: requestedBy.subjectId },
+            outcome,
+            reasonCategory,
+          }),
+        );
+        const terminalWrite = operations.findOneAndUpdate.mock.calls[1][1];
+        expect(terminalWrite[0].$set.status).toBe(terminalStatus);
+      },
+    );
+
+    it('records the terminal event before finalizing cleanup-pending state without a parent TTL', async () => {
+      const candidate = operation({
+        operationId: 'operation-cleanup-pending-finalize',
+        status: AuthIdentifierOperationStatus.Finalizing,
+        cleanupStatus: AuthIdentifierOperationCleanupStatus.Pending,
+        assignments: [
+          assignment({ status: AuthIdentifierAssignmentStatus.Applied }),
+        ],
+      });
+      const ordering: string[] = [];
+      operations.find.mockReturnValueOnce(criticalQueryResult([candidate]));
+      operations.findOneAndUpdate
+        .mockImplementationOnce(async () => candidate)
+        .mockImplementationOnce(async () => {
+          ordering.push('operation');
+          return candidate;
+        });
+      identifiers.find.mockReturnValueOnce(criticalQueryResult([]));
+      events.recordIdentifierOperationTerminal.mockImplementationOnce(
+        async () => {
+          ordering.push('event');
+          return 'event-cleanup-pending';
+        },
+      );
+
+      await expect(service.reconcileOnce()).resolves.toMatchObject({
+        claimed: 1,
+        processed: 1,
+      });
+
+      expect(ordering).toEqual(['event', 'operation']);
+      const terminalSet = operations.findOneAndUpdate.mock.calls[1][1][0].$set;
+      expect(terminalSet).toMatchObject({
+        status: AuthIdentifierOperationStatus.Completed,
+        terminalEventId: 'event-cleanup-pending',
+        terminalEventRecordedAt: '$$NOW',
+      });
+      expect(terminalSet).not.toHaveProperty('expiresAt');
+    });
+
+    it.each([
+      [
+        AuthIdentifierOperationStatus.FailedTerminal,
+        {
+          $set: { status: AuthIdentifierStatus.Released },
+          $unset: { activationGateOperationId: '' },
+        },
+      ],
+      [
+        AuthIdentifierOperationStatus.Completed,
+        { $unset: { activationGateOperationId: '' } },
+      ],
+    ])(
+      'cleans gated identifiers correctly for %s operations',
+      async (status, expectedUpdate) => {
+        const gate = { _id: new Types.ObjectId() };
+        const gateCapture: { limit?: number } = {};
+        const batchCapture: { limit?: number } = {};
+        const candidate = operation({
+          operationId: `operation-cleanup-${status}`,
+          status,
+          cleanupStatus: AuthIdentifierOperationCleanupStatus.Pending,
+          terminalEventId: `event-${status}`,
+          terminalEventRecordedAt: new Date('2026-01-01T00:00:00.000Z'),
+        });
+        operations.find.mockReturnValueOnce(criticalQueryResult([candidate]));
+        operations.findOneAndUpdate
+          .mockResolvedValueOnce(candidate)
+          .mockResolvedValueOnce(candidate)
+          .mockResolvedValueOnce(candidate);
+        identifiers.find.mockReturnValueOnce(
+          criticalQueryResult([gate], gateCapture),
+        );
+        batches.find.mockReturnValueOnce(
+          criticalQueryResult([], batchCapture),
+        );
+
+        await expect(service.reconcileOnce()).resolves.toMatchObject({
+          claimed: 1,
+          processed: 1,
+        });
+
+        expect(identifiers.updateMany).toHaveBeenCalledWith(
+          { _id: { $in: [gate._id] } },
+          expectedUpdate,
+        );
+        expect(gateCapture.limit).toBe(2);
+        expect(batchCapture.limit).toBe(1);
+      },
+    );
+
+    it('defers batch expiry when gated identifiers exhaust cleanup capacity', async () => {
+      const gates = [
+        { _id: new Types.ObjectId() },
+        { _id: new Types.ObjectId() },
+      ];
+      const gateCapture: { limit?: number } = {};
+      const candidate = operation({
+        operationId: 'operation-gates-exhaust-capacity',
+        status: AuthIdentifierOperationStatus.Completed,
+        cleanupStatus: AuthIdentifierOperationCleanupStatus.Pending,
+        terminalEventId: 'event-gates-exhaust-capacity',
+        terminalEventRecordedAt: new Date('2026-01-01T00:00:00.000Z'),
+      });
+      operations.find.mockReturnValueOnce(criticalQueryResult([candidate]));
+      operations.findOneAndUpdate
+        .mockResolvedValueOnce(candidate)
+        .mockResolvedValueOnce(candidate);
+      identifiers.find.mockReturnValueOnce(
+        criticalQueryResult(gates, gateCapture),
+      );
+      identifiers.exists.mockResolvedValueOnce(gates[0]);
+
+      await expect(service.reconcileOnce()).resolves.toMatchObject({
+        claimed: 1,
+        processed: 1,
+      });
+
+      expect(batches.find).not.toHaveBeenCalled();
+      expect(batches.updateMany).not.toHaveBeenCalled();
+      expect(gateCapture.limit).toBe(2);
+      expect(operations.findOneAndUpdate).toHaveBeenCalledTimes(2);
+    });
+
+    it('keeps cleanup pending while gate or batch work remains', async () => {
+      const gate = { _id: new Types.ObjectId() };
+      const batch = { _id: new Types.ObjectId() };
+      const candidate = operation({
+        operationId: 'operation-cleanup-remains',
+        status: AuthIdentifierOperationStatus.Completed,
+        cleanupStatus: AuthIdentifierOperationCleanupStatus.Pending,
+        terminalEventId: 'event-cleanup-remains',
+        terminalEventRecordedAt: new Date('2026-01-01T00:00:00.000Z'),
+      });
+      operations.find.mockReturnValueOnce(criticalQueryResult([candidate]));
+      operations.findOneAndUpdate
+        .mockResolvedValueOnce(candidate)
+        .mockResolvedValueOnce(candidate);
+      identifiers.find.mockReturnValueOnce(criticalQueryResult([gate]));
+      batches.find.mockReturnValueOnce(criticalQueryResult([batch]));
+      batches.exists.mockResolvedValueOnce(batch);
+
+      await expect(service.reconcileOnce()).resolves.toMatchObject({
+        claimed: 1,
+        processed: 1,
+      });
+
+      expect(batches.updateMany).toHaveBeenCalledWith(
+        { _id: { $in: [batch._id] } },
+        [{ $set: { expiresAt: '$$NOW' } }],
+        { updatePipeline: true },
+      );
+      expect(operations.findOneAndUpdate).toHaveBeenCalledTimes(2);
+    });
+
+    it('completes empty cleanup remainder and applies retention only after terminal event fields exist', async () => {
+      const candidate = operation({
+        operationId: 'operation-cleanup-complete',
+        status: AuthIdentifierOperationStatus.Completed,
+        cleanupStatus: AuthIdentifierOperationCleanupStatus.Pending,
+        terminalEventId: 'event-cleanup-complete',
+        terminalEventRecordedAt: new Date('2026-01-01T00:00:00.000Z'),
+      });
+      operations.find.mockReturnValueOnce(criticalQueryResult([candidate]));
+      operations.findOneAndUpdate
+        .mockResolvedValueOnce(candidate)
+        .mockResolvedValueOnce(candidate)
+        .mockResolvedValueOnce(candidate);
+      identifiers.find.mockReturnValueOnce(criticalQueryResult([]));
+      batches.find.mockReturnValueOnce(criticalQueryResult([]));
+
+      await expect(service.reconcileOnce()).resolves.toMatchObject({
+        claimed: 1,
+        processed: 1,
+      });
+
+      expect(operations.findOneAndUpdate.mock.calls[2][0]).toMatchObject({
+        operationId: candidate.operationId,
+        cleanupStatus: AuthIdentifierOperationCleanupStatus.Pending,
+        terminalEventId: { $exists: true },
+        terminalEventRecordedAt: { $exists: true },
+      });
+      expect(operations.findOneAndUpdate.mock.calls[2][1][0].$set).toMatchObject(
+        {
+          cleanupStatus: AuthIdentifierOperationCleanupStatus.Completed,
+          expiresAt: {
+            $dateAdd: {
+              startDate: '$$NOW',
+              unit: 'day',
+              amount: 90,
+            },
+          },
+        },
+      );
+    });
+
+    it('releases every claimed lease when one public operation recovery fails', async () => {
+      const failing = operation({
+        _id: new Types.ObjectId('507f1f77bcf86cd799439059'),
+        operationId: 'operation-public-failure',
+        assignments: [assignment()],
+      });
+      const following = operation({
+        _id: new Types.ObjectId('507f1f77bcf86cd799439060'),
+        operationId: 'operation-public-following',
+      });
+      operations.find.mockReturnValueOnce(
+        criticalQueryResult([failing, following]),
+      );
+      operations.findOneAndUpdate
+        .mockResolvedValueOnce(failing)
+        .mockResolvedValueOnce(following);
+      identifiers.find
+        .mockReturnValueOnce(
+          criticalQueryResult([
+            {
+              _id: new Types.ObjectId(),
+              normalizedIdentifier: 'failing@example.test',
+              pendingOperationId: failing.operationId,
+              pendingAction: AuthIdentifierPendingAction.Claim,
+              subjectType: AuthIdentifierSubjectType.Member,
+              subjectId: 'member-1',
+            },
+          ]),
+        )
+        .mockReturnValueOnce(criticalQueryResult([]));
+      (policy.getKeyMaterial as jest.Mock)
+        .mockImplementationOnce(() => {
+          throw new Error('transient key provider failure');
+        })
+        .mockReturnValueOnce('audit-key-material');
+
+      await expect(service.reconcileOnce()).resolves.toMatchObject({
+        claimed: 2,
+        processed: 1,
+      });
+
+      const leaseReleases = operations.updateOne.mock.calls.filter(
+        ([, update]: unknown[]) => Array.isArray(update),
+      );
+      expect(
+        leaseReleases.map(
+          ([filter]: [{ operationId: string }]) => filter.operationId,
+        ),
+      ).toEqual(['operation-public-failure', 'operation-public-following']);
+    });
   });
 });

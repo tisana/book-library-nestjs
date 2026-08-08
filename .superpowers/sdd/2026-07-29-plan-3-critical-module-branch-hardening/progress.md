@@ -16,7 +16,7 @@ This ledger is append-only evidence for Plan 3. Existing evidence is preserved; 
 | 2 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task2_implementer`) | high | b05b9e90a8669adf69970014927335d01cff2a63 | fbfc378dd1c002aa4bff3456c4e99fc32b6ee308 | gpt-5.6-sol, high (`/root/plan3_task2_review`) | fbfc378dd1c002aa4bff3456c4e99fc32b6ee308 | approved | 0 |
 | 3 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task3_implementer`) | high | 1cf23a49aca3df4023b0c6f93208432bbef5d6c6 | b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb | gpt-5.6-sol, high (`/root/plan3_task3_review`) | b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb | approved | 1 |
 | 4 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task4_implementer`) | high | c6735fc56c40fa0f51b691c0dc2e3c4831dfb0d7 | 5bffafdf4224b5c7e22e945f0ae322900af46384 | gpt-5.6-sol, high (`/root/plan3_task4_review`) | 5bffafdf4224b5c7e22e945f0ae322900af46384 | approved | 1 |
-| 5 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
+| 5 | in-progress | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task5_implementer`) | high | 38491688015d4e7945a7ed63f0f6fc8cb2cc98ab | not-run | gpt-5.6-sol, high (separate context; actual not-run) | not-run | not-run | not-run |
 | 6 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 7 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 8 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
@@ -108,3 +108,15 @@ Task 4: fix round 1/5 (1 addressed, 0 open pending re-review — in-flight stale
 Task 4: fix round 1/5 (1 addressed, 0 open — stale lifecycle readiness; commits 05d9e1d..5bffafd)
 
 Task 4: complete (commits c6735fc..5bffafd, review clean)
+
+## Task 5 evidence chronology
+
+- Starting commit: `38491688015d4e7945a7ed63f0f6fc8cb2cc98ab`; requested/actual implementer `gpt-5.6-sol`, high, identity `/root/plan3_task5_implementer`; substitution none.
+- RED: after correcting a test-only TypeScript library-target incompatibility, the exact focused reconciliation command exited 1 with `3` failed and `52` passed. The HMAC reservation reference and failed/completed gate cleanup cases failed at their intentionally absent sequenced reservation/gate query results; reconciliation branches were `181/191`.
+- GREEN: the exact focused reconciliation command exited 0 with `55/55` tests; reconciliation branches reached `181/191`, exceeding the Task 5 floor of `163/191` with the denominator unchanged.
+- Recovery proof: public `reconcileOnce()` cases verify retry direction, applied/compensated skips, missing and operation-mismatched reservation fallback, retain/release/replace restoration, unmatched and attached reservations, requested-version HMAC correlation without raw identifiers, and missing version/material attachment without fabricated correlation metadata.
+- Terminal and cleanup proof: public cases verify explicit-failure, all-compensated, and successful terminal metadata; member/staff/system actor mapping; event-before-terminal-state ordering; cleanup-pending TTL omission; failed/completed gate behavior; exact gate/batch query limits; deferred and remaining cleanup; final retention TTL gating; and lease release after an operation failure.
+- Focused non-fixing ESLint and `git diff --check` exited 0.
+- Full backend unit coverage regression exited 0 with `35/35` suites and `444/444` tests; overall statements `2954/3659`, branches `2077/2815`, functions `492/605`, lines `2835/3496`.
+- Implementer scope review found no production, configuration, baseline, Plan 2 fixture/test, permission test, e2e, frontend, generated-output, new private-method-access, raw-identifier-write, or fabricated-correlation change. Generated coverage and test-result outputs remain unstaged.
+- Task 5 implementation commit uses subject `test: harden identifier recovery transitions`; immutable SHA is returned in the implementer handoff. Separate-context reviewer, review commit, verdict, and findings resolved remain `not-run`.
