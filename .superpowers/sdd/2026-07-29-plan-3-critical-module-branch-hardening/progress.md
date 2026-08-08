@@ -20,7 +20,7 @@ This ledger is append-only evidence for Plan 3. Existing evidence is preserved; 
 | 6 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task6_implementer`) | high | 76af392e25141b91c088596c44dc10cba7a4c9c6 | 59b2d60fdf9539adee0c600785144f9bfb29c007 | gpt-5.6-sol, high (`/root/plan3_task6_review`) | 59b2d60fdf9539adee0c600785144f9bfb29c007 | approved | 2 |
 | 7 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task7_implementer`) | high | 2e278c81e2650f540350adf9c9d0168ab1b63064 | 114cdffc95f127d0bd2d3bcca054b4d4d074a9f6 | gpt-5.6-sol, high (`/root/plan3_task7_review`) | 114cdffc95f127d0bd2d3bcca054b4d4d074a9f6 | approved | 0 |
 | 8 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task8_implementer`) | high | 6fdd9888fb04bcc089e4fc9681b0f806cb7e0ea5 | 04a5d6d74800be30d6a247011475605d326dc0eb | gpt-5.6-sol, high (`/root/plan3_task8_review`) | 04a5d6d74800be30d6a247011475605d326dc0eb | approved | 0 |
-| 9 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
+| 9 | in-progress | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task9_implementer`) | high | bedbceabdc57658f85b658c5ae464e7e8fc883b7 | not-run | gpt-5.6-sol, high (separate context; actual not-run) | not-run | not-run | not-run |
 | 10 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 
 ## Task 1 evidence chronology
@@ -201,3 +201,18 @@ Task 7: complete (commits 2e278c8..114cdff, review clean)
 - Independent review reproduced borrowing `105/116` and focused permission `69/74`. The controller rules the brief's focused `71/74` expectation inaccurate rather than an implementation gap: permission source/spec are unchanged, guard cross-spec execution at lines `55` and `89` covers permission-service defaults at lines `131` and `133`, and fresh authoritative full-source permission coverage remains `71/74` (`95.94%`) without permission mutation.
 
 Task 8: complete (commits 6fdd988..04a5d6d, review clean)
+
+## Task 9 evidence chronology
+
+- Plan 3 base SHA remained `e52711c7f6fd1174f4ff85280152ced174724bfe`; starting commit `bedbceabdc57658f85b658c5ae464e7e8fc883b7` matched the assignment. Requested/actual implementer: `gpt-5.6-sol`, high, identity `/root/plan3_task9_implementer`; substitution none.
+- Authoritative producer exits were all `0`: quality reporting `68/68`; backend unit `469/469` with failures `0`; backend e2e `242/242` with failures `0`; backend reporter expected files `87`.
+- Fresh full-source coverage: statements `2960/3659`, branches `2103/2815`, functions `492/605`, lines `2841/3496`.
+- Exact critical pairs: token session `89/103`; repair `103/110`; reconciliation `181/191`; members `164/188`; borrowings `105/116`; permissions full-source `71/74`. Every denominator remained unchanged and the exact gate exited `0`.
+- Task 8's focused/full permission explanation is preserved: the focused permission spec measures `69/74`, while fresh authoritative full-source execution includes established cross-spec guard calls and measures the Task 9 gate's `71/74`; no permission source/spec or eligibility changed.
+- Validated base diff creation, full non-fixing backend ESLint, build, and `git diff --check` exited `0`. The diff contains zero eligible backend production lines; final changed-line coverage is `not-applicable`, `0/0`, passed.
+- Write-baseline and check-only reporter calls both exited `0` with identical diff/LCOV arguments. Backend baseline ratcheted monotonically to statements `80.89`, branches `74.7`, functions `81.32`, lines `81.26`; frontend remained byte-for-byte unchanged.
+- Remaining overall 75% branch backlog: `max(0, 2112 - 2103) = 9` covered branches.
+- Implementer self-review found no production/source-set/configuration/script/CI/e2e-spec/frontend-object/reviewer-report change; generated coverage, test-results, and dist outputs remain unstaged.
+- Task 9 implementation commit uses exact subject `test: ratchet critical backend coverage`; immutable SHA is returned in the implementer handoff. Required separate-context reviewer, review commit, verdict, and findings resolved remain `not-run`.
+
+Task 9: implementation complete (review not-run)
