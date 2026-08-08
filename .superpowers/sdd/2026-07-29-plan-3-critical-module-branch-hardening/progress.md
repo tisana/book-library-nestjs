@@ -15,7 +15,7 @@ This ledger is append-only evidence for Plan 3. Existing evidence is preserved; 
 | 1 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task1_implementer`) | high | e52711c7f6fd1174f4ff85280152ced174724bfe | 25e37048c05c2b3dd81256d1ab31eb21bad192ec | gpt-5.6-sol, high (`/root/plan3_task1_review`) | 25e37048c05c2b3dd81256d1ab31eb21bad192ec | approved | 0 |
 | 2 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task2_implementer`) | high | b05b9e90a8669adf69970014927335d01cff2a63 | fbfc378dd1c002aa4bff3456c4e99fc32b6ee308 | gpt-5.6-sol, high (`/root/plan3_task2_review`) | fbfc378dd1c002aa4bff3456c4e99fc32b6ee308 | approved | 0 |
 | 3 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task3_implementer`) | high | 1cf23a49aca3df4023b0c6f93208432bbef5d6c6 | b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb | gpt-5.6-sol, high (`/root/plan3_task3_review`) | b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb | approved | 1 |
-| 4 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
+| 4 | in-progress | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task4_implementer`) | high | c6735fc56c40fa0f51b691c0dc2e3c4831dfb0d7 | not-run | gpt-5.6-sol, high (separate context; actual not-run) | not-run | not-run | not-run |
 | 5 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 6 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 7 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
@@ -78,3 +78,16 @@ Task 2: complete (commits b05b9e9..fbfc378, review clean)
 Task 3: fix round 1/5 (1 addressed, 0 open — missing-target compensation skip; commits 235b4cb..b4f0fa1)
 
 Task 3: complete (commits 1cf23a4..b4f0fa1, review clean)
+
+## Task 4 evidence chronology
+
+- Starting commit: `c6735fc56c40fa0f51b691c0dc2e3c4831dfb0d7`; requested/actual implementer `gpt-5.6-sol`, high, identity `/root/plan3_task4_implementer`; substitution none.
+- RED: the exact focused reconciliation command exited 1 before test execution with `TS2304: Cannot find name 'createReconciliationService'` at the new scheduler/connection override calls, proving the intended missing test-factory seam.
+- GREEN: the exact focused reconciliation command exited 0 with `34/34` tests; reconciliation-service branches reached `151/191`, exceeding the Task 4 floor of `150/191` with the denominator unchanged.
+- Lifecycle and scheduling proof: public bootstrap/shutdown calls cover missing Mongo connection, missing scheduler ownership, fresh lifecycle startup after shutdown, readiness-probe transition, contained startup and scheduled-pass failures, deferred readiness losing to shutdown, and idempotent non-owner shutdown.
+- Claim and lease proof: public `reconcileOnce`/`renewLease` coverage verifies lost claims remain examined but unclaimed/unprocessed, candidate discovery is bounded to twice the batch cap, claims stop at the configured cap, each acquired lease is released, missing offline-repair key material skips before claim, and lost renewal ownership returns false without state mutation.
+- Approved shared fixtures: Task 1's `createIdentifierOperation`/`criticalQueryResult` and Plan 2's `deferred`, `queryResult`, `createStaffModelHarness`, and `createIdentifierModelHarness` are consumed read-only; the exact override-capable `createReconciliationService` and reconciliation model extensions remain test-local.
+- Focused non-fixing ESLint and `git diff --check` exited 0.
+- Full backend unit coverage regression exited 0 with `35/35` suites and `423/423` tests; overall statements `2937/3659`, branches `2047/2815`, functions `490/605`, lines `2818/3496`.
+- Implementer scope review found no production, configuration, baseline, Plan 2 fixture/test, permission test, e2e, frontend, generated-output, or new private-method-access change. Fake timers are restored, deferred promises are resolved and awaited, and generated coverage/test-result outputs remain unstaged.
+- Task 4 implementation commit uses subject `test: cover reconciliation scheduling races`; immutable SHA is returned in the implementer handoff. Final separate-context reviewer, review commit, verdict, and findings resolved remain `not-run`.

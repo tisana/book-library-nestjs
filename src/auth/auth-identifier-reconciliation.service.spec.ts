@@ -1,5 +1,16 @@
 import { ConfigService } from '@nestjs/config';
-import { Types } from 'mongoose';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { Connection, Types } from 'mongoose';
+import {
+  createIdentifierModelHarness,
+  createStaffModelHarness,
+  deferred,
+  queryResult,
+} from '../../test/support/backend-coverage-fixtures';
+import {
+  createIdentifierOperation,
+  criticalQueryResult,
+} from '../../test/support/critical-auth-fixtures';
 import { AuthIdentifierReconciliationService } from './auth-identifier-reconciliation.service';
 import { AuthIdentifierRepairKeyPolicyService } from './auth-identifier-repair-key-policy.service';
 import {
@@ -15,34 +26,17 @@ import {
   AuthIdentifierSubjectType,
 } from './schemas/auth-identifier.schema';
 
-function query<T>(value: T, capture?: { limit?: number }) {
-  const result = {
-    sort: () => result,
-    select: () => result,
-    limit: (amount: number) => {
-      if (capture) capture.limit = amount;
-      return result;
-    },
-    lean: () => result,
-    exec: async () => value,
-  };
-  return result;
-}
+const staffRequester = createStaffModelHarness().document;
 
 function operation(overrides: Record<string, unknown> = {}) {
-  return {
-    _id: new Types.ObjectId(),
+  return createIdentifierOperation({
     operationId: 'operation-1',
-    operationType: AuthIdentifierOperationType.Claim,
-    status: AuthIdentifierOperationStatus.Pending,
-    assignments: [],
-    cleanupStatus: AuthIdentifierOperationCleanupStatus.NotRequired,
     requestedBy: {
       subjectType: AuthIdentifierSubjectType.Staff,
-      subjectId: 'admin-1',
+      subjectId: staffRequester._id.toString(),
     },
     ...overrides,
-  } as any;
+  });
 }
 
 describe('AuthIdentifierReconciliationService', () => {
@@ -57,22 +51,42 @@ describe('AuthIdentifierReconciliationService', () => {
   let config: ConfigService;
   let service: AuthIdentifierReconciliationService;
 
+  function createReconciliationService(overrides?: {
+    scheduler?: SchedulerRegistry;
+    connection?: Connection;
+    config?: ConfigService;
+    operations?: typeof operations;
+    identifiers?: typeof identifiers;
+    batches?: typeof batches;
+  }): AuthIdentifierReconciliationService {
+    return new AuthIdentifierReconciliationService(
+      overrides?.operations ?? operations,
+      overrides?.identifiers ?? identifiers,
+      overrides?.batches ?? batches,
+      policy as AuthIdentifierRepairKeyPolicyService,
+      events,
+      overrides?.config ?? config,
+      overrides?.scheduler,
+      overrides?.connection,
+    );
+  }
+
   beforeEach(() => {
     operations = {
-      find: jest.fn().mockReturnValue(query([])),
+      find: jest.fn().mockReturnValue(criticalQueryResult([])),
       findOneAndUpdate: jest.fn().mockResolvedValue(null),
       updateOne: jest.fn().mockResolvedValue({ modifiedCount: 1 }),
     };
+    const identifierHarness = createIdentifierModelHarness();
     identifiers = {
-      find: jest.fn().mockReturnValue(query([])),
-      findOne: jest.fn().mockResolvedValue(null),
+      ...identifierHarness.model,
+      find: jest.fn().mockReturnValue(criticalQueryResult([])),
       findById: jest.fn().mockResolvedValue(null),
-      updateOne: jest.fn().mockResolvedValue({ modifiedCount: 1 }),
       updateMany: jest.fn().mockResolvedValue({ modifiedCount: 0 }),
       exists: jest.fn().mockResolvedValue(null),
     };
     batches = {
-      find: jest.fn().mockReturnValue(query([])),
+      find: jest.fn().mockReturnValue(criticalQueryResult([])),
       updateMany: jest.fn().mockResolvedValue({ modifiedCount: 0 }),
       exists: jest.fn().mockResolvedValue(null),
     };
@@ -97,19 +111,12 @@ describe('AuthIdentifierReconciliationService', () => {
       'auth.identifierOperationRetentionDays': 90,
     };
     config = { get: (key: string) => values[key] } as ConfigService;
-    service = new AuthIdentifierReconciliationService(
-      operations,
-      identifiers,
-      batches,
-      policy as AuthIdentifierRepairKeyPolicyService,
-      events,
-      config,
-    );
+    service = createReconciliationService();
   });
 
   it('checks a repair key before acquiring a lease and leaves data unchanged when missing', async () => {
     operations.find.mockReturnValue(
-      query([
+      criticalQueryResult([
         operation({
           operationType: AuthIdentifierOperationType.OfflineRepair,
           manifestKeyVersion: 9,
@@ -134,7 +141,7 @@ describe('AuthIdentifierReconciliationService', () => {
 
   it('uses MongoDB time for atomic lease acquisition and renewal', async () => {
     const candidate = operation();
-    operations.find.mockReturnValue(query([candidate]));
+    operations.find.mockReturnValue(criticalQueryResult([candidate]));
     operations.findOneAndUpdate
       .mockResolvedValueOnce(candidate)
       .mockResolvedValueOnce(candidate);
@@ -166,7 +173,7 @@ describe('AuthIdentifierReconciliationService', () => {
       pendingAction: AuthIdentifierPendingAction.Claim,
       pendingOperationId: 'operation-1',
     };
-    identifiers.find.mockReturnValue(query([reservation]));
+    identifiers.find.mockReturnValue(criticalQueryResult([reservation]));
 
     await (service as any).attachMissingReservationReferences(
       operation({ assignments: [assignment] }),
@@ -260,10 +267,10 @@ describe('AuthIdentifierReconciliationService', () => {
   it('bounds gate and batch cleanup and expires the parent only after both are clear', async () => {
     const gateCapture: { limit?: number } = {};
     const gate = { _id: new Types.ObjectId() };
-    identifiers.find.mockReturnValue(query([gate], gateCapture));
+    identifiers.find.mockReturnValue(criticalQueryResult([gate], gateCapture));
     const batchCapture: { limit?: number } = {};
     batches.find.mockReturnValue(
-      query([{ _id: new Types.ObjectId() }], batchCapture),
+      criticalQueryResult([{ _id: new Types.ObjectId() }], batchCapture),
     );
     operations.findOneAndUpdate.mockResolvedValue(operation());
 
@@ -294,7 +301,9 @@ describe('AuthIdentifierReconciliationService', () => {
   });
 
   it('releases residual gates for a failed terminal repair instead of unlocking them', async () => {
-    identifiers.find.mockReturnValue(query([{ _id: new Types.ObjectId() }]));
+    identifiers.find.mockReturnValue(
+      criticalQueryResult([{ _id: new Types.ObjectId() }]),
+    );
     operations.findOneAndUpdate.mockResolvedValue(operation());
 
     await (service as any).cleanup(
@@ -313,7 +322,7 @@ describe('AuthIdentifierReconciliationService', () => {
   });
 
   it('ignores clean terminal operations', async () => {
-    operations.find.mockReturnValue(query([]));
+    operations.find.mockReturnValue(criticalQueryResult([]));
 
     await expect(service.reconcileOnce()).resolves.toEqual({
       examined: 0,
@@ -357,6 +366,262 @@ describe('AuthIdentifierReconciliationService', () => {
       'auth-identifier-reconciliation',
     );
     expect(registry.deleteInterval).toHaveBeenCalledTimes(1);
+  });
+
+  it('registers only a readiness probe when bootstrap has no Mongo connection', async () => {
+    jest.useFakeTimers();
+    const scheduler = {
+      addInterval: jest.fn(),
+      doesExist: jest.fn().mockReturnValue(false),
+      deleteInterval: jest.fn(),
+    };
+    service = createReconciliationService({
+      scheduler: scheduler as unknown as SchedulerRegistry,
+    });
+
+    await service.onApplicationBootstrap();
+
+    expect(scheduler.addInterval).not.toHaveBeenCalled();
+    expect(operations.find).not.toHaveBeenCalled();
+    expect(operations.findOneAndUpdate).not.toHaveBeenCalled();
+    expect(jest.getTimerCount()).toBe(1);
+
+    service.onApplicationShutdown();
+    expect(jest.getTimerCount()).toBe(0);
+    jest.useRealTimers();
+  });
+
+  it('starts a new lifecycle after shutdown without reusing prior readiness', async () => {
+    jest.useFakeTimers();
+    const notReady = queryResult<Record<string, unknown> | null>(null);
+    const ready = queryResult<Record<string, unknown> | null>({
+      version: '003',
+    });
+    const findOne = jest
+      .fn()
+      .mockImplementationOnce(() => notReady.exec())
+      .mockImplementationOnce(() => ready.exec());
+    const scheduler = {
+      addInterval: jest.fn(),
+      doesExist: jest.fn().mockReturnValue(true),
+      deleteInterval: jest.fn(),
+    };
+    const connection = {
+      db: {
+        collection: jest.fn().mockReturnValue({ findOne }),
+      },
+    };
+    service = createReconciliationService({
+      scheduler: scheduler as unknown as SchedulerRegistry,
+      connection: connection as unknown as Connection,
+    });
+
+    await service.onApplicationBootstrap();
+    service.onApplicationShutdown();
+    await service.onApplicationBootstrap();
+
+    expect(findOne).toHaveBeenCalledTimes(2);
+    expect(scheduler.addInterval).toHaveBeenCalledTimes(1);
+    expect(operations.find).toHaveBeenCalledTimes(1);
+
+    service.onApplicationShutdown();
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+
+  it('never treats reconciliation as scheduled without a SchedulerRegistry', async () => {
+    jest.useFakeTimers();
+    const findOne = jest.fn().mockResolvedValue({ version: '003' });
+    const connection = {
+      db: {
+        collection: jest.fn().mockReturnValue({ findOne }),
+      },
+    };
+    service = createReconciliationService({
+      connection: connection as unknown as Connection,
+    });
+
+    await service.onApplicationBootstrap();
+    await service.onApplicationBootstrap();
+
+    expect(findOne).toHaveBeenCalledTimes(2);
+    expect(operations.find).not.toHaveBeenCalled();
+    expect(jest.getTimerCount()).toBe(1);
+
+    service.onApplicationShutdown();
+    expect(jest.getTimerCount()).toBe(0);
+    jest.useRealTimers();
+  });
+
+  it('starts scheduled work when the public readiness probe observes the migration', async () => {
+    jest.useFakeTimers();
+    let migrationReady = false;
+    const scheduler = {
+      addInterval: jest.fn(),
+      doesExist: jest.fn().mockReturnValue(true),
+      deleteInterval: jest.fn(),
+    };
+    const connection = {
+      db: {
+        collection: jest.fn().mockReturnValue({
+          findOne: jest.fn().mockImplementation(async () =>
+            migrationReady ? { version: '003' } : null,
+          ),
+        }),
+      },
+    };
+    service = createReconciliationService({
+      scheduler: scheduler as unknown as SchedulerRegistry,
+      connection: connection as unknown as Connection,
+    });
+
+    await service.onApplicationBootstrap();
+    await jest.advanceTimersByTimeAsync(60_000);
+    expect(scheduler.addInterval).not.toHaveBeenCalled();
+
+    migrationReady = true;
+    await jest.advanceTimersByTimeAsync(60_000);
+
+    expect(scheduler.addInterval).toHaveBeenCalledTimes(1);
+    expect(operations.find).toHaveBeenCalledTimes(1);
+
+    service.onApplicationShutdown();
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+
+  it('contains a scheduled reconciliation rejection and keeps the interval owned', async () => {
+    jest.useFakeTimers();
+    const scheduler = {
+      addInterval: jest.fn(),
+      doesExist: jest.fn().mockReturnValue(true),
+      deleteInterval: jest.fn(),
+    };
+    const connection = {
+      db: {
+        collection: jest.fn().mockReturnValue({
+          findOne: jest.fn().mockResolvedValue({ version: '003' }),
+        }),
+      },
+    };
+    service = createReconciliationService({
+      scheduler: scheduler as unknown as SchedulerRegistry,
+      connection: connection as unknown as Connection,
+    });
+    const reconcile = jest
+      .spyOn(service, 'reconcileOnce')
+      .mockResolvedValueOnce({
+        examined: 0,
+        claimed: 0,
+        processed: 0,
+        skippedMissingKey: 0,
+      })
+      .mockRejectedValueOnce(new Error('scheduled pass failed'));
+
+    await service.onApplicationBootstrap();
+    await jest.advanceTimersByTimeAsync(60_000);
+
+    expect(reconcile).toHaveBeenCalledTimes(2);
+    expect(scheduler.deleteInterval).not.toHaveBeenCalled();
+
+    service.onApplicationShutdown();
+    expect(scheduler.deleteInterval).toHaveBeenCalledTimes(1);
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+
+  it('contains a rejected startup pass after registering the schedule', async () => {
+    jest.useFakeTimers();
+    const scheduler = {
+      addInterval: jest.fn(),
+      doesExist: jest.fn().mockReturnValue(true),
+      deleteInterval: jest.fn(),
+    };
+    const connection = {
+      db: {
+        collection: jest.fn().mockReturnValue({
+          findOne: jest.fn().mockResolvedValue({ version: '003' }),
+        }),
+      },
+    };
+    service = createReconciliationService({
+      scheduler: scheduler as unknown as SchedulerRegistry,
+      connection: connection as unknown as Connection,
+    });
+    jest
+      .spyOn(service, 'reconcileOnce')
+      .mockRejectedValueOnce(new Error('startup pass failed'));
+
+    await expect(service.onApplicationBootstrap()).resolves.toBeUndefined();
+    expect(scheduler.addInterval).toHaveBeenCalledTimes(1);
+
+    service.onApplicationShutdown();
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+
+  it('does not register work after shutdown wins a migration-readiness race', async () => {
+    jest.useFakeTimers();
+    const readiness = deferred<Record<string, unknown> | null>();
+    const scheduler = {
+      addInterval: jest.fn(),
+      doesExist: jest.fn().mockReturnValue(false),
+      deleteInterval: jest.fn(),
+    };
+    const connection = {
+      db: {
+        collection: jest.fn().mockReturnValue({
+          findOne: jest.fn().mockReturnValue(readiness.promise),
+        }),
+      },
+    };
+    service = createReconciliationService({
+      scheduler: scheduler as unknown as SchedulerRegistry,
+      connection: connection as unknown as Connection,
+    });
+
+    const bootstrap = service.onApplicationBootstrap();
+    service.onApplicationShutdown();
+    readiness.resolve({ version: '003' });
+    await bootstrap;
+
+    expect(scheduler.addInterval).not.toHaveBeenCalled();
+    expect(operations.findOneAndUpdate).not.toHaveBeenCalled();
+
+    service.onApplicationShutdown();
+    expect(jest.getTimerCount()).toBe(0);
+    jest.useRealTimers();
+  });
+
+  it('does not delete a schedule no longer owned by this service on shutdown', async () => {
+    jest.useFakeTimers();
+    const scheduler = {
+      addInterval: jest.fn(),
+      doesExist: jest.fn().mockReturnValue(false),
+      deleteInterval: jest.fn(),
+    };
+    const connection = {
+      db: {
+        collection: jest.fn().mockReturnValue({
+          findOne: jest.fn().mockResolvedValue({ version: '003' }),
+        }),
+      },
+    };
+    service = createReconciliationService({
+      scheduler: scheduler as unknown as SchedulerRegistry,
+      connection: connection as unknown as Connection,
+    });
+
+    await service.onApplicationBootstrap();
+    service.onApplicationShutdown();
+    service.onApplicationShutdown();
+
+    expect(scheduler.addInterval).toHaveBeenCalledTimes(1);
+    expect(scheduler.doesExist).toHaveBeenCalledTimes(1);
+    expect(scheduler.deleteInterval).not.toHaveBeenCalled();
+
+    jest.clearAllTimers();
+    jest.useRealTimers();
   });
 
   it('skips reconciliation scheduling until the required auth migration is recorded', async () => {
@@ -479,6 +744,104 @@ describe('AuthIdentifierReconciliationService', () => {
     await expect(first).resolves.toMatchObject({ examined: 0 });
   });
 
+  it('counts a lost claim as examined without claiming or processing it', async () => {
+    const lost = operation({
+      _id: new Types.ObjectId('507f1f77bcf86cd799439031'),
+      operationId: 'operation-lost',
+    });
+    const acquired = operation({
+      _id: new Types.ObjectId('507f1f77bcf86cd799439032'),
+      operationId: 'operation-acquired',
+    });
+    operations.find.mockReturnValue(criticalQueryResult([lost, acquired]));
+    operations.findOneAndUpdate
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(acquired);
+
+    await expect(service.reconcileOnce()).resolves.toEqual({
+      examined: 2,
+      claimed: 1,
+      processed: 1,
+      skippedMissingKey: 0,
+    });
+    expect(operations.findOneAndUpdate).toHaveBeenCalledTimes(2);
+    expect(
+      operations.updateOne.mock.calls.filter(([, update]: unknown[]) =>
+        Array.isArray(update),
+      ),
+    ).toHaveLength(1);
+  });
+
+  it('caps claims at the configured batch size and releases every acquired lease', async () => {
+    const candidates = [
+      operation({
+        _id: new Types.ObjectId('507f1f77bcf86cd799439041'),
+        operationId: 'operation-1',
+      }),
+      operation({
+        _id: new Types.ObjectId('507f1f77bcf86cd799439042'),
+        operationId: 'operation-2',
+      }),
+      operation({
+        _id: new Types.ObjectId('507f1f77bcf86cd799439043'),
+        operationId: 'operation-3',
+      }),
+      operation({
+        _id: new Types.ObjectId('507f1f77bcf86cd799439044'),
+        operationId: 'operation-4',
+      }),
+    ];
+    const capture: { limit?: number } = {};
+    operations.find.mockReturnValue(criticalQueryResult(candidates, capture));
+    operations.findOneAndUpdate.mockImplementation(
+      async (filter: { _id: Types.ObjectId }) =>
+        candidates.find((candidate) => candidate._id.equals(filter._id)) ?? null,
+    );
+
+    await expect(service.reconcileOnce()).resolves.toEqual({
+      examined: 4,
+      claimed: 2,
+      processed: 2,
+      skippedMissingKey: 0,
+    });
+
+    expect(capture.limit).toBe(4);
+    expect(operations.findOneAndUpdate).toHaveBeenCalledTimes(2);
+    const releases = operations.updateOne.mock.calls.filter(
+      ([, update]: unknown[]) => Array.isArray(update),
+    );
+    expect(releases).toHaveLength(2);
+    expect(releases.map(([filter]: [{ operationId: string }]) => filter.operationId)).toEqual([
+      'operation-1',
+      'operation-2',
+    ]);
+  });
+
+  it('processes claimed terminal cleanup and releases its lease through the public pass', async () => {
+    const terminal = operation({
+      _id: new Types.ObjectId('507f1f77bcf86cd799439045'),
+      operationId: 'operation-terminal-cleanup',
+      status: AuthIdentifierOperationStatus.Completed,
+      cleanupStatus: AuthIdentifierOperationCleanupStatus.Pending,
+      terminalEventId: 'event-terminal-cleanup',
+      terminalEventRecordedAt: new Date('2026-01-01T00:00:00.000Z'),
+    });
+    operations.find.mockReturnValue(criticalQueryResult([terminal]));
+    operations.findOneAndUpdate.mockResolvedValue(terminal);
+
+    await expect(service.reconcileOnce()).resolves.toEqual({
+      examined: 1,
+      claimed: 1,
+      processed: 1,
+      skippedMissingKey: 0,
+    });
+    expect(
+      operations.updateOne.mock.calls.filter(([, update]: unknown[]) =>
+        Array.isArray(update),
+      ),
+    ).toHaveLength(1);
+  });
+
   it('reports lost lease ownership without changing operation state', async () => {
     operations.findOneAndUpdate.mockResolvedValue(null);
 
@@ -512,7 +875,7 @@ describe('AuthIdentifierReconciliationService', () => {
   it('continues processing later claimed operations after one operation fails', async () => {
     const first = operation({ operationId: 'operation-fails' });
     const second = operation({ operationId: 'operation-recovers' });
-    operations.find.mockReturnValue(query([first, second]));
+    operations.find.mockReturnValue(criticalQueryResult([first, second]));
     operations.findOneAndUpdate
       .mockResolvedValueOnce(first)
       .mockResolvedValueOnce(second);
@@ -540,7 +903,7 @@ describe('AuthIdentifierReconciliationService', () => {
 
   it('skips an offline repair with unavailable audit material before claiming it', async () => {
     operations.find.mockReturnValue(
-      query([
+      criticalQueryResult([
         operation({
           operationType: AuthIdentifierOperationType.OfflineRepair,
           manifestKeyVersion: 1,
