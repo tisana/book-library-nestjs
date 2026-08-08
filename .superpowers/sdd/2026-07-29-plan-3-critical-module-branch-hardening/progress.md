@@ -18,7 +18,7 @@ This ledger is append-only evidence for Plan 3. Existing evidence is preserved; 
 | 4 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task4_implementer`) | high | c6735fc56c40fa0f51b691c0dc2e3c4831dfb0d7 | 5bffafdf4224b5c7e22e945f0ae322900af46384 | gpt-5.6-sol, high (`/root/plan3_task4_review`) | 5bffafdf4224b5c7e22e945f0ae322900af46384 | approved | 1 |
 | 5 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task5_implementer`) | high | 38491688015d4e7945a7ed63f0f6fc8cb2cc98ab | 11c14bc11b7636382ed367f5eba4ec6297363de4 | gpt-5.6-sol, high (`/root/plan3_task5_review`) | 11c14bc11b7636382ed367f5eba4ec6297363de4 | approved | 3 |
 | 6 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task6_implementer`) | high | 76af392e25141b91c088596c44dc10cba7a4c9c6 | 59b2d60fdf9539adee0c600785144f9bfb29c007 | gpt-5.6-sol, high (`/root/plan3_task6_review`) | 59b2d60fdf9539adee0c600785144f9bfb29c007 | approved | 2 |
-| 7 | in-progress | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task7_implementer`) | high | 2e278c81e2650f540350adf9c9d0168ab1b63064 | not-run | gpt-5.6-sol, high (separate context; actual not-run) | not-run | not-run | not-run |
+| 7 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task7_implementer`) | high | 2e278c81e2650f540350adf9c9d0168ab1b63064 | 114cdffc95f127d0bd2d3bcca054b4d4d074a9f6 | gpt-5.6-sol, high (`/root/plan3_task7_review`) | 114cdffc95f127d0bd2d3bcca054b4d4d074a9f6 | approved | 0 |
 | 8 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 9 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 10 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
@@ -181,3 +181,6 @@ Task 6: complete (commits 76af392..59b2d60, review clean)
 - Full backend unit coverage regression exited `0` with `35/35` suites and `467/467` tests; overall statements `2959/3659`, branches `2100/2815`, functions `492/605`, lines `2840/3496`.
 - Implementer scope review found no production, configuration, baseline, Plan 2 fixture/test, permission test, e2e, frontend, generated-output, private-method-access, or credential/token disclosure change. Generated coverage and test-result outputs remain unstaged.
 - Task 7 implementation commit uses subject `test: harden member lifecycle effects`; immutable SHA is returned in the implementer handoff. Separate-context reviewer, review commit, verdict, and findings resolved remain `not-run`.
+- Final review: approved by separate-context `gpt-5.6-sol`, high, identity `/root/plan3_task7_review`, against implementation commit `114cdffc95f127d0bd2d3bcca054b4d4d074a9f6`; Critical `0`, Important `0`, Minor `0`, open findings `0`, resolved `0`. Independent focused verification passed `44/44` tests with member-service branches exactly `164/188`.
+
+Task 7: complete (commits 2e278c8..114cdff, review clean)

@@ -107,3 +107,18 @@ Pending; the immutable implementation SHA and exact subject `test: harden member
 - Fresh exact focused coverage command: exit `0`; `44/44` tests passed with statements `152/154`, branches `164/188`, functions `21/21`, and lines `145/147`.
 - `npx eslint src/members/members.service.spec.ts --no-fix`: exit `0`.
 - `git diff --check`: exit `0` before this append-only evidence update; the final post-update whitespace check is performed immediately before staging.
+
+## Final review closeout
+
+### Status
+Complete; approved by separate-context review with no findings.
+
+### Commits
+- Implementation and reviewed commit: `114cdffc95f127d0bd2d3bcca054b4d4d074a9f6` (`test: harden member lifecycle effects`).
+- Starting commit: `2e278c81e2650f540350adf9c9d0168ab1b63064`.
+
+### Final review
+- Reviewer: `gpt-5.6-sol`, high, identity `/root/plan3_task7_review`; substitution none.
+- Verdict: approved at implementation commit `114cdffc95f127d0bd2d3bcca054b4d4d074a9f6`.
+- Independent focused verification: `44/44` tests passed and member-service branches were exactly `164/188`.
+- Findings: Critical `0`, Important `0`, Minor `0`, open `0`, resolved `0`.
