@@ -65,3 +65,28 @@ pending; the immutable implementation SHA for `test: cover reconciliation schedu
 - Final separate-context reviewer: not-run.
 - Reviewer verdict: not-run.
 - Implementer findings: none.
+
+## Fix Round 1
+
+### Status
+Important lifecycle-generation finding addressed; pending separate-context re-review.
+
+### Finding addressed
+The original restart case settled its first readiness result before shutdown, so it could not fail when stale in-flight readiness escaped lifecycle-generation invalidation. The replacement keeps the first Mongo readiness promise pending across shutdown and the restarted bootstrap.
+
+### Test file and title
+- File: `src/auth/auth-identifier-reconciliation.service.spec.ts`.
+- Test: `invalidates stale in-flight readiness before a restarted lifecycle schedules work`.
+
+### Change
+The public test now starts the original bootstrap against deferred readiness, shuts down that generation, starts a new bootstrap generation, and only then resolves the stale result as migration-ready. It asserts that the stale generation registers no interval and runs no reconciliation. A subsequent public readiness-probe tick performs the fresh readiness query and permits exactly one schedule and startup pass. The deferred promise is resolved and both bootstrap promises are awaited; fake timers are cleared and restored.
+
+### Commands and outputs
+- `npx jest --runInBand auth/auth-identifier-reconciliation.service.spec.ts --coverage --collectCoverageFrom=auth/auth-identifier-reconciliation.service.ts --coverageReporters=text`: exit 0; `1/1` suite and `34/34` tests passed; reconciliation statements `206/228`, branches `151/191`, functions `40/42`, lines `204/226`. The branch denominator remains `191`.
+- `npx eslint src/auth/auth-identifier-reconciliation.service.spec.ts`: exit 0; non-fixing focused lint.
+- `git diff --check`: exit 0.
+
+### Review state
+- Reviewer `/root/plan3_task4_review` requested this Important fix against `05d9e1d929b7b11d3423faf506adf9a11c2834c4`; no Critical or Minor findings were open.
+- `task-04-review.md` is preserved as reviewer-written evidence.
+- Fix Round 1 re-review and final verdict remain pending.

@@ -91,3 +91,14 @@ Task 3: complete (commits 1cf23a4..b4f0fa1, review clean)
 - Full backend unit coverage regression exited 0 with `35/35` suites and `423/423` tests; overall statements `2937/3659`, branches `2047/2815`, functions `490/605`, lines `2818/3496`.
 - Implementer scope review found no production, configuration, baseline, Plan 2 fixture/test, permission test, e2e, frontend, generated-output, or new private-method-access change. Fake timers are restored, deferred promises are resolved and awaited, and generated coverage/test-result outputs remain unstaged.
 - Task 4 implementation commit uses subject `test: cover reconciliation scheduling races`; immutable SHA is returned in the implementer handoff. Final separate-context reviewer, review commit, verdict, and findings resolved remain `not-run`.
+
+## Task 4 Fix Round 1
+
+- Review of implementation commit `05d9e1d929b7b11d3423faf506adf9a11c2834c4` requested changes with one Important lifecycle-generation finding and no Critical or Minor findings.
+- The finding is addressed in `invalidates stale in-flight readiness before a restarted lifecycle schedules work`: the public test now holds the old generation's readiness promise across shutdown and restart, proves the stale migration-ready result registers no interval or work, then proves the restarted generation's readiness probe performs the fresh query and starts exactly one schedule/pass.
+- Deterministic cleanup: the stale readiness promise is resolved, both bootstrap promises are awaited, the service is shut down, and fake timers are cleared and restored.
+- Exact focused reconciliation command exited 0 with `34/34` tests and reconciliation branches `151/191`; the denominator remains unchanged.
+- Focused non-fixing ESLint and `git diff --check` exited 0.
+- Fix Round 1 status: pending separate-context re-review; reviewer-authored `task-04-review.md` is preserved as written.
+
+Task 4: fix round 1/5 (1 addressed, 0 open pending re-review — in-flight stale readiness generation)

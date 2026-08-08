@@ -391,15 +391,15 @@ describe('AuthIdentifierReconciliationService', () => {
     jest.useRealTimers();
   });
 
-  it('starts a new lifecycle after shutdown without reusing prior readiness', async () => {
+  it('invalidates stale in-flight readiness before a restarted lifecycle schedules work', async () => {
     jest.useFakeTimers();
-    const notReady = queryResult<Record<string, unknown> | null>(null);
+    const staleReadiness = deferred<Record<string, unknown> | null>();
     const ready = queryResult<Record<string, unknown> | null>({
       version: '003',
     });
     const findOne = jest
       .fn()
-      .mockImplementationOnce(() => notReady.exec())
+      .mockImplementationOnce(() => staleReadiness.promise)
       .mockImplementationOnce(() => ready.exec());
     const scheduler = {
       addInterval: jest.fn(),
@@ -416,9 +416,17 @@ describe('AuthIdentifierReconciliationService', () => {
       connection: connection as unknown as Connection,
     });
 
-    await service.onApplicationBootstrap();
+    const staleBootstrap = service.onApplicationBootstrap();
     service.onApplicationShutdown();
-    await service.onApplicationBootstrap();
+    const restartedBootstrap = service.onApplicationBootstrap();
+
+    staleReadiness.resolve({ version: '003' });
+    await Promise.all([staleBootstrap, restartedBootstrap]);
+
+    expect(scheduler.addInterval).not.toHaveBeenCalled();
+    expect(operations.find).not.toHaveBeenCalled();
+
+    await jest.advanceTimersByTimeAsync(60_000);
 
     expect(findOne).toHaveBeenCalledTimes(2);
     expect(scheduler.addInterval).toHaveBeenCalledTimes(1);
