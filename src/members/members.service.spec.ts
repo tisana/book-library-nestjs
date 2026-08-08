@@ -7,6 +7,15 @@ import {
   AuthIdentifierType,
 } from '../auth/schemas/auth-identifier.schema';
 import {
+  AuthSubjectType,
+  RefreshTokenFamilyStatus,
+} from '../auth/schemas/refresh-token-family.schema';
+import {
+  SecurityActivityActorType,
+  SecurityActivityEventType,
+  SecurityActivityOutcome,
+} from '../auth/schemas/security-activity-event.schema';
+import {
   LibraryItemStatus,
   MemberAuthStatus,
   MemberStatus,
@@ -85,11 +94,14 @@ describe('MembersService', () => {
       identifierModel?: ReturnType<typeof createIdentifierModel>;
       refreshTokenFamilyModel?: { updateMany: jest.Mock };
       securityActivityService?: { record: jest.Mock };
+      installExists?: boolean;
     },
   ): MembersService {
     const model = overrides?.model ?? (jest.fn() as MockMemberModel);
     model.findOne ??= jest.fn().mockReturnValue(queryResult(member));
-    model.exists ??= jest.fn().mockResolvedValue(null);
+    if (overrides?.installExists !== false) {
+      model.exists ??= jest.fn().mockResolvedValue(null);
+    }
 
     return new MembersService(
       asModel(model),
@@ -953,6 +965,323 @@ describe('MembersService', () => {
       expect.objectContaining({ normalizedIdentifier: 'new@example.com' }),
       expect.objectContaining({ $set: expect.objectContaining({ releasedAt: expect.any(Date) }) }),
     );
+  });
+
+  it.each([0, 2])(
+    'creates without an optional exists method and preserves activeLoanCount %i',
+    async (activeLoanCount) => {
+      const modelRequests: Array<Record<string, unknown>> = [];
+      const model: MockMemberModel = jest
+        .fn()
+        .mockImplementation((request: Record<string, unknown>) => {
+          modelRequests.push(request);
+          const saved = createSharedMemberDocument({
+            id: 'member-id',
+            memberNumber: request.memberNumber as string,
+            fullName: request.fullName as string,
+            email: request.email as string | undefined,
+            phone: request.phone as string | undefined,
+            membershipTypeId: request.membershipTypeId as string,
+            status: request.status as MemberStatus,
+            activeLoanCount: request.activeLoanCount as number,
+          });
+          return { save: jest.fn().mockResolvedValue(saved) };
+        });
+      const service = new MembersService(
+        asModel(model),
+        createMembershipTypesService(),
+      );
+
+      const result = await service.create({
+        memberNumber: ' mem-0001 ',
+        fullName: 'Ada Lovelace',
+        membershipTypeId: '64f000000000000000000001',
+        activeLoanCount,
+      });
+
+      expect(model.exists).toBeUndefined();
+      expect(JSON.parse(JSON.stringify(modelRequests[0]))).toEqual({
+        memberNumber: 'MEM-0001',
+        fullName: 'Ada Lovelace',
+        membershipTypeId: '64f000000000000000000001',
+        status: MemberStatus.Active,
+        activeLoanCount,
+        authVersion: 0,
+      });
+      expect(JSON.parse(JSON.stringify(result))).toEqual({
+        id: 'member-id',
+        memberNumber: 'MEM-0001',
+        fullName: 'Ada Lovelace',
+        membershipTypeId: '64f000000000000000000001',
+        status: MemberStatus.Active,
+        activeLoanCount,
+      });
+    },
+  );
+
+  it('clears email without reserving an empty identifier and revokes sessions', async () => {
+    const member = createSharedMemberDocument({
+      id: 'member-id',
+      email: 'ada@example.test',
+      authVersion: 0,
+    });
+    const identifierModel = createIdentifierModel(null);
+    const refreshTokenFamilyModel = {
+      updateMany: jest.fn().mockResolvedValue({ modifiedCount: 2 }),
+    };
+    const securityActivityService = {
+      record: jest.fn().mockResolvedValue(undefined),
+    };
+    const service = createServiceWithMember(member, {
+      identifierModel,
+      refreshTokenFamilyModel,
+      securityActivityService,
+    });
+
+    const result = await service.update(validMemberId, { email: '   ' });
+
+    expect(result).toEqual({
+      id: 'member-id',
+      memberNumber: 'MEM-0001',
+      fullName: 'Library Member',
+      email: '',
+      phone: '+15550000001',
+      membershipTypeId: '507f1f77bcf86cd799439024',
+      status: MemberStatus.Active,
+      activeLoanCount: 0,
+    });
+    expect(member.authVersion).toBe(1);
+    expect(member.updatedBy).toBeUndefined();
+    expect(identifierModel.findOne).not.toHaveBeenCalled();
+    expect(identifierModel.create).not.toHaveBeenCalled();
+    expect(identifierModel.updateOne).toHaveBeenCalledTimes(1);
+    expect(identifierModel.updateOne).toHaveBeenCalledWith(
+      {
+        normalizedIdentifier: 'ada@example.test',
+        subjectType: AuthIdentifierSubjectType.Member,
+        subjectId: 'member-id',
+        status: AuthIdentifierStatus.Active,
+      },
+      {
+        $set: {
+          status: AuthIdentifierStatus.Released,
+          releasedAt: expect.any(Date),
+          updatedBy: 'system',
+        },
+      },
+    );
+    expect(refreshTokenFamilyModel.updateMany).toHaveBeenCalledWith(
+      {
+        subjectType: AuthSubjectType.Member,
+        subjectId: 'member-id',
+        status: RefreshTokenFamilyStatus.Active,
+      },
+      {
+        $set: {
+          status: RefreshTokenFamilyStatus.Revoked,
+          revokedAt: expect.any(Date),
+          revokedReason: 'member-account-updated',
+        },
+        $unset: { currentTokenHash: '', previousTokenHash: '' },
+      },
+    );
+    expect(securityActivityService.record).toHaveBeenCalledTimes(1);
+    expect(securityActivityService.record).toHaveBeenCalledWith({
+      actorType: SecurityActivityActorType.System,
+      actorId: undefined,
+      targetType: 'member',
+      targetId: 'member-id',
+      subjectType: 'member',
+      subjectId: 'member-id',
+      outcome: SecurityActivityOutcome.Success,
+      eventType: SecurityActivityEventType.IdentifierReservationRecovered,
+      reasonCategory: 'member-identifier-updated',
+    });
+    expect(JSON.stringify(securityActivityService.record.mock.calls)).not.toContain(
+      'ada@example.test',
+    );
+  });
+
+  it('skips identifier and lifecycle effects for the same normalized email', async () => {
+    const member = createSharedMemberDocument({
+      id: 'member-id',
+      email: 'ada@example.test',
+      authVersion: 4,
+    });
+    const identifierModel = createIdentifierModel(null);
+    const refreshTokenFamilyModel = {
+      updateMany: jest.fn().mockResolvedValue({ modifiedCount: 0 }),
+    };
+    const securityActivityService = {
+      record: jest.fn().mockResolvedValue(undefined),
+    };
+    const service = createServiceWithMember(member, {
+      identifierModel,
+      refreshTokenFamilyModel,
+      securityActivityService,
+    });
+
+    const result = await service.update(validMemberId, {
+      email: ' ADA@EXAMPLE.TEST ',
+    });
+
+    expect(result).toEqual({
+      id: 'member-id',
+      memberNumber: 'MEM-0001',
+      fullName: 'Library Member',
+      email: 'ada@example.test',
+      phone: '+15550000001',
+      membershipTypeId: '507f1f77bcf86cd799439024',
+      status: MemberStatus.Active,
+      activeLoanCount: 0,
+    });
+    expect(member.authVersion).toBe(4);
+    expect(identifierModel.findOne).not.toHaveBeenCalled();
+    expect(identifierModel.create).not.toHaveBeenCalled();
+    expect(identifierModel.updateOne).not.toHaveBeenCalled();
+    expect(refreshTokenFamilyModel.updateMany).not.toHaveBeenCalled();
+    expect(securityActivityService.record).not.toHaveBeenCalled();
+  });
+
+  it('initializes an absent auth version and revokes only active member families on status change', async () => {
+    const member = createSharedMemberDocument({
+      id: 'member-id',
+      status: MemberStatus.Active,
+      authVersion: undefined,
+    });
+    const identifierModel = createIdentifierModel(null);
+    const refreshTokenFamilyModel = {
+      updateMany: jest.fn().mockResolvedValue({ modifiedCount: 1 }),
+    };
+    const securityActivityService = {
+      record: jest.fn().mockResolvedValue(undefined),
+    };
+    const service = createServiceWithMember(member, {
+      identifierModel,
+      refreshTokenFamilyModel,
+      securityActivityService,
+    });
+
+    const result = await service.update(validMemberId, {
+      status: MemberStatus.Suspended,
+    });
+
+    expect(result).toEqual({
+      id: 'member-id',
+      memberNumber: 'MEM-0001',
+      fullName: 'Library Member',
+      email: 'member@example.test',
+      phone: '+15550000001',
+      membershipTypeId: '507f1f77bcf86cd799439024',
+      status: MemberStatus.Suspended,
+      activeLoanCount: 0,
+    });
+    expect(member.authVersion).toBe(1);
+    expect(identifierModel.findOne).not.toHaveBeenCalled();
+    expect(identifierModel.create).not.toHaveBeenCalled();
+    expect(identifierModel.updateOne).not.toHaveBeenCalled();
+    expect(refreshTokenFamilyModel.updateMany).toHaveBeenCalledWith(
+      {
+        subjectType: AuthSubjectType.Member,
+        subjectId: 'member-id',
+        status: RefreshTokenFamilyStatus.Active,
+      },
+      {
+        $set: {
+          status: RefreshTokenFamilyStatus.Revoked,
+          revokedAt: expect.any(Date),
+          revokedReason: 'member-account-updated',
+        },
+        $unset: { currentTokenHash: '', previousTokenHash: '' },
+      },
+    );
+    expect(securityActivityService.record).toHaveBeenCalledTimes(1);
+    expect(securityActivityService.record).toHaveBeenCalledWith({
+      actorType: SecurityActivityActorType.System,
+      actorId: undefined,
+      targetType: 'member',
+      targetId: 'member-id',
+      subjectType: 'member',
+      subjectId: 'member-id',
+      outcome: SecurityActivityOutcome.Success,
+      eventType: SecurityActivityEventType.AccountStatusChanged,
+      reasonCategory: 'member-status-updated',
+    });
+    expect(JSON.stringify(securityActivityService.record.mock.calls)).not.toContain(
+      'stored-password-hash',
+    );
+  });
+
+  it('completes the owned member update when every optional integration is absent', async () => {
+    const member = createSharedMemberDocument({
+      id: 'member-id',
+      email: 'old@example.test',
+      authVersion: 2,
+    });
+    const service = createServiceWithMember(member, {
+      identifierModel: undefined,
+      refreshTokenFamilyModel: undefined,
+      securityActivityService: undefined,
+      installExists: false,
+    });
+
+    const result = await service.update(validMemberId, {
+      email: 'new@example.test',
+      status: MemberStatus.Inactive,
+    });
+
+    expect(member.save).toHaveBeenCalledTimes(1);
+    expect(member.authVersion).toBe(4);
+    expect(result).toEqual({
+      id: 'member-id',
+      memberNumber: 'MEM-0001',
+      fullName: 'Library Member',
+      email: 'new@example.test',
+      phone: '+15550000001',
+      membershipTypeId: '507f1f77bcf86cd799439024',
+      status: MemberStatus.Inactive,
+      activeLoanCount: 0,
+    });
+  });
+
+  it.each([
+    ['absent', undefined],
+    ['locked', MemberAuthStatus.Locked],
+    ['reset-required', MemberAuthStatus.ResetRequired],
+  ])(
+    'uses the same public active-member error for %s auth status',
+    async (_label, authStatus) => {
+      const member = createSharedMemberDocument({
+        status: MemberStatus.Active,
+        authStatus,
+      });
+      const service = createServiceWithMember(member);
+
+      await expect(service.findActiveById(validMemberId)).rejects.toThrow(
+        'Active member not found',
+      );
+    },
+  );
+
+  it('clamps remaining policy allowance at zero above the tier maximum', async () => {
+    const member = createSharedMemberDocument({
+      id: 'member-id',
+      activeLoanCount: 5,
+      status: MemberStatus.Active,
+    });
+    const service = createServiceWithMember(member);
+
+    await expect(service.getPolicyStatus(validMemberId)).resolves.toEqual({
+      memberId: 'member-id',
+      status: MemberStatus.Active,
+      membershipTypeId: '507f1f77bcf86cd799439024',
+      maxActiveLoans: 3,
+      activeLoanCount: 5,
+      remainingAllowance: 0,
+      eligibleByStatus: true,
+      withinLimit: false,
+      limitReached: true,
+    });
   });
 });
 

@@ -18,7 +18,7 @@ This ledger is append-only evidence for Plan 3. Existing evidence is preserved; 
 | 4 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task4_implementer`) | high | c6735fc56c40fa0f51b691c0dc2e3c4831dfb0d7 | 5bffafdf4224b5c7e22e945f0ae322900af46384 | gpt-5.6-sol, high (`/root/plan3_task4_review`) | 5bffafdf4224b5c7e22e945f0ae322900af46384 | approved | 1 |
 | 5 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task5_implementer`) | high | 38491688015d4e7945a7ed63f0f6fc8cb2cc98ab | 11c14bc11b7636382ed367f5eba4ec6297363de4 | gpt-5.6-sol, high (`/root/plan3_task5_review`) | 11c14bc11b7636382ed367f5eba4ec6297363de4 | approved | 3 |
 | 6 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task6_implementer`) | high | 76af392e25141b91c088596c44dc10cba7a4c9c6 | 59b2d60fdf9539adee0c600785144f9bfb29c007 | gpt-5.6-sol, high (`/root/plan3_task6_review`) | 59b2d60fdf9539adee0c600785144f9bfb29c007 | approved | 2 |
-| 7 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
+| 7 | in-progress | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task7_implementer`) | high | 2e278c81e2650f540350adf9c9d0168ab1b63064 | not-run | gpt-5.6-sol, high (separate context; actual not-run) | not-run | not-run | not-run |
 | 8 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 9 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
 | 10 | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run | not-run |
@@ -168,3 +168,16 @@ Task 6: fix round 1/5 (2 addressed, 0 open pending re-review — exact reservati
 Task 6: fix round 1/5 (2 addressed, 0 open — exact reservation selectors and distinct contracts; commits 75cb4f5..59b2d60)
 
 Task 6: complete (commits 76af392..59b2d60, review clean)
+
+## Task 7 evidence chronology
+
+- Starting commit: `2e278c81e2650f540350adf9c9d0168ab1b63064`; requested/actual implementer `gpt-5.6-sol`, high, identity `/root/plan3_task7_implementer`; substitution none.
+- RED: the exact focused members command exited `1` before execution with `TS2353` at the intentionally absent test-local `installExists` option, proving the Task 6 factory could not model a member model without optional `exists`; production code was unchanged.
+- GREEN: the exact focused members command exited `0` with `44/44` tests; member-service branches reached `164/188`, exceeding the Task 7 floor of `160/188` with the denominator unchanged.
+- Create proof: public `create` works without model `exists`, preserves supplied zero/nonzero active-loan counts, and omits absent email/actor fields from serialized model requests and results.
+- Lifecycle proof: public `update` covers cleared and same-normalized email, old reservation release without empty reservation, absent `authVersion` initialization, member-scoped active-family revocation with both token hashes unset, optional integration absence, and identifier/status event separation.
+- Public-contract and privacy proof: public `findActiveById` returns the same fixed error for active membership with absent or non-active auth status; public `getPolicyStatus` clamps over-limit allowance at zero; exact audit requests include fixed IDs/categories and exclude identifiers, credentials, and tokens.
+- Focused non-fixing ESLint and `git diff --check` passed before report append; final fresh invocations are recorded in the Task 7 report.
+- Full backend unit coverage regression exited `0` with `35/35` suites and `467/467` tests; overall statements `2959/3659`, branches `2100/2815`, functions `492/605`, lines `2840/3496`.
+- Implementer scope review found no production, configuration, baseline, Plan 2 fixture/test, permission test, e2e, frontend, generated-output, private-method-access, or credential/token disclosure change. Generated coverage and test-result outputs remain unstaged.
+- Task 7 implementation commit uses subject `test: harden member lifecycle effects`; immutable SHA is returned in the implementer handoff. Separate-context reviewer, review commit, verdict, and findings resolved remain `not-run`.
