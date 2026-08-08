@@ -168,3 +168,62 @@ mismatch. Plan 5 remains closed.
 handoff because Important I1 is open. Return the finding to Task 10, rerun the
 required scope and verification steps after correction, and obtain a fresh
 whole-plan review. Do not start Plan 5.
+
+## Fix Round 1 Re-review
+
+### Reviewed correction
+
+`75d81b17ca826df4f8236fd153f89b155c1d9748`
+(`docs: correct Plan 3 handoff scope count`) against fix base
+`f2498e66a64826c66970228f03bc2c9b8e5c2600`.
+
+The supplied immutable scoped package
+`rereview-f2498e6..75d81b1.diff` was read as the sole fix-round change view.
+No Git command, producer suite, coverage command, lint, or build was rerun.
+
+### Finding Verdict
+
+- **Important I1 — ADDRESSED** at `task-10-report.md:111` and
+  `progress.md:232`. Both inaccurate `28` statements now record exactly `29`
+  paths and enumerate the complete arithmetic: `22` Plan 3 records, five
+  critical specs, `test/support/critical-auth-fixtures.ts`, and Task 9-owned
+  `quality/coverage-baselines.json`. The appended fix evidence records the
+  exact base-to-candidate recomputation command, exit `0`, and result `29`.
+
+### New Breakage
+
+- Critical: `0`.
+- Important: `0`.
+- Blocking Minor: `0`.
+- No production source, test, baseline value, reporting/source configuration,
+  generated artifact, permission file, frontend file, script, CI, or e2e spec
+  changes appear in the scoped package.
+- The scoped package carries this reviewer-authored review record from its
+  prior placeholder state. Its content is preserved as authored and is an
+  expected administrative review artifact, not implementer-owned functional
+  scope or new breakage.
+- The correction is evidence-only and does not change any producer or gate
+  input. Retaining the already accepted fresh verification evidence without a
+  redundant broad rerun is non-blocking for this scoped count correction.
+
+### Deferred Minor Triage
+
+Task 3 Minor TQ-2 remains **non-load-bearing and explicitly deferred**. The
+correction neither erases nor changes the ruling or the underlying
+`expect.any(String)` assertions. Blocking Minor `0`; deferred non-blocking
+Minor `1`.
+
+### Final Counts
+
+- Critical open: `0`.
+- Important open: `0`.
+- Minor open blocking: `0`.
+- Minor deferred non-blocking: `1`.
+- Total blocking open findings: `0`.
+
+### Fix Round Verdict
+
+**APPROVED — READY TO MERGE/ACCEPT AS THE REVIEWED PLAN 3 HANDOFF.** Important
+I1 is addressed with no new blocking breakage. Reviewed head:
+`75d81b17ca826df4f8236fd153f89b155c1d9748`. Plan 5 remains closed until the
+parent records this scoped review acceptance.

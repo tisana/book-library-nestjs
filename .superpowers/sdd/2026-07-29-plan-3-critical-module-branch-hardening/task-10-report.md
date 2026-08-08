@@ -214,3 +214,14 @@ createCriticalModelHarnesses
 - `git diff --name-only e52711c7f6fd1174f4ff85280152ced174724bfe...f2498e66a64826c66970228f03bc2c9b8e5c2600` exited `0` and returned exactly `29` paths: `22` Plan 3 record files (`base.sha`, `progress.md`, and `20` task report/review files), five critical specs, `test/support/critical-auth-fixtures.ts`, and Task 9-owned backend baseline path `quality/coverage-baselines.json`.
 - The two inaccurate `28` statements are corrected to `29`. Reviewer-authored `task-10-review.md` and its non-load-bearing deferred Task 3 Minor ruling are preserved unchanged.
 - This is an evidence-only fix. Producer tests, coverage, e2e, reporting, ESLint, and build are not rerun; their fresh accepted evidence remains unchanged. Task 10 remains pending scoped re-review and Plan 5 remains closed.
+
+### Final scoped review acceptance and closeout
+- Candidate handoff commit: `f2498e66a64826c66970228f03bc2c9b8e5c2600` (`docs: record critical module handoff`).
+- Fix Round 1 and final reviewed task/review head: `75d81b17ca826df4f8236fd153f89b155c1d9748` (`docs: correct Plan 3 handoff scope count`).
+- Final scoped reviewer: `/root/plan3_task10_implementer/plan3_task10_review`, `gpt-5.6-sol`, high; fresh separate context; substitution none.
+- Final scoped verdict: `APPROVED — READY TO MERGE/ACCEPT AS THE REVIEWED PLAN 3 HANDOFF` at `75d81b17ca826df4f8236fd153f89b155c1d9748`.
+- Important I1 is addressed: the exact scope is `29` paths and explicitly includes Task 9-owned `quality/coverage-baselines.json`. Findings resolved `1`; open Critical `0`, Important `0`, blocking Minor `0`; unresolved load-bearing reviewer findings `0`.
+- Task 3 Minor TQ-2 remains explicit, non-load-bearing, and accepted/deferred by the final reviewer: the aggregate assertions accept any string instead of exact replacement/original identifiers. It is parked for Plan 5 mutation-design visibility, not erased or represented as fixed.
+- The earlier candidate-SHA, pending-review, and `CHANGES_REQUIRED` statements are preserved as historical evidence and superseded by this final scoped approval. Task 10 is complete at reviewed head `75d81b17ca826df4f8236fd153f89b155c1d9748` with one parked deferred Minor.
+- No handoff interface, overall/critical pair, command exit, runtime, backlog, permission-monitor explanation, mutation boundary, or invariant changed during Fix Round 1 or closeout. No producer/test/coverage/e2e/report/lint/build rerun was required for the evidence-only correction.
+- Plan 5 remains closed and unstarted by this Task 10 closeout. The parent dispatcher may consume the final administrative closeout commit only after its SHA is returned; this task does not dispatch Plan 5.

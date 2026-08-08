@@ -21,7 +21,7 @@ This ledger is append-only evidence for Plan 3. Existing evidence is preserved; 
 | 7 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task7_implementer`) | high | 2e278c81e2650f540350adf9c9d0168ab1b63064 | 114cdffc95f127d0bd2d3bcca054b4d4d074a9f6 | gpt-5.6-sol, high (`/root/plan3_task7_review`) | 114cdffc95f127d0bd2d3bcca054b4d4d074a9f6 | approved | 0 |
 | 8 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task8_implementer`) | high | 6fdd9888fb04bcc089e4fc9681b0f806cb7e0ea5 | 04a5d6d74800be30d6a247011475605d326dc0eb | gpt-5.6-sol, high (`/root/plan3_task8_review`) | 04a5d6d74800be30d6a247011475605d326dc0eb | approved | 0 |
 | 9 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task9_implementer`) | high | bedbceabdc57658f85b658c5ae464e7e8fc883b7 | 260e123d947bcbfc4e8d25e605272d358131cfb2 | gpt-5.6-sol, high (`/root/plan3_task9_review`) | 260e123d947bcbfc4e8d25e605272d358131cfb2 | approved | 0 |
-| 10 | in-progress | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task10_implementer`) | high | 0f11a6cd7f281027bf12bd429b37d2a49613aabc | not-run | gpt-5.6-sol, high (fresh whole-plan reviewer; actual not-run) | not-run | not-run | not-run |
+| 10 | complete | gpt-5.6-sol | gpt-5.6-sol (`/root/plan3_task10_implementer`) | high | 0f11a6cd7f281027bf12bd429b37d2a49613aabc | 75d81b17ca826df4f8236fd153f89b155c1d9748 | gpt-5.6-sol, high (`/root/plan3_task10_implementer/plan3_task10_review`) | 75d81b17ca826df4f8236fd153f89b155c1d9748 | approved | 1 |
 
 ## Task 1 evidence chronology
 
@@ -247,3 +247,18 @@ Task 9: complete (commits bedbcea..260e123, review clean)
 - Exact recomputation command `git diff --name-only e52711c7f6fd1174f4ff85280152ced174724bfe...f2498e66a64826c66970228f03bc2c9b8e5c2600` exited `0` with `29` paths. The inventory is `22` Plan 3 records, five critical specs, `test/support/critical-auth-fixtures.ts`, and Task 9-owned `quality/coverage-baselines.json`.
 - Fix Round 1 corrects only the two inaccurate count statements and appends this evidence. Reviewer-authored `task-10-review.md` is preserved unchanged, including its ruling that Task 3's exact-identifier Minor is non-load-bearing and remains explicitly deferred.
 - No producer/test/coverage/e2e/report/lint/build command is rerun for this evidence-only correction. Task 10 remains pending scoped re-review; Plan 5 remains closed.
+
+## Task 10 final scoped review closeout
+
+- Candidate handoff commit: `f2498e66a64826c66970228f03bc2c9b8e5c2600`; Fix Round 1 and final reviewed task/review head: `75d81b17ca826df4f8236fd153f89b155c1d9748`.
+- Final scoped reviewer: `/root/plan3_task10_implementer/plan3_task10_review`, `gpt-5.6-sol`, high, fresh separate context; substitution none.
+- Final verdict: `APPROVED — READY TO MERGE/ACCEPT AS THE REVIEWED PLAN 3 HANDOFF`. Important I1 addressed; findings resolved `1`; open Critical `0`, Important `0`, blocking Minor `0`; unresolved load-bearing reviewer findings `0`.
+- Task 3: parked/deferred — aggregate assertions accept any string instead of exact replacement/original identifiers — ruling: non-load-bearing and accepted by the final whole-plan reviewer; remains visible to Plan 5 mutation design.
+
+Task 10: fix round 1/5 (1 addressed, 0 open — handoff scope path count; commits f2498e6..75d81b1)
+
+Task 10: complete (commits 0f11a6c..75d81b1, 1 parked)
+
+- All earlier Task 10 pending and `CHANGES_REQUIRED` markers are preserved as historical evidence and superseded by the final scoped approval above.
+- Every handoff interface, fresh overall/critical pair, exact command exit, runtime, remaining branch backlog `9`, permission monitor, five-service mutation boundary, and exported invariant remains unchanged.
+- Plan 5 remains closed and unstarted by this closeout. The final administrative closeout commit SHA is returned out of band to the parent dispatcher; Task 10 does not start Plan 5.
