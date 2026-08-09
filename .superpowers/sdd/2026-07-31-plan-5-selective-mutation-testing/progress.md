@@ -47,6 +47,7 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 02: fix round 1/5 (six findings/conflict records addressed under human-approved coordinate and baseline rulings; fresh re-review pending).
 - Task 2: fix round 1/5 (6 addressed, 0 open — one-based coordinates, source bounds, baseline semantics, zero denominator, boundary coverage, and reviewer evidence; commit 8f53887)
 - Task 2: complete (commits 6bd0cef..8f53887, review clean)
+- Task 2: fix round 2/5 (1 addressed, 0 open — Task 02 evidence formatting; administrative closeout)
 
 ## Mutation score history
 
