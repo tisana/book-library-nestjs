@@ -45,6 +45,8 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 02: in progress (implementer `/root/plan5_task2_implementer`; reviewer pending controller dispatch).
 - Task 02 implementation complete in `6bd0cef92d04963aeb44d93ef09b082f44958db4` (`test: enforce selective mutation policy`); independent reviewer decision pending controller dispatch.
 - Task 02: fix round 1/5 (six findings/conflict records addressed under human-approved coordinate and baseline rulings; fresh re-review pending).
+- Task 2: fix round 1/5 (6 addressed, 0 open — one-based coordinates, source bounds, baseline semantics, zero denominator, boundary coverage, and reviewer evidence; commit 8f53887)
+- Task 2: complete (commits 6bd0cef..8f53887, review clean)
 
 ## Mutation score history
 
