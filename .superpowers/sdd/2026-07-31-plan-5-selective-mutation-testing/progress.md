@@ -21,6 +21,8 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 00 requested and actual reviewer: fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task0_reviewer`; substitution none.
 - Initial reviewer verdict: Needs fixes. Fix Round 1 is recorded in `task-00.md`; the historical initial verdict is retained.
 - Final scoped reviewer: requested and actual `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task0_reviewer`; substitution none. Fix Round 2 verdict: APPROVED.
+- Task 01 requested and actual implementer: `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task1_implementer`; substitution none.
+- Task 01 requested reviewer: fresh `gpt-5.6-sol`, high reasoning, identity pending controller dispatch; substitution none.
 
 ## Task status
 
@@ -30,6 +32,7 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 0: fix round 1/5 (1 addressed, 1 open — ancestry evidence addressed; exact schema order open; commit e9f962f)
 - Task 0: fix round 2/5 (1 addressed, 0 open — exact schema order; commit b89e29d)
 - Task 0: complete (commits b678209..b89e29d, review clean)
+- Task 01: in progress (implementer `/root/plan5_task1_implementer`; reviewer pending controller dispatch)
 
 ## Mutation score history
 
