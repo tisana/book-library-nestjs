@@ -868,7 +868,7 @@ test('requires complete ordered rule identity and invalidates a source edit', ()
 
 // Production break caught: a Plan 3-reviewed security or state invariant is left
 // to the aggregate mutation score instead of the zero-survivor critical gate.
-test('covers every Plan 3-reviewed critical invariant occurrence with a manifest rule', () => {
+test('keeps the Fix Round 1 point inventory as a lower-bound overlap smoke', () => {
   const reviewedOccurrences = [
     // Refresh denial, replay, revocation, and revoked/expired-family handling.
     [
@@ -1242,4 +1242,1066 @@ test('covers every Plan 3-reviewed critical invariant occurrence with a manifest
   );
 
   assert.deepEqual(uncovered, []);
+});
+
+// Production break caught: reviewed executable helper/branch bodies are absent
+// from the critical gate or are covered only by a differently classified rule.
+test('protects named Plan 3 executable ranges with same-category manifest rules', () => {
+  const AUTHORIZATION = 'authorization/role denial';
+  const OWNERSHIP = 'member/staff ownership';
+  const REPLAY = 'replay/revocation';
+  const TOKEN_REJECTION = 'revoked/expired token rejection';
+  const BORROWING_STATE = 'illegal borrowing transitions';
+  const TERMINAL_ORDERING = 'terminal event/cleanup/TTL ordering';
+  const categories = [
+    AUTHORIZATION,
+    OWNERSHIP,
+    REPLAY,
+    TOKEN_REJECTION,
+    BORROWING_STATE,
+    TERMINAL_ORDERING,
+  ];
+  const plan3Root = join(
+    REPOSITORY_ROOT,
+    '.superpowers',
+    'sdd',
+    '2026-07-29-plan-3-critical-module-branch-hardening',
+  );
+  const item = (id, startLine, endLine, itemCategories, tests) => ({
+    id,
+    startLine,
+    endLine,
+    categories: itemCategories,
+    tests,
+  });
+  const groups = [
+    {
+      source: 'src/auth/token-session.service.ts',
+      spec: 'src/auth/token-session.service.spec.ts',
+      evidence: ['task-01-review.md'],
+      items: [
+        item(
+          'token-empty-refresh-denial',
+          132,
+          133,
+          [TOKEN_REJECTION],
+          [
+            'rejects malformed, missing, expired, and revoked credentials without mutation',
+          ],
+        ),
+        item(
+          'token-family-cas-and-interruption',
+          136,
+          168,
+          [REPLAY],
+          [
+            'commits a hash-only marker after operation-correlated family CAS',
+            'leaves an uncertain family CAS pending and takeover-eligible',
+          ],
+        ),
+        item(
+          'token-rotation-failure-denial',
+          171,
+          198,
+          [REPLAY],
+          [
+            'fails closed when marker commitment is interrupted after family CAS',
+            'fails closed when a completed rotation marker cannot be found',
+          ],
+        ),
+        item(
+          'token-family-resolution',
+          207,
+          228,
+          [REPLAY],
+          [
+            'resolves only a family id for active and replayed refresh credentials',
+          ],
+        ),
+        item(
+          'token-expired-marker-reconciliation',
+          232,
+          272,
+          [REPLAY, TOKEN_REJECTION],
+          [
+            'reconciles orphaned rotations and leaves expired pre-CAS work for takeover',
+          ],
+        ),
+        item(
+          'token-refresh-revocation-selector',
+          279,
+          289,
+          [REPLAY],
+          ['revokes families and subjects idempotently'],
+        ),
+        item(
+          'token-family-revocation-selector',
+          293,
+          296,
+          [REPLAY],
+          ['revokes families and subjects idempotently'],
+        ),
+        item(
+          'token-subject-revocation-selector',
+          304,
+          307,
+          [REPLAY],
+          [
+            'revokes current and all subject sessions without exposing token hashes',
+          ],
+        ),
+        item(
+          'token-marker-preparation',
+          352,
+          394,
+          [REPLAY, TOKEN_REJECTION],
+          [
+            'denies a lost duplicate-marker race without mutating the family',
+            'rejects malformed, missing, expired, and revoked credentials without mutation',
+          ],
+        ),
+        item(
+          'token-committed-marker-replay',
+          401,
+          417,
+          [REPLAY],
+          ['revokes on replay from any committed generation'],
+        ),
+        item(
+          'token-pending-marker-takeover',
+          420,
+          470,
+          [REPLAY, TOKEN_REJECTION],
+          [
+            'denies an active pending lease without mutating the family',
+            'takes over an expired pre-CAS lease and rotates once',
+            'denies a lost expired-marker takeover without creating a successor',
+          ],
+        ),
+        item(
+          'token-interrupted-cas-recovery',
+          480,
+          497,
+          [REPLAY],
+          [
+            'finalizes an uncertain family CAS that installed a successor',
+            'leaves an uncertain family CAS pending and takeover-eligible',
+          ],
+        ),
+        item(
+          'token-finalize-before-revoke',
+          509,
+          510,
+          [REPLAY],
+          [
+            'reconciles orphaned rotations and leaves expired pre-CAS work for takeover',
+          ],
+        ),
+        item(
+          'token-marker-commit-cas',
+          517,
+          533,
+          [REPLAY],
+          ['commits a hash-only marker after operation-correlated family CAS'],
+        ),
+        item(
+          'token-replay-family-revocation',
+          537,
+          543,
+          [REPLAY],
+          ['revokes on replay from any committed generation'],
+        ),
+        item(
+          'token-hash-clearing-revocation-update',
+          547,
+          554,
+          [REPLAY],
+          [
+            'revokes current and all subject sessions without exposing token hashes',
+          ],
+        ),
+        item(
+          'token-duplicate-key-classification',
+          578,
+          583,
+          [REPLAY],
+          ['denies a lost duplicate-marker race without mutating the family'],
+        ),
+        item(
+          'token-generic-refresh-denial',
+          587,
+          587,
+          [AUTHORIZATION, TOKEN_REJECTION],
+          [
+            'rejects malformed, missing, expired, and revoked credentials without mutation',
+          ],
+        ),
+      ],
+    },
+    {
+      source: 'src/auth/auth-identifier-repair.service.ts',
+      spec: 'src/auth/auth-identifier-repair.service.spec.ts',
+      evidence: ['task-02-review.md', 'task-03-review.md'],
+      items: [
+        item(
+          'repair-dry-run-authorization-and-claimants',
+          94,
+          131,
+          [AUTHORIZATION, OWNERSHIP],
+          [
+            'dry-runs an existing matching operation without mutating any model',
+            'rejects an unavailable manifest key before looking up an operation',
+          ],
+        ),
+        item(
+          'repair-apply-authorization-and-resume',
+          135,
+          165,
+          [AUTHORIZATION, OWNERSHIP],
+          [
+            'fails closed when a resume manifest differs from the persisted hash',
+            'replays a completed operation without preparing or activating batches',
+          ],
+        ),
+        item(
+          'repair-apply-reauthorization-and-transition',
+          168,
+          195,
+          [AUTHORIZATION, TERMINAL_ORDERING],
+          [
+            'uses bounded unique batches, reauthorizes each mutation boundary, and completes atomically',
+            'fails closed before parent completion when authorization expires',
+          ],
+        ),
+        item(
+          'repair-cancel-authorization-and-transition',
+          203,
+          259,
+          [AUTHORIZATION, TERMINAL_ORDERING],
+          [
+            'leaves cancellation retryable when authorization expires between compensation batches',
+            'revalidates authorization after the final compensation batch before parent mutations',
+          ],
+        ),
+        item(
+          'repair-batch-identity-and-checkpoint',
+          272,
+          304,
+          [OWNERSHIP],
+          [
+            'prepares a new bounded batch before applying its aggregate changes',
+            'rejects a mismatched pending batch checkpoint before aggregate mutation and ends the session',
+          ],
+        ),
+        item(
+          'repair-batch-transactional-ownership',
+          305,
+          365,
+          [OWNERSHIP, TERMINAL_ORDERING],
+          [
+            'prepares a new bounded batch before applying its aggregate changes',
+            'fails before repair writes when MongoDB transaction support is absent',
+          ],
+        ),
+        item(
+          'repair-batch-activation-gate',
+          370,
+          414,
+          [OWNERSHIP, TERMINAL_ORDERING],
+          [
+            'activates a prepared batch and keeps its identifiers gated until parent completion',
+            'does not activate missing or already activated batches',
+          ],
+        ),
+        item(
+          'repair-parent-conflict-ownership',
+          422,
+          460,
+          [OWNERSHIP],
+          [
+            'releases the original conflict under the first reassigned subject and records the terminal event first',
+          ],
+        ),
+        item(
+          'repair-completed-event-order',
+          461,
+          499,
+          [TERMINAL_ORDERING],
+          ['completes the parent only after recording its terminal event'],
+        ),
+        item(
+          'repair-reverse-compensation',
+          507,
+          562,
+          [OWNERSHIP, TERMINAL_ORDERING],
+          [
+            'compensates batch assignments in reverse and releases their reservations',
+            'skips non-releasable cancellation assignments and still records a redacted failed terminal event first',
+          ],
+        ),
+        item(
+          'repair-failed-event-order',
+          565,
+          608,
+          [TERMINAL_ORDERING],
+          ['records a cancellation terminal event before failing its parent'],
+        ),
+        item(
+          'repair-replacement-ownership',
+          616,
+          655,
+          [OWNERSHIP],
+          [
+            'reserves a replacement with pending ownership for the repair operation',
+            'maps duplicate replacement writes to the fixed reservation conflict',
+          ],
+        ),
+        item(
+          'repair-aggregate-field-ownership',
+          662,
+          679,
+          [OWNERSHIP],
+          [
+            'updates staff email and member loginIdentifier while incrementing authVersion once',
+          ],
+        ),
+        item(
+          'repair-aggregate-restoration',
+          691,
+          703,
+          [OWNERSHIP],
+          [
+            'compensates batch assignments in reverse and releases their reservations',
+          ],
+        ),
+        item(
+          'repair-conflict-state-requirement',
+          707,
+          711,
+          [AUTHORIZATION, OWNERSHIP],
+          [
+            'releases the original conflict under the first reassigned subject and records the terminal event first',
+          ],
+        ),
+        item(
+          'repair-exact-claimant-set',
+          716,
+          733,
+          [OWNERSHIP],
+          [
+            'fails closed when a resume manifest differs from the persisted hash',
+          ],
+        ),
+        item(
+          'repair-persisted-manifest-authorization',
+          740,
+          759,
+          [AUTHORIZATION, OWNERSHIP],
+          [
+            'fails closed when a resume manifest differs from the persisted hash',
+          ],
+        ),
+        item(
+          'repair-key-availability',
+          763,
+          768,
+          [AUTHORIZATION],
+          [
+            'rejects a missing current key version before operation lookup or creation',
+            'rejects an unavailable manifest key before looking up an operation',
+          ],
+        ),
+        item(
+          'repair-operation-requirement',
+          774,
+          776,
+          [AUTHORIZATION],
+          [
+            'replays a completed operation without preparing or activating batches',
+          ],
+        ),
+        item(
+          'repair-transaction-support-requirement',
+          780,
+          785,
+          [AUTHORIZATION, TERMINAL_ORDERING],
+          [
+            'fails before repair writes when MongoDB transaction support is absent',
+          ],
+        ),
+        item(
+          'repair-resume-actor-binding',
+          793,
+          804,
+          [AUTHORIZATION, OWNERSHIP],
+          [
+            'uses bounded unique batches, reauthorizes each mutation boundary, and completes atomically',
+          ],
+        ),
+        item(
+          'repair-bounded-partition',
+          810,
+          820,
+          [OWNERSHIP],
+          [
+            'uses bounded unique batches, reauthorizes each mutation boundary, and completes atomically',
+          ],
+        ),
+        item(
+          'repair-subject-key',
+          843,
+          843,
+          [OWNERSHIP],
+          [
+            'updates staff email and member loginIdentifier while incrementing authVersion once',
+          ],
+        ),
+        item(
+          'repair-terminal-status-classification',
+          847,
+          850,
+          [TERMINAL_ORDERING],
+          [
+            'replays a completed operation without preparing or activating batches',
+            'replays terminal cancellation without compensation mutations',
+          ],
+        ),
+        item(
+          'repair-current-key-version',
+          854,
+          858,
+          [AUTHORIZATION],
+          [
+            'rejects a missing current key version before operation lookup or creation',
+          ],
+        ),
+        item(
+          'repair-assignment-bound',
+          862,
+          865,
+          [OWNERSHIP],
+          [
+            'uses bounded unique batches, reauthorizes each mutation boundary, and completes atomically',
+          ],
+        ),
+      ],
+    },
+    {
+      source: 'src/auth/auth-identifier-reconciliation.service.ts',
+      spec: 'src/auth/auth-identifier-reconciliation.service.spec.ts',
+      evidence: ['task-04-review.md', 'task-05-review.md'],
+      items: [
+        item(
+          'reconciliation-owned-lease-renewal',
+          180,
+          202,
+          [OWNERSHIP, TERMINAL_ORDERING],
+          [
+            'uses MongoDB time for atomic lease acquisition and renewal',
+            'reports lost lease ownership without changing operation state',
+          ],
+        ),
+        item(
+          'reconciliation-bounded-claim-pass',
+          223,
+          264,
+          [OWNERSHIP, TERMINAL_ORDERING],
+          [
+            'caps claims at the configured batch size and releases every acquired lease',
+            'continues processing later claimed operations after one operation fails',
+          ],
+        ),
+        item(
+          'reconciliation-candidate-filter',
+          268,
+          286,
+          [TERMINAL_ORDERING],
+          [
+            'processes claimed terminal cleanup and releases its lease through the public pass',
+          ],
+        ),
+        item(
+          'reconciliation-repair-key-availability',
+          295,
+          301,
+          [AUTHORIZATION],
+          [
+            'skips an offline repair with unavailable audit material before claiming it',
+          ],
+        ),
+        item(
+          'reconciliation-exact-claim',
+          307,
+          357,
+          [OWNERSHIP, TERMINAL_ORDERING],
+          [
+            'counts a lost claim as examined without claiming or processing it',
+            'caps claims at the configured batch size and releases every acquired lease',
+          ],
+        ),
+        item(
+          'reconciliation-state-dispatch',
+          363,
+          405,
+          [TERMINAL_ORDERING],
+          [
+            'moves a recoverable failed operation through a valid retry transition',
+            'fails an invalid transition terminally with a redacted event',
+          ],
+        ),
+        item(
+          'reconciliation-invalid-terminal-order',
+          447,
+          493,
+          [TERMINAL_ORDERING],
+          [
+            'fails an invalid transition terminally with a redacted event',
+            'persists the idempotent terminal event before writing terminal TTL state',
+          ],
+        ),
+        item(
+          'reconciliation-reservation-attachment',
+          498,
+          549,
+          [OWNERSHIP],
+          [
+            'attaches an HMAC-only reservation reference under the requested key version',
+            'ignores an unmatched discovered reservation without mutating assignments',
+          ],
+        ),
+        item(
+          'reconciliation-application-recovery',
+          554,
+          594,
+          [OWNERSHIP, TERMINAL_ORDERING],
+          [
+            'recovers applied reservations into finalization when every assignment is durable',
+            'returns incomplete application recovery to a retryable state',
+          ],
+        ),
+        item(
+          'reconciliation-compensation-recovery',
+          599,
+          652,
+          [OWNERSHIP, TERMINAL_ORDERING],
+          [
+            'compensates a pending reservation and advances a recovered operation to finalization',
+            'returns compensation with applied assignments to a retryable state',
+          ],
+        ),
+        item(
+          'reconciliation-terminal-event-and-ttl',
+          657,
+          719,
+          [TERMINAL_ORDERING],
+          [
+            'records the terminal event before finalizing cleanup-pending state without a parent TTL',
+            'records the terminal event before clean terminal state and retention TTL',
+          ],
+        ),
+        item(
+          'reconciliation-bounded-cleanup',
+          724,
+          803,
+          [OWNERSHIP, TERMINAL_ORDERING],
+          [
+            'defers batch expiry when gated identifiers exhaust cleanup capacity',
+            'completes empty cleanup remainder and applies retention only after terminal event fields exist',
+          ],
+        ),
+        item(
+          'reconciliation-exact-reservation-lookup',
+          809,
+          817,
+          [OWNERSHIP],
+          [
+            'returns missing application and operation-mismatched compensation reservations to retryable',
+          ],
+        ),
+        item(
+          'reconciliation-owned-transition',
+          825,
+          831,
+          [OWNERSHIP, TERMINAL_ORDERING],
+          [
+            'moves a recoverable failed operation through a valid retry transition',
+          ],
+        ),
+        item(
+          'reconciliation-owned-lease-release',
+          835,
+          843,
+          [OWNERSHIP, TERMINAL_ORDERING],
+          [
+            'releases every claimed lease when one public operation recovery fails',
+          ],
+        ),
+        item(
+          'reconciliation-correlation-keying',
+          850,
+          872,
+          [OWNERSHIP],
+          [
+            'attaches an HMAC-only reservation reference under the requested key version',
+          ],
+        ),
+        item(
+          'reconciliation-secret-decoding',
+          876,
+          879,
+          [OWNERSHIP],
+          [
+            'attaches an HMAC-only reservation reference under the requested key version',
+          ],
+        ),
+        item(
+          'reconciliation-lease-duration',
+          883,
+          887,
+          [OWNERSHIP, TERMINAL_ORDERING],
+          ['uses MongoDB time for atomic lease acquisition and renewal'],
+        ),
+        item(
+          'reconciliation-batch-bound',
+          898,
+          903,
+          [TERMINAL_ORDERING],
+          [
+            'caps claims at the configured batch size and releases every acquired lease',
+          ],
+        ),
+        item(
+          'reconciliation-retention-duration',
+          906,
+          909,
+          [TERMINAL_ORDERING],
+          [
+            'records the terminal event before clean terminal state and retention TTL',
+          ],
+        ),
+        item(
+          'reconciliation-assignment-bound',
+          913,
+          916,
+          [OWNERSHIP, TERMINAL_ORDERING],
+          [
+            'defers batch expiry when gated identifiers exhaust cleanup capacity',
+          ],
+        ),
+      ],
+    },
+    {
+      source: 'src/members/members.service.ts',
+      spec: 'src/members/members.service.spec.ts',
+      evidence: ['task-06-review.md', 'task-07-review.md'],
+      items: [
+        item(
+          'member-update-lifecycle',
+          169,
+          238,
+          [OWNERSHIP, REPLAY],
+          [
+            'reserves a changed email, revokes active sessions, and audits identifier and status changes',
+            'releases a newly reserved email when saving the member change fails',
+          ],
+        ),
+        item(
+          'member-normalized-login-lookup',
+          270,
+          281,
+          [AUTHORIZATION, OWNERSHIP],
+          [
+            'looks up credentials with normalized login identifiers and the password hash selected',
+          ],
+        ),
+        item(
+          'member-active-auth-requirement',
+          285,
+          294,
+          [AUTHORIZATION],
+          [
+            'returns the active-member not-found contract when the member does not exist',
+          ],
+        ),
+        item(
+          'member-owned-last-login-touch',
+          298,
+          301,
+          [OWNERSHIP],
+          ['updates last login atomically without loading the member document'],
+        ),
+        item(
+          'member-credential-owner-denial',
+          310,
+          325,
+          [AUTHORIZATION, OWNERSHIP],
+          [
+            'leaves member credentials unchanged when the normalized login identifier conflicts',
+          ],
+        ),
+        item(
+          'member-credential-lifecycle',
+          328,
+          367,
+          [AUTHORIZATION, OWNERSHIP, REPLAY],
+          [
+            'sets normalized credentials, increments auth version, and records the actor',
+            'recovers a released credential identifier and revokes sessions after saving credentials',
+          ],
+        ),
+        item(
+          'member-required-document',
+          371,
+          379,
+          [AUTHORIZATION, OWNERSHIP],
+          ['returns not found for missing members'],
+        ),
+        item(
+          'member-auth-version-bump',
+          383,
+          390,
+          [REPLAY],
+          ['rejects a missing member when bumping its auth version'],
+        ),
+        item(
+          'member-login-normalization',
+          407,
+          407,
+          [OWNERSHIP],
+          [
+            'sets normalized credentials, increments auth version, and records the actor',
+          ],
+        ),
+        item(
+          'member-identifier-reservation',
+          416,
+          466,
+          [OWNERSHIP],
+          [
+            'keeps a same-owner active identifier idempotent without a prior member login',
+            'reactivates a released reservation with member ownership and no release timestamp',
+          ],
+        ),
+        item(
+          'member-identifier-release',
+          474,
+          489,
+          [OWNERSHIP],
+          [
+            'releases only the newly acquired reservation when credential persistence fails',
+          ],
+        ),
+        item(
+          'member-session-revocation',
+          493,
+          508,
+          [OWNERSHIP, REPLAY],
+          [
+            'initializes an absent auth version and revokes only active member families on status change',
+          ],
+        ),
+      ],
+    },
+    {
+      source: 'src/borrowings/borrowings.service.ts',
+      spec: 'src/borrowings/borrowings.service.spec.ts',
+      evidence: ['task-08-review.md'],
+      items: [
+        item(
+          'borrowing-create-policy-and-effects',
+          58,
+          105,
+          [AUTHORIZATION, BORROWING_STATE],
+          [
+            'requires an authenticated staff actor before creating borrowing records',
+            'creates a borrowing only after active member, book, category, and membership policy pass',
+            'does not change book availability or member loans when borrowing persistence fails',
+          ],
+        ),
+        item(
+          'borrowing-return-transition-and-effects',
+          113,
+          151,
+          [AUTHORIZATION, BORROWING_STATE],
+          [
+            'requires an authenticated staff actor before returning borrowing records',
+            'returns an overdue loan at the supplied time without a negative loan count',
+            'denies a non-returned loan in an illegal state without writes',
+          ],
+        ),
+        item(
+          'borrowing-member-detail-ownership',
+          189,
+          203,
+          [AUTHORIZATION, OWNERSHIP],
+          [
+            'applies both borrowing and member ObjectId ownership filters for self-service detail',
+            'does not reveal a foreign borrowing when the owner filter is absent or wrong',
+          ],
+        ),
+        item(
+          'borrowing-member-list-ownership',
+          215,
+          219,
+          [AUTHORIZATION, OWNERSHIP],
+          [
+            'rejects member self-service queries with a mismatched memberId',
+            'uses member ownership and requested pagination values for member borrowing history',
+          ],
+        ),
+        item(
+          'borrowing-current-and-overdue-filters',
+          232,
+          260,
+          [BORROWING_STATE],
+          [
+            'filters current borrowings to unreturned active and overdue records',
+            'applies the overdue-only filter before listing overdue borrowings',
+          ],
+        ),
+        item(
+          'borrowing-overdue-policy-query',
+          267,
+          276,
+          [BORROWING_STATE, OWNERSHIP],
+          [
+            'creates a borrowing only after active member, book, category, and membership policy pass',
+          ],
+        ),
+        item(
+          'borrowing-required-record',
+          283,
+          292,
+          [BORROWING_STATE],
+          [
+            'rejects a duplicate return without changing availability or loan count',
+            'returns not found when a borrowing lookup has no matching record',
+          ],
+        ),
+        item(
+          'borrowing-required-book',
+          299,
+          308,
+          [BORROWING_STATE],
+          [
+            'creates a borrowing only after active member, book, category, and membership policy pass',
+          ],
+        ),
+        item(
+          'borrowing-required-category',
+          315,
+          324,
+          [BORROWING_STATE],
+          [
+            'creates a borrowing only after active member, book, category, and membership policy pass',
+          ],
+        ),
+        item(
+          'borrowing-required-member',
+          331,
+          340,
+          [BORROWING_STATE, OWNERSHIP],
+          [
+            'creates a borrowing only after active member, book, category, and membership policy pass',
+          ],
+        ),
+        item(
+          'borrowing-required-membership-policy',
+          347,
+          356,
+          [BORROWING_STATE],
+          [
+            'creates a borrowing only after active member, book, category, and membership policy pass',
+          ],
+        ),
+        item(
+          'borrowing-transaction-boundary',
+          362,
+          372,
+          [BORROWING_STATE],
+          [
+            'does not change book availability or member loans when borrowing persistence fails',
+            'denies a non-returned loan in an illegal state without writes',
+          ],
+        ),
+        item(
+          'borrowing-staff-actor-requirement',
+          376,
+          380,
+          [AUTHORIZATION],
+          [
+            'requires an authenticated staff actor before creating borrowing records',
+            'requires an authenticated staff actor before returning borrowing records',
+          ],
+        ),
+      ],
+    },
+  ];
+  const manifest = JSON.parse(
+    readFileSync(
+      join(REPOSITORY_ROOT, 'test', 'quality', 'critical-rule-manifest.json'),
+      'utf8',
+    ),
+  );
+  const classifiedRules = manifest.rules.map((rule) => {
+    const match = /^\[categories: ([^\]]+)\] /.exec(rule.invariant);
+    return {
+      ...rule,
+      categories: match ? match[1].split(' | ') : [],
+    };
+  });
+  const inventory = groups.flatMap((group) =>
+    group.items.map((entry) => ({ ...entry, group })),
+  );
+
+  assert.deepEqual(
+    groups.map((group) => group.source),
+    SELECTED_SOURCES,
+  );
+  assert.deepEqual(
+    Object.fromEntries(
+      groups.map((group) => [group.source, group.items.length]),
+    ),
+    {
+      'src/auth/token-session.service.ts': 18,
+      'src/auth/auth-identifier-repair.service.ts': 26,
+      'src/auth/auth-identifier-reconciliation.service.ts': 21,
+      'src/members/members.service.ts': 12,
+      'src/borrowings/borrowings.service.ts': 13,
+    },
+  );
+  assert.deepEqual(
+    Object.fromEntries(
+      categories.map((category) => [
+        category,
+        inventory.filter((entry) => entry.categories.includes(category)).length,
+      ]),
+    ),
+    {
+      [AUTHORIZATION]: 23,
+      [OWNERSHIP]: 45,
+      [REPLAY]: 20,
+      [TOKEN_REJECTION]: 5,
+      [BORROWING_STATE]: 10,
+      [TERMINAL_ORDERING]: 25,
+    },
+  );
+  assert.deepEqual(
+    Object.fromEntries(
+      SELECTED_SOURCES.map((source) => [
+        source,
+        classifiedRules.filter((rule) => rule.source === source).length,
+      ]),
+    ),
+    {
+      'src/auth/token-session.service.ts': 16,
+      'src/auth/auth-identifier-repair.service.ts': 26,
+      'src/auth/auth-identifier-reconciliation.service.ts': 22,
+      'src/members/members.service.ts': 13,
+      'src/borrowings/borrowings.service.ts': 12,
+    },
+  );
+  for (const rule of classifiedRules) {
+    assert.ok(
+      rule.categories.length > 0,
+      `${rule.id}: missing category prefix`,
+    );
+    assert.equal(
+      new Set(rule.categories).size,
+      rule.categories.length,
+      rule.id,
+    );
+    for (const category of rule.categories) {
+      assert.ok(categories.includes(category), `${rule.id}: ${category}`);
+    }
+  }
+  assert.deepEqual(
+    [...new Set(inventory.flatMap((entry) => entry.categories))].sort(),
+    [...categories].sort(),
+  );
+
+  for (const group of groups) {
+    const sourceText = readFileSync(
+      join(REPOSITORY_ROOT, ...group.source.split('/')),
+      'utf8',
+    );
+    const sourceLines = sourceText.split(/\r?\n/);
+    const specText = readFileSync(
+      join(REPOSITORY_ROOT, ...group.spec.split('/')),
+      'utf8',
+    );
+    for (const evidenceFile of group.evidence) {
+      assert.match(
+        readFileSync(join(plan3Root, evidenceFile), 'utf8'),
+        /approved/i,
+      );
+    }
+    for (const entry of group.items) {
+      assert.ok(
+        Number.isInteger(entry.startLine) &&
+          Number.isInteger(entry.endLine) &&
+          entry.startLine > 0 &&
+          entry.startLine <= entry.endLine &&
+          entry.endLine <= sourceLines.length,
+        entry.id,
+      );
+      for (const boundary of [entry.startLine, entry.endLine]) {
+        const line = sourceLines[boundary - 1].trim();
+        assert.notEqual(line, '', `${entry.id}:${boundary}`);
+        assert.doesNotMatch(
+          line,
+          /^(?:async |private |protected |public ).*\{$/,
+          `${entry.id}:${boundary} must be executable, not a signature`,
+        );
+      }
+      assert.ok(entry.tests.length > 0, entry.id);
+      for (const title of entry.tests) {
+        assert.ok(specText.includes(`'${title}'`), `${entry.id}: ${title}`);
+      }
+    }
+  }
+
+  const coversEveryLine = (rules, entry) => {
+    for (let line = entry.startLine; line <= entry.endLine; line += 1) {
+      if (
+        !rules.some(
+          (rule) =>
+            rule.source === entry.group.source &&
+            rule.startLine <= line &&
+            rule.endLine >= line,
+        )
+      ) {
+        return false;
+      }
+    }
+    return true;
+  };
+  const uncoveredExecutableRanges = inventory
+    .filter((entry) => !coversEveryLine(classifiedRules, entry))
+    .map((entry) => [
+      entry.id,
+      entry.group.source,
+      entry.startLine,
+      entry.endLine,
+    ]);
+  const overlaps = (rule, entry) =>
+    rule.source === entry.group.source &&
+    rule.startLine <= entry.endLine &&
+    rule.endLine >= entry.startLine;
+  const categoryMismatches = inventory.flatMap((entry) =>
+    entry.categories
+      .filter(
+        (category) =>
+          !classifiedRules.some(
+            (rule) =>
+              rule.categories.includes(category) && overlaps(rule, entry),
+          ),
+      )
+      .map((category) => [entry.id, category]),
+  );
+
+  assert.deepEqual(
+    { uncoveredExecutableRanges, categoryMismatches },
+    { uncoveredExecutableRanges: [], categoryMismatches: [] },
+  );
 });
