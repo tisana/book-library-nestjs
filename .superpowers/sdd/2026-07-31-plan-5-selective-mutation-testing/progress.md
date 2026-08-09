@@ -20,12 +20,16 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 00 requested and actual implementer: `gpt-5.6-terra`, medium reasoning, identity `/root/plan5_task0_implementer`; substitution none.
 - Task 00 requested and actual reviewer: fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task0_reviewer`; substitution none.
 - Initial reviewer verdict: Needs fixes. Fix Round 1 is recorded in `task-00.md`; the historical initial verdict is retained.
+- Final scoped reviewer: requested and actual `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task0_reviewer`; substitution none. Fix Round 2 verdict: APPROVED.
 
 ## Task status
 
 - Task 00 initial implementation evidence complete in `b231461ef15ca7336e29cfed7c74883507066234` (`docs: lock selective mutation testing baseline`); its evidence-only backfill commit is `bb80f9b8e82a1f658acaaa479d01a021dfe7e79a` (`docs: record Plan 5 task evidence`).
 - Task 00 Fix Round 1 result: immutable ancestry evidence addressed; reviewer identified the Base-SHA/section ordering as still open.
 - Task 00 Fix Round 2: exact prefix/order correction and strengthened schema-order validation pending fresh reviewer re-review; no Task 1+ work has begun.
+- Task 0: fix round 1/5 (1 addressed, 1 open — ancestry evidence addressed; exact schema order open; commit e9f962f)
+- Task 0: fix round 2/5 (1 addressed, 0 open — exact schema order; commit b89e29d)
+- Task 0: complete (commits b678209..b89e29d, review clean)
 
 ## Mutation score history
 
@@ -47,3 +51,4 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 
 - Dependency evidence, selected-path byte identity, fixture export inventory, coverage-summary checksum, initial RED/GREEN results, and initial focused metrics are recorded in `task-00.md`.
 - Fix Round 1 corrects the required ledger contract and adds immutable ancestry command evidence. Fresh reviewer follow-up is pending after this implementation fix.
+- Final scoped reviewer approval recorded: Task 0 APPROVED after Fix Round 2; all findings addressed with no new Critical/Important breakage.
