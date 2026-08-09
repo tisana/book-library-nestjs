@@ -307,7 +307,7 @@ Ownership inspection showed only the six Task 3-authorized implementation/eviden
 
 ## Commit hash
 
-Initial implementation: `4c1e61318792c2f09d359fd609f871e708a2a33a` (`test: define critical mutation rules`). The Fix Round 1 immutable implementation SHA is created after fresh verification and backfilled without amend in the required evidence-only commit.
+Initial implementation: `4c1e61318792c2f09d359fd609f871e708a2a33a` (`test: define critical mutation rules`). Fix Round 1 implementation: `2511d7d43931b245fecda39a3e6a384ffd779bc0` (`fix: complete critical mutation rule inventory`). The immutable Fix Round 1 SHA is backfilled without amend; the distinct evidence-only commit is intentionally not recorded in itself.
 
 ## Deferred findings
 

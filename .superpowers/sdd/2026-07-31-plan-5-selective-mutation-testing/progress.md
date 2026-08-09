@@ -54,7 +54,7 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 2: fix round 2/5 (1 addressed, 0 open — Task 02 evidence formatting; administrative closeout)
 - Task 2: complete (commits 6bd0cef..0cd77ef, review clean)
 - Task 03 implementation is complete in `4c1e61318792c2f09d359fd609f871e708a2a33a` (`test: define critical mutation rules`). Its immutable full SHA is backfilled without amend in the required evidence-only commit; independent review remains pending.
-- Task 03 Fix Round 1/5: Important I1 re-inventory candidate is GREEN with `60` rules covering `93/93` reviewed occurrence points; implementation commit creation/backfill and fresh scoped re-review remain pending. Task 4 remains blocked.
+- Task 03 Fix Round 1/5 implementation is complete in `2511d7d43931b245fecda39a3e6a384ffd779bc0` (`fix: complete critical mutation rule inventory`), with `60` rules covering `93/93` reviewed occurrence points. The immutable full SHA is backfilled without amend in the required evidence-only commit; fresh scoped re-review remains pending and Task 4 remains blocked.
 
 ## Mutation score history
 
@@ -90,4 +90,4 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 2 Fix Round 1 implements the human-approved one-based coordinate and pre-baseline-null rulings, adds source bounds and zero-denominator coverage, and backfills reviewer evidence; fresh reviewer re-review is pending.
 - Final scoped reviewer approval recorded: Task 2 APPROVED after Fix Round 2; evidence formatting and semantic preservation are accepted with focused Prettier and scoped-diff verification and no new Critical/Important breakage.
 - Task 03 initial implementation evidence and its 29-rule review matrix are recorded in `task-03.md`; immutable initial implementation SHA backfill is complete. Initial review later required Fix Round 1, and Task 4 did not start.
-- Task 03 Fix Round 1 addresses Important I1 with a complete 60-rule/93-occurrence matrix and regression evidence; fresh scoped independent re-review remains pending. Task 4 remains blocked and unstarted.
+- Task 03 Fix Round 1 implementation `2511d7d43931b245fecda39a3e6a384ffd779bc0` addresses Important I1 with a complete 60-rule/93-occurrence matrix and regression evidence; immutable SHA backfill is complete and fresh scoped independent re-review remains pending. Task 4 remains blocked and unstarted.
