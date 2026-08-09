@@ -216,9 +216,9 @@
       "invariant": "[categories: member/staff ownership | terminal event/cleanup/TTL ordering] A prepared batch rejects mismatched checkpoints and atomically reserves, applies, and records every exact subject assignment before marking the batch prepared.",
       "source": "src/auth/auth-identifier-repair.service.ts",
       "sourceSha256": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
-      "startLine": 325,
+      "startLine": 298,
       "endLine": 369,
-      "startAnchor": "        } else if (batch.checkpointHash !== checkpointHash) {",
+      "startAnchor": "    const checkpointHash = createHmac('sha256', derived)",
       "endAnchor": "  private async activateBatch(operationId: string, batchNumber: number) {"
     },
     {
@@ -246,9 +246,9 @@
       "invariant": "[categories: terminal event/cleanup/TTL ordering] A successful repair records its redacted durable terminal event before writing completed terminal state.",
       "source": "src/auth/auth-identifier-repair.service.ts",
       "sourceSha256": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
-      "startLine": 464,
+      "startLine": 457,
       "endLine": 503,
-      "startAnchor": "              operationId: input.operationId,",
+      "startAnchor": "          { _id: manifest.conflictId, status: AuthIdentifierStatus.Conflict },",
       "endAnchor": "  private async compensateBatch("
     },
     {
@@ -553,7 +553,7 @@
     },
     {
       "id": "reconciliation-parent-ttl-after-cleanup-and-event",
-      "invariant": "[categories: terminal event/cleanup/TTL ordering] The parent receives cleanup-complete retention TTL only after no gate or batch remains and durable terminal event fields exist.",
+      "invariant": "[categories: member/staff ownership | terminal event/cleanup/TTL ordering] The parent receives cleanup-complete retention TTL only after no operation-owned gate or batch remains and durable terminal event fields exist.",
       "source": "src/auth/auth-identifier-reconciliation.service.ts",
       "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803",
       "startLine": 763,

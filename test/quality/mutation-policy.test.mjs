@@ -1246,7 +1246,7 @@ test('keeps the Fix Round 1 point inventory as a lower-bound overlap smoke', () 
 
 // Production break caught: reviewed executable helper/branch bodies are absent
 // from the critical gate or are covered only by a differently classified rule.
-test('protects named Plan 3 executable ranges with same-category manifest rules', () => {
+test('protects every named Plan 3 executable line with same-category manifest rules', () => {
   const AUTHORIZATION = 'authorization/role denial';
   const OWNERSHIP = 'member/staff ownership';
   const REPLAY = 'replay/revocation';
@@ -2284,24 +2284,28 @@ test('protects named Plan 3 executable ranges with same-category manifest rules'
       entry.startLine,
       entry.endLine,
     ]);
-  const overlaps = (rule, entry) =>
-    rule.source === entry.group.source &&
-    rule.startLine <= entry.endLine &&
-    rule.endLine >= entry.startLine;
-  const categoryMismatches = inventory.flatMap((entry) =>
-    entry.categories
-      .filter(
-        (category) =>
-          !classifiedRules.some(
-            (rule) =>
-              rule.categories.includes(category) && overlaps(rule, entry),
-          ),
-      )
-      .map((category) => [entry.id, category]),
+  const missingLineCategoryPairs = inventory.flatMap((entry) =>
+    Array.from(
+      { length: entry.endLine - entry.startLine + 1 },
+      (_, index) => entry.startLine + index,
+    ).flatMap((line) =>
+      entry.categories
+        .filter(
+          (category) =>
+            !classifiedRules.some(
+              (rule) =>
+                rule.source === entry.group.source &&
+                rule.startLine <= line &&
+                rule.endLine >= line &&
+                rule.categories.includes(category),
+            ),
+        )
+        .map((category) => [entry.id, line, category]),
+    ),
   );
 
   assert.deepEqual(
-    { uncoveredExecutableRanges, categoryMismatches },
-    { uncoveredExecutableRanges: [], categoryMismatches: [] },
+    { uncoveredExecutableRanges, missingLineCategoryPairs },
+    { uncoveredExecutableRanges: [], missingLineCategoryPairs: [] },
   );
 });
