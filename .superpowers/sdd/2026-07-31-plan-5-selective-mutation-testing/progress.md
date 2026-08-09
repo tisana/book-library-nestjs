@@ -1,13 +1,48 @@
-# Plan 5 selective mutation testing evidence ledger
+# Plan 5 Progress
 
-This ledger is append-only evidence for Plan 5 selective mutation testing.
+This append-only ledger corrects the initial flat Task 00 evidence into the binding Plan 5 sectioned contract while preserving its facts and chronology.
+
+## Dependency evidence
 
 Base SHA: b678209e23ef7020c21ff565327de1b229c835f6
 
-- Task 00 dependency verdict: PASS. The locked execution base is the reviewed Plan 3 integration merge. Reviewed Task 10 handoff `75d81b17ca826df4f8236fd153f89b155c1d9748` and administrative acceptance `912131507fb8bbf58ad9a674e9b00906d23022d8` are ancestors of this base.
+- Task 00 dependency verdict: PASS. The locked execution base is the reviewed Plan 3 integration merge.
+- `git merge-base --is-ancestor 75d81b17ca826df4f8236fd153f89b155c1d9748 b678209e23ef7020c21ff565327de1b229c835f6` — exit `0`.
+- `git merge-base --is-ancestor 912131507fb8bbf58ad9a674e9b00906d23022d8 b678209e23ef7020c21ff565327de1b229c835f6` — exit `0`.
+- `git merge-base --is-ancestor 75d81b17ca826df4f8236fd153f89b155c1d9748 bb80f9b8e82a1f658acaaa479d01a021dfe7e79a` — exit `0`.
+- `git merge-base --is-ancestor 912131507fb8bbf58ad9a674e9b00906d23022d8 bb80f9b8e82a1f658acaaa479d01a021dfe7e79a` — exit `0`.
+- The preceding current-HEAD checks establish that reviewed Task 10 handoff and administrative acceptance remain ancestors of current HEAD at Fix Round 1 validation.
 - Selected production mutation boundary: `src/auth/token-session.service.ts`, `src/auth/auth-identifier-repair.service.ts`, `src/auth/auth-identifier-reconciliation.service.ts`, `src/members/members.service.ts`, and `src/borrowings/borrowings.service.ts`.
-- Verified Plan 3 critical branch pairs: token session `89/103`; identifier repair `103/110`; identifier reconciliation `181/191`; members `164/188`; borrowings `105/116`; permission full-source monitor `71/74`. The permission module remains a non-mutated control.
-- Required read-only fixture exports: Plan 2 `deferred`, `queryResult`, `createStaffDocument`, `createStaffModelHarness`, `createIdentifierModelHarness`; Plan 3 `createRefreshFamily`, `createReplayMarker`, `createIdentifierOperation`, `createMemberDocument`, `createBorrowingDocument`, `CriticalQueryDouble`, `criticalQueryResult`, `createCriticalModelHarnesses`.
 - Copied generated evidence verified: `coverage/backend-unit/coverage-summary.json` SHA-256 `E664AB848B846F95C3165F0958BBD50CED6F3231EAD366C338E16A906EF3947F`.
-- Task 00 status: implementation evidence complete; fresh reviewer identity and verdict pending controller dispatch.
-- Task 00 implementation commit: `b231461ef15ca7336e29cfed7c74883507066234` (`docs: lock selective mutation testing baseline`). The required evidence-only commit follows and is deliberately not recorded in the Task 00 report.
+
+## Model dispatch ledger
+
+- Task 00 requested and actual implementer: `gpt-5.6-terra`, medium reasoning, identity `/root/plan5_task0_implementer`; substitution none.
+- Task 00 requested and actual reviewer: fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task0_reviewer`; substitution none.
+- Initial reviewer verdict: Needs fixes. Fix Round 1 is recorded in `task-00.md`; the historical initial verdict is retained.
+
+## Task status
+
+- Task 00 initial implementation evidence complete in `b231461ef15ca7336e29cfed7c74883507066234` (`docs: lock selective mutation testing baseline`); its evidence-only backfill commit is `bb80f9b8e82a1f658acaaa479d01a021dfe7e79a` (`docs: record Plan 5 task evidence`).
+- Task 00 Fix Round 1: evidence-contract correction in progress; no Task 1+ work has begun.
+
+## Mutation score history
+
+- No mutation run has begun; raw combined selected-module mutation score remains unrecorded and the tracked raw baseline is not lowered.
+- Verified Plan 3 critical branch pairs: token session `89/103`; identifier repair `103/110`; identifier reconciliation `181/191`; members `164/188`; borrowings `105/116`; permission full-source monitor `71/74`.
+
+## Critical-rule decisions
+
+- Required read-only fixture exports: Plan 2 `deferred`, `queryResult`, `createStaffDocument`, `createStaffModelHarness`, `createIdentifierModelHarness`; Plan 3 `createRefreshFamily`, `createReplayMarker`, `createIdentifierOperation`, `createMemberDocument`, `createBorrowingDocument`, `CriticalQueryDouble`, `criticalQueryResult`, `createCriticalModelHarnesses`.
+- Permission evaluation remains a monitored, non-mutated control; focused-only coverage is `69/74`, while inherited authoritative full-source coverage is `71/74`.
+- Plan 3's parked non-load-bearing Minor remains visible: aggregate assertions accept any string rather than exact replacement/original identifiers. Task 00 does not address it.
+
+## Runtime history
+
+- Focused Task 00 commands total `35147 ms`; each is below the `300000 ms` PR-smoke limit. Verified inherited Plan 3 producer runtime was approximately `72 s`.
+- Scheduled/manual Stryker mutation execution has not begun; the `900000 ms` Ubuntu 24.04/Node 22 limit remains mandatory.
+
+## Integration status
+
+- Dependency evidence, selected-path byte identity, fixture export inventory, coverage-summary checksum, initial RED/GREEN results, and initial focused metrics are recorded in `task-00.md`.
+- Fix Round 1 corrects the required ledger contract and adds immutable ancestry command evidence. Fresh reviewer follow-up is pending after this implementation fix.

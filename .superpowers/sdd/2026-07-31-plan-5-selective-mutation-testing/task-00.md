@@ -10,7 +10,7 @@ Requested and actual implementer: `gpt-5.6-terra`, medium reasoning. Required re
 
 ## Reviewer model and reasoning
 
-Pending controller dispatch of the required fresh `gpt-5.6-sol`, high-reasoning reviewer.
+Requested and actual reviewer: fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task0_reviewer`; substitution none. Initial verdict: Needs fixes.
 
 ## Base SHA
 
@@ -36,6 +36,13 @@ The prescribed ledger-existence/Base-SHA ancestry PowerShell command exited `0` 
 ## GREEN evidence
 
 The ledger contains exactly one `Base SHA:` record. `git merge-base --is-ancestor` confirms that record is an ancestor of `HEAD`.
+
+Fix Round 1 immutable relationship evidence:
+
+- `git merge-base --is-ancestor 75d81b17ca826df4f8236fd153f89b155c1d9748 b678209e23ef7020c21ff565327de1b229c835f6` — exit `0`.
+- `git merge-base --is-ancestor 912131507fb8bbf58ad9a674e9b00906d23022d8 b678209e23ef7020c21ff565327de1b229c835f6` — exit `0`.
+- `git merge-base --is-ancestor 75d81b17ca826df4f8236fd153f89b155c1d9748 bb80f9b8e82a1f658acaaa479d01a021dfe7e79a` — exit `0`.
+- `git merge-base --is-ancestor 912131507fb8bbf58ad9a674e9b00906d23022d8 bb80f9b8e82a1f658acaaa479d01a021dfe7e79a` — exit `0`.
 
 ## Focused metrics
 
@@ -67,4 +74,10 @@ Plan 3's parked non-load-bearing Minor remains visible: aggregate assertions acc
 
 ## Reviewer decision
 
-Pending required fresh reviewer. Implementer self-review: dependency relationship, selected-path byte identity, fixture export inventory, coverage-summary SHA-256, ownership boundary, commands, and report headings are all recorded; no Task 1+ work began.
+Initial fresh review by `/root/plan5_task0_reviewer` (`gpt-5.6-sol`, high; substitution none): Needs fixes, preserving Critical ledger-schema and Important ancestry-evidence findings. Implementer self-review: dependency relationship, selected-path byte identity, fixture export inventory, coverage-summary SHA-256, ownership boundary, commands, and report headings are all recorded; no Task 1+ work began.
+
+**Fix Round 1 report (2026-08-09):** Addressed the Critical binding-ledger contract finding by correcting `progress.md` to exact title `# Plan 5 Progress` and all mandatory sections: `## Dependency evidence`, `## Model dispatch ledger`, `## Task status`, `## Mutation score history`, `## Critical-rule decisions`, `## Runtime history`, and `## Integration status`. Addressed the Important immutable-relationship finding with these fresh commands and output: `git merge-base --is-ancestor 75d81b17ca826df4f8236fd153f89b155c1d9748 b678209e23ef7020c21ff565327de1b229c835f6` exit `0`; `git merge-base --is-ancestor 912131507fb8bbf58ad9a674e9b00906d23022d8 b678209e23ef7020c21ff565327de1b229c835f6` exit `0`; `git merge-base --is-ancestor 75d81b17ca826df4f8236fd153f89b155c1d9748 bb80f9b8e82a1f658acaaa479d01a021dfe7e79a` exit `0`; `git merge-base --is-ancestor 912131507fb8bbf58ad9a674e9b00906d23022d8 bb80f9b8e82a1f658acaaa479d01a021dfe7e79a` exit `0`. Covering Task 0 GREEN and schema-validation command results will be appended after execution. No Jest suite rerun is required for this docs-only correction.
+
+Covering validation command: `$progressPath = '.superpowers/sdd/2026-07-31-plan-5-selective-mutation-testing/progress.md'; $taskPath = '.superpowers/sdd/2026-07-31-plan-5-selective-mutation-testing/task-00.md'; if (-not (Test-Path $progressPath)) { throw 'Missing progress ledger.' }; if (-not (Test-Path $taskPath)) { throw 'Missing Task 00 report.' }; $baseShaMatch = Select-String -LiteralPath $progressPath -Pattern '^Base SHA: ([0-9a-f]{40})$'; if ($baseShaMatch.Matches.Count -ne 1) { throw 'Invalid Base SHA record.' }; git merge-base --is-ancestor $baseShaMatch.Matches[0].Groups[1].Value HEAD`. Exit `0`; relevant output: `TASK0_GREEN_EXIT=0`.
+
+Focused schema-validation command: `$progressPath = '.superpowers/sdd/2026-07-31-plan-5-selective-mutation-testing/progress.md'; $requiredTitle = '# Plan 5 Progress'; $requiredSections = @('## Dependency evidence','## Model dispatch ledger','## Task status','## Mutation score history','## Critical-rule decisions','## Runtime history','## Integration status'); $lines = Get-Content -LiteralPath $progressPath; if ($lines[0] -cne $requiredTitle) { throw "invalid-ledger-title: $($lines[0])" }; $baseMatches = @(Select-String -LiteralPath $progressPath -Pattern '^Base SHA: ([0-9a-f]{40})$').Matches; if ($baseMatches.Count -ne 1) { throw "invalid-base-sha-count: $($baseMatches.Count)" }; foreach ($section in $requiredSections) { if (@($lines | Where-Object { $_ -ceq $section }).Count -ne 1) { throw "invalid-required-section: $section" } }`. Exit `0`; relevant output: `SCHEMA_TITLE=# Plan 5 Progress`, `SCHEMA_BASE_SHA_COUNT=1`, `SCHEMA_REQUIRED_SECTIONS=7`, `TASK0_SCHEMA_EXIT=0`.
