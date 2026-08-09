@@ -1,10 +1,10 @@
 # Plan 5 Progress
 
-This append-only ledger corrects the initial flat Task 00 evidence into the binding Plan 5 sectioned contract while preserving its facts and chronology.
+Base SHA: b678209e23ef7020c21ff565327de1b229c835f6
 
 ## Dependency evidence
 
-Base SHA: b678209e23ef7020c21ff565327de1b229c835f6
+This append-only ledger corrects the initial flat Task 00 evidence into the binding Plan 5 sectioned contract while preserving its facts and chronology.
 
 - Task 00 dependency verdict: PASS. The locked execution base is the reviewed Plan 3 integration merge.
 - `git merge-base --is-ancestor 75d81b17ca826df4f8236fd153f89b155c1d9748 b678209e23ef7020c21ff565327de1b229c835f6` — exit `0`.
@@ -24,7 +24,8 @@ Base SHA: b678209e23ef7020c21ff565327de1b229c835f6
 ## Task status
 
 - Task 00 initial implementation evidence complete in `b231461ef15ca7336e29cfed7c74883507066234` (`docs: lock selective mutation testing baseline`); its evidence-only backfill commit is `bb80f9b8e82a1f658acaaa479d01a021dfe7e79a` (`docs: record Plan 5 task evidence`).
-- Task 00 Fix Round 1: evidence-contract correction in progress; no Task 1+ work has begun.
+- Task 00 Fix Round 1 result: immutable ancestry evidence addressed; reviewer identified the Base-SHA/section ordering as still open.
+- Task 00 Fix Round 2: exact prefix/order correction and strengthened schema-order validation pending fresh reviewer re-review; no Task 1+ work has begun.
 
 ## Mutation score history
 
