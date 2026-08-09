@@ -10,3 +10,4 @@ Base SHA: b678209e23ef7020c21ff565327de1b229c835f6
 - Required read-only fixture exports: Plan 2 `deferred`, `queryResult`, `createStaffDocument`, `createStaffModelHarness`, `createIdentifierModelHarness`; Plan 3 `createRefreshFamily`, `createReplayMarker`, `createIdentifierOperation`, `createMemberDocument`, `createBorrowingDocument`, `CriticalQueryDouble`, `criticalQueryResult`, `createCriticalModelHarnesses`.
 - Copied generated evidence verified: `coverage/backend-unit/coverage-summary.json` SHA-256 `E664AB848B846F95C3165F0958BBD50CED6F3231EAD366C338E16A906EF3947F`.
 - Task 00 status: implementation evidence complete; fresh reviewer identity and verdict pending controller dispatch.
+- Task 00 implementation commit: `b231461ef15ca7336e29cfed7c74883507066234` (`docs: lock selective mutation testing baseline`). The required evidence-only commit follows and is deliberately not recorded in the Task 00 report.

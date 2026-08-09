@@ -59,7 +59,7 @@ Focused-command durations total `35147 ms`; each is below the `300000 ms` PR-smo
 
 ## Commit hash
 
-Pending implementation commit; this field will be updated after the distinct implementation commit is resolved to its 40-character SHA. The evidence-only commit will not be recorded here.
+`b231461ef15ca7336e29cfed7c74883507066234` (`docs: lock selective mutation testing baseline`). The distinct evidence-only commit is intentionally not recorded here.
 
 ## Deferred findings
 
