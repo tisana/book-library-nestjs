@@ -327,7 +327,7 @@ Important I1: the mechanically valid 29-rule manifest did not inventory every Pl
 - The manifest now contains `60` narrow exact rules: token session `12`, repair `18`, reconciliation `15`, members `8`, and borrowings `7`.
 - The regression now proves `93/93` reviewed occurrence points overlap the zero-survivor critical gate, with all six required categories and all five sources represented.
 - All source SHA, exact path, ordered positive inclusive range, exact unique anchor, read-only `--check`, review-only `--candidate`, and empty exact allowlist contracts remain enforced.
-- I1 is addressed in the implementation candidate; open implementer-known findings are `0`. Fresh independent re-review remains pending, so this implementer does not mark Task 3 approved and does not start Task 4.
+- Fix Round 1 was submitted with implementer-known findings `0`, but subsequent independent re-review kept I1 open. The implementer did not mark Task 3 approved and did not start Task 4.
 
 ## Fix Round 2 correction and evidence
 
@@ -398,7 +398,7 @@ b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803 src/auth/auth-i
 - Executable occurrences: `90` total — token session `18`, repair `26`, reconciliation `21`, members `12`, borrowings `13`.
 - Occurrence/category links: authorization `23`, ownership `45`, replay/revocation `20`, revoked/expired rejection `5`, illegal borrowing transitions `10`, terminal/cleanup/TTL ordering `25`.
 - Manifest rules: `89` total — token session `16`, repair `26`, reconciliation `22`, members `13`, borrowings `12`.
-- All `90/90` executable occurrences have complete range coverage and every one of their `128/128` category links has a same-source overlapping manifest classification.
+- Fix Round 2 proved all `90/90` executable occurrences had any-category line coverage and all `128` occurrence/category declarations had some same-source overlap. It did not prove category coverage for every executable line; Fix Round 3 below supersedes this insufficient completeness statement.
 
 The executable matrix in `test/quality/mutation-policy.test.mjs` is the authoritative exact occurrence-to-test/evidence linkage. It contains each exact named test and reads each cited Plan 3 review file. The original retained-rule tables above continue to identify named tests for the pre-Fix-Round-2 rules, subject to the corrected ranges below. The following table completes the rule-by-rule linkage for all `29` newly added rules.
 
@@ -449,4 +449,67 @@ The following retained rules were deliberately extended to cover their exact rev
 | `borrowing-create-requires-staff-and-policy`           |              54-108 |
 | `borrowing-return-requires-staff-and-returnable-state` |             108-154 |
 
-Important I1 is addressed in implementation candidate `db8d7d078d632b83d00736426c089481ef9cf626`; implementer-known open findings are `0`. Independent Fix Round 2 re-review remains pending, so Task 3 is not marked approved and Task 4 remains blocked and unstarted.
+Fix Round 2 implementation candidate `db8d7d078d632b83d00736426c089481ef9cf626` was submitted with implementer-known open findings `0`, but independent Fix Round 2 re-review kept Important I1 open because the category check was not per-line. Task 3 was not approved and Task 4 remained blocked and unstarted.
+
+## Fix Round 3 correction and evidence
+
+Fix Round 2 re-review by `/root/plan5_task3_reviewer` (requested and actual fresh `gpt-5.6-sol`, high reasoning; substitution none) was **CHANGES_REQUIRED**, with Critical `0`, Important `1`, Minor `0`. Completeness beyond I1 was accepted. I1 remained open solely because the regression required any-category coverage on every executable line and merely one same-category overlap per occurrence, rather than a same-category rule on every executable line.
+
+### Fix Round 3 RED
+
+The regression was strengthened before the manifest changed. It now expands every one of the `90` matrix occurrences into each inclusive executable source line crossed with each declared category, and reports the exact occurrence id, line, and missing category.
+
+```powershell
+node --test test/quality/mutation-policy.test.mjs
+# FIX3_RED_EXIT=1
+```
+
+```text
+tests 45
+pass 44
+fail 1
+duration_ms 486.8926
+uncoveredExecutableRanges 0
+missingLineCategoryPairs 63
+```
+
+The sole intended failure, `protects every named Plan 3 executable line with same-category manifest rules`, reported exactly the independently audited `63` gaps:
+
+- `repair-batch-transactional-ownership`: terminal event/cleanup/TTL ordering on lines `305-324` (`20` pairs).
+- `repair-completed-event-order`: terminal event/cleanup/TTL ordering on lines `461-463` (`3` pairs).
+- `reconciliation-bounded-cleanup`: member/staff ownership on lines `764-803` (`40` pairs).
+
+### Minimal manifest correction
+
+Implementation commit: `65d3d3e2512f9552d6e3e071901a2f56bcac7295` (`fix: enforce per-line critical categories`). It changes only the tracked manifest and its policy regression.
+
+- `repair-batch-transactional-ownership` now begins at the unique checkpoint/transaction prelude anchor on line `298`, covering the terminally ordered transactional body through line `369`. A proposed line-`305` anchor was rejected by the updater because that exact session-acquisition line occurs five times; the final line-`298` anchor occurs once.
+- `repair-completed-event-precedes-terminal-state` now begins at the unique original-conflict update selector on line `457`, covering the event creation beginning at line `461` through the terminal state write.
+- `reconciliation-parent-ttl-after-cleanup-and-event` retains its exact `763-805` range and now classifies the operation-owned gate/batch remainder and parent update as both member/staff ownership and terminal event/cleanup/TTL ordering.
+
+No rule was added or removed. The exact schema, `90`-occurrence matrix, empty allowlist, source hashes, and source files are unchanged.
+
+### Fix Round 3 GREEN and exact denominator
+
+```text
+node --test test/quality/mutation-policy.test.mjs
+tests 45
+pass 45
+fail 0
+duration_ms 490.0548
+
+node scripts/quality/update-critical-rule-manifest.mjs --check
+Critical mutation manifest check passed (89 rules).
+exit 0
+
+npx --no-install jest --runInBand src/auth/token-session.service.spec.ts src/auth/auth-identifier-repair.service.spec.ts src/auth/auth-identifier-reconciliation.service.spec.ts src/members/members.service.spec.ts src/borrowings/borrowings.service.spec.ts
+Test Suites: 5 passed, 5 total
+Tests:       193 passed, 193 total
+Time:        6.61 s
+```
+
+The final matrix expands to exactly `3151` executable line/category pairs, and the strengthened regression proves `3151/3151` have a same-source covering manifest rule with that exact category. Manifest counts remain `89`: token session `16`, repair `26`, reconciliation `22`, members `13`, borrowings `12`. Occurrence counts remain `90`: `18/26/21/12/13`. The six controlled categories and their occurrence-level counts remain authorization `23`, ownership `45`, replay/revocation `20`, revoked/expired rejection `5`, illegal borrowing transitions `10`, and terminal/cleanup/TTL ordering `25`.
+
+Focused ESLint and Prettier exited `0`. The updater `--candidate` resolved all anchors uniquely and produced a byte-identical tracked manifest. Source identity against locked base `b678209e23ef7020c21ff565327de1b229c835f6`, all five SHA-256 values, `git diff --check`, and implementation scope checks exited `0`.
+
+Important I1 is addressed in Fix Round 3 implementation candidate `65d3d3e2512f9552d6e3e071901a2f56bcac7295`; implementer-known open findings are `0`. Fresh independent Fix Round 3 re-review remains pending. Task 3 is not marked approved, and Task 4 remains blocked and unstarted.
