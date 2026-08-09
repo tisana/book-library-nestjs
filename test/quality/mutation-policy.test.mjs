@@ -8,6 +8,7 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { after, before, test } from 'node:test';
 
 import {
@@ -42,6 +43,13 @@ const VALID_REVIEWED_AT = new Date(
 const VALID_EXPIRES_AT = new Date(
   TEST_CLOCK_MS + 30 * 24 * 60 * 60 * 1000,
 ).toISOString();
+const REPOSITORY_ROOT = process.cwd();
+const UPDATER_PATH = join(
+  REPOSITORY_ROOT,
+  'scripts',
+  'quality',
+  'update-critical-rule-manifest.mjs',
+);
 
 let temporaryRoot;
 let sourceByPath;
@@ -662,5 +670,198 @@ test('validates manifest against temporary source files', () => {
   assert.deepEqual(
     validateCriticalManifest(makeManifest(), sourceByPath),
     makeManifest(),
+  );
+});
+
+function updaterResult(repositoryRoot, mode) {
+  return spawnSync(process.execPath, [UPDATER_PATH, mode], {
+    cwd: repositoryRoot,
+    encoding: 'utf8',
+  });
+}
+
+function writeUpdaterFixture() {
+  const root = mkdtempSync(join(tmpdir(), 'mutation-manifest-updater-'));
+  const manifest = makeManifest();
+  for (const source of SELECTED_SOURCES) {
+    const target = join(root, ...source.split('/'));
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, SOURCE, 'utf8');
+  }
+  const qualityDirectory = join(root, 'test', 'quality');
+  mkdirSync(qualityDirectory, { recursive: true });
+  writeFileSync(
+    join(qualityDirectory, 'critical-rule-manifest.json'),
+    `${JSON.stringify(manifest, null, 2)}\n`,
+    'utf8',
+  );
+  writeFileSync(
+    join(qualityDirectory, 'mutation-equivalents.json'),
+    '{\n  "schemaVersion": 1,\n  "entries": []\n}\n',
+    'utf8',
+  );
+  return { root, manifest };
+}
+
+// Production break caught: the tracked manifest or allowlist is absent or stale.
+test('checks the tracked critical-rule manifest and strict empty allowlist', () => {
+  const result = updaterResult(REPOSITORY_ROOT, '--check');
+
+  assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+  const manifest = JSON.parse(
+    readFileSync(
+      join(REPOSITORY_ROOT, 'test', 'quality', 'critical-rule-manifest.json'),
+      'utf8',
+    ),
+  );
+  const allowlist = JSON.parse(
+    readFileSync(
+      join(REPOSITORY_ROOT, 'test', 'quality', 'mutation-equivalents.json'),
+      'utf8',
+    ),
+  );
+  const realSources = new Map(
+    SELECTED_SOURCES.map((source) => [
+      source,
+      readFileSync(join(REPOSITORY_ROOT, ...source.split('/')), 'utf8'),
+    ]),
+  );
+
+  assert.deepEqual(validateCriticalManifest(manifest, realSources), manifest);
+  assert.deepEqual(
+    validateEquivalentAllowlist(allowlist, manifest, new Date().toISOString()),
+    { schemaVersion: 1, entries: [] },
+  );
+  assert.deepEqual(
+    [...new Set(manifest.rules.map((rule) => rule.source))],
+    SELECTED_SOURCES,
+  );
+});
+
+// Production break caught: check mode accepts stale bytes or unresolved anchors.
+test('check mode rejects stale SHA and missing or ambiguous anchors', async (t) => {
+  await t.test('stale source SHA', () => {
+    const fixture = writeUpdaterFixture();
+    try {
+      writeFileSync(
+        join(fixture.root, ...SELECTED_SOURCES[0].split('/')),
+        `${SOURCE}source edit\n`,
+        'utf8',
+      );
+
+      const result = updaterResult(fixture.root, '--check');
+
+      assert.notEqual(result.status, 0);
+      assert.match(result.stderr, /stale sourceSha256/);
+    } finally {
+      rmSync(fixture.root, { recursive: true, force: true });
+    }
+  });
+
+  await t.test('missing anchor', () => {
+    const fixture = writeUpdaterFixture();
+    try {
+      fixture.manifest.rules[0].startAnchor = 'missing critical anchor';
+      writeFileSync(
+        join(fixture.root, 'test', 'quality', 'critical-rule-manifest.json'),
+        `${JSON.stringify(fixture.manifest, null, 2)}\n`,
+        'utf8',
+      );
+
+      const result = updaterResult(fixture.root, '--check');
+
+      assert.notEqual(result.status, 0);
+      assert.match(
+        result.stderr,
+        /startAnchor does not match|anchor.*missing/i,
+      );
+    } finally {
+      rmSync(fixture.root, { recursive: true, force: true });
+    }
+  });
+
+  await t.test('ambiguous anchor', () => {
+    const fixture = writeUpdaterFixture();
+    try {
+      const source = SOURCE.replace('line five', 'critical start\nline five');
+      writeFileSync(
+        join(fixture.root, ...SELECTED_SOURCES[0].split('/')),
+        source,
+        'utf8',
+      );
+      fixture.manifest.rules[0].sourceSha256 = sha256Text(source);
+      writeFileSync(
+        join(fixture.root, 'test', 'quality', 'critical-rule-manifest.json'),
+        `${JSON.stringify(fixture.manifest, null, 2)}\n`,
+        'utf8',
+      );
+
+      const result = updaterResult(fixture.root, '--check');
+
+      assert.notEqual(result.status, 0);
+      assert.match(result.stderr, /startAnchor is not unique/);
+    } finally {
+      rmSync(fixture.root, { recursive: true, force: true });
+    }
+  });
+});
+
+// Production break caught: candidate mode rewrites reviewed JSON or writes outside reports.
+test('candidate mode writes only a refreshed review candidate below reports', () => {
+  const fixture = writeUpdaterFixture();
+  try {
+    const trackedPath = join(
+      fixture.root,
+      'test',
+      'quality',
+      'critical-rule-manifest.json',
+    );
+    const trackedBefore = readFileSync(trackedPath, 'utf8');
+    const editedSource = `inserted line\n${SOURCE}`;
+    writeFileSync(
+      join(fixture.root, ...SELECTED_SOURCES[0].split('/')),
+      editedSource,
+      'utf8',
+    );
+
+    const result = updaterResult(fixture.root, '--candidate');
+
+    assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+    assert.equal(readFileSync(trackedPath, 'utf8'), trackedBefore);
+    const candidatePath = join(
+      fixture.root,
+      'reports',
+      'mutation',
+      'critical-rule-manifest.candidate.json',
+    );
+    const candidate = JSON.parse(readFileSync(candidatePath, 'utf8'));
+    assert.equal(candidate.rules[0].sourceSha256, sha256Text(editedSource));
+    assert.equal(candidate.rules[0].startLine, 3);
+    assert.equal(candidate.rules[0].endLine, 5);
+  } finally {
+    rmSync(fixture.root, { recursive: true, force: true });
+  }
+});
+
+// Production break caught: manifest rules no longer have exact narrow inclusive identity.
+test('requires complete ordered rule identity and invalidates a source edit', () => {
+  const manifest = makeManifest();
+  const validated = validateCriticalManifest(manifest, sourceByPath);
+
+  for (const rule of validated.rules) {
+    assert.equal(typeof rule.id, 'string');
+    assert.equal(typeof rule.invariant, 'string');
+    assert.match(rule.sourceSha256, /^[0-9a-f]{64}$/);
+    assert.ok(Number.isInteger(rule.startLine) && rule.startLine > 0);
+    assert.ok(Number.isInteger(rule.endLine) && rule.endLine >= rule.startLine);
+    assert.equal(typeof rule.startAnchor, 'string');
+    assert.equal(typeof rule.endAnchor, 'string');
+  }
+
+  const editedSources = new Map(sourceByPath);
+  editedSources.set(SELECTED_SOURCES[0], `${SOURCE}source edit\n`);
+  assert.throws(
+    () => validateCriticalManifest(manifest, editedSources),
+    /stale sourceSha256/,
   );
 });

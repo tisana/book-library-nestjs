@@ -29,6 +29,8 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 02 requested reviewer: fresh `gpt-5.6-sol`, high reasoning, identity pending controller dispatch; substitution none.
 - Task 02 requested and actual reviewer: fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task2_reviewer`; substitution none. Initial verdict: Needs fixes; six findings/conflict records are preserved in `task-02.md`.
 - Task 02 Fix Round 2 final scoped reviewer: requested and actual fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task2_reviewer`; substitution none. Verdict: APPROVED with the formatting finding addressed and no new Critical/Important breakage.
+- Task 03 requested and actual implementer: `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task3_implementer`; substitution none.
+- Task 03 requested reviewer: fresh `gpt-5.6-sol`, high reasoning, identity pending controller dispatch; substitution none. Independent verdict remains pending and is not pre-approved by the implementer.
 
 ## Task status
 
@@ -50,6 +52,7 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 2: complete (commits 6bd0cef..8f53887, review clean)
 - Task 2: fix round 2/5 (1 addressed, 0 open — Task 02 evidence formatting; administrative closeout)
 - Task 2: complete (commits 6bd0cef..0cd77ef, review clean)
+- Task 03 implementation is GREEN and pending the exact two-commit protocol. The immutable implementation SHA is backfilled without amend after creation; independent review remains pending.
 
 ## Mutation score history
 
@@ -63,11 +66,15 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Plan 3's parked non-load-bearing Minor remains visible: aggregate assertions accept any string rather than exact replacement/original identifiers. Task 00 does not address it.
 - Task 02 human ruling: installed Stryker 9.6.1 one-based report line/column coordinates govern; policy overlap and fingerprints use emitted one-based coordinates directly, with source-text endpoint bounds.
 - Task 02 human ruling: `baseline: null` is valid before Task 6; supplied baseline objects validate for smoke and complete, but only complete compares raw score against the baseline.
+- Task 03 inventory encodes `29` narrow source-hashed rules across all `5/5` selected sources and all six required invariant categories; every range has exact unique anchors. The tracked schema-v1 allowlist is exactly empty, so no equivalent is presumed.
+- Task 03 updater supports only read-only `--check` and review-only `--candidate`; candidates are written only under `reports/mutation/` and never promote or overwrite tracked JSON.
+- Task 03 resolved one proposed duplicated borrowing-detail end anchor by using the next unique method boundary at line `205`; no tracked anchor/range ambiguity remains.
 
 ## Runtime history
 
 - Focused Task 00 commands total `35147 ms`; each is below the `300000 ms` PR-smoke limit. Verified inherited Plan 3 producer runtime was approximately `72 s`.
 - Scheduled/manual Stryker mutation execution has not begun; the `900000 ms` Ubuntu 24.04/Node 22 limit remains mandatory.
+- Task 03 RED: exact Node suite exit `1`, `37/43` pass and six intended missing-updater failures, `415.2626 ms`. Initial GREEN: exact Node suite exit `0`, `43/43` pass, `501.5477 ms`; standalone updater `--check` exit `0` with `29` rules. Final post-format evidence is retained in `task-03.md`.
 
 ## Integration status
 
@@ -77,3 +84,4 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Final scoped reviewer approval recorded: Task 1 APPROVED after Fix Round 1; exact Stryker pins, installed-schema compatibility, complete lock-graph provenance, and reviewer backfill are accepted with no new Critical/Important breakage.
 - Task 2 Fix Round 1 implements the human-approved one-based coordinate and pre-baseline-null rulings, adds source bounds and zero-denominator coverage, and backfills reviewer evidence; fresh reviewer re-review is pending.
 - Final scoped reviewer approval recorded: Task 2 APPROVED after Fix Round 2; evidence formatting and semantic preservation are accepted with focused Prettier and scoped-diff verification and no new Critical/Important breakage.
+- Task 03 implementation evidence and full 29-rule review matrix are recorded in `task-03.md`; implementation commit creation/backfill and fresh independent review remain pending. Task 4 has not started.
