@@ -42,6 +42,7 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 1: fix round 1/5 (3 addressed, 0 open — exact schema command, complete lock graph audit, reviewer backfill; commit e7605c5)
 - Task 1: complete (commits a61d4e8..e7605c5, review clean)
 - Task 02: in progress (implementer `/root/plan5_task2_implementer`; reviewer pending controller dispatch).
+- Task 02 implementation complete in `6bd0cef92d04963aeb44d93ef09b082f44958db4` (`test: enforce selective mutation policy`); independent reviewer decision pending controller dispatch.
 
 ## Mutation score history
 

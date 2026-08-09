@@ -114,7 +114,7 @@ No full-suite command is required for Task 2. The exact focused Node suite and n
 
 ## Commit hash
 
-Pending implementation commit backfill.
+`6bd0cef92d04963aeb44d93ef09b082f44958db4` (`test: enforce selective mutation policy`). The distinct evidence-only commit is intentionally not recorded here.
 
 ## Deferred findings
 
