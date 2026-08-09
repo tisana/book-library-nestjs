@@ -24,6 +24,7 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 01 requested and actual implementer: `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task1_implementer`; substitution none.
 - Task 01 requested reviewer: fresh `gpt-5.6-sol`, high reasoning, identity pending controller dispatch; substitution none.
 - Task 01 requested and actual reviewer: fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task1_reviewer`; substitution none. Initial verdict: Needs fixes with three Important evidence findings.
+- Task 01 final scoped reviewer: requested and actual fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task1_reviewer`; substitution none. Fix Round 1 verdict: APPROVED, all three findings addressed with no new Critical/Important breakage.
 
 ## Task status
 
@@ -36,6 +37,8 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 01: in progress (implementer `/root/plan5_task1_implementer`; reviewer pending controller dispatch)
 - Task 01 implementation complete in `cbd19a9f7567fe654d1dd1b6178dda5fd6d7ba3a` (`build: pin selective mutation tooling`); independent reviewer decision pending controller dispatch.
 - Task 01: fix round 1/5 (three Important evidence findings addressed; fresh re-review pending).
+- Task 1: fix round 1/5 (3 addressed, 0 open — exact schema command, complete lock graph audit, reviewer backfill; commit e7605c5)
+- Task 1: complete (commits a61d4e8..e7605c5, review clean)
 
 ## Mutation score history
 
@@ -58,3 +61,4 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Dependency evidence, selected-path byte identity, fixture export inventory, coverage-summary checksum, initial RED/GREEN results, and initial focused metrics are recorded in `task-00.md`.
 - Fix Round 1 corrects the required ledger contract and adds immutable ancestry command evidence. Fresh reviewer follow-up is pending after this implementation fix.
 - Final scoped reviewer approval recorded: Task 0 APPROVED after Fix Round 2; all findings addressed with no new Critical/Important breakage.
+- Final scoped reviewer approval recorded: Task 1 APPROVED after Fix Round 1; exact Stryker pins, installed-schema compatibility, complete lock-graph provenance, and reviewer backfill are accepted with no new Critical/Important breakage.
