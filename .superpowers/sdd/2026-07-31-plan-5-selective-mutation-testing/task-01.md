@@ -253,7 +253,7 @@ Every Task 1 command is below the `300000 ms` smoke ceiling. Mutation execution 
 
 ## Commit hash
 
-Pending implementation commit.
+`cbd19a9f7567fe654d1dd1b6178dda5fd6d7ba3a` (`build: pin selective mutation tooling`). The distinct evidence-only commit is intentionally not recorded here.
 
 ## Deferred findings
 
