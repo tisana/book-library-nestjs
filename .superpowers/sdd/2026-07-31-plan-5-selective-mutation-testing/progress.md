@@ -32,6 +32,7 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 03 requested and actual implementer: `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task3_implementer`; substitution none.
 - Task 03 requested reviewer: fresh `gpt-5.6-sol`, high reasoning, identity pending controller dispatch; substitution none. Independent verdict remains pending and is not pre-approved by the implementer.
 - Task 03 requested and actual reviewer: fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task3_reviewer`; substitution none. Initial verdict: CHANGES_REQUIRED with Critical `0`, Important `1`, Minor `0`.
+- Task 03 final scoped reviewer: requested and actual fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task3_reviewer`; substitution none. Fix Round 3 verdict: APPROVED with Critical `0`, Important `0`, Minor `0`; Important I1 addressed.
 
 ## Task status
 
@@ -55,6 +56,10 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 2: complete (commits 6bd0cef..0cd77ef, review clean)
 - Task 03 implementation is complete in `4c1e61318792c2f09d359fd609f871e708a2a33a` (`test: define critical mutation rules`). Its immutable full SHA is backfilled without amend in the required evidence-only commit; independent review remains pending.
 - Task 03 Fix Round 1/5 implementation is complete in `2511d7d43931b245fecda39a3e6a384ffd779bc0` (`fix: complete critical mutation rule inventory`), with `60` rules covering `93/93` reviewed occurrence points. The immutable full SHA is backfilled without amend in the required evidence-only commit; fresh scoped re-review remains pending and Task 4 remains blocked.
+- Task 3: fix round 1/5 (0 addressed, 1 open — reviewed executable occurrence completeness; commit 2511d7d)
+- Task 3: fix round 2/5 (0 addressed, 1 open — per-line category completeness; commit db8d7d0)
+- Task 3: fix round 3/5 (1 addressed, 0 open — per-line category completeness; commit 65d3d3e)
+- Task 3: complete (commits 4c1e613..65d3d3e, review clean)
 
 ## Mutation score history
 
@@ -73,6 +78,7 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 03 resolved one proposed duplicated borrowing-detail end anchor by using the next unique method boundary at line `205`; no tracked anchor/range ambiguity remains.
 - Task 03 initial reviewer Important I1: the valid 29-rule manifest omitted Plan 3-reviewed critical occurrences in every selected module, leaving those lines to aggregate score only.
 - Task 03 Fix Round 1 re-inventory records `93` reviewed critical occurrence points and expands the manifest to `60` narrow rules: token `12`, repair `18`, reconciliation `15`, members `8`, borrowings `7`. All `93/93` points, five sources, six categories, exact hashes, and unique anchors are covered; the focused overlap regression prevents recurrence.
+- Task 03 final accepted inventory contains `89` source-hashed rules and `90` exact executable occurrences. The reviewer independently recomputed `3151` unique line/category pairs — token `451`, repair `996`, reconciliation `909`, members `456`, borrowings `339` — and confirmed all are covered. The exact schema and strict empty allowlist remain unchanged.
 
 ## Runtime history
 
@@ -80,6 +86,7 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Scheduled/manual Stryker mutation execution has not begun; the `900000 ms` Ubuntu 24.04/Node 22 limit remains mandatory.
 - Task 03 RED: exact Node suite exit `1`, `37/43` pass and six intended missing-updater failures, `415.2626 ms`. Initial GREEN: exact Node suite exit `0`, `43/43` pass, `501.5477 ms`; standalone updater `--check` exit `0` with `29` rules. Final post-format evidence is retained in `task-03.md`.
 - Task 03 Fix Round 1 RED: exact Node suite exit `1`, `43/44` pass, one intended reviewed-occurrence failure exposing `59` uncovered points, `469.0597 ms`. Final GREEN: exit `0`, `44/44` pass, `471.6878 ms`; updater check exit `0` with `60` rules; ESLint/Prettier exit `0`. All five focused Plan 3 suites passed `193/193` in `6.454 s`.
+- Task 03 Fix Round 3 final reviewer verification: policy `45/45`, updater `89` rules, selected Plan 3 suites `193/193`, ESLint and Prettier clean, and all hashes, anchors, allowlist, source-identity, and scope checks clean.
 
 ## Integration status
 
@@ -91,6 +98,7 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Final scoped reviewer approval recorded: Task 2 APPROVED after Fix Round 2; evidence formatting and semantic preservation are accepted with focused Prettier and scoped-diff verification and no new Critical/Important breakage.
 - Task 03 initial implementation evidence and its 29-rule review matrix are recorded in `task-03.md`; immutable initial implementation SHA backfill is complete. Initial review later required Fix Round 1, and Task 4 did not start.
 - Task 03 Fix Round 1 implementation `2511d7d43931b245fecda39a3e6a384ffd779bc0` addresses Important I1 with a complete 60-rule/93-occurrence matrix and regression evidence; immutable SHA backfill is complete and fresh scoped independent re-review remains pending. Task 4 remains blocked and unstarted.
+- Final scoped reviewer approval recorded: Task 3 APPROVED after Fix Round 3; Important I1 is addressed, `3151/3151` unique executable line/category pairs are covered, and no Critical/Important/Minor finding remains. Task 3 is complete; Task 4 has not started in this closeout.
 
 ## Task 03 Fix Round 2 correction
 
@@ -109,4 +117,4 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Fix Round 3 implementation is complete in `65d3d3e2512f9552d6e3e071901a2f56bcac7295` (`fix: enforce per-line critical categories`). Only the manifest and regression changed. No rule was added or removed; the final manifest remains `89` rules and the matrix remains `90` occurrences.
 - Final authoritative denominator: `3151` executable line/category pairs, all `3151/3151` covered by a same-source manifest rule carrying the same category. The exact schema, six controlled categories, source hashes, allowlist, and production bytes are unchanged.
 - Fix Round 3 GREEN: policy `45/45`, `490.0548 ms`; updater `89` rules; selected Plan 3 suites `193/193`, `6.61 s`; ESLint, Prettier, updater candidate byte identity, source identity, hashes, scope, and diff checks exit `0`.
-- Important I1 is addressed in the Fix Round 3 implementation candidate; implementer-known open findings `0`. Fresh independent Fix Round 3 re-review remains pending. Task 4 remains blocked and unstarted.
+- Final Fix Round 3 reviewer verdict: APPROVED with Critical `0`, Important `0`, Minor `0`; Important I1 addressed and open findings `0`. Task 3 is complete. Task 4 remains unstarted in this closeout.

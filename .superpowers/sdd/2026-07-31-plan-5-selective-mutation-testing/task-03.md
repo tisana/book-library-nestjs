@@ -513,3 +513,11 @@ The final matrix expands to exactly `3151` executable line/category pairs, and t
 Focused ESLint and Prettier exited `0`. The updater `--candidate` resolved all anchors uniquely and produced a byte-identical tracked manifest. Source identity against locked base `b678209e23ef7020c21ff565327de1b229c835f6`, all five SHA-256 values, `git diff --check`, and implementation scope checks exited `0`.
 
 Important I1 is addressed in Fix Round 3 implementation candidate `65d3d3e2512f9552d6e3e071901a2f56bcac7295`; implementer-known open findings are `0`. Fresh independent Fix Round 3 re-review remains pending. Task 3 is not marked approved, and Task 4 remains blocked and unstarted.
+
+## Final scoped reviewer decision
+
+Final scoped reviewer: requested and actual fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task3_reviewer`; substitution none. Fix Round 3 verdict: **APPROVED**, with Critical `0`, Important `0`, Minor `0`. Important I1 is addressed.
+
+The reviewer independently recomputed all `3151` unique executable line/category pairs and confirmed complete coverage. Per-source pair counts were token session `451`, repair `996`, reconciliation `909`, members `456`, and borrowings `339`. The exact three manifest corrections were accepted.
+
+Independent verification confirmed policy `45/45`, updater `89` rules, selected Plan 3 suites `193/193`, ESLint and Prettier clean, all source hashes and anchors valid, the allowlist exactly empty, selected production source identity unchanged, and commit scope clean. No Critical, Important, or Minor finding remains. Task 3 is complete; this administrative closeout does not start Task 4.
