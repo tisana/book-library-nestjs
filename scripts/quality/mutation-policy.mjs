@@ -110,11 +110,11 @@ function stableObject(value) {
 
 function requirePosition(position, label) {
   requireExactKeys(position, ['line', 'column'], label);
-  if (!Number.isInteger(position.line) || position.line < 0) {
-    fail(`${label} location line must be a non-negative integer.`);
+  if (!Number.isInteger(position.line) || position.line < 1) {
+    fail(`${label} location line must be a positive integer.`);
   }
-  if (!Number.isInteger(position.column) || position.column < 0) {
-    fail(`${label} location column must be a non-negative integer.`);
+  if (!Number.isInteger(position.column) || position.column < 1) {
+    fail(`${label} location column must be a positive integer.`);
   }
 }
 
@@ -128,6 +128,21 @@ function requireLocation(location, label) {
       location.start.column < location.end.column);
   if (!startsBeforeEnd) {
     fail(`${label} location must have an exclusive end after its start.`);
+  }
+}
+
+function requireLocationWithinSource(location, sourceText, label) {
+  const lines = sourceText.split(/\r\n|\r|\n/);
+  for (const [positionName, position] of [
+    ['start', location.start],
+    ['end', location.end],
+  ]) {
+    if (position.line > lines.length) {
+      fail(`${label} ${positionName} location line exceeds its source.`);
+    }
+    if (position.column > lines[position.line - 1].length + 1) {
+      fail(`${label} ${positionName} location column exceeds its source.`);
+    }
   }
 }
 
@@ -229,7 +244,7 @@ function scoreCounts(mutants) {
   };
 }
 
-function validateMutant(mutant, source, index) {
+function validateMutant(mutant, source, sourceText, index) {
   const label = `report.files[${JSON.stringify(source)}].mutants[${index}]`;
   requirePlainObject(mutant, label);
   const allowedKeys = new Set([
@@ -266,6 +281,7 @@ function validateMutant(mutant, source, index) {
     fail(`${label}.status is malformed or unsupported.`);
   }
   requireLocation(mutant.location, label);
+  requireLocationWithinSource(mutant.location, sourceText, label);
 }
 
 function validateReport(report) {
@@ -311,7 +327,7 @@ function validateReport(report) {
     }
     const ids = new Set();
     file.mutants.forEach((mutant, index) => {
-      validateMutant(mutant, source, index);
+      validateMutant(mutant, source, file.source, index);
       if (ids.has(mutant.id)) {
         fail(
           `report.files[${source}] contains duplicate mutant id ${mutant.id}.`,
@@ -390,12 +406,10 @@ function validateBaseline(baseline, manifest) {
 }
 
 function mutantLineRange(location) {
-  const startLine = location.start.line + 1;
-  const endLine =
-    location.end.line > location.start.line && location.end.column === 0
-      ? location.end.line
-      : location.end.line + 1;
-  return { startLine, endLine };
+  return {
+    startLine: location.start.line,
+    endLine: location.end.line,
+  };
 }
 
 function overlapsRule(mutant, rule) {

@@ -32,7 +32,9 @@ const SOURCE =
 const SOURCE_SHA256 =
   'dfbb14b8cdf560c0ad5ed64ae0f0fae8793880c2abfcd38763c9c32be6f2d3cb';
 const FIRST_RULE_FINGERPRINT =
-  'f337fbc24c78f72d79ebc1263b882c69f9c0078ec8276507e6fb75ffa72f75db';
+  '04b269fc86fb3776a2f2c4f930609336afd7098516f7925d61d7d1338a3e1a46';
+const LAST_RULE_FINGERPRINT =
+  'ace30be0d737116114d5e96e76c5f4d8f07cb395c9fc40b09c64b2b7574d2089';
 const TEST_CLOCK_MS = Date.now();
 const VALID_REVIEWED_AT = new Date(
   TEST_CLOCK_MS - 24 * 60 * 60 * 1000,
@@ -86,8 +88,8 @@ function makeMutant(status = 'Killed', overrides = {}) {
     replacement: 'false',
     status,
     location: {
-      start: { line: 5, column: 0 },
-      end: { line: 5, column: 5 },
+      start: { line: 5, column: 1 },
+      end: { line: 5, column: 6 },
     },
     ...overrides,
   };
@@ -169,8 +171,8 @@ test('hashes text and canonical mutant identity with hand-derived literals', () 
         mutatorName: 'ConditionalExpression',
         replacement: 'false',
         location: {
-          start: { line: 1, column: 0 },
-          end: { line: 1, column: 5 },
+          start: { line: 2, column: 1 },
+          end: { line: 2, column: 6 },
         },
       },
       SOURCE_SHA256,
@@ -215,7 +217,7 @@ test('rejects a score below the tracked upward-only baseline', () => {
 });
 
 // Production break caught: smoke accidentally enforces the complete-run baseline.
-test('does not compare smoke score with the complete baseline', () => {
+test('validates but does not compare smoke score with the complete baseline', () => {
   const report = makeReport({
     [SELECTED_SOURCES[0]]: [makeMutant('Survived', { id: 'survivor' })],
   });
@@ -231,14 +233,24 @@ test('does not compare smoke score with the complete baseline', () => {
   assert.deepEqual(evaluation.violations, []);
 });
 
-// Production break caught: inclusive first-line critical overlaps are missed.
+// Production break caught: pre-Task-6 runs are rejected when no baseline exists yet.
+test('accepts a null baseline for smoke and complete profiles', () => {
+  for (const profile of ['smoke', 'complete']) {
+    const evaluation = evaluate({ profile, baseline: null });
+
+    assert.equal(evaluation.rawCombinedScore, 100);
+    assert.equal(evaluation.passed, true);
+  }
+});
+
+// Production break caught: a one-based last-line survivor escapes the inclusive rule.
 test('rejects a surviving mutant overlapping a critical rule', () => {
   const report = makeReport({
     [SELECTED_SOURCES[0]]: [
       makeMutant('Survived', {
         location: {
-          start: { line: 1, column: 0 },
-          end: { line: 1, column: 5 },
+          start: { line: 4, column: 1 },
+          end: { line: 4, column: 6 },
         },
       }),
     ],
@@ -248,19 +260,19 @@ test('rejects a surviving mutant overlapping a critical rule', () => {
 
   assert.equal(evaluation.passed, false);
   assert.deepEqual(evaluation.violations, [
-    'Critical mutant f337fbc24c78f72d79ebc1263b882c69f9c0078ec8276507e6fb75ffa72f75db (Survived) is not an approved equivalent for critical-rule-1.',
+    `Critical mutant ${LAST_RULE_FINGERPRINT} (Survived) is not an approved equivalent for critical-rule-1.`,
   ]);
-  assert.equal(evaluation.criticalFindings[0].manifestLine, 2);
+  assert.equal(evaluation.criticalFindings[0].manifestLine, 4);
 });
 
-// Production break caught: inclusive last-line NoCoverage overlaps are missed.
+// Production break caught: a one-based first-line NoCoverage overlap is missed.
 test('rejects a no-coverage mutant overlapping a critical rule', () => {
   const report = makeReport({
     [SELECTED_SOURCES[0]]: [
       makeMutant('NoCoverage', {
         location: {
-          start: { line: 3, column: 0 },
-          end: { line: 3, column: 5 },
+          start: { line: 2, column: 1 },
+          end: { line: 2, column: 6 },
         },
       }),
     ],
@@ -270,8 +282,43 @@ test('rejects a no-coverage mutant overlapping a critical rule', () => {
 
   assert.equal(evaluation.passed, false);
   assert.equal(evaluation.criticalFindings[0].ruleId, 'critical-rule-1');
-  assert.equal(evaluation.criticalFindings[0].manifestLine, 4);
+  assert.equal(evaluation.criticalFindings[0].manifestLine, 2);
   assert.equal(evaluation.criticalFindings[0].status, 'NoCoverage');
+});
+
+// Production break caught: a report location beyond the source line count is accepted.
+test('rejects a report location beyond its source lines', () => {
+  const report = makeReport({
+    [SELECTED_SOURCES[0]]: [
+      makeMutant('Killed', {
+        location: {
+          start: { line: 8, column: 1 },
+          end: { line: 8, column: 2 },
+        },
+      }),
+    ],
+  });
+
+  assert.throws(() => evaluate({ report }), /location line exceeds its source/);
+});
+
+// Production break caught: an out-of-source survivor outside critical lines is accepted.
+test('rejects a report location beyond its source columns', () => {
+  const report = makeReport({
+    [SELECTED_SOURCES[0]]: [
+      makeMutant('Survived', {
+        location: {
+          start: { line: 5, column: 11 },
+          end: { line: 5, column: 12 },
+        },
+      }),
+    ],
+  });
+
+  assert.throws(
+    () => evaluate({ report }),
+    /location column exceeds its source/,
+  );
 });
 
 // Production break caught: a non-exact fingerprint, rule, or source hash bypasses review.
@@ -280,8 +327,8 @@ test('accepts only an exact equivalent fingerprint tied to source SHA and rule i
     [SELECTED_SOURCES[0]]: [
       makeMutant('Survived', {
         location: {
-          start: { line: 1, column: 0 },
-          end: { line: 1, column: 5 },
+          start: { line: 2, column: 1 },
+          end: { line: 2, column: 6 },
         },
       }),
     ],
@@ -407,8 +454,8 @@ test('writes module scores and critical findings without changing the raw score'
     [SELECTED_SOURCES[0]]: [
       makeMutant('Survived', {
         location: {
-          start: { line: 1, column: 0 },
-          end: { line: 1, column: 5 },
+          start: { line: 2, column: 1 },
+          end: { line: 2, column: 6 },
         },
       }),
     ],
@@ -463,6 +510,42 @@ test('uses Stryker raw status semantics and excludes ignored mutants', () => {
   assert.equal(evaluation.undetected, 2);
   assert.equal(evaluation.ignored, 1);
   assert.equal(evaluation.rawCombinedScore, 80);
+});
+
+// Production break caught: zero score denominator is treated as failure or NaN.
+test('returns raw score 100 for empty and ignored-only reports', async (t) => {
+  await t.test('empty mutants', () => {
+    const report = makeReport(
+      Object.fromEntries(SELECTED_SOURCES.map((source) => [source, []])),
+    );
+
+    const evaluation = evaluate({ report });
+
+    assert.equal(evaluation.rawCombinedScore, 100);
+    assert.equal(evaluation.detected, 0);
+    assert.equal(evaluation.undetected, 0);
+    assert.equal(evaluation.ignored, 0);
+    assert.equal(evaluation.passed, true);
+  });
+
+  await t.test('ignored-only mutants', () => {
+    const report = makeReport(
+      Object.fromEntries(
+        SELECTED_SOURCES.map((source, index) => [
+          source,
+          [makeMutant('Ignored', { id: `ignored-${index + 1}` })],
+        ]),
+      ),
+    );
+
+    const evaluation = evaluate({ report });
+
+    assert.equal(evaluation.rawCombinedScore, 100);
+    assert.equal(evaluation.detected, 0);
+    assert.equal(evaluation.undetected, 0);
+    assert.equal(evaluation.ignored, 5);
+    assert.equal(evaluation.passed, true);
+  });
 });
 
 // Production break caught: malformed schema components are coerced or ignored.
@@ -539,7 +622,10 @@ test('fails closed on malformed schema, status, profile, paths, hashes, ranges, 
   await t.test('baseline', () => {
     const baseline = makeBaseline(80);
     baseline.generatedFromCommit = 'not-a-commit';
-    assert.throws(() => evaluate({ baseline }), /generatedFromCommit/);
+    assert.throws(
+      () => evaluate({ profile: 'smoke', baseline }),
+      /generatedFromCommit/,
+    );
   });
 
   await t.test('report location', () => {
@@ -554,6 +640,20 @@ test('fails closed on malformed schema, status, profile, paths, hashes, ranges, 
       ],
     });
     assert.throws(() => evaluate({ report }), /location/);
+  });
+
+  await t.test('ordered report location', () => {
+    const report = makeReport({
+      [SELECTED_SOURCES[0]]: [
+        makeMutant('Killed', {
+          location: {
+            start: { line: 5, column: 6 },
+            end: { line: 5, column: 1 },
+          },
+        }),
+      ],
+    });
+    assert.throws(() => evaluate({ report }), /exclusive end after its start/);
   });
 });
 

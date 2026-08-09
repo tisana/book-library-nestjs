@@ -27,6 +27,7 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 01 final scoped reviewer: requested and actual fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task1_reviewer`; substitution none. Fix Round 1 verdict: APPROVED, all three findings addressed with no new Critical/Important breakage.
 - Task 02 requested and actual implementer: `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task2_implementer`; substitution none.
 - Task 02 requested reviewer: fresh `gpt-5.6-sol`, high reasoning, identity pending controller dispatch; substitution none.
+- Task 02 requested and actual reviewer: fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task2_reviewer`; substitution none. Initial verdict: Needs fixes; six findings/conflict records are preserved in `task-02.md`.
 
 ## Task status
 
@@ -43,6 +44,7 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 1: complete (commits a61d4e8..e7605c5, review clean)
 - Task 02: in progress (implementer `/root/plan5_task2_implementer`; reviewer pending controller dispatch).
 - Task 02 implementation complete in `6bd0cef92d04963aeb44d93ef09b082f44958db4` (`test: enforce selective mutation policy`); independent reviewer decision pending controller dispatch.
+- Task 02: fix round 1/5 (six findings/conflict records addressed under human-approved coordinate and baseline rulings; fresh re-review pending).
 
 ## Mutation score history
 
@@ -54,6 +56,8 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Required read-only fixture exports: Plan 2 `deferred`, `queryResult`, `createStaffDocument`, `createStaffModelHarness`, `createIdentifierModelHarness`; Plan 3 `createRefreshFamily`, `createReplayMarker`, `createIdentifierOperation`, `createMemberDocument`, `createBorrowingDocument`, `CriticalQueryDouble`, `criticalQueryResult`, `createCriticalModelHarnesses`.
 - Permission evaluation remains a monitored, non-mutated control; focused-only coverage is `69/74`, while inherited authoritative full-source coverage is `71/74`.
 - Plan 3's parked non-load-bearing Minor remains visible: aggregate assertions accept any string rather than exact replacement/original identifiers. Task 00 does not address it.
+- Task 02 human ruling: installed Stryker 9.6.1 one-based report line/column coordinates govern; policy overlap and fingerprints use emitted one-based coordinates directly, with source-text endpoint bounds.
+- Task 02 human ruling: `baseline: null` is valid before Task 6; supplied baseline objects validate for smoke and complete, but only complete compares raw score against the baseline.
 
 ## Runtime history
 
@@ -66,3 +70,4 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Fix Round 1 corrects the required ledger contract and adds immutable ancestry command evidence. Fresh reviewer follow-up is pending after this implementation fix.
 - Final scoped reviewer approval recorded: Task 0 APPROVED after Fix Round 2; all findings addressed with no new Critical/Important breakage.
 - Final scoped reviewer approval recorded: Task 1 APPROVED after Fix Round 1; exact Stryker pins, installed-schema compatibility, complete lock-graph provenance, and reviewer backfill are accepted with no new Critical/Important breakage.
+- Task 2 Fix Round 1 implements the human-approved one-based coordinate and pre-baseline-null rulings, adds source bounds and zero-denominator coverage, and backfills reviewer evidence; fresh reviewer re-review is pending.
