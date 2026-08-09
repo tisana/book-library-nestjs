@@ -220,7 +220,7 @@ Ownership inspection showed only the six Task 3-authorized implementation/eviden
 
 ## Commit hash
 
-The immutable implementation commit is created after this pre-commit evidence snapshot and then backfilled without amend in the required evidence-only commit.
+`4c1e61318792c2f09d359fd609f871e708a2a33a` (`test: define critical mutation rules`). This full immutable implementation SHA was backfilled without amend. The distinct evidence-only commit is intentionally not recorded in itself.
 
 ## Deferred findings
 

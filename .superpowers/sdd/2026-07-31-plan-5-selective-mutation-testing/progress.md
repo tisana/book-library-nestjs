@@ -52,7 +52,7 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 2: complete (commits 6bd0cef..8f53887, review clean)
 - Task 2: fix round 2/5 (1 addressed, 0 open — Task 02 evidence formatting; administrative closeout)
 - Task 2: complete (commits 6bd0cef..0cd77ef, review clean)
-- Task 03 implementation is GREEN and pending the exact two-commit protocol. The immutable implementation SHA is backfilled without amend after creation; independent review remains pending.
+- Task 03 implementation is complete in `4c1e61318792c2f09d359fd609f871e708a2a33a` (`test: define critical mutation rules`). Its immutable full SHA is backfilled without amend in the required evidence-only commit; independent review remains pending.
 
 ## Mutation score history
 
@@ -84,4 +84,4 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Final scoped reviewer approval recorded: Task 1 APPROVED after Fix Round 1; exact Stryker pins, installed-schema compatibility, complete lock-graph provenance, and reviewer backfill are accepted with no new Critical/Important breakage.
 - Task 2 Fix Round 1 implements the human-approved one-based coordinate and pre-baseline-null rulings, adds source bounds and zero-denominator coverage, and backfills reviewer evidence; fresh reviewer re-review is pending.
 - Final scoped reviewer approval recorded: Task 2 APPROVED after Fix Round 2; evidence formatting and semantic preservation are accepted with focused Prettier and scoped-diff verification and no new Critical/Important breakage.
-- Task 03 implementation evidence and full 29-rule review matrix are recorded in `task-03.md`; implementation commit creation/backfill and fresh independent review remain pending. Task 4 has not started.
+- Task 03 implementation evidence and full 29-rule review matrix are recorded in `task-03.md`; immutable implementation SHA backfill is complete and fresh independent review remains pending. Task 4 has not started.
