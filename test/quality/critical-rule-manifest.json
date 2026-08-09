@@ -2,6 +2,16 @@
   "schemaVersion": 1,
   "rules": [
     {
+      "id": "token-rotation-input-and-interrupted-cas-denial",
+      "invariant": "Refresh rotation rejects missing credentials and denies interrupted family CAS after bounded recovery without issuing a successor.",
+      "source": "src/auth/token-session.service.ts",
+      "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051",
+      "startLine": 131,
+      "endLine": 171,
+      "startAnchor": "  async rotate(refreshToken: string): Promise<RefreshTokenRotationResult> {",
+      "endAnchor": "    if (!rotatedFamily) {"
+    },
+    {
       "id": "token-active-unexpired-family-cas",
       "invariant": "Refresh rotation may compare-and-swap only the active unexpired family that owns the presented token hash.",
       "source": "src/auth/token-session.service.ts",
@@ -17,9 +27,9 @@
       "source": "src/auth/token-session.service.ts",
       "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051",
       "startLine": 171,
-      "endLine": 189,
+      "endLine": 201,
       "startAnchor": "    if (!rotatedFamily) {",
-      "endAnchor": "          'refresh-rotation-orphaned',"
+      "endAnchor": "    return this.rotationResult(rotatedFamily, nextRefreshToken);"
     },
     {
       "id": "token-expired-marker-reconciliation-revokes",
@@ -30,6 +40,26 @@
       "endLine": 264,
       "startAnchor": "          family?.status === RefreshTokenFamilyStatus.Active &&",
       "endAnchor": "          reason,"
+    },
+    {
+      "id": "token-direct-revocation-selectors",
+      "invariant": "Direct refresh-token, family, and subject revocation target only active matching families and apply the shared hash-clearing revocation update.",
+      "source": "src/auth/token-session.service.ts",
+      "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051",
+      "startLine": 275,
+      "endLine": 310,
+      "startAnchor": "  async revokeRefreshToken(",
+      "endAnchor": "  hashRefreshToken(refreshToken: string): string {"
+    },
+    {
+      "id": "token-prepare-marker-race-denial",
+      "invariant": "Rotation preparation accepts only an active unexpired owning family, binds a pending marker to it, and denies unresolved duplicate-marker races or marker creation failure.",
+      "source": "src/auth/token-session.service.ts",
+      "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051",
+      "startLine": 348,
+      "endLine": 397,
+      "startAnchor": "  private async prepareRotation(",
+      "endAnchor": "  private async handleExistingMarker("
     },
     {
       "id": "token-rejects-missing-revoked-expired-family",
@@ -57,9 +87,29 @@
       "source": "src/auth/token-session.service.ts",
       "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051",
       "startLine": 420,
-      "endLine": 445,
+      "endLine": 475,
       "startAnchor": "    const canTakeOver =",
-      "endAnchor": "    if (marker.leaseExpiresAt && marker.leaseExpiresAt > now) {"
+      "endAnchor": "  private async recoverAfterInterruptedCas("
+    },
+    {
+      "id": "token-interrupted-cas-finalization",
+      "invariant": "Interrupted or uncertain family CAS is reconciled against the active current-token owner, then its marker is finalized before the family is revoked when recovery cannot safely continue.",
+      "source": "src/auth/token-session.service.ts",
+      "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051",
+      "startLine": 475,
+      "endLine": 513,
+      "startAnchor": "  private async recoverAfterInterruptedCas(",
+      "endAnchor": "  private async commitMarker("
+    },
+    {
+      "id": "token-marker-commit-cas",
+      "invariant": "Only the matching pending marker operation may commit replay state, record commit time, and remove its takeover lease.",
+      "source": "src/auth/token-session.service.ts",
+      "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051",
+      "startLine": 513,
+      "endLine": 536,
+      "startAnchor": "  private async commitMarker(",
+      "endAnchor": "  private async revokeAsReplay(familyId: string): Promise<void> {"
     },
     {
       "id": "token-replay-revocation-clears-current-hash",
@@ -72,14 +122,24 @@
       "endAnchor": "      $unset: { currentTokenHash: 1 },"
     },
     {
+      "id": "repair-dry-run-authorizes-and-binds-claimants",
+      "invariant": "Dry-run authorization precedes conflict access, validates the exact claimant manifest, and binds an idempotent operation to the requesting staff subject and manifest hash.",
+      "source": "src/auth/auth-identifier-repair.service.ts",
+      "sourceSha256": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
+      "startLine": 93,
+      "endLine": 134,
+      "startAnchor": "  async dryRun(input: OfflineRepairRequest): Promise<OfflineRepairResult> {",
+      "endAnchor": "  async apply(input: OfflineRepairRequest): Promise<OfflineRepairResult> {"
+    },
+    {
       "id": "repair-apply-authorizes-and-binds-manifest",
       "invariant": "Applying an offline repair requires a stable resume id, current mutation authorization, the persisted manifest, and the reviewed claimant set.",
       "source": "src/auth/auth-identifier-repair.service.ts",
       "sourceSha256": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
       "startLine": 134,
-      "endLine": 147,
+      "endLine": 168,
       "startAnchor": "  async apply(input: OfflineRepairRequest): Promise<OfflineRepairResult> {",
-      "endAnchor": "    await this.recordResume(operation, actor.subjectId, input.resumeId);"
+      "endAnchor": "    const batches = this.partition(manifest);"
     },
     {
       "id": "repair-reauthorizes-every-apply-boundary",
@@ -102,14 +162,64 @@
       "endAnchor": "      await this.finishFailedParent(input.operationId, actor.subjectId);"
     },
     {
+      "id": "repair-batch-identity-and-checkpoint",
+      "invariant": "Prepared repair assignments are bound to the operation and exact subject ownership set with a key-versioned correlation and deterministic checkpoint.",
+      "source": "src/auth/auth-identifier-repair.service.ts",
+      "sourceSha256": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
+      "startLine": 265,
+      "endLine": 325,
+      "startAnchor": "  private async prepareBatch(",
+      "endAnchor": "        } else if (batch.checkpointHash !== checkpointHash) {"
+    },
+    {
+      "id": "repair-batch-transactional-ownership",
+      "invariant": "A prepared batch rejects mismatched checkpoints and atomically reserves, applies, and records every exact subject assignment before marking the batch prepared.",
+      "source": "src/auth/auth-identifier-repair.service.ts",
+      "sourceSha256": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
+      "startLine": 325,
+      "endLine": 369,
+      "startAnchor": "        } else if (batch.checkpointHash !== checkpointHash) {",
+      "endAnchor": "  private async activateBatch(operationId: string, batchNumber: number) {"
+    },
+    {
+      "id": "repair-batch-activation-gate-ownership",
+      "invariant": "Only a prepared operation-owned batch activates its target reservations, installs the operation activation gate, and records activated batch state in one transaction.",
+      "source": "src/auth/auth-identifier-repair.service.ts",
+      "sourceSha256": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
+      "startLine": 369,
+      "endLine": 417,
+      "startAnchor": "  private async activateBatch(operationId: string, batchNumber: number) {",
+      "endAnchor": "  private async completeParent("
+    },
+    {
+      "id": "repair-parent-conflict-ownership-finalization",
+      "invariant": "Parent completion assigns or releases the original conflict only to the reviewed retained or reassigned subject before terminal event recording.",
+      "source": "src/auth/auth-identifier-repair.service.ts",
+      "sourceSha256": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
+      "startLine": 417,
+      "endLine": 464,
+      "startAnchor": "  private async completeParent(",
+      "endAnchor": "              operationId: input.operationId,"
+    },
+    {
       "id": "repair-completed-event-precedes-terminal-state",
       "invariant": "A successful repair records its redacted durable terminal event before writing completed terminal state.",
       "source": "src/auth/auth-identifier-repair.service.ts",
       "sourceSha256": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
       "startLine": 464,
-      "endLine": 487,
+      "endLine": 503,
       "startAnchor": "              operationId: input.operationId,",
-      "endAnchor": "                httpStatus: 200,"
+      "endAnchor": "  private async compensateBatch("
+    },
+    {
+      "id": "repair-reverse-compensation-ownership",
+      "invariant": "Compensation walks assignments in reverse, restores only manifest-owned aggregates, releases only recorded target reservations, and marks the operation-owned batch compensated atomically.",
+      "source": "src/auth/auth-identifier-repair.service.ts",
+      "sourceSha256": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
+      "startLine": 503,
+      "endLine": 564,
+      "startAnchor": "  private async compensateBatch(",
+      "endAnchor": "  private async finishFailedParent(operationId: string, actorId: string) {"
     },
     {
       "id": "repair-failed-event-precedes-terminal-state",
@@ -117,9 +227,19 @@
       "source": "src/auth/auth-identifier-repair.service.ts",
       "sourceSha256": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
       "startLine": 564,
-      "endLine": 594,
+      "endLine": 610,
       "startAnchor": "  private async finishFailedParent(operationId: string, actorId: string) {",
-      "endAnchor": "                httpStatus: 409,"
+      "endAnchor": "  private async reserveReplacement("
+    },
+    {
+      "id": "repair-replacement-reservation-ownership",
+      "invariant": "Replacement reservation binds the normalized identifier to the exact operation, subject, action, and requesting staff owner and fails closed when unavailable.",
+      "source": "src/auth/auth-identifier-repair.service.ts",
+      "sourceSha256": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
+      "startLine": 610,
+      "endLine": 657,
+      "startAnchor": "  private async reserveReplacement(",
+      "endAnchor": "  private async applyAggregateIdentifier("
     },
     {
       "id": "repair-writes-only-owned-aggregate-field",
@@ -132,6 +252,26 @@
       "endAnchor": "      { $set: { [field]: item.newIdentifier }, $inc: { authVersion: 1 } },"
     },
     {
+      "id": "repair-restores-exact-aggregate-owner",
+      "invariant": "Aggregate restoration selects the staff or member model and owned identifier field solely from the reviewed subject type and id.",
+      "source": "src/auth/auth-identifier-repair.service.ts",
+      "sourceSha256": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
+      "startLine": 684,
+      "endLine": 706,
+      "startAnchor": "  private async setAggregateIdentifier(",
+      "endAnchor": "  private async loadConflict(conflictId: string): Promise<AuthIdentifierDocument> {"
+    },
+    {
+      "id": "repair-loads-only-active-conflict",
+      "invariant": "Repair work proceeds only with the exact requested identifier record while it remains in conflict state.",
+      "source": "src/auth/auth-identifier-repair.service.ts",
+      "sourceSha256": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
+      "startLine": 706,
+      "endLine": 714,
+      "startAnchor": "  private async loadConflict(conflictId: string): Promise<AuthIdentifierDocument> {",
+      "endAnchor": "  private validateManifestSubjects("
+    },
+    {
       "id": "repair-manifest-covers-exact-conflict-claimants",
       "invariant": "A repair manifest cannot omit, duplicate, or introduce a member or staff claimant outside the conflict ownership set.",
       "source": "src/auth/auth-identifier-repair.service.ts",
@@ -140,6 +280,76 @@
       "endLine": 733,
       "startAnchor": "  private validateManifestSubjects(",
       "endAnchor": "        'Repair manifest must account for every conflict claimant',"
+    },
+    {
+      "id": "repair-persisted-manifest-authorization",
+      "invariant": "Mutation resumes only when the persisted offline-repair operation retains its exact reviewed manifest hash and configured key version.",
+      "source": "src/auth/auth-identifier-repair.service.ts",
+      "sourceSha256": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
+      "startLine": 738,
+      "endLine": 762,
+      "startAnchor": "  private verifyPersistedManifest(",
+      "endAnchor": "  private requireKey(version: number): string | Buffer {"
+    },
+    {
+      "id": "repair-resume-actor-binding",
+      "invariant": "Every resume record binds the stable resume id to both the originally requesting staff subject and the currently authorized staff subject.",
+      "source": "src/auth/auth-identifier-repair.service.ts",
+      "sourceSha256": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
+      "startLine": 788,
+      "endLine": 807,
+      "startAnchor": "  private async recordResume(",
+      "endAnchor": "  private partition("
+    },
+    {
+      "id": "reconciliation-renews-only-owned-lease",
+      "invariant": "Lease renewal updates only the operation currently owned by this reconciliation instance and derives expiry from database time.",
+      "source": "src/auth/auth-identifier-reconciliation.service.ts",
+      "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803",
+      "startLine": 179,
+      "endLine": 205,
+      "startAnchor": "  async renewLease(operationId: string): Promise<boolean> {",
+      "endAnchor": "  private registerSchedule(): void {"
+    },
+    {
+      "id": "reconciliation-bounded-claim-processing",
+      "invariant": "A reconciliation pass bounds candidates and claims, skips unavailable repair keys, contains per-operation failures, and releases every acquired lease.",
+      "source": "src/auth/auth-identifier-reconciliation.service.ts",
+      "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803",
+      "startLine": 222,
+      "endLine": 267,
+      "startAnchor": "  private async runBoundedPass(): Promise<AuthIdentifierReconciliationResult> {",
+      "endAnchor": "  private candidateFilter(clientCutoff: Date): Record<string, unknown> {"
+    },
+    {
+      "id": "reconciliation-candidate-status-and-lease-filter",
+      "invariant": "Candidates are limited to retryable or cleanup-pending terminal operations whose lease is absent or expired beyond clock skew.",
+      "source": "src/auth/auth-identifier-reconciliation.service.ts",
+      "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803",
+      "startLine": 267,
+      "endLine": 289,
+      "startAnchor": "  private candidateFilter(clientCutoff: Date): Record<string, unknown> {",
+      "endAnchor": "  private repairKeyAvailable("
+    },
+    {
+      "id": "reconciliation-claims-exact-eligible-operation",
+      "invariant": "Claim acquisition atomically rechecks operation status, cleanup state, and lease expiry before installing this instance as lease owner.",
+      "source": "src/auth/auth-identifier-reconciliation.service.ts",
+      "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803",
+      "startLine": 304,
+      "endLine": 360,
+      "startAnchor": "  private async claim(",
+      "endAnchor": "  private async process("
+    },
+    {
+      "id": "reconciliation-terminal-cleanup-and-state-dispatch",
+      "invariant": "Terminal operations run only pending cleanup, while nonterminal operations attach ownership evidence before dispatching their reviewed state transition.",
+      "source": "src/auth/auth-identifier-reconciliation.service.ts",
+      "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803",
+      "startLine": 360,
+      "endLine": 378,
+      "startAnchor": "  private async process(",
+      "endAnchor": "    switch (operation.status) {"
     },
     {
       "id": "reconciliation-invalid-state-fails-terminally",
@@ -160,6 +370,36 @@
       "endLine": 495,
       "startAnchor": "  private async failInvalidOperation(",
       "endAnchor": "  private async attachMissingReservationReferences("
+    },
+    {
+      "id": "reconciliation-attaches-operation-owned-reservations",
+      "invariant": "Reservation discovery is bounded to the operation and attaches only exact subject/action matches under the current lease without inventing correlation data.",
+      "source": "src/auth/auth-identifier-reconciliation.service.ts",
+      "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803",
+      "startLine": 495,
+      "endLine": 551,
+      "startAnchor": "  private async attachMissingReservationReferences(",
+      "endAnchor": "  private async recoverApplying("
+    },
+    {
+      "id": "reconciliation-recovers-applied-ownership",
+      "invariant": "Application recovery accepts only reservations in the expected status owned by the same operation, updates the exact assignment under the lease, and chooses retry or finalization accordingly.",
+      "source": "src/auth/auth-identifier-reconciliation.service.ts",
+      "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803",
+      "startLine": 551,
+      "endLine": 596,
+      "startAnchor": "  private async recoverApplying(",
+      "endAnchor": "  private async recoverCompensating("
+    },
+    {
+      "id": "reconciliation-recovers-compensated-ownership",
+      "invariant": "Compensation recovery reverses exact operation-owned reservations, records the exact assignment under the lease, and transitions only after every reviewed assignment is classified.",
+      "source": "src/auth/auth-identifier-reconciliation.service.ts",
+      "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803",
+      "startLine": 596,
+      "endLine": 654,
+      "startAnchor": "  private async recoverCompensating(",
+      "endAnchor": "  private async finalize("
     },
     {
       "id": "reconciliation-terminal-event-and-ttl-ordering",
@@ -192,14 +432,44 @@
       "endAnchor": "  private async findReservation("
     },
     {
+      "id": "reconciliation-finds-exact-assignment-reservation",
+      "invariant": "Recovery finds a reservation only by its recorded id or the exact operation, subject type, subject id, and pending action tuple.",
+      "source": "src/auth/auth-identifier-reconciliation.service.ts",
+      "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803",
+      "startLine": 805,
+      "endLine": 820,
+      "startAnchor": "  private async findReservation(",
+      "endAnchor": "  private async transition("
+    },
+    {
+      "id": "reconciliation-owned-transition-and-release",
+      "invariant": "State transitions and lease release mutate only the exact operation while this reconciliation instance owns its lease.",
+      "source": "src/auth/auth-identifier-reconciliation.service.ts",
+      "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803",
+      "startLine": 820,
+      "endLine": 846,
+      "startAnchor": "  private async transition(",
+      "endAnchor": "  private correlationFor("
+    },
+    {
+      "id": "member-update-reservation-and-lifecycle-state",
+      "invariant": "Member update normalizes and reserves a changed identifier before persistence and increments auth version for each identifier or status lifecycle change.",
+      "source": "src/members/members.service.ts",
+      "sourceSha256": "03e5a2d54626ef11cc9f9d73dfcda4a39d30d7bab3d2d249985dfeec2baf0ad9",
+      "startLine": 164,
+      "endLine": 221,
+      "startAnchor": "  async update(",
+      "endAnchor": "      if (emailChanged && previousEmail) {"
+    },
+    {
       "id": "member-update-compensates-and-revokes-lifecycle",
       "invariant": "A persisted member identifier or status change releases the prior identifier, revokes active sessions, and compensates a newly reserved identifier on failure.",
       "source": "src/members/members.service.ts",
       "sourceSha256": "03e5a2d54626ef11cc9f9d73dfcda4a39d30d7bab3d2d249985dfeec2baf0ad9",
       "startLine": 221,
-      "endLine": 235,
+      "endLine": 241,
       "startAnchor": "      if (emailChanged && previousEmail) {",
-      "endAnchor": "        await this.releaseIdentifier(nextEmail, getMemberId(member), actor?.id);"
+      "endAnchor": "  async getPolicyStatus(id: string): Promise<MemberPolicyStatusResponseDto> {"
     },
     {
       "id": "member-active-auth-status-required",
@@ -222,14 +492,34 @@
       "endAnchor": "      throw new ConflictException('Member login identifier already exists');"
     },
     {
+      "id": "member-credential-reservation-and-revocation",
+      "invariant": "Credential changes reserve the normalized identifier before mutation, version the account, release only the prior owned identifier after save, revoke sessions, and compensate the new reservation on failure.",
+      "source": "src/members/members.service.ts",
+      "sourceSha256": "03e5a2d54626ef11cc9f9d73dfcda4a39d30d7bab3d2d249985dfeec2baf0ad9",
+      "startLine": 328,
+      "endLine": 370,
+      "startAnchor": "    await this.reserveIdentifier(",
+      "endAnchor": "  private async findDocumentById(id: string): Promise<MemberDocument> {"
+    },
+    {
       "id": "member-reservation-enforces-exact-owner",
       "invariant": "Only the same active member owner is idempotent; foreign ownership is denied and released reservations are explicitly rebound.",
       "source": "src/members/members.service.ts",
       "sourceSha256": "03e5a2d54626ef11cc9f9d73dfcda4a39d30d7bab3d2d249985dfeec2baf0ad9",
       "startLine": 410,
-      "endLine": 444,
+      "endLine": 469,
       "startAnchor": "  private async reserveIdentifier(",
-      "endAnchor": "      return;"
+      "endAnchor": "  private async releaseIdentifier("
+    },
+    {
+      "id": "member-release-requires-exact-active-owner",
+      "invariant": "Identifier release targets only the normalized active reservation owned by the exact member subject before recording released state.",
+      "source": "src/members/members.service.ts",
+      "sourceSha256": "03e5a2d54626ef11cc9f9d73dfcda4a39d30d7bab3d2d249985dfeec2baf0ad9",
+      "startLine": 469,
+      "endLine": 492,
+      "startAnchor": "  private async releaseIdentifier(",
+      "endAnchor": "  private async revokeSessions(subjectId: string, reason: string): Promise<void> {"
     },
     {
       "id": "member-session-revocation-clears-token-hashes",
@@ -247,9 +537,9 @@
       "source": "src/borrowings/borrowings.service.ts",
       "sourceSha256": "91a41fb81abd1c1ebc57586fcb4f07299fc455735973f23289a62348c318b647",
       "startLine": 54,
-      "endLine": 94,
+      "endLine": 104,
       "startAnchor": "  async create(",
-      "endAnchor": "      }).save({ session });"
+      "endAnchor": "      return this.toResponse(borrowing, borrowedAt, book, member);"
     },
     {
       "id": "borrowing-return-requires-staff-and-returnable-state",
@@ -257,9 +547,9 @@
       "source": "src/borrowings/borrowings.service.ts",
       "sourceSha256": "91a41fb81abd1c1ebc57586fcb4f07299fc455735973f23289a62348c318b647",
       "startLine": 108,
-      "endLine": 129,
+      "endLine": 150,
       "startAnchor": "  async returnBorrowing(",
-      "endAnchor": "        throw new ConflictException('Borrowing record cannot be returned');"
+      "endAnchor": "      return this.toResponse(borrowing, returnedAt, book, member);"
     },
     {
       "id": "borrowing-member-detail-is-owner-scoped",
@@ -280,6 +570,26 @@
       "endLine": 219,
       "startAnchor": "  async findByMember(",
       "endAnchor": "    return this.findAll({ ...query, memberId });"
+    },
+    {
+      "id": "borrowing-list-state-filters",
+      "invariant": "Current and overdue borrowing views require an unreturned active-or-overdue state, with overdue queries additionally requiring a past due date.",
+      "source": "src/borrowings/borrowings.service.ts",
+      "sourceSha256": "91a41fb81abd1c1ebc57586fcb4f07299fc455735973f23289a62348c318b647",
+      "startLine": 228,
+      "endLine": 262,
+      "startAnchor": "  private buildListFilter(",
+      "endAnchor": "  private async hasOverdueLoans("
+    },
+    {
+      "id": "borrowing-overdue-policy-selector",
+      "invariant": "Borrowing eligibility treats only an unreturned active-or-overdue loan with a past due date as overdue for the exact member.",
+      "source": "src/borrowings/borrowings.service.ts",
+      "sourceSha256": "91a41fb81abd1c1ebc57586fcb4f07299fc455735973f23289a62348c318b647",
+      "startLine": 262,
+      "endLine": 279,
+      "startAnchor": "  private async hasOverdueLoans(",
+      "endAnchor": "  private async findBorrowing("
     },
     {
       "id": "borrowing-transaction-and-staff-actor-boundary",

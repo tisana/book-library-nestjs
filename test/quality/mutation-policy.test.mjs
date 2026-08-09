@@ -865,3 +865,381 @@ test('requires complete ordered rule identity and invalidates a source edit', ()
     /stale sourceSha256/,
   );
 });
+
+// Production break caught: a Plan 3-reviewed security or state invariant is left
+// to the aggregate mutation score instead of the zero-survivor critical gate.
+test('covers every Plan 3-reviewed critical invariant occurrence with a manifest rule', () => {
+  const reviewedOccurrences = [
+    // Refresh denial, replay, revocation, and revoked/expired-family handling.
+    [
+      'src/auth/token-session.service.ts',
+      132,
+      'revoked/expired token rejection',
+    ],
+    ['src/auth/token-session.service.ts', 163, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 191, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 197, 'replay/revocation'],
+    [
+      'src/auth/token-session.service.ts',
+      249,
+      'revoked/expired token rejection',
+    ],
+    ['src/auth/token-session.service.ts', 275, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 292, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 299, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 356, 'replay/revocation'],
+    [
+      'src/auth/token-session.service.ts',
+      368,
+      'revoked/expired token rejection',
+    ],
+    ['src/auth/token-session.service.ts', 383, 'replay/revocation'],
+    [
+      'src/auth/token-session.service.ts',
+      391,
+      'revoked/expired token rejection',
+    ],
+    ['src/auth/token-session.service.ts', 401, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 410, 'replay/revocation'],
+    [
+      'src/auth/token-session.service.ts',
+      425,
+      'revoked/expired token rejection',
+    ],
+    [
+      'src/auth/token-session.service.ts',
+      435,
+      'revoked/expired token rejection',
+    ],
+    [
+      'src/auth/token-session.service.ts',
+      445,
+      'revoked/expired token rejection',
+    ],
+    ['src/auth/token-session.service.ts', 468, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 475, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 497, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 503, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 513, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 536, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 546, 'replay/revocation'],
+
+    // Offline-repair authorization, claimant ownership, and terminal ordering.
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      93,
+      'authorization/role denial',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      134,
+      'authorization/role denial',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      149,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      168,
+      'authorization/role denial',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      202,
+      'authorization/role denial',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      265,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      305,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      329,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      353,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      369,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      377,
+      'authorization/role denial',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      386,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      401,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      417,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      425,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      456,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      461,
+      'terminal event/cleanup/TTL ordering',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      476,
+      'terminal event/cleanup/TTL ordering',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      503,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      519,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      530,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      564,
+      'terminal event/cleanup/TTL ordering',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      610,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      616,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      657,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      684,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      706,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      714,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      738,
+      'authorization/role denial',
+    ],
+    [
+      'src/auth/auth-identifier-repair.service.ts',
+      788,
+      'authorization/role denial',
+    ],
+
+    // Reconciliation lease ownership, recovery ownership, and terminal cleanup.
+    [
+      'src/auth/auth-identifier-reconciliation.service.ts',
+      179,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-reconciliation.service.ts',
+      222,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-reconciliation.service.ts',
+      267,
+      'terminal event/cleanup/TTL ordering',
+    ],
+    [
+      'src/auth/auth-identifier-reconciliation.service.ts',
+      304,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-reconciliation.service.ts',
+      360,
+      'terminal event/cleanup/TTL ordering',
+    ],
+    [
+      'src/auth/auth-identifier-reconciliation.service.ts',
+      444,
+      'terminal event/cleanup/TTL ordering',
+    ],
+    [
+      'src/auth/auth-identifier-reconciliation.service.ts',
+      495,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-reconciliation.service.ts',
+      551,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-reconciliation.service.ts',
+      596,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-reconciliation.service.ts',
+      654,
+      'terminal event/cleanup/TTL ordering',
+    ],
+    [
+      'src/auth/auth-identifier-reconciliation.service.ts',
+      721,
+      'terminal event/cleanup/TTL ordering',
+    ],
+    [
+      'src/auth/auth-identifier-reconciliation.service.ts',
+      805,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-reconciliation.service.ts',
+      820,
+      'member/staff ownership',
+    ],
+    [
+      'src/auth/auth-identifier-reconciliation.service.ts',
+      834,
+      'member/staff ownership',
+    ],
+
+    // Member identifier ownership, lifecycle revocation, and denial boundaries.
+    ['src/members/members.service.ts', 164, 'member/staff ownership'],
+    ['src/members/members.service.ts', 176, 'member/staff ownership'],
+    ['src/members/members.service.ts', 204, 'replay/revocation'],
+    ['src/members/members.service.ts', 219, 'replay/revocation'],
+    ['src/members/members.service.ts', 284, 'authorization/role denial'],
+    ['src/members/members.service.ts', 304, 'member/staff ownership'],
+    ['src/members/members.service.ts', 328, 'member/staff ownership'],
+    ['src/members/members.service.ts', 345, 'replay/revocation'],
+    ['src/members/members.service.ts', 410, 'member/staff ownership'],
+    ['src/members/members.service.ts', 446, 'member/staff ownership'],
+    ['src/members/members.service.ts', 469, 'member/staff ownership'],
+    ['src/members/members.service.ts', 492, 'replay/revocation'],
+
+    // Borrowing authorization, ownership, policy, and state transitions/effects.
+    ['src/borrowings/borrowings.service.ts', 54, 'authorization/role denial'],
+    [
+      'src/borrowings/borrowings.service.ts',
+      78,
+      'illegal borrowing transitions',
+    ],
+    [
+      'src/borrowings/borrowings.service.ts',
+      96,
+      'illegal borrowing transitions',
+    ],
+    ['src/borrowings/borrowings.service.ts', 108, 'authorization/role denial'],
+    [
+      'src/borrowings/borrowings.service.ts',
+      119,
+      'illegal borrowing transitions',
+    ],
+    [
+      'src/borrowings/borrowings.service.ts',
+      125,
+      'illegal borrowing transitions',
+    ],
+    [
+      'src/borrowings/borrowings.service.ts',
+      138,
+      'illegal borrowing transitions',
+    ],
+    ['src/borrowings/borrowings.service.ts', 185, 'member/staff ownership'],
+    ['src/borrowings/borrowings.service.ts', 211, 'member/staff ownership'],
+    [
+      'src/borrowings/borrowings.service.ts',
+      228,
+      'illegal borrowing transitions',
+    ],
+    [
+      'src/borrowings/borrowings.service.ts',
+      262,
+      'illegal borrowing transitions',
+    ],
+    ['src/borrowings/borrowings.service.ts', 359, 'authorization/role denial'],
+    ['src/borrowings/borrowings.service.ts', 375, 'authorization/role denial'],
+  ];
+  const manifest = JSON.parse(
+    readFileSync(
+      join(REPOSITORY_ROOT, 'test', 'quality', 'critical-rule-manifest.json'),
+      'utf8',
+    ),
+  );
+  assert.deepEqual(
+    [...new Set(reviewedOccurrences.map(([source]) => source))],
+    SELECTED_SOURCES,
+  );
+  assert.deepEqual(
+    [...new Set(reviewedOccurrences.map(([, , category]) => category))].sort(),
+    [
+      'authorization/role denial',
+      'illegal borrowing transitions',
+      'member/staff ownership',
+      'replay/revocation',
+      'revoked/expired token rejection',
+      'terminal event/cleanup/TTL ordering',
+    ],
+  );
+  assert.equal(
+    new Set(reviewedOccurrences.map(([source, line]) => `${source}:${line}`))
+      .size,
+    reviewedOccurrences.length,
+  );
+  const uncovered = reviewedOccurrences.filter(
+    ([source, line]) =>
+      !manifest.rules.some(
+        (rule) =>
+          rule.source === source &&
+          rule.startLine <= line &&
+          rule.endLine >= line,
+      ),
+  );
+
+  assert.deepEqual(uncovered, []);
+});
