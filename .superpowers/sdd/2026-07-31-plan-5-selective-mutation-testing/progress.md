@@ -44,6 +44,7 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 04 final independent reviewer requested and actual: fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task4_final_reviewer`; substitution none. Requested role was recorded before dispatch; approval is not presumed.
 - Task 04 final independent review verdict: CHANGES_REQUIRED, Critical `0`, Important `1`, Minor `0`. I1: named/sequential execution can accept stale pre-existing JSON/HTML as current-run evidence when a new nonzero Stryker launch writes nothing.
 - Task 04 Fix Round 1 implementer requested and actual: `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task4_amendment_implementer`; substitution none. Recorded before dispatch; fix scope is only I1 and its evidence.
+- Task 04 Fix Round 1 scoped reviewer requested and actual: fresh Task 4 reviewer `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task4_final_reviewer`; substitution none. Recorded before re-dispatch; approval is not presumed.
 
 ## Task status
 
@@ -188,3 +189,11 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Final focused GREEN: `4/4`, `289.7141 ms`. Windows combined suite: `82` pass, `0` fail, one intentional POSIX skip, `26997.3148 ms`. Ubuntu 24.04/nvm Node `v22.22.2`: `83/83`, no skips, `14841.724933 ms`. Manifest `89`, ESLint, Prettier, diff, protected bytes, and scope are clean.
 - Accepted cold evidence was not rerun because its unique clean snapshots had no pre-existing active outputs, and the fix changes only output lifecycle handling—not config, provenance, scope, identity merge, concurrency, reporters, thresholds, mutators, or budgets.
 - Fix implementation commit `125e5b519eac9513a7f82c72325035979a33c598` (`fix: reject stale mutation artifacts`). Important I1 addressed; implementer-known open findings `0`. Status: READY FOR SCOPED FRESH RE-REVIEW. Task 5, push, workflow dispatch, and Actions remain unstarted.
+
+## Task 04 final review closeout
+
+- Fix Round 1 scoped reviewer requested and actual: fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task4_final_reviewer`; substitution none.
+- Final verdict: APPROVED. I1 ADDRESSED. Critical `0`, Important `0`, Minor `0`; spec and code-quality verdicts both APPROVED.
+- Reviewer verification: focused `4/4`; Windows full `82` passed plus one intentional POSIX skip; Ubuntu/Node 22 full `83/83`; manifest, ESLint, Prettier, whitespace, protected-byte, scope, and ignore checks passed.
+- Reviewer accepted the prior cold mutation evidence as valid because its unique clean output paths make the new pre-launch preservation step a no-op. Configuration, sources, provenance, `2/2/2/4/2` smoke concurrency, complete concurrency `4`, reporters, thresholds, mutators, and budgets remain unchanged.
+- Task 4 is complete. Task 8 reference wall-clock proof remains deferred and is not waived. Task 5 and CI are not preapproved; no Task 5 work, push, workflow dispatch, or Actions run occurred in this closeout.

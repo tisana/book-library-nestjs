@@ -357,3 +357,13 @@ Focused GREEN after final formatting: `4/4` passed, `289.7141 ms`. Final Windows
 The previously accepted cold members and sequential mutation evidence remains valid and was not rerun. Both accepted runs began from unique clean snapshots with no pre-existing active mutation outputs; the fix changes only pre-launch preservation and active-output invalidation. It does not change Stryker configuration, selected sources/ranges, canonical identities, provenance fields, concurrency `2/2/2/4/2`, reporters, thresholds, mutators, `300000`/`900000 ms` budgets, or the emitted current-run artifacts when the active paths begin absent.
 
 Fix Round 1 implementation is immutable commit `125e5b519eac9513a7f82c72325035979a33c598` (`fix: reject stale mutation artifacts`). It changes only the mutation runner and its deterministic regression tests. Important I1 is addressed; implementer-known findings are Critical `0`, Important `0`, Minor `0`. Status is **READY FOR SCOPED FRESH RE-REVIEW**. Task 5, push, workflow dispatch, and Actions remain unstarted.
+
+## Fix Round 1 final independent review
+
+Requested and actual scoped reviewer was fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task4_final_reviewer`; substitution none. The final verdict is **APPROVED** with I1 **ADDRESSED** and Critical `0`, Important `0`, Minor `0`. Both the spec verdict and code-quality verdict are APPROVED.
+
+The reviewer verified that prior shard directories move into unique ignored history before launch; prior aggregate JSON/HTML/duration/summary artifacts are preserved before sequential or standalone merge; named and sequential runs cannot accept stale JSON/HTML; and a failed standalone merge leaves no stale canonical output active. The regressions exercise exported entry points with children that write nothing and are non-tautological.
+
+Exact reviewer verification: focused stale-artifact regressions `4/4`; Windows full suite `82` passed with one intentional POSIX skip; Ubuntu/Node 22 full suite `83/83`. Manifest, ESLint, Prettier, whitespace, protected-byte, scope, and ignore checks passed. Only runner lifecycle, regression tests, and evidence ledgers changed. Configuration, source scope, provenance, smoke concurrency `2/2/2/4/2`, complete concurrency `4`, reporters, thresholds, mutators, and budgets remain unchanged.
+
+The reviewer independently accepted the prior cold mutation evidence as valid because it was produced from unique clean output paths; the new preservation step is a no-op for those runs and does not affect their execution or results. Task 4 is complete. Reference wall-clock proof remains deferred to Task 8 and is not waived. This approval does not preapprove Task 5 or CI; Task 5, push, workflow dispatch, and Actions remain unstarted.
