@@ -85,4 +85,3 @@
 - [ ] Record the local preflight and the explicit missing reference URLs/artifacts as pending, not green.
 - [ ] Stop before push/manual dispatch and request user authorization later.
 - [ ] Task 9 remains undispatched until Task 8 is approved with fresh smoke/complete reference evidence.
-
