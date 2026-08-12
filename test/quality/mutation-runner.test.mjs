@@ -4,8 +4,10 @@ import {
   existsSync,
   mkdtempSync,
   mkdirSync,
+  readdirSync,
   readFileSync,
   rmSync,
+  statSync,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -326,6 +328,28 @@ function readArtifact(root, profile, name) {
   return JSON.parse(
     readFileSync(join(root, 'reports', 'mutation', profile, name), 'utf8'),
   );
+}
+
+function findPreservedFile(root, name, expectedContents) {
+  const pending = [root];
+  while (pending.length > 0) {
+    const directory = pending.shift();
+    if (!existsSync(directory)) {
+      continue;
+    }
+    for (const entry of readdirSync(directory)) {
+      const path = join(directory, entry);
+      if (statSync(path).isDirectory()) {
+        pending.push(path);
+      } else if (
+        entry === name &&
+        readFileSync(path, 'utf8').includes(expectedContents)
+      ) {
+        return path;
+      }
+    }
+  }
+  return null;
 }
 
 function pidIsAlive(pid) {
@@ -1148,6 +1172,45 @@ test('named smoke shard runs once and writes isolated provenance artifacts', asy
   assert.deepEqual(Object.keys(summary.sourceSha256), SELECTED_SOURCES);
 });
 
+// Production break caught: a failed named launch relabels a stale JSON/HTML
+// pair as evidence from the current commit instead of failing closed.
+test('named smoke shard preserves but rejects stale mutation artifacts', async () => {
+  const root = temporaryRepository();
+  const shard = WHOLE_SOURCE_SHARDS[0];
+  const directory = shardDirectory(root, shard.id);
+  mkdirSync(directory, { recursive: true });
+  writeFileSync(
+    join(directory, 'mutation.json'),
+    '{"staleNamedArtifact":true}\n',
+    'utf8',
+  );
+  writeFileSync(
+    join(directory, 'mutation.html'),
+    '<p>stale named artifact</p>\n',
+    'utf8',
+  );
+  const dependencies = shardedDependencies(root);
+  dependencies.spawnProcess = () => fakeChild({ exitCode: 1 });
+
+  const result = await runnerModule.runSmokeShard(shard.id, dependencies);
+
+  assert.equal(result.strykerExitCode, 1);
+  assert.equal(result.artifactExitCode, 1);
+  assert.equal(result.exitCode, 1);
+  assert.equal(result.reportSchemaVersion, null);
+  assert.equal(existsSync(join(directory, 'mutation.json')), false);
+  assert.equal(existsSync(join(directory, 'mutation.html')), false);
+  const history = join(root, 'reports', 'mutation', 'smoke', 'history');
+  assert.notEqual(
+    findPreservedFile(history, 'mutation.json', 'staleNamedArtifact'),
+    null,
+  );
+  assert.notEqual(
+    findPreservedFile(history, 'mutation.html', 'stale named artifact'),
+    null,
+  );
+});
+
 // Production break caught: local evidence launches source shards concurrently
 // or shares one five-minute clock instead of giving each shard its own deadline.
 test('local smoke evidence runs five shards sequentially with independent budgets', async () => {
@@ -1189,6 +1252,109 @@ test('local smoke evidence runs five shards sequentially with independent budget
   assert.equal(result.canonicalMutantCount, 1366);
   assert.equal(result.policyExitCode, 0);
   assert.equal(result.referenceBudgetEvidence, false);
+});
+
+// Production break caught: sequential or standalone merge leaves stale shard
+// and aggregate JSON/HTML active when the current run produces no valid report.
+test('sequential and standalone merge preserve stale evidence but invalidate active outputs', async (t) => {
+  await t.test('sequential launch writes no reports', async () => {
+    const root = temporaryRepository();
+    writeAllShardArtifacts(root);
+    const aggregate = join(root, 'reports', 'mutation', 'smoke');
+    writeFileSync(
+      join(aggregate, 'mutation.json'),
+      '{"staleSequentialAggregate":true}\n',
+      'utf8',
+    );
+    writeFileSync(
+      join(aggregate, 'mutation.html'),
+      '<p>stale sequential aggregate</p>\n',
+      'utf8',
+    );
+    const dependencies = shardedDependencies(root);
+    dependencies.spawnProcess = () => fakeChild({ exitCode: 1 });
+
+    const result = await runnerModule.runSmokeSequential(dependencies);
+
+    assert.equal(result.exitCode, 1);
+    assert.equal(result.canonicalMutantCount, null);
+    assert.match(result.policyError, /Missing token-session mutation\.json/);
+    assert.equal(
+      result.shards.every((shard) => shard.artifactExitCode === 1),
+      true,
+    );
+    for (const shard of WHOLE_SOURCE_SHARDS) {
+      assert.equal(
+        existsSync(join(shardDirectory(root, shard.id), 'mutation.json')),
+        false,
+      );
+      assert.equal(
+        existsSync(join(shardDirectory(root, shard.id), 'mutation.html')),
+        false,
+      );
+    }
+    assert.equal(existsSync(join(aggregate, 'mutation.json')), false);
+    assert.equal(existsSync(join(aggregate, 'mutation.html')), false);
+    const history = join(aggregate, 'history');
+    assert.notEqual(
+      findPreservedFile(history, 'mutation.json', 'staleSequentialAggregate'),
+      null,
+    );
+    assert.notEqual(
+      findPreservedFile(history, 'mutation.html', 'stale sequential aggregate'),
+      null,
+    );
+  });
+
+  await t.test(
+    'standalone merge fails before writing a fresh aggregate',
+    async () => {
+      const root = temporaryRepository();
+      for (const shard of WHOLE_SOURCE_SHARDS) {
+        writeWholeSourceEvidence(root, shard);
+      }
+      const aggregate = join(root, 'reports', 'mutation', 'smoke');
+      writeFileSync(
+        join(aggregate, 'mutation.json'),
+        '{"staleStandaloneAggregate":true}\n',
+        'utf8',
+      );
+      writeFileSync(
+        join(aggregate, 'mutation.html'),
+        '<p>stale standalone aggregate</p>\n',
+        'utf8',
+      );
+      rmSync(
+        join(shardDirectory(root, WHOLE_SOURCE_SHARDS[0].id), 'mutation.json'),
+      );
+
+      await assert.rejects(
+        runnerModule.runSmokeMerge({
+          repositoryRoot: root,
+          commitSha: '0123456789abcdef0123456789abcdef01234567',
+          nodeVersion: 'v22.18.0',
+          os: 'Linux 6.11 x64',
+        }),
+        /Missing token-session mutation\.json/,
+      );
+
+      assert.equal(existsSync(join(aggregate, 'mutation.json')), false);
+      assert.equal(existsSync(join(aggregate, 'mutation.html')), false);
+      const history = join(aggregate, 'history');
+      assert.notEqual(
+        findPreservedFile(history, 'mutation.json', 'staleStandaloneAggregate'),
+        null,
+      );
+      assert.notEqual(
+        findPreservedFile(
+          history,
+          'mutation.html',
+          'stale standalone aggregate',
+        ),
+        null,
+      );
+    },
+  );
 });
 
 // Production break caught: aggregation accepts reports from different commits,

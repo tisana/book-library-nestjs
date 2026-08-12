@@ -6,6 +6,7 @@ import {
   mkdirSync,
   openSync,
   readFileSync,
+  renameSync,
   writeFileSync,
 } from 'node:fs';
 import { arch, platform as osPlatform, release } from 'node:os';
@@ -61,6 +62,13 @@ const FORCE_CLEANUP_VERIFY_MS = 10000;
 const PROCESS_TREE_POLL_MS = 25;
 const COMMIT_PATTERN = /^[0-9a-f]{40}$/;
 const ISO_UTC_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+const AGGREGATE_ARTIFACTS = [
+  'mutation.json',
+  'mutation.html',
+  'duration.json',
+  'summary.json',
+  'summary.md',
+];
 
 function requireProfile(profile) {
   if (profile !== 'smoke' && profile !== 'complete') {
@@ -377,12 +385,64 @@ function reportDirectory(root, profile, shardId) {
   return repositoryPath(root, tracked);
 }
 
+function nextHistoryDirectory(historyRoot) {
+  mkdirSync(historyRoot, { recursive: true });
+  let index = 1;
+  while (true) {
+    const candidate = join(
+      historyRoot,
+      `run-${String(index).padStart(4, '0')}`,
+    );
+    if (!existsSync(candidate)) {
+      return candidate;
+    }
+    index += 1;
+  }
+}
+
+function preserveShardDirectory(root, shardId) {
+  const directory = reportDirectory(root, 'smoke', shardId);
+  if (!existsSync(directory)) {
+    return null;
+  }
+  const historyRoot = join(
+    reportDirectory(root, 'smoke'),
+    'history',
+    'shards',
+    shardId,
+  );
+  const historyDirectory = nextHistoryDirectory(historyRoot);
+  renameSync(directory, historyDirectory);
+  return historyDirectory;
+}
+
+function preserveAggregateArtifacts(root) {
+  const directory = reportDirectory(root, 'smoke');
+  const existing = AGGREGATE_ARTIFACTS.filter((name) =>
+    existsSync(join(directory, name)),
+  );
+  if (existing.length === 0) {
+    return null;
+  }
+  const historyDirectory = nextHistoryDirectory(
+    join(directory, 'history', 'aggregate'),
+  );
+  mkdirSync(historyDirectory, { recursive: true });
+  for (const name of existing) {
+    renameSync(join(directory, name), join(historyDirectory, name));
+  }
+  return historyDirectory;
+}
+
 function launchStryker(profile, shard, dependencies, timing) {
   const directory = reportDirectory(
     dependencies.repositoryRoot,
     profile,
     shard?.id,
   );
+  if (shard) {
+    preserveShardDirectory(dependencies.repositoryRoot, shard.id);
+  }
   mkdirSync(directory, { recursive: true });
   const command = dependencies.platform === 'win32' ? 'npx.cmd' : 'npx';
   const environment = {
@@ -891,6 +951,7 @@ async function runSmokeSequentialInternal(dependencies, inputs) {
   const profile = 'smoke';
   const budgetMs = BUDGETS.smoke;
   const directory = reportDirectory(dependencies.repositoryRoot, profile);
+  preserveAggregateArtifacts(dependencies.repositoryRoot);
   mkdirSync(directory, { recursive: true });
   const started = dependencies.performanceNow();
   const handles = [];
@@ -1142,6 +1203,7 @@ export async function runSmokeMerge(injected = {}) {
   const dependencies = createDependencies(injected);
   const inputs = policyInputs(dependencies.repositoryRoot);
   const directory = reportDirectory(dependencies.repositoryRoot, 'smoke');
+  preserveAggregateArtifacts(dependencies.repositoryRoot);
   const shardEvidence = SMOKE_SHARDS.map((shard) => ({
     duration: readJson(
       join(
