@@ -738,6 +738,52 @@ test('checks the tracked critical-rule manifest and strict empty allowlist', () 
   );
 });
 
+// Production break caught: a pre-baseline smoke artifact with the exact selected
+// source bytes cannot pass through the tracked manifest and empty allowlist.
+test('evaluates an exact tracked pre-baseline smoke artifact', () => {
+  const manifest = JSON.parse(
+    readFileSync(
+      join(REPOSITORY_ROOT, 'test', 'quality', 'critical-rule-manifest.json'),
+      'utf8',
+    ),
+  );
+  const allowlist = JSON.parse(
+    readFileSync(
+      join(REPOSITORY_ROOT, 'test', 'quality', 'mutation-equivalents.json'),
+      'utf8',
+    ),
+  );
+  const report = {
+    schemaVersion: '2.0',
+    thresholds: { high: 80, low: 70 },
+    files: Object.fromEntries(
+      SELECTED_SOURCES.map((source) => [
+        source,
+        {
+          language: 'typescript',
+          source: readFileSync(
+            join(REPOSITORY_ROOT, ...source.split('/')),
+            'utf8',
+          ),
+          mutants: [],
+        },
+      ]),
+    ),
+  };
+
+  const evaluation = evaluateMutationReport({
+    profile: 'smoke',
+    report,
+    manifest,
+    allowlist,
+    baseline: null,
+  });
+
+  assert.equal(evaluation.passed, true);
+  assert.equal(evaluation.rawCombinedScore, 100);
+  assert.deepEqual(evaluation.criticalFindings, []);
+});
+
 // Production break caught: check mode accepts stale bytes or unresolved anchors.
 test('check mode rejects stale SHA and missing or ambiguous anchors', async (t) => {
   await t.test('stale source SHA', () => {

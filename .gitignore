@@ -24,6 +24,7 @@ lerna-debug.log*
 /test-results
 /.nyc_output
 /.worktrees/
+/reports/mutation/
 
 # IDEs and editors
 /.idea
