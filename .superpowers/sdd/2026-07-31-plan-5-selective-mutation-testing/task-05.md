@@ -9,7 +9,7 @@
 
 ## Task
 
-Kill every non-equivalent critical auth repair and reconciliation mutation using focused observable-behavior tests, then prove the exact shard merge and complete-profile RED contracts without changing production code or mutation gates.
+Kill every non-equivalent critical auth mutation using focused observable-behavior tests, then prove the exact smoke and distributed complete-profile contracts. Production code remains protected; the only gate change is the separately human-approved smoke-budget amendment from `300000` to exactly `350000 ms`.
 
 ## Implementer model and reasoning
 
@@ -17,7 +17,7 @@ Requested and actual implementer: fresh `gpt-5.6-sol`, high reasoning, identity 
 
 ## Reviewer model and reasoning
 
-Required reviewer: separate fresh `gpt-5.6-sol`, high reasoning, identity pending controller dispatch; substitution none. No reviewer decision or equivalent-mutant approval is presumed.
+Initial final reviewer requested and actual: separate fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task5_final_reviewer`; substitution none. Verdict: `CHANGES_REQUIRED`, Critical `0`, Important `3`, Minor `0`. Fix Round 1 requested and actual implementer: `/root/plan5_task5_recovery_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. Re-review remains pending and is not presumed.
 
 ## Base SHA
 
@@ -28,16 +28,101 @@ Task 5 starting SHA: `dad7c524330c1c60ea016b357c3feedae68e47c9`. Locked Plan 5 b
 - `src/auth/token-session.service.spec.ts`
 - `src/auth/auth-identifier-repair.service.spec.ts`
 - `src/auth/auth-identifier-reconciliation.service.spec.ts`
+- `docs/superpowers/plans/2026-07-31-selective-mutation-testing.md`
+- `scripts/quality/run-mutation.mjs`
+- `stryker.config.mjs`
+- `test/quality/mutation-equivalents.json`
+- `test/quality/mutation-policy.test.mjs`
+- `test/quality/mutation-runner.test.mjs`
 - `.superpowers/sdd/2026-07-31-plan-5-selective-mutation-testing/task-05.md`
 - `.superpowers/sdd/2026-07-31-plan-5-selective-mutation-testing/progress.md`
+- `.superpowers/sdd/2026-07-31-plan-5-selective-mutation-testing/task-05-brief.md`
+- `.superpowers/sdd/2026-07-31-plan-5-selective-mutation-testing/task-05-recovery-2026-08-16.md`
 
-No production source, member/borrowing spec, dependency, manifest, baseline, runner/configuration, workflow, or mutation gate is authorized to change. The equivalent allowlist remains unchanged unless a later independent reviewer supplies the complete plan-required proof.
+Implementation `f539eda1c1f99622df59ca13181b9a71f96219a5` changed the governing selective-mutation plan, runner, Stryker configuration, three auth specs, equivalent allowlist, policy regression, and runner regressions. Evidence commit `1819b85433b798fb4e25e2e751bb381b5ab02400` added the four Task 5 ledgers/briefs. Fix Round 1 additionally changes only the same three auth specs, the policy quality regression, and those Task 5 evidence files. The runner/config work is exactly the approved `350000 ms` smoke amendment and five-shard distributed-complete amendment; complete remains `900000 ms`, concurrency remains `4`, and the selected sources, mutators, reporters, score/critical gates, and smoke concurrency map remain unchanged. Exactly three independently approved allowlist entries are present. Production sources, member/borrowing specs, dependencies and lockfile, critical-rule manifest, baseline, workflows, frontend, and Tasks 6+ remain protected and unchanged.
 
 ## RED command and exit
 
-Pending exact per-assertion RED cycles after the complete accepted-finding inventory below.
+Task 5's auth TDD RED is primarily report based: a critical `Survived` or
+`NoCoverage` fingerprint in a structurally valid Stryker report is the failing
+behavioral assertion. Focused Jest commands are GREEN checks unless an actual
+Jest failure was recorded. No unrecorded Jest failure is inferred here.
+
+- Historical clean baseline command, recorded exactly:
+  `npx --no-install jest --runInBand src/auth/token-session.service.spec.ts src/auth/auth-identifier-repair.service.spec.ts src/auth/auth-identifier-reconciliation.service.spec.ts`;
+  exit `0`, suites `3/3`, tests `127/127`, `6.142 s`.
+- The smoke-budget runner regression is recorded as exit `1`, `0/1`, with
+  `0 !== 5` while the runner scheduled `300000 ms`; after the one-constant
+  implementation it was exit `0`, `1/1`. The historical ledger did not retain
+  its literal `--test-name-pattern`, so none is invented.
+- The complete-distributed topology/orchestration/merge regression is recorded
+  as exit `1`, `0/13`; after implementation it was exit `0`, `13/13`. The
+  historical ledger did not retain a more specific command than the focused
+  runner test invocation, so none is invented.
+- Fix Round 1 public-path guard, exact command:
+  `node --test --test-name-pattern "keeps Task 5 mutation assertions on public service paths" test/quality/mutation-policy.test.mjs`;
+  RED exit `1`, `0/1`. It listed direct private access in all three cited auth
+  specs. The same command after replacement exited `0`, `1/1`.
+- Fix Round 1 report-based RED: the first clean WSL smoke merge exited `1` on
+  policy and retained unapproved fingerprint
+  `646a86b2242963771f866c8e1eac7a192151eb099421e4a7e2912b51b3b14967`.
+  No focused Jest RED is claimed for this mutation; its failing assertion is
+  the preserved survivor disposition in the merged report.
 
 ## RED evidence
+
+### Auditable RED-to-GREEN reconstruction
+
+- Initial report-based RED:
+  `reports/mutation/diagnostics/node22-nvm-ubuntu24-sequential-c4-valid-policy-red/mutation.json`,
+  SHA-256
+  `b07c6c6db1312e0e210e4b301e51e150a91fff26c2e4fce1a85988ed11ee10c6`;
+  matching summary SHA-256
+  `6d157f57c6c9451f8425cb9e8f9a04c27e7fc9d1761881cd1e60077ad6673751`.
+  It contains exact `1366` identities and `322` unique auth critical mutants.
+- Pre-Fix-Round-1 accepted GREEN report:
+  `reports/mutation/diagnostics/task5-auth-final-wsl-350k-aggregate/mutation.json`,
+  SHA-256
+  `f1f5154f39199da5bd64b297e646449372055f2712a45b73824e982ced024ecb`;
+  auth unapproved `0`, exact three approved equivalents.
+- Fix Round 1 public-path smoke RED:
+  `reports/mutation/diagnostics/task5-fix-round1-public-path-smoke-red-wsl/mutation.json`,
+  SHA-256
+  `ef6a5b69c22c1487e216be210c7d757c0b2552bb02dab50f3e6932cf1d47cbf9`;
+  summary SHA-256
+  `7f715addc9ffd22565a6922d937c043c0c5b794861eb766ea132e9ab16f8520a`.
+  It is structurally complete at exact `1366`, raw
+  `94.07027818448023`, and has exactly one unapproved auth finding:
+  `646a86b2...b14967` (`ArrayDeclaration`, `[] -> ["Stryker was here"]`,
+  line `719`, rule `repair-manifest-covers-exact-conflict-claimants`).
+- Fix Round 1 final smoke GREEN:
+  `reports/mutation/diagnostics/task5-fix-round1-final-smoke-wsl-350k/mutation.json`,
+  SHA-256
+  `cb3e454dc510268da17021f9044b6c26616e8dea748cf8c7ebc46aa531446266`;
+  summary SHA-256
+  `afbcf3bd2b3aa00d7c25b85f77fcdd51014b36bca12c9135cc071d57a1fd38e1`.
+  It is exact `1366`, raw `94.14348462664715`, auth unapproved `0`, with only
+  the exact three approved auth equivalents.
+
+Selected canonical survivor-to-killed mappings are reproduced by applying the
+tracked `mutantFingerprint` function and current manifest source SHA to the
+preserved before/after reports; report-local mutant ids are not identities.
+
+| Behavioral cluster                                      | Canonical fingerprint                                              | Before evidence                   | Final smoke disposition |
+| ------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------- | ----------------------- |
+| Token public `rotate` denies missing family             | `4fb5f831f9fc9ad857dabf2f21c2163ae4b9caf4072bca0c38bd5356ee1a15ce` | Initial accepted report: Survived | Killed                  |
+| Token public `rotate` preserves denial block            | `f0bf4e31f52bffd31fd107762464346659a753454b2816fa9b5757bcd18ec496` | Initial accepted report: Survived | Killed                  |
+| Repair public manifest claimant validation              | `646a86b2242963771f866c8e1eac7a192151eb099421e4a7e2912b51b3b14967` | Fix Round 1 smoke RED: Survived   | Killed                  |
+| Reconciliation canonical-base64url decode               | `d091a1157065b74f4f283a857e7f198ddcf4a327a868a1c1bfe434f89fb67011` | Initial accepted report: Survived | Killed                  |
+| Reconciliation canonical-base64url branch               | `142a9a4c2ffad7c50d5409881176bcdb7f027092b2e535c934a2862b4b05b22d` | Initial accepted report: Survived | Killed                  |
+| Reconciliation noncanonical secret fallback             | `3a4d522d574e06ab378cc6b50e5070abdb4848591e74e3fc696d1bad9392e950` | Initial accepted report: Survived | Killed                  |
+| Reconciliation base64url equality direction             | `05c5027479738dd7c3752a724bf623711c15a21247f99548371db695f626ca5d` | Initial accepted report: Survived | Killed                  |
+| Reconciliation default lease through claim              | `1becc71a04c3d1d517dce5c4aaed80677619a6a67ad6a554faed70125bd9cfe3` | Initial accepted report: Survived | Killed                  |
+| Reconciliation default retention through terminal write | `4ba5285d033a19887630adbf7502df270a089e9c7d2ef16ecc83c693bee6d283` | Initial accepted report: Survived | Killed                  |
+
+Fingerprint `b4a9385a...bd51a` remains Survived by design and is not represented as
+killed: independent review approved its exact Node 22 UTF-8 equivalence, and
+the tracked schema-v1 allowlist records that decision.
 
 ### Accepted mutation artifact preflight
 
@@ -483,7 +568,7 @@ Coordinates are the report's one-based `startLine:startColumn-endLine:endColumn`
 
 ## GREEN evidence
 
-- Focused auth Jest: `3/3` suites and `188/188` tests passed.
+- Pre-Fix-Round-1 focused auth Jest: `3/3` suites and `188/188` tests passed.
 - Allowlist policy: `46/46` tests passed and validates exactly three ordered,
   independently approved fingerprints.
 - Final same-provenance smoke durations were token `149865.12891`, repair
@@ -526,7 +611,8 @@ Coordinates are the report's one-based `startLine:startColumn-endLine:endColumn`
   one intentional POSIX skip. The byte-exact WSL Node 22 snapshot passed
   `92/92`, with no skips. Manifest `89`, ESLint, Prettier, `git diff --check`,
   and protected production/package/manifest identity checks passed. Final
-  focused auth Jest remained `3/3` suites and `188/188` tests.
+  pre-Fix-Round-1 focused auth Jest remained `3/3` suites and `188/188`
+  tests.
 - Existing quality streams remain independent and were referenced rather than
   recomputed in this test/runner-only Task 5 scope. Task 0's verified inherited
   Plan 3 Task 10 evidence records backend unit `469/469`, backend E2E
@@ -600,11 +686,75 @@ Coordinates are the report's one-based `startLine:startColumn-endLine:endColumn`
   summary SHA is
   `8ef53c529e1ab01dfa3a0ce8f9b834071c92ac9b4faae5251852664488afc5c8`.
 
+## Fix Round 1 reviewer remediation
+
+- Initial independent Task 5 verdict was `CHANGES_REQUIRED`, Critical `0`,
+  Important `3`, Minor `0`. I1 was the unfinished RED ledger, I2 was stale
+  scope/amendment accounting, and I3 was private-only assertion quality.
+- Public-path TDD is exact. The focused policy guard command shown under RED
+  first failed `0/1` and then passed `1/1`. Token missing-family denial and UUID
+  consumption now run through public `rotate`; reconciliation key availability,
+  correlation, secret decoding, default lease, and retention are asserted via
+  public `reconcileOnce` selectors/writes/results; repair manifest validation
+  runs through public `dryRun`, `apply`, and `cancel`. The cited direct
+  `(service as any).privateMethod` and private getter assertions are absent.
+- Final Windows verification: focused auth `3/3` suites and `190/190` tests;
+  all auth `18/18` suites and `334/334` tests; deterministic runner/policy
+  `92` passed, `0` failed, one intentional POSIX skip; ESLint, Prettier,
+  manifest `89`, protected-path identity, and `git diff --check` all exited
+  `0`. Final same-snapshot WSL Node 22 verification passed deterministic
+  runner/policy `93/93` with no skips, manifest `89`, and Prettier.
+- First clean public-path smoke at temporary snapshot commit
+  `58ed352675a5216f21638a386f60d22ec10ed7c1` was retained because exact repair
+  fingerprint `646a86b2...b14967` survived. A public `dryRun` claimant-state
+  assertion distinguished it. The final mutation snapshot commit is
+  `4c4623512fc0895685aff396e7d77d0333f12150`.
+- Final clean snapshot root:
+  `/home/tisana/book-library-plan5-task5-fix-round1-20260816-1930/repo`;
+  Node `v22.22.2`, npm `10.9.8`, fresh `npm ci`; runner SHA
+  `f6352077e62e4ef37a050655ce58f33d5b6aa5b8e3a1c19e8a736518480796f9`;
+  config SHA
+  `3e960072b82654cf7ecf2e43ca43f7227719117bb332206101baf984b25c26e2`.
+- Final smoke shards used exact `350000 ms`: token `135733.733258`, repair
+  `104056.1518`, reconciliation `114038.735271`, members `196870.980403`, and
+  borrowings `37127.026146 ms`. Merge exact `1366`, raw
+  `94.14348462664715`, statuses `1283` Killed/`66` Survived/`3` Timeout/`14`
+  NoCoverage, auth unapproved `0`, exact three approved equivalents, and exact
+  `77` Task 6/7 violations. Durable JSON/summary hashes are
+  `cb3e454dc510268da17021f9044b6c26616e8dea748cf8c7ebc46aa531446266`
+  and
+  `afbcf3bd2b3aa00d7c25b85f77fcdd51014b36bca12c9135cc071d57a1fd38e1`.
+- Final full-source complete shards used independent exact `900000 ms` gates:
+  token `261/102477.067983`, repair `417/66520.382847`, reconciliation
+  `532/95562.910743`, members `286/274087.79486100003`, and borrowings
+  `231/39642.82099199999 ms`. Each has JSON/HTML/log/duration/summary and
+  artifact exit `0`. Canonical merge exact `1727`, raw
+  `90.79328314997105`, statuses `1565` Killed/`132` Survived/`27`
+  NoCoverage/`3` Timeout, auth unapproved `0`, exact three approved
+  equivalents, and exact `77` Task 6/7 violations. Durable JSON/summary hashes
+  are
+  `51eb907615b659a2cacb2278e1e066c70e33edbdfb9f04600f8b7e0bbdf34a3a`
+  and
+  `c5a2c2d887c9dd52dd11fd8efcf3db5d03c70a97c4452679c7ee5339b5224533`.
+- The final evidence trees are
+  `reports/mutation/diagnostics/task5-fix-round1-final-smoke-wsl-350k/` and
+  `reports/mutation/diagnostics/task5-fix-round1-final-complete-wsl-900k/`;
+  the report-based public-path RED is separately preserved at
+  `reports/mutation/diagnostics/task5-fix-round1-public-path-smoke-red-wsl/`.
+  Missing artifacts, shard timeout, provenance/scope drift, raw-score
+  regression, and unapproved auth findings are absent.
+
 ## Commit hash
 
 `f539eda1c1f99622df59ca13181b9a71f96219a5` (`test: harden critical auth
 mutations`). This exact immutable SHA was measured with `git rev-parse HEAD`
 and is backfilled without amend in the required distinct evidence-only commit.
+
+Fix Round 1 implementation is the separate immutable commit
+`b90460231c8cbdb5ceeee3de6bde93c424f8ecc0` (`test: use public auth mutation
+paths`). It contains only the three auth specs and the public-path quality
+regression. This SHA was measured after commit and is backfilled here without
+amend; Task 5 evidence remains a distinct evidence-only commit.
 
 ## Deferred findings
 
@@ -613,7 +763,10 @@ and is backfilled without amend in the required distinct evidence-only commit.
 ## Reviewer decision
 
 The token, repair, and reconciliation equivalents each received independent
-`APPROVED_EQUIVALENT`. Implementer self-review finds no open Critical,
-Important, or Minor issue in the amendment scope. Task 5 is ready for a fresh
-independent final reviewer after the exact two-commit protocol; no Task 6,
-push, or Actions work is authorized or started.
+`APPROVED_EQUIVALENT`. Initial Task 5 review nevertheless returned
+`CHANGES_REQUIRED`, Critical `0`, Important `3`, Minor `0`, for evidence scope
+and test-quality defects rather than equivalent disposition. Fix Round 1
+addresses I1-I3 and is pending the same independent reviewer's re-review; no
+approval is presumed. No Task 6, push, or Actions work is authorized or
+started. Implementer self-review after mutation and deterministic verification
+finds open Critical/Important/Minor `0/0/0` in Fix Round 1 scope.

@@ -220,6 +220,8 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 
 - Human approval received on `2026-08-16` to replace the structurally incomplete monolithic complete-profile producer with five full-source complete-profile shards and a fail-closed canonical merge. The complete hard/runtime gate remains exactly `900000 ms`; selected production files, mutation operators, reporters, score thresholds, critical-survivor policy, and dependency order remain unchanged. No push or Actions dispatch is authorized.
 - Amendment implementer dispatch requested and actual: `/root/plan5_task5_recovery_implementer`, `gpt-5.6-sol`, high reasoning; substitution none.
+- Task 05 final independent reviewer dispatch requested and actual: fresh `/root/plan5_task5_final_reviewer`, `gpt-5.6-sol`, high reasoning; substitution none. Review target is immutable implementation `f539eda1c1f99622df59ca13181b9a71f96219a5` plus evidence `1819b85433b798fb4e25e2e751bb381b5ab02400`; Task 6 remains blocked pending verdict.
+- Task 05 Fix Round 1 implementer dispatch requested and actual: `/root/plan5_task5_recovery_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. The immutable final review verdict was CHANGES_REQUIRED with Critical `0`, Important `3`, Minor `0`; Task 6 remains blocked.
 - Complete-distributed amendment TDD: focused RED `0/13` on the monolithic
   config/missing shard APIs; focused GREEN `13/13`. Final Windows runner/policy
   verification is `91` pass, `0` fail, one intentional POSIX skip. The
@@ -257,7 +259,7 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
   `ce3730b1ce3d06967a23a77f4203ded43af7b62d481e7901fec65528ab067f01`;
   summary SHA
   `8ef53c529e1ab01dfa3a0ce8f9b834071c92ac9b4faae5251852664488afc5c8`.
-  Focused auth final is `188/188`; implementer self-review open findings
+  Pre-Fix-Round-1 focused auth was `188/188`; implementer self-review open findings
   Critical/Important/Minor `0/0/0`. Task 5 is ready for its exact two-commit
   protocol and then fresh independent final review. Task 6, push, and Actions
   remain unstarted.
@@ -275,3 +277,71 @@ mutations`). Its exact full SHA was measured after commit and is backfilled
   without amend in the required distinct evidence-only commit. Final status:
   READY FOR FRESH INDEPENDENT TASK 5 REVIEW; Task 6, push, and Actions remain
   unstarted.
+
+## Task 05 Fix Round 1
+
+- Initial independent verdict: `CHANGES_REQUIRED`, Critical `0`, Important `3`,
+  Minor `0`. I1 required an auditable RED reconstruction, I2 required exact
+  implementation/amendment path accounting, and I3 required replacing the cited
+  direct private-method/getter tests with public observable workflows.
+- Fix Round 1 implementer requested and actual:
+  `/root/plan5_task5_recovery_implementer`, `gpt-5.6-sol`, high reasoning;
+  substitution none. No Task 6, production, member/borrowing spec, dependency,
+  manifest, push, or Actions work is authorized.
+- Strict focused public-path guard command:
+  `node --test --test-name-pattern "keeps Task 5 mutation assertions on public service paths" test/quality/mutation-policy.test.mjs`;
+  RED exit `1`, `0/1`, identifying the cited private access in all three auth
+  specs; GREEN exit `0`, `1/1`. Token assertions now traverse public `rotate`,
+  reconciliation assertions traverse `reconcileOnce` outcomes, and repair
+  validation assertions traverse public `dryRun`/`apply`/`cancel` workflows.
+- Final Windows verification passed focused auth `190/190`, all auth
+  `334/334`, deterministic runner/policy `92` passed with one intentional POSIX
+  skip, manifest `89`, ESLint, Prettier, protected-path identity, and whitespace
+  checks. Final current-snapshot WSL Node 22 verification passed deterministic
+  runner/policy `93/93` with no skips, manifest `89`, and Prettier.
+- First clean WSL smoke was retained as a report-based RED because exact
+  fingerprint
+  `646a86b2242963771f866c8e1eac7a192151eb099421e4a7e2912b51b3b14967`
+  survived the public repair manifest path. Preserved JSON SHA is
+  `ef6a5b69c22c1487e216be210c7d757c0b2552bb02dab50f3e6932cf1d47cbf9`;
+  summary SHA is
+  `7f715addc9ffd22565a6922d937c043c0c5b794861eb766ea132e9ab16f8520a`.
+  The minimal public claimant-state assertion killed it.
+- Final clean WSL-native snapshot root is
+  `/home/tisana/book-library-plan5-task5-fix-round1-20260816-1930/repo`,
+  temporary provenance commit
+  `4c4623512fc0895685aff396e7d77d0333f12150`, Node `v22.22.2`, npm `10.9.8`,
+  fresh `npm ci`, runner SHA
+  `f6352077e62e4ef37a050655ce58f33d5b6aa5b8e3a1c19e8a736518480796f9`,
+  config SHA
+  `3e960072b82654cf7ecf2e43ca43f7227719117bb332206101baf984b25c26e2`.
+- Final smoke exact `1366`: raw `94.14348462664715`; statuses `1283` Killed,
+  `66` Survived, `3` Timeout, `14` NoCoverage; auth unapproved `0`; exact three
+  approved equivalents; `77` expected Task 6/7 violations. Durations in exact
+  `350000 ms` gates: token `135733.733258`, repair `104056.1518`,
+  reconciliation `114038.735271`, members `196870.980403`, borrowings
+  `37127.026146 ms`. Durable JSON SHA is
+  `cb3e454dc510268da17021f9044b6c26616e8dea748cf8c7ebc46aa531446266`;
+  summary SHA is
+  `afbcf3bd2b3aa00d7c25b85f77fcdd51014b36bca12c9135cc071d57a1fd38e1`.
+- Final distributed complete exact `1727`: raw `90.79328314997105`; statuses
+  `1565` Killed, `132` Survived, `27` NoCoverage, `3` Timeout; auth unapproved
+  `0`; exact three approved equivalents; `77` expected Task 6/7 violations.
+  Full-source shard durations under independent `900000 ms` gates: token
+  `261/102477.067983`, repair `417/66520.382847`, reconciliation
+  `532/95562.910743`, members `286/274087.79486100003`, borrowings
+  `231/39642.82099199999 ms`. All required JSON/HTML/log/duration/summary
+  artifacts and provenance checks passed. Durable JSON SHA is
+  `51eb907615b659a2cacb2278e1e066c70e33edbdfb9f04600f8b7e0bbdf34a3a`;
+  summary SHA is
+  `c5a2c2d887c9dd52dd11fd8efcf3db5d03c70a97c4452679c7ee5339b5224533`.
+- Fix Round 1 evidence directories are
+  `reports/mutation/diagnostics/task5-fix-round1-public-path-smoke-red-wsl/`,
+  `reports/mutation/diagnostics/task5-fix-round1-final-smoke-wsl-350k/`, and
+  `reports/mutation/diagnostics/task5-fix-round1-final-complete-wsl-900k/`.
+  Prior timeout and accepted evidence is preserved. Real implementation and
+  evidence are kept in separate commits. Fix implementation is immutable
+  `b90460231c8cbdb5ceeee3de6bde93c424f8ecc0` (`test: use public auth mutation
+paths`), containing only the three auth specs and policy quality regression.
+  Implementer self-review open Critical/Important/Minor is `0/0/0`; re-review
+  is pending and no approval is presumed.

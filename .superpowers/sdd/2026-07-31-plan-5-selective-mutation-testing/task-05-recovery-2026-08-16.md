@@ -84,3 +84,29 @@ exactly `1727`. This amendment narrowly authorizes corresponding runner,
 configuration, deterministic regression, governing-plan, and Task 5 evidence
 changes. It does not authorize production, package, manifest, mutator,
 reporter, threshold, smoke, Task 6+, push, or Actions changes.
+
+## Fix Round 1 resume state
+
+- Initial Task 5 review of implementation
+  `f539eda1c1f99622df59ca13181b9a71f96219a5` and evidence
+  `1819b85433b798fb4e25e2e751bb381b5ab02400` returned
+  `CHANGES_REQUIRED`, Critical `0`, Important `3`, Minor `0`.
+- Fix implementer requested and actual: `/root/plan5_task5_recovery_implementer`,
+  `gpt-5.6-sol`, high reasoning; substitution none.
+- Scope is the three cited fixes only: auditable historical RED reconstruction,
+  exact implementation/amendment path accounting, and public-observable
+  replacements for the cited private-only auth tests.
+- Final mutation provenance is the clean WSL-native Node `v22.22.2` snapshot
+  `/home/tisana/book-library-plan5-task5-fix-round1-20260816-1930/repo`,
+  temporary snapshot commit
+  `4c4623512fc0895685aff396e7d77d0333f12150`, fresh `npm ci`, runner SHA
+  `f6352077e62e4ef37a050655ce58f33d5b6aa5b8e3a1c19e8a736518480796f9`,
+  and config SHA
+  `3e960072b82654cf7ecf2e43ca43f7227719117bb332206101baf984b25c26e2`.
+- Final smoke exact `1366` and complete exact `1727` reports are preserved in
+  uniquely named ignored diagnostics directories; both have auth unapproved
+  `0` and exactly the three independently approved equivalents. Task 6 remains
+  blocked pending same-reviewer re-review.
+- Fix Round 1 implementation is immutable commit
+  `b90460231c8cbdb5ceeee3de6bde93c424f8ecc0` (`test: use public auth mutation
+paths`). The evidence-only commit follows separately without amend.

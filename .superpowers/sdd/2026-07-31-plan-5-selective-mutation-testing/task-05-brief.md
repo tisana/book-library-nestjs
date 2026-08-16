@@ -81,3 +81,27 @@ current artifacts, requires the preserved exact complete union of `1727`, and
 runs Task 2 policy once. Smoke behavior, production, manifest, mutators,
 reporters, thresholds, dependencies, Task 6+, push, and Actions remain outside
 this amendment.
+
+## Binding Fix Round 1 review remediation — 2026-08-16
+
+The initial independent Task 5 reviewer returned `CHANGES_REQUIRED`, Critical
+`0`, Important `3`, Minor `0`. Fix Round 1 must address only those findings:
+
+- reconstruct the Task 5 RED ledger from recorded commands and preserved
+  reports, explicitly distinguishing report-based survivor REDs from focused
+  Jest GREEN checks;
+- make the changed-file and authorization record match implementation
+  `f539eda1c1f99622df59ca13181b9a71f96219a5`, including the approved
+  `350000 ms` smoke and distributed-complete amendments; and
+- replace the cited direct private-method/getter tests with assertions through
+  public token rotation, reconciliation, and repair entrypoints.
+
+Because all three auth specs change, acceptance requires a new clean WSL-native
+Node 22 snapshot with fresh `npm ci`, five final smoke shards plus exact `1366`
+merge, and five full-source complete shards plus exact `1727` merge. Preserve
+old and new reports. Production, member/borrowing specs, dependencies, manifest,
+Task 6+, push, and Actions remain unauthorized.
+
+Fix Round 1 implementation is immutable commit
+`b90460231c8cbdb5ceeee3de6bde93c424f8ecc0` (`test: use public auth mutation
+paths`); its evidence is committed separately without amend before re-review.
