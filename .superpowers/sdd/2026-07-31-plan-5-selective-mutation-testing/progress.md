@@ -81,6 +81,17 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 04 second-level range sharding is superseded after its genuine cold failure. The approved distributed amendment returns smoke to five whole-source shards, permits sequential local evidence generation, and defers only five-minute reference wall-clock proof to Task 8. Tasks 4–7 may proceed locally; Task 8 stops before push/dispatch and Task 9 remains blocked on fresh reference evidence.
 - Task 04 distributed sequential evidence isolated members as the only standalone budget failure: four sources produced JSON/HTML below 300000 ms, while members concurrency `2` reached `159/204` and timed out at `300019.033115 ms`. The targeted correction reuses the previously human-approved members concurrency `4` setting on an idle/local or independent CI runner; all other shard settings and gates remain unchanged.
 - Task 4: fix round 1/5 (0 addressed, 1 open — stale current-run artifact acceptance; implementation pending).
+- Task 4: fix round 1/5 (1 addressed, 0 open — stale current-run artifact acceptance; commits `125e5b5..23291f3`).
+- Task 4: complete (implementation `b496431`, fix `125e5b5`, final review closeout `dad7c52`; review clean; distributed reference wall-clock deferred to Task 8, not waived).
+- Task 05 implementer requested and actual: fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task5_implementer`; substitution none. Requested role was recorded before dispatch.
+- Task 05 token equivalent-candidate reviewer requested and actual: separate fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task5_equivalent_reviewer`; substitution none. Candidate fingerprint `0108d0...0cc5`; approval is not presumed and implementer has not edited the allowlist.
+- Task 05 exact equivalent review: APPROVED only fingerprint `0108d029ef22842e4c8a00d900136b2dbc483f0013d796483b852f024a550cc5`, rule `token-interrupted-cas-finalization`, source hash `72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051`, reviewed `2026-08-12`, expires `2026-11-10`; Critical/Important/Minor `0/0/0`. No other survivor or Task 5 is approved.
+- Task 05 second token equivalent audit requested: separate reviewer `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task5_equivalent_reviewer`; substitution none. Candidates `4fb5f8...` and `f0bf4e...` overlap two rules each; approval is not presumed and no entries have been added.
+- Task 05 second token equivalent audit verdict: REJECT both `4fb5f831...a15ce` and `f0bf4e31...c496` as non-equivalent, Critical/Important/Minor `0/1/0`. Both consume `randomUUID()` outside the following catch before denial; deterministic UUID sequencing or a throwing UUID source distinguishes them. No allowlist entries authorized.
+- Task 05 repair HMAC equivalent audit requested: separate reviewer `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task5_equivalent_reviewer`; substitution none. Candidate exact fingerprint `c010a2ec5f4bb9177df61f0bc8326b2d04d2463a59bf5dd2337b840dedc2f36e`; approval is not presumed and no entry has been added.
+- Task 05 repair HMAC equivalent audit verdict: APPROVED only fingerprint `c010a2ec5f4bb9177df61f0bc8326b2d04d2463a59bf5dd2337b840dedc2f36e`, rule `repair-batch-identity-and-checkpoint`, source hash `a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f`, reviewed `2026-08-12`, expires `2026-11-10`; Critical/Important/Minor `0/0/0`. No other repair survivor or Task 5 is approved.
+- Task 05 interruption recovery: prior implementer session ended during repair pass 8 after pass-7 archival. No active mutation descendants remain; pass 7 is intact with only approved HMAC fingerprint `c010a2ec...c2f36e` and killable activation-filter mutant `152`. Fresh replacement implementer requested and actual: `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task5_recovery_implementer`; substitution none.
+- Task 05 narrow owned-test amendment: `test/quality/mutation-policy.test.mjs` may update only the historical strict-empty tracked-allowlist assertion/comment/name to validate the exact independently approved entry and fingerprint. Policy/schema/evaluation behavior remains out of scope and unchanged. This prevents knowingly carrying a red Task 2 integrity fixture after the Task 5-authorized allowlist population.
 
 ## Mutation score history
 
@@ -103,6 +114,13 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 
 ## Runtime history
 
+- Task 05 user-approved runtime amendment: deterministic focused RED expected five exact `350000 ms` smoke timers while the unchanged runner still scheduled `300000 ms`; exit `1`, `0/1`, exact assertion `0 !== 5`. The binding correction raises smoke only to exactly `350000 ms`, retains complete at `900000 ms`, and leaves selected production scope, mutators, reporters, score/critical gates, and concurrency map unchanged. The required reconciliation retry uses a unique clean WSL-native Node 22 `lts/jod` snapshot with a fresh `npm ci`; all prior timeout evidence remains preserved.
+- Task 05 reconciliation pass 7: unique clean WSL snapshot `/home/tisana/book-library-plan5-task5-reconciliation-350k-20260816-1620/repo`, provenance `dad7c524330c1c60ea016b357c3feedae68e47c9`, Node `v22.22.2`/npm `10.9.8`, fresh `npm ci` exit `0` in `22.81 s`, manifest `89`, deterministic runner/policy `83/83`. Reconciliation completed with JSON/HTML at `123501.000308/350000 ms`, no timeout, exits Stryker/artifact/policy `0/0/0`, and exact `414` Killed/`1` Survived/zero NoCoverage from `415`. Durable evidence is `reports/mutation/diagnostics/task5-identifier-reconciliation-pass7-wsl-350k/`; JSON SHA `463a524f94625ffaea7b783f78a5f59f2247c28cdd92802d5345595b5a7557c5`.
+- Task 05 reconciliation equivalent pre-dispatch: the sole survivor is mutant `403`, `StringLiteral` to `""`, location `879:28-879:34`, rule `reconciliation-secret-decoding`, exact fingerprint `b4a9385a539d4b16ca74d4f3f5c70adb2775a73e50a66a80aa1acf17e30bd51a`. Node 22 routes empty and explicit `utf8` encodings to the same implementation, and the existing observable fallback test already proves resulting bytes. Reviewer requested fresh `gpt-5.6-sol`, high reasoning; actual fresh `gpt-5.6-sol`, high reasoning; substitution none. Allowlist remains unchanged pending verdict.
+- Task 05 reconciliation equivalent verdict: fresh independent reviewer returned `APPROVED_EQUIVALENT` for only `b4a9385a539d4b16ca74d4f3f5c70adb2775a73e50a66a80aa1acf17e30bd51a`. Narrow ordered-allowlist RED exited `1`, `0/1`, exact `2 !== 3`; after adding only the verbatim reviewer-provided schema-v1 entry, the full policy suite passed `46/46`, exit `0`, `547.9982 ms`. Requested/actual reviewer fresh `gpt-5.6-sol`, high reasoning; substitution none. The tracked allowlist now contains exactly the three independently approved ordered fingerprints.
+- Task 05 current-report validation: token final is exact `210` Killed/`1` approved-equivalent Survived of `211` (JSON SHA `2c0d4de38140eeabec6c6a20986930a8efd6ebb6632ae3b23554412f55a4fc8f`); repair pass 8 is exact `397` Killed/`3` Timeout/`1` approved-equivalent Survived of `401` (JSON SHA `6a8dfd644978e69112bb9b1941f05aabd09180c49929b531444ea83ba8ad3c76`). Both are valid preserved Task 5 evidence, but their Node 24/`300000 ms` provenance prevents reuse in the required same-provenance Node 22/`350000 ms` final merge. Old member/borrowing artifacts also have historical commit/budget provenance, so final production must regenerate those four named shards around the accepted current reconciliation report.
+- Task 05 final same-snapshot smoke producer: exact shard durations token `149865.12891`, repair `114286.59524099999`, reconciliation `123501.000308`, members `224989.141534`, and borrowings `37732.896585999995 ms`, all under `350000`, no timeout, all JSON/HTML. Standalone merge accepted exact five sources/`1366` identities at commit `dad7c52`, Node major `22`, and config SHA `e65a708152cdbc95ab850ba8546bbec3af4690895e91f86b4970d884f761562a`. Raw score `94.14348462664715`; statuses `1283` Killed/`66` Survived/`3` Timeout/`14` NoCoverage. Auth has exact three approved equivalents and zero unapproved critical findings; the expected policy RED is only `26` members plus `51` borrowings violations. Aggregate JSON SHA `f1f5154f39199da5bd64b297e646449372055f2712a45b73824e982ced024ecb`.
+- Task 05 complete-profile stop: same snapshot and unchanged full five-source scope instrumented `1727` mutants with concurrency `4`; 329-test dry run passed. The runner timed out at `900335.251824/900000 ms`, `timedOut: true`, signal `SIGTERM`, last emitted progress `1702/1727`, no remaining mutation processes, and no complete JSON/HTML/log. Summary has raw score null and missing-report policy error, so baseline and critical disposition are not acceptable. Preserved at `reports/mutation/diagnostics/task5-complete-profile-timeout-wsl-900k/`; duration SHA `2b78e9f583c2dbef4b7f7848593ecacdfff755c32d245dacf9ef50a295e741d7`, sandbox tar SHA `2a57aa40e83143f692e590fb51b852e69e0ed1aafebdab6562b527f2bfeaaa51`. Binding status: STOPPED/INCOMPLETE; no retry, Task 6, commit, push, or Actions.
 - Focused Task 00 commands total `35147 ms`; each is below the `300000 ms` PR-smoke limit. Verified inherited Plan 3 producer runtime was approximately `72 s`.
 - Scheduled/manual Stryker mutation execution has not begun; the `900000 ms` Ubuntu 24.04/Node 22 limit remains mandatory.
 - Task 03 RED: exact Node suite exit `1`, `37/43` pass and six intended missing-updater failures, `415.2626 ms`. Initial GREEN: exact Node suite exit `0`, `43/43` pass, `501.5477 ms`; standalone updater `--check` exit `0` with `29` rules. Final post-format evidence is retained in `task-03.md`.
@@ -197,3 +215,63 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Reviewer verification: focused `4/4`; Windows full `82` passed plus one intentional POSIX skip; Ubuntu/Node 22 full `83/83`; manifest, ESLint, Prettier, whitespace, protected-byte, scope, and ignore checks passed.
 - Reviewer accepted the prior cold mutation evidence as valid because its unique clean output paths make the new pre-launch preservation step a no-op. Configuration, sources, provenance, `2/2/2/4/2` smoke concurrency, complete concurrency `4`, reporters, thresholds, mutators, and budgets remain unchanged.
 - Task 4 is complete. Task 8 reference wall-clock proof remains deferred and is not waived. Task 5 and CI are not preapproved; no Task 5 work, push, workflow dispatch, or Actions run occurred in this closeout.
+
+## Task 05 complete-profile distributed amendment dispatch
+
+- Human approval received on `2026-08-16` to replace the structurally incomplete monolithic complete-profile producer with five full-source complete-profile shards and a fail-closed canonical merge. The complete hard/runtime gate remains exactly `900000 ms`; selected production files, mutation operators, reporters, score thresholds, critical-survivor policy, and dependency order remain unchanged. No push or Actions dispatch is authorized.
+- Amendment implementer dispatch requested and actual: `/root/plan5_task5_recovery_implementer`, `gpt-5.6-sol`, high reasoning; substitution none.
+- Complete-distributed amendment TDD: focused RED `0/13` on the monolithic
+  config/missing shard APIs; focused GREEN `13/13`. Final Windows runner/policy
+  verification is `91` pass, `0` fail, one intentional POSIX skip. The
+  accepted byte-exact WSL Node `v22.22.2` snapshot passed `92/92`, no skips,
+  plus manifest `89`, ESLint, Prettier, and diff checks. Smoke remains exactly
+  `350000 ms` with `2/2/2/4/2`; complete remains exactly `900000 ms` with
+  concurrency `4` per full-source shard.
+- Accepted WSL snapshot:
+  `/home/tisana/book-library-plan5-task5-complete-shards-exact-20260816-2000/repo`,
+  HEAD `dad7c524330c1c60ea016b357c3feedae68e47c9`, Node `v22.22.2`, npm
+  `10.9.8`, fresh `npm ci` `23.70 s`, runner SHA
+  `f6352077e62e4ef37a050655ce58f33d5b6aa5b8e3a1c19e8a736518480796f9`,
+  config SHA
+  `3e960072b82654cf7ecf2e43ca43f7227719117bb332206101baf984b25c26e2`.
+  Exact byte comparisons passed for runner/config/policy/allowlist/manifest,
+  package inputs, and all five protected production sources. Two earlier
+  no-shard preflight snapshots are preserved: one failed WSL Prettier from
+  inherited CRLF changed JavaScript; one failed manifest hashes after
+  over-normalizing protected production to LF.
+- Complete full-source shards all wrote isolated JSON/HTML/log/duration/summary
+  with artifact exit `0`, no timeout, identical provenance, c4, and independent
+  `900000 ms` gates: token `261/114714.184835 ms`; repair
+  `417/76678.565423 ms`; reconciliation `532/106823.370522 ms`; members
+  `286/316857.54179700004 ms`; borrowings `231/42058.691993 ms`.
+- Canonical complete merge accepted exact five disjoint sources and `1727`
+  identities. Raw score `90.79328314997105`; statuses `1565` Killed, `132`
+  Survived, `27` NoCoverage, `3` Timeout. The single Task 2 policy run exited
+  `1` only for Task 6/7: exact `26` member + `51` borrowing violations. All
+  three auth critical findings are the approved exact equivalents; auth
+  unapproved `0`. Missing artifacts, timeout, scope/provenance drift, and raw
+  score regression are absent.
+- Durable complete tree:
+  `reports/mutation/diagnostics/task5-complete-distributed-wsl-900k/`;
+  aggregate JSON SHA
+  `ce3730b1ce3d06967a23a77f4203ded43af7b62d481e7901fec65528ab067f01`;
+  summary SHA
+  `8ef53c529e1ab01dfa3a0ce8f9b834071c92ac9b4faae5251852664488afc5c8`.
+  Focused auth final is `188/188`; implementer self-review open findings
+  Critical/Important/Minor `0/0/0`. Task 5 is ready for its exact two-commit
+  protocol and then fresh independent final review. Task 6, push, and Actions
+  remain unstarted.
+- Independent existing gates are explicitly consumed, not averaged into
+  mutation: Task 0 verified inherited backend unit `469/469`, backend E2E
+  `242/242`, quality `68/68`, backend report `87` files, and changed-line
+  `not-applicable` `0/0` passed. The accepted integrated G3/G4 handoff retains
+  frontend coverage baseline statements/branches/functions/lines
+  `85.29/82.44/81.48/85.82%` and Playwright `87/87`, zero
+  failed/flaky/skipped. Task 5 touches none of those gates; Task 8 owns their
+  fresh authoritative integration rerun.
+- Task 05 immutable implementation commit is
+  `f539eda1c1f99622df59ca13181b9a71f96219a5` (`test: harden critical auth
+mutations`). Its exact full SHA was measured after commit and is backfilled
+  without amend in the required distinct evidence-only commit. Final status:
+  READY FOR FRESH INDEPENDENT TASK 5 REVIEW; Task 6, push, and Actions remain
+  unstarted.
