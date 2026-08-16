@@ -152,46 +152,156 @@ describe('AuthIdentifierReconciliationService', () => {
     expect(identifiers.updateOne).not.toHaveBeenCalled();
   });
 
-  it('reports an offline repair key available only when policy and material agree', () => {
+  it('claims an offline repair only when policy and key material are available', async () => {
+    const offlineRepair = operation({
+      operationType: AuthIdentifierOperationType.OfflineRepair,
+      manifestKeyVersion: 1,
+      status: AuthIdentifierOperationStatus.Completed,
+      cleanupStatus: AuthIdentifierOperationCleanupStatus.Completed,
+    });
+    operations.find.mockReturnValue(criticalQueryResult([offlineRepair]));
+    operations.findOneAndUpdate.mockResolvedValue(offlineRepair);
+
+    await expect(service.reconcileOnce()).resolves.toMatchObject({
+      examined: 1,
+      claimed: 1,
+      processed: 1,
+      skippedMissingKey: 0,
+    });
+    expect(operations.findOneAndUpdate).toHaveBeenCalledTimes(1);
+    expect(operations.updateOne).toHaveBeenCalledWith(
+      {
+        operationId: offlineRepair.operationId,
+        leaseOwner: expect.any(String),
+      },
+      [{ $set: { leaseExpiresAt: '$$NOW', updatedAt: '$$NOW' } }],
+      { updatePipeline: true },
+    );
+  });
+
+  it('skips an offline repair when policy allows but key material is absent', async () => {
     const offlineRepair = operation({
       operationType: AuthIdentifierOperationType.OfflineRepair,
       manifestKeyVersion: 1,
     });
+    operations.find.mockReturnValue(criticalQueryResult([offlineRepair]));
+    (policy.getKeyMaterial as jest.Mock).mockReturnValue(undefined);
 
-    expect((service as any).repairKeyAvailable(offlineRepair)).toBe(true);
-    expect(policy.repairWorkerDecision).toHaveBeenCalledWith(1);
-    expect(policy.getKeyMaterial).toHaveBeenCalledWith(1);
-
-    (policy.repairWorkerDecision as jest.Mock).mockReturnValue({
-      allowed: false,
+    await expect(service.reconcileOnce()).resolves.toEqual({
+      examined: 1,
+      claimed: 0,
+      processed: 0,
+      skippedMissingKey: 1,
     });
-    expect((service as any).repairKeyAvailable(offlineRepair)).toBe(false);
+    expect(operations.findOneAndUpdate).not.toHaveBeenCalled();
+    expect(operations.updateOne).not.toHaveBeenCalled();
   });
 
-  it('uses exact legacy correlation keying, secret decoding, and duration defaults', () => {
-    const legacyConfig = {
-      get: jest.fn((key: string) =>
-        key === 'auth.auditCorrelationKeyVersion' ? 7 : undefined,
-      ),
-    } as unknown as ConfigService;
-    (policy.getKeyMaterial as jest.Mock).mockReturnValue(
-      Buffer.from([1, 2, 3]),
-    );
-    const defaults = createReconciliationService({ config: legacyConfig });
+  it.each([
+    [
+      'canonical base64url',
+      'AQID',
+      'lEM1oM_GJ_Uo74k0Uuo-fbm3ITclnSJY35gtRSJFOfg',
+    ],
+    [
+      'literal UTF-8',
+      'not base64!',
+      'wSOLmzFyV-NqjUmHROCdyQ18-fQ0sMfKBioXPTtkDno',
+    ],
+  ])(
+    'uses the legacy key version and %s material in a public assignment write',
+    async (_case, keyMaterial, expectedHash) => {
+      const legacyConfig = {
+        get: jest.fn((key: string) =>
+          key === 'auth.auditCorrelationKeyVersion' ? 7 : undefined,
+        ),
+      } as unknown as ConfigService;
+      const candidate = operation({
+        operationId: `operation-legacy-${_case}`,
+        assignments: [assignment()],
+      });
+      const reservationId = new Types.ObjectId();
+      operations.find.mockReturnValue(criticalQueryResult([candidate]));
+      operations.findOneAndUpdate.mockResolvedValue(candidate);
+      identifiers.find.mockReturnValue(
+        criticalQueryResult([
+          {
+            _id: reservationId,
+            normalizedIdentifier: 'member@example.test',
+            pendingOperationId: candidate.operationId,
+            pendingAction: AuthIdentifierPendingAction.Claim,
+            subjectType: AuthIdentifierSubjectType.Member,
+            subjectId: 'member-1',
+          },
+        ]),
+      );
+      (policy.getKeyMaterial as jest.Mock).mockReturnValue(keyMaterial);
+      const defaults = createReconciliationService({ config: legacyConfig });
 
-    expect((defaults as any).correlationFor('member@example.test')).toEqual({
-      hash: expect.any(String),
-      version: 7,
+      await expect(defaults.reconcileOnce()).resolves.toMatchObject({
+        claimed: 1,
+        processed: 1,
+      });
+
+      expect(operations.findOneAndUpdate.mock.calls[0][1]).toEqual([
+        {
+          $set: {
+            leaseOwner: expect.any(String),
+            leaseExpiresAt: {
+              $dateAdd: {
+                startDate: '$$NOW',
+                unit: 'second',
+                amount: 300,
+              },
+            },
+            updatedAt: '$$NOW',
+          },
+        },
+      ]);
+      expect(operations.updateOne).toHaveBeenCalledWith(
+        expect.objectContaining({
+          'assignments.assignmentId': 'assignment-1',
+        }),
+        expect.objectContaining({
+          $set: expect.objectContaining({
+            'assignments.$.targetReservationId': reservationId,
+            'assignments.$.identifierCorrelationHash': expectedHash,
+            'assignments.$.correlationKeyVersion': 7,
+          }),
+        }),
+      );
+    },
+  );
+
+  it('uses the public terminal write to apply the default retention duration', async () => {
+    const defaultConfig = { get: jest.fn() } as unknown as ConfigService;
+    const candidate = operation({
+      operationId: 'operation-default-retention',
+      status: AuthIdentifierOperationStatus.Finalizing,
+      cleanupStatus: AuthIdentifierOperationCleanupStatus.NotRequired,
+      assignments: [
+        assignment({ status: AuthIdentifierAssignmentStatus.Applied }),
+      ],
     });
-    expect(policy.getKeyMaterial).toHaveBeenCalledWith(7);
-    expect((defaults as any).decodeConfiguredSecret('AQID')).toEqual(
-      Buffer.from([1, 2, 3]),
-    );
-    expect((defaults as any).decodeConfiguredSecret('not base64!')).toEqual(
-      Buffer.from('not base64!', 'utf8'),
-    );
-    expect((defaults as any).leaseSeconds).toBe(300);
-    expect((defaults as any).retentionDays).toBe(90);
+    operations.find.mockReturnValue(criticalQueryResult([candidate]));
+    operations.findOneAndUpdate.mockResolvedValue(candidate);
+    identifiers.find.mockReturnValue(criticalQueryResult([]));
+    const defaults = createReconciliationService({ config: defaultConfig });
+
+    await expect(defaults.reconcileOnce()).resolves.toMatchObject({
+      claimed: 1,
+      processed: 1,
+    });
+
+    expect(
+      operations.findOneAndUpdate.mock.calls[1][1][0].$set.expiresAt,
+    ).toEqual({
+      $dateAdd: {
+        startDate: '$$NOW',
+        unit: 'day',
+        amount: 90,
+      },
+    });
   });
 
   it('uses MongoDB time for atomic lease acquisition and renewal', async () => {

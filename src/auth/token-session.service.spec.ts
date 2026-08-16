@@ -1069,15 +1069,11 @@ describe('TokenSessionService', () => {
     expect(families.documents).toEqual([]);
   });
 
-  it('denies marker preparation when no active unexpired family exists', async () => {
-    const tokenHash = service.hashRefreshToken('unowned-refresh-token');
-
-    const denial = await (service as any)
-      .prepareRotation(tokenHash, new Date('2026-07-15T00:00:00.000Z'))
-      .then(
-        () => undefined,
-        (error: unknown) => error,
-      );
+  it('denies rotation when no active unexpired family exists', async () => {
+    const denial = await service.rotate('unowned-refresh-token').then(
+      () => undefined,
+      (error: unknown) => error,
+    );
 
     expect(denial).toBeInstanceOf(UnauthorizedException);
     expect((denial as UnauthorizedException).message).toBe(
@@ -1085,6 +1081,7 @@ describe('TokenSessionService', () => {
     );
     expect((denial as UnauthorizedException).getStatus()).toBe(401);
     expect(markers.createArguments).toEqual([]);
+    expect(families.documents).toEqual([]);
   });
 
   it('denies a missing family before consuming a rotation operation id', async () => {
@@ -1095,12 +1092,9 @@ describe('TokenSessionService', () => {
       .mockReturnValueOnce(firstFamilyId)
       .mockReturnValueOnce(secondFamilyId);
 
-    await expect(
-      (service as any).prepareRotation(
-        service.hashRefreshToken('unowned-refresh-token'),
-        new Date('2026-07-15T00:00:00.000Z'),
-      ),
-    ).rejects.toEqual(new UnauthorizedException('Invalid refresh session'));
+    await expect(service.rotate('unowned-refresh-token')).rejects.toEqual(
+      new UnauthorizedException('Invalid refresh session'),
+    );
 
     await expect(createFamily('uuid-sequence')).resolves.toMatchObject({
       familyId: firstFamilyId,

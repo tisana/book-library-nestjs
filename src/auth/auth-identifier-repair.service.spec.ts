@@ -2040,44 +2040,61 @@ describe('AuthIdentifierRepairService', () => {
     expect(fixture.memberModel.updateOne).not.toHaveBeenCalled();
   });
 
-  it('rejects a manifest when the conflict has no persisted claimants', () => {
+  it('rejects a dry-run manifest when the conflict has no persisted claimants', async () => {
     const fixture = createFixture();
+    const malformedManifest = {
+      conflictId: manifest.conflictId,
+      reassignments: [
+        {
+          subjectType: undefined as never,
+          subjectId: 'undefined',
+          newIdentifier: 'unowned@example.test',
+        },
+      ],
+    };
+    fixture.identifierModel.findById.mockResolvedValue({
+      _id: manifest.conflictId,
+      status: AuthIdentifierStatus.Conflict,
+    });
 
-    expect(() =>
-      (fixture.service as any).validateManifestSubjects(
-        { status: AuthIdentifierStatus.Conflict },
-        manifest,
-      ),
-    ).toThrow('Repair manifest must account for every conflict claimant');
+    await expect(
+      fixture.service.dryRun({
+        token: 'stdin-token',
+        operationId: 'repair-no-persisted-claimants',
+        manifest: malformedManifest,
+      }),
+    ).rejects.toThrow(
+      'Repair manifest must account for every conflict claimant',
+    );
+
+    expect(fixture.operationModel.findOne).not.toHaveBeenCalled();
+    expectNoModelMutations(fixture);
   });
 
-  it('accepts an exact empty claimant set during direct manifest validation', () => {
-    const fixture = createFixture();
-
-    expect(() =>
-      (fixture.service as any).validateManifestSubjects(
-        { status: AuthIdentifierStatus.Conflict },
-        { conflictId: 'conflict-empty', reassignments: [] },
-      ),
-    ).not.toThrow();
-  });
-
-  it('rejects direct persisted-manifest verification for a changed manifest', () => {
+  it('rejects public apply when its manifest differs from the dry-run operation', async () => {
     const fixture = createFixture();
     const operation = repairOperation('repair-verify-direct', manifest);
+    fixture.operationModel.findOne.mockResolvedValue(operation);
 
-    expect(() =>
-      (fixture.service as any).verifyPersistedManifest(operation, {
-        ...manifest,
-        reassignments: [
-          {
-            ...manifest.reassignments[0],
-            newIdentifier: 'changed@example.test',
-          },
-          ...manifest.reassignments.slice(1),
-        ],
+    await expect(
+      fixture.service.apply({
+        token: 'stdin-token',
+        operationId: operation.operationId,
+        resumeId: 'resume-changed-manifest',
+        manifest: {
+          ...manifest,
+          reassignments: [
+            {
+              ...manifest.reassignments[0],
+              newIdentifier: 'changed@example.test',
+            },
+            ...manifest.reassignments.slice(1),
+          ],
+        },
       }),
-    ).toThrow('Repair manifest does not match dry run');
+    ).rejects.toThrow('Repair manifest does not match dry run');
+
+    expectNoModelMutations(fixture);
   });
 
   it.each([
@@ -2087,17 +2104,27 @@ describe('AuthIdentifierRepairService', () => {
     ],
     ['missing manifest hash', { manifestHash: undefined }],
     ['missing manifest key version', { manifestKeyVersion: undefined }],
-  ])('rejects persisted-manifest authorization with %s', (_case, overrides) => {
-    const fixture = createFixture();
-    const operation = {
-      ...repairOperation('repair-invalid-direct', manifest),
-      ...overrides,
-    };
+  ])(
+    'rejects public cancel with persisted-manifest authorization %s',
+    async (_case, overrides) => {
+      const fixture = createFixture();
+      const operation = {
+        ...repairOperation('repair-invalid-direct', manifest),
+        ...overrides,
+      };
+      fixture.operationModel.findOne.mockResolvedValue(operation);
 
-    expect(() =>
-      (fixture.service as any).verifyPersistedManifest(operation, manifest),
-    ).toThrow('Repair operation is invalid');
-  });
+      await expect(
+        fixture.service.cancel({
+          token: 'stdin-token',
+          operationId: operation.operationId,
+          manifest,
+        }),
+      ).rejects.toThrow('Repair operation is invalid');
+
+      expectNoModelMutations(fixture);
+    },
+  );
 
   it('releases the original conflict under the first reassigned subject and records the terminal event first', async () => {
     const fixture = createFixture();

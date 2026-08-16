@@ -51,6 +51,23 @@ const UPDATER_PATH = join(
   'update-critical-rule-manifest.mjs',
 );
 
+const TASK5_PUBLIC_PATH_RULES = [
+  {
+    spec: 'src/auth/token-session.service.spec.ts',
+    privateAccess: /\(service as any\)\s*\.prepareRotation\s*\(/,
+  },
+  {
+    spec: 'src/auth/auth-identifier-reconciliation.service.spec.ts',
+    privateAccess:
+      /\((?:service|defaults) as any\)\s*\.(?:repairKeyAvailable|correlationFor|decodeConfiguredSecret|leaseSeconds|retentionDays)\b/,
+  },
+  {
+    spec: 'src/auth/auth-identifier-repair.service.spec.ts',
+    privateAccess:
+      /\(fixture\.service as any\)\s*\.(?:validateManifestSubjects|verifyPersistedManifest)\s*\(/,
+  },
+];
+
 let temporaryRoot;
 let sourceByPath;
 
@@ -702,6 +719,22 @@ function writeUpdaterFixture() {
   );
   return { root, manifest };
 }
+
+// Test-quality break caught: Task 5 critical mutations are killed only by calling
+// private implementation details instead of a supported service workflow.
+test('keeps Task 5 mutation assertions on public service paths', () => {
+  const violations = TASK5_PUBLIC_PATH_RULES.flatMap(
+    ({ spec, privateAccess }) => {
+      const source = readFileSync(
+        join(REPOSITORY_ROOT, ...spec.split('/')),
+        'utf8',
+      );
+      return privateAccess.test(source) ? [spec] : [];
+    },
+  );
+
+  assert.deepEqual(violations, []);
+});
 
 // Production break caught: the tracked manifest or reviewed allowlist is absent or stale.
 test('checks the tracked critical-rule manifest and reviewed allowlist', () => {
