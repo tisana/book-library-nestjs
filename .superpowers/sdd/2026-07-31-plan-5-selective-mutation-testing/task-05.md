@@ -17,7 +17,7 @@ Requested and actual implementer: fresh `gpt-5.6-sol`, high reasoning, identity 
 
 ## Reviewer model and reasoning
 
-Initial final reviewer requested and actual: separate fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task5_final_reviewer`; substitution none. Verdict: `CHANGES_REQUIRED`, Critical `0`, Important `3`, Minor `0`. Fix Round 1 requested and actual implementer: `/root/plan5_task5_recovery_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. Re-review remains pending and is not presumed.
+Initial final reviewer requested and actual: separate fresh `gpt-5.6-sol`, high reasoning, identity `/root/plan5_task5_final_reviewer`; substitution none. Initial verdict: `CHANGES_REQUIRED`, Critical `0`, Important `3`, Minor `0`. Fix Round 1 requested and actual implementer: `/root/plan5_task5_recovery_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. Final scoped re-review requested and actual: the same fresh `/root/plan5_task5_final_reviewer`, `gpt-5.6-sol`, high reasoning; substitution none. Final verdict: `APPROVED`, Critical `0`, Important `0`, Minor `0`; I1, I2, and I3 are `RESOLVED`.
 
 ## Base SHA
 
@@ -765,8 +765,19 @@ amend; Task 5 evidence remains a distinct evidence-only commit.
 The token, repair, and reconciliation equivalents each received independent
 `APPROVED_EQUIVALENT`. Initial Task 5 review nevertheless returned
 `CHANGES_REQUIRED`, Critical `0`, Important `3`, Minor `0`, for evidence scope
-and test-quality defects rather than equivalent disposition. Fix Round 1
-addresses I1-I3 and is pending the same independent reviewer's re-review; no
-approval is presumed. No Task 6, push, or Actions work is authorized or
-started. Implementer self-review after mutation and deterministic verification
-finds open Critical/Important/Minor `0/0/0` in Fix Round 1 scope.
+and test-quality defects rather than equivalent disposition. The same scoped
+reviewer re-reviewed immutable implementation
+`b90460231c8cbdb5ceeee3de6bde93c424f8ecc0` and immutable evidence
+`57d878a3b698d789f4d4576d365a1a935efa4b0a`, and returned final `APPROVED`,
+Critical `0`, Important `0`, Minor `0`; I1, I2, and I3 are `RESOLVED`.
+
+Reviewer verification was exact: focused auth `190/190`; all-auth `334/334`;
+elevated Windows deterministic runner/policy `92` passed with one intentional
+POSIX skip; manifest `89`; final smoke exact `1366`, raw
+`94.14348462664715`, maximum shard duration below `350000 ms`; final complete
+exact `1727`, raw `90.79328314997105`, maximum shard duration below
+`900000 ms`; auth unapproved `0` with exactly three independently approved
+equivalents; and clean WSL snapshot
+`4c4623512fc0895685aff396e7d77d0333f12150` byte-matched the reviewed inputs.
+Task 5 is complete at the reviewed boundary. No Task 6, push, or Actions work
+was started by this closeout.

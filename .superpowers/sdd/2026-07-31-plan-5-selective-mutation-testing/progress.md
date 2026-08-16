@@ -222,6 +222,8 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Amendment implementer dispatch requested and actual: `/root/plan5_task5_recovery_implementer`, `gpt-5.6-sol`, high reasoning; substitution none.
 - Task 05 final independent reviewer dispatch requested and actual: fresh `/root/plan5_task5_final_reviewer`, `gpt-5.6-sol`, high reasoning; substitution none. Review target is immutable implementation `f539eda1c1f99622df59ca13181b9a71f96219a5` plus evidence `1819b85433b798fb4e25e2e751bb381b5ab02400`; Task 6 remains blocked pending verdict.
 - Task 05 Fix Round 1 implementer dispatch requested and actual: `/root/plan5_task5_recovery_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. The immutable final review verdict was CHANGES_REQUIRED with Critical `0`, Important `3`, Minor `0`; Task 6 remains blocked.
+- Task 05 Fix Round 1 scoped re-review dispatch requested and actual: `/root/plan5_task5_final_reviewer`, fresh `gpt-5.6-sol`, high reasoning; substitution none. Review target is implementation `b90460231c8cbdb5ceeee3de6bde93c424f8ecc0` plus evidence `57d878a3b698d789f4d4576d365a1a935efa4b0a`; Task 6 remains blocked pending verdict.
+- Task 05 review-closeout implementer dispatch requested and actual: `/root/plan5_task5_recovery_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. The scoped re-review verdict is APPROVED with Critical `0`, Important `0`, Minor `0`; closeout is documentation-only and Task 6 remains blocked until its commit is clean.
 - Complete-distributed amendment TDD: focused RED `0/13` on the monolithic
   config/missing shard APIs; focused GREEN `13/13`. Final Windows runner/policy
   verification is `91` pass, `0` fail, one intentional POSIX skip. The
@@ -345,3 +347,24 @@ mutations`). Its exact full SHA was measured after commit and is backfilled
 paths`), containing only the three auth specs and policy quality regression.
   Implementer self-review open Critical/Important/Minor is `0/0/0`; re-review
   is pending and no approval is presumed.
+
+## Task 05 final review closeout
+
+- Final scoped reviewer requested and actual: fresh
+  `/root/plan5_task5_final_reviewer`, `gpt-5.6-sol`, high reasoning;
+  substitution none. Reviewed immutable implementation
+  `b90460231c8cbdb5ceeee3de6bde93c424f8ecc0` and evidence
+  `57d878a3b698d789f4d4576d365a1a935efa4b0a`.
+- Final verdict: `APPROVED`, Critical `0`, Important `0`, Minor `0`. I1
+  auditable RED reconstruction, I2 exact scope/amendment accounting, and I3
+  public-observable test quality are all `RESOLVED`.
+- Reviewer verification: focused auth `190/190`; all-auth `334/334`; elevated
+  Windows deterministic runner/policy `92` passed with one intentional POSIX
+  skip; manifest `89`; smoke exact `1366`, raw `94.14348462664715`, maximum
+  shard duration below `350000 ms`; complete exact `1727`, raw
+  `90.79328314997105`, maximum shard duration below `900000 ms`; auth
+  unapproved `0` with exactly three approved equivalents; clean WSL snapshot
+  `4c4623512fc0895685aff396e7d77d0333f12150` byte-matched the reviewed inputs.
+- Task 5 is complete at the reviewed immutable boundary. This closeout changes
+  evidence only; no implementation amend, Task 6, push, or Actions work was
+  started.
