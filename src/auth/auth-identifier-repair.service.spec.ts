@@ -18,12 +18,15 @@ import {
   hashRepairManifest,
 } from './auth-identifier-repair-manifest';
 import {
+  AuthIdentifierOperationCleanupStatus,
   AuthIdentifierOperationStatus,
   AuthIdentifierOperationType,
 } from './schemas/auth-identifier-operation.schema';
 import {
+  AuthIdentifierPendingAction,
   AuthIdentifierStatus,
   AuthIdentifierSubjectType,
+  AuthIdentifierType,
 } from './schemas/auth-identifier.schema';
 import { AuthIdentifierRepairBatchStatus } from './schemas/auth-identifier-repair-batch.schema';
 
@@ -159,7 +162,10 @@ describe('AuthIdentifierRepairService', () => {
     return {
       _id: manifest.conflictId,
       status,
-      conflictingSubjects: [manifest.retainedSubject, ...manifest.reassignments],
+      conflictingSubjects: [
+        manifest.retainedSubject,
+        ...manifest.reassignments,
+      ],
     };
   }
 
@@ -302,7 +308,9 @@ describe('AuthIdentifierRepairService', () => {
     async (_case, operation) => {
       const fixture = createFixture();
       fixture.identifierModel.findById.mockResolvedValue(conflictReservation());
-      fixture.operationModel.findOne.mockReturnValue(criticalQueryResult(operation));
+      fixture.operationModel.findOne.mockReturnValue(
+        criticalQueryResult(operation),
+      );
 
       await expect(
         fixture.service.dryRun({
@@ -320,7 +328,10 @@ describe('AuthIdentifierRepairService', () => {
 
   it.each([
     ['missing conflict', null],
-    ['non-conflict reservation', conflictReservation(AuthIdentifierStatus.Active)],
+    [
+      'non-conflict reservation',
+      conflictReservation(AuthIdentifierStatus.Active),
+    ],
   ])('returns the same public error for a %s', async (_case, reservation) => {
     const fixture = createFixture();
     fixture.identifierModel.findById.mockResolvedValue(reservation);
@@ -404,6 +415,9 @@ describe('AuthIdentifierRepairService', () => {
         }),
       ).rejects.toMatchObject({ message: 'Repair operation not found' });
 
+      expect(fixture.operationModel.findOne).toHaveBeenCalledWith({
+        operationId: 'repair-operation-missing',
+      });
       expectNoModelMutations(fixture);
     },
   );
@@ -434,7 +448,10 @@ describe('AuthIdentifierRepairService', () => {
       .mockResolvedValue({
         _id: 'conflict-1',
         status: AuthIdentifierStatus.Conflict,
-        conflictingSubjects: [manifest.retainedSubject, ...manifest.reassignments],
+        conflictingSubjects: [
+          manifest.retainedSubject,
+          ...manifest.reassignments,
+        ],
       } as never);
     jest
       .spyOn(fixture.service as never, 'validateManifestSubjects' as never)
@@ -463,19 +480,46 @@ describe('AuthIdentifierRepairService', () => {
     expect(activateBatch).toHaveBeenNthCalledWith(1, 'repair-1', 0);
     expect(activateBatch).toHaveBeenNthCalledWith(2, 'repair-1', 1);
     expect(completeParent).toHaveBeenCalledTimes(1);
-    expect(fixture.operationModel.updateOne).toHaveBeenCalledWith(
-      expect.objectContaining({ status: AuthIdentifierOperationStatus.Applying }),
+    expect(fixture.operationModel.updateOne).toHaveBeenNthCalledWith(
+      1,
+      {
+        operationId: 'repair-1',
+        status: AuthIdentifierOperationStatus.Pending,
+      },
+      {
+        $set: {
+          status: AuthIdentifierOperationStatus.Applying,
+          lastResumedBy: {
+            subjectType: AuthIdentifierSubjectType.Staff,
+            subjectId: 'admin-2',
+          },
+          lastResumedAt: expect.any(Date),
+        },
+      },
+    );
+    expect(fixture.operationModel.updateOne).toHaveBeenNthCalledWith(
+      2,
+      {
+        operationId: 'repair-1',
+        status: AuthIdentifierOperationStatus.Applying,
+      },
       { $set: { status: AuthIdentifierOperationStatus.Finalizing } },
     );
-    expect(fixture.securityActivity.recordIdentifierRepairResumed).toHaveBeenCalledWith(
+    expect(
+      fixture.securityActivity.recordIdentifierRepairResumed,
+    ).toHaveBeenCalledWith(
       expect.objectContaining({
         originalActor: expect.objectContaining({ actorId: 'admin-1' }),
         resumingActor: expect.objectContaining({ actorId: 'admin-2' }),
       }),
     );
-    expect(result).toMatchObject({
+    expect(result).toEqual({
+      operationId: 'repair-1',
       status: AuthIdentifierOperationStatus.Completed,
+      assignmentCount: 3,
       batchCount: 2,
+      replayed: false,
+      reasonCategory: 'identifier-offline-repair-completed',
     });
   });
 
@@ -527,9 +571,12 @@ describe('AuthIdentifierRepairService', () => {
       }),
     ).rejects.toBeInstanceOf(UnauthorizedException);
 
+    expect(fixture.operationModel.updateOne).toHaveBeenCalledTimes(1);
     expect(completeParent).not.toHaveBeenCalled();
     expect(fixture.operationModel.updateOne).toHaveBeenLastCalledWith(
-      expect.objectContaining({ status: AuthIdentifierOperationStatus.Applying }),
+      expect.objectContaining({
+        status: AuthIdentifierOperationStatus.Applying,
+      }),
       { $set: { status: AuthIdentifierOperationStatus.FailedRetryable } },
     );
   });
@@ -555,9 +602,10 @@ describe('AuthIdentifierRepairService', () => {
       .spyOn(fixture.service as never, 'verifyPersistedManifest' as never)
       .mockReturnValue(undefined as never);
     const batches = [{ batchNumber: 1 }, { batchNumber: 0 }];
-    fixture.repairBatchModel.find.mockReturnValue({
-      sort: jest.fn(() => ({ exec: jest.fn().mockResolvedValue(batches) })),
-    });
+    const sort = jest.fn(() => ({
+      exec: jest.fn().mockResolvedValue(batches),
+    }));
+    fixture.repairBatchModel.find.mockReturnValue({ sort });
     const compensate = jest
       .spyOn(fixture.service as never, 'compensateBatch' as never)
       .mockResolvedValue(undefined as never);
@@ -565,13 +613,39 @@ describe('AuthIdentifierRepairService', () => {
       .spyOn(fixture.service as never, 'finishFailedParent' as never)
       .mockResolvedValue(undefined as never);
 
-    await fixture.service.cancel({
+    const result = await fixture.service.cancel({
       token: 'stdin-token',
       operationId: 'repair-3',
       manifest,
     });
 
     expect(compensate.mock.calls.map((call) => call[0])).toEqual(batches);
+    expect(fixture.operationModel.updateOne).toHaveBeenNthCalledWith(
+      1,
+      {
+        operationId: 'repair-3',
+        status: {
+          $in: [
+            AuthIdentifierOperationStatus.Applying,
+            AuthIdentifierOperationStatus.FailedRetryable,
+            AuthIdentifierOperationStatus.Pending,
+          ],
+        },
+      },
+      { $set: { status: AuthIdentifierOperationStatus.Compensating } },
+    );
+    expect(fixture.repairBatchModel.find).toHaveBeenCalledWith({
+      parentOperationId: 'repair-3',
+    });
+    expect(sort).toHaveBeenCalledWith({ batchNumber: -1 });
+    expect(fixture.operationModel.updateOne).toHaveBeenNthCalledWith(
+      2,
+      {
+        operationId: 'repair-3',
+        status: AuthIdentifierOperationStatus.Compensating,
+      },
+      { $set: { status: AuthIdentifierOperationStatus.Finalizing } },
+    );
     expect(fixture.identifierModel.updateOne).toHaveBeenCalledWith(
       { _id: 'conflict-1' },
       expect.objectContaining({
@@ -580,6 +654,73 @@ describe('AuthIdentifierRepairService', () => {
           conflictResolutionStatus: 'manual-repair-required',
         }),
       }),
+    );
+    expect(result).toEqual({
+      operationId: 'repair-3',
+      status: AuthIdentifierOperationStatus.FailedTerminal,
+      assignmentCount: 3,
+      batchCount: 2,
+      replayed: false,
+      reasonCategory: 'identifier-offline-repair-pending',
+    });
+  });
+
+  it('resumes a retryable operation through the exact Applying transition', async () => {
+    const fixture = createFixture();
+    const operation = repairOperation(
+      'repair-retryable',
+      manifest,
+      AuthIdentifierOperationStatus.FailedRetryable,
+    );
+    jest
+      .spyOn(fixture.service as never, 'requireOperation' as never)
+      .mockResolvedValueOnce(operation as never)
+      .mockResolvedValueOnce({
+        ...operation,
+        status: AuthIdentifierOperationStatus.Completed,
+      } as never);
+    jest
+      .spyOn(fixture.service as never, 'verifyPersistedManifest' as never)
+      .mockReturnValue(undefined as never);
+    jest
+      .spyOn(fixture.service as never, 'loadConflict' as never)
+      .mockResolvedValue(conflictReservation() as never);
+    jest
+      .spyOn(fixture.service as never, 'validateManifestSubjects' as never)
+      .mockReturnValue(undefined as never);
+    jest
+      .spyOn(fixture.service as never, 'prepareBatch' as never)
+      .mockResolvedValue(undefined as never);
+    jest
+      .spyOn(fixture.service as never, 'activateBatch' as never)
+      .mockResolvedValue(undefined as never);
+    jest
+      .spyOn(fixture.service as never, 'completeParent' as never)
+      .mockResolvedValue(undefined as never);
+
+    await fixture.service.apply({
+      token: 'retry-token',
+      operationId: operation.operationId,
+      resumeId: 'retry-resume',
+      manifest,
+    });
+
+    expect(fixture.operationModel.updateOne).toHaveBeenNthCalledWith(
+      1,
+      {
+        operationId: operation.operationId,
+        status: AuthIdentifierOperationStatus.FailedRetryable,
+      },
+      {
+        $set: {
+          status: AuthIdentifierOperationStatus.Applying,
+          lastResumedBy: {
+            subjectType: AuthIdentifierSubjectType.Staff,
+            subjectId: 'admin-2',
+          },
+          lastResumedAt: expect.any(Date),
+        },
+      },
     );
   });
 
@@ -601,7 +742,10 @@ describe('AuthIdentifierRepairService', () => {
       .spyOn(fixture.service as never, 'loadConflict' as never)
       .mockResolvedValue({
         status: AuthIdentifierStatus.Conflict,
-        conflictingSubjects: [manifest.retainedSubject, ...manifest.reassignments],
+        conflictingSubjects: [
+          manifest.retainedSubject,
+          ...manifest.reassignments,
+        ],
       } as never);
 
     await expect(
@@ -610,18 +754,74 @@ describe('AuthIdentifierRepairService', () => {
         operationId: 'repair-dry-run',
         manifest,
       }),
-    ).resolves.toMatchObject({
+    ).resolves.toEqual({
+      operationId: 'repair-dry-run',
       status: AuthIdentifierOperationStatus.Pending,
+      assignmentCount: 3,
       replayed: true,
       batchCount: 2,
+      reasonCategory: 'identifier-offline-repair-pending',
     });
 
+    expect(fixture.operationModel.findOne).toHaveBeenCalledWith({
+      operationId: 'repair-dry-run',
+    });
+    expect(fixture.configGet).toHaveBeenCalledWith(
+      'auth.auditCorrelationKeyVersion',
+    );
     expect(fixture.operationModel.create).not.toHaveBeenCalled();
     expect(fixture.operationModel.updateOne).not.toHaveBeenCalled();
     expect(fixture.repairBatchModel.find).not.toHaveBeenCalled();
     expect(fixture.identifierModel.updateOne).not.toHaveBeenCalled();
     expect(fixture.staffUserModel.updateOne).not.toHaveBeenCalled();
     expect(fixture.memberModel.updateOne).not.toHaveBeenCalled();
+  });
+
+  it('authorizes and persists a new dry-run operation bound to the exact claimants', async () => {
+    const fixture = createFixture();
+    const created = repairOperation(
+      'repair-new-dry-run',
+      manifest,
+      AuthIdentifierOperationStatus.Pending,
+    );
+    fixture.identifierModel.findById.mockResolvedValue(conflictReservation());
+    fixture.operationModel.findOne
+      .mockReturnValueOnce(criticalQueryResult(null))
+      .mockResolvedValueOnce(created);
+
+    await expect(
+      fixture.service.dryRun({
+        token: 'stdin-token',
+        operationId: 'repair-new-dry-run',
+        manifest,
+      }),
+    ).resolves.toEqual({
+      operationId: 'repair-new-dry-run',
+      status: AuthIdentifierOperationStatus.Pending,
+      assignmentCount: 3,
+      replayed: false,
+      batchCount: 2,
+      reasonCategory: 'identifier-offline-repair-pending',
+    });
+
+    expect(fixture.authorization.authorizeDryRun).toHaveBeenCalledWith(
+      'stdin-token',
+    );
+    expect(fixture.operationModel.create).toHaveBeenCalledWith({
+      operationId: 'repair-new-dry-run',
+      operationType: AuthIdentifierOperationType.OfflineRepair,
+      status: AuthIdentifierOperationStatus.Pending,
+      assignments: [],
+      manifestHash: hashRepairManifest(manifest, Buffer.alloc(32, 4), 1)
+        .manifestHash,
+      manifestKeyVersion: 1,
+      retainedSubject: manifest.retainedSubject,
+      requestedBy: {
+        subjectType: AuthIdentifierSubjectType.Staff,
+        subjectId: 'admin-2',
+      },
+      cleanupStatus: AuthIdentifierOperationCleanupStatus.NotRequired,
+    });
   });
 
   it('rejects an unavailable manifest key before looking up an operation', async () => {
@@ -631,7 +831,10 @@ describe('AuthIdentifierRepairService', () => {
       .spyOn(fixture.service as never, 'loadConflict' as never)
       .mockResolvedValue({
         status: AuthIdentifierStatus.Conflict,
-        conflictingSubjects: [manifest.retainedSubject, ...manifest.reassignments],
+        conflictingSubjects: [
+          manifest.retainedSubject,
+          ...manifest.reassignments,
+        ],
       } as never);
 
     await expect(
@@ -662,8 +865,14 @@ describe('AuthIdentifierRepairService', () => {
     jest
       .spyOn(fixture.service as never, 'verifyPersistedManifest' as never)
       .mockReturnValue(undefined as never);
-    const prepare = jest.spyOn(fixture.service as never, 'prepareBatch' as never);
-    const activate = jest.spyOn(fixture.service as never, 'activateBatch' as never);
+    const prepare = jest.spyOn(
+      fixture.service as never,
+      'prepareBatch' as never,
+    );
+    const activate = jest.spyOn(
+      fixture.service as never,
+      'activateBatch' as never,
+    );
 
     await expect(
       fixture.service.apply({
@@ -763,7 +972,9 @@ describe('AuthIdentifierRepairService', () => {
       .mockReturnValue(undefined as never);
     fixture.repairBatchModel.find.mockReturnValue({
       sort: jest.fn(() => ({
-        exec: jest.fn().mockResolvedValue([{ batchNumber: 1 }, { batchNumber: 0 }]),
+        exec: jest
+          .fn()
+          .mockResolvedValue([{ batchNumber: 1 }, { batchNumber: 0 }]),
       })),
     });
     const compensate = jest
@@ -810,7 +1021,9 @@ describe('AuthIdentifierRepairService', () => {
       .spyOn(fixture.service as never, 'verifyPersistedManifest' as never)
       .mockReturnValue(undefined as never);
     fixture.repairBatchModel.find.mockReturnValue({
-      sort: jest.fn(() => ({ exec: jest.fn().mockResolvedValue([{ batchNumber: 0 }]) })),
+      sort: jest.fn(() => ({
+        exec: jest.fn().mockResolvedValue([{ batchNumber: 0 }]),
+      })),
     });
     jest
       .spyOn(fixture.service as never, 'compensateBatch' as never)
@@ -830,7 +1043,9 @@ describe('AuthIdentifierRepairService', () => {
     expect(fixture.identifierModel.updateOne).not.toHaveBeenCalled();
     expect(finish).not.toHaveBeenCalled();
     expect(fixture.operationModel.updateOne).toHaveBeenLastCalledWith(
-      expect.objectContaining({ status: AuthIdentifierOperationStatus.Compensating }),
+      expect.objectContaining({
+        status: AuthIdentifierOperationStatus.Compensating,
+      }),
       { $set: { status: AuthIdentifierOperationStatus.FailedRetryable } },
     );
   });
@@ -864,19 +1079,95 @@ describe('AuthIdentifierRepairService', () => {
     );
 
     expect(fixture.repairBatchModel.create).toHaveBeenCalledWith(
-      [expect.objectContaining({ batchNumber: 0, batchCount: 2 })],
+      [
+        {
+          parentOperationId: 'repair-prepare',
+          batchNumber: 0,
+          batchCount: 2,
+          status: AuthIdentifierRepairBatchStatus.Pending,
+          assignments: [
+            {
+              assignmentId: 'repair-prepare:member:member-1',
+              subjectType: AuthIdentifierSubjectType.Member,
+              subjectId: 'member-1',
+              action: 'replace',
+              sourceReservationId: 'conflict-1',
+              identifierCorrelationHash:
+                '74DAYGJjCPIV08LP20Igb8Nv1llX77q_WKICh7K2r_k',
+              correlationKeyVersion: 1,
+              status: 'pending',
+            },
+          ],
+          checkpointHash: 't_gKrM7uLiU2EdT3Dl6gHD4gEq61F_Fn1V6ayrn7rco',
+          manifestKeyVersion: 1,
+        },
+      ],
       { session },
     );
     expect(reserve).toHaveBeenCalledTimes(1);
     expect(apply).toHaveBeenCalledTimes(1);
-    expect(fixture.repairBatchModel.updateOne).toHaveBeenCalledWith(
-      expect.objectContaining({ batchNumber: 0 }),
-      expect.objectContaining({
-        $set: expect.objectContaining({ status: 'prepared' }),
-      }),
+    expect(fixture.repairBatchModel.updateOne).toHaveBeenNthCalledWith(
+      1,
+      {
+        parentOperationId: 'repair-prepare',
+        batchNumber: 0,
+        'assignments.assignmentId': 'repair-prepare:member:member-1',
+      },
+      {
+        $set: {
+          'assignments.$.targetReservationId': 'reservation-1',
+          'assignments.$.status': 'applied',
+          'assignments.$.appliedAt': expect.any(Date),
+        },
+      },
+      { session },
+    );
+    expect(fixture.repairBatchModel.updateOne).toHaveBeenNthCalledWith(
+      2,
+      { parentOperationId: 'repair-prepare', batchNumber: 0 },
+      {
+        $set: {
+          status: 'prepared',
+          preparedAt: expect.any(Date),
+        },
+      },
       { session },
     );
     expect(session.endSession).toHaveBeenCalledTimes(1);
+    expect(fixture.repairBatchModel.findOne).toHaveBeenCalledWith({
+      parentOperationId: 'repair-prepare',
+      batchNumber: 0,
+    });
+  });
+
+  it('binds a multi-assignment checkpoint with the exact ordered separator', async () => {
+    const fixture = createFixture();
+    const session = transactionSession();
+    fixture.operationModel.db.startSession.mockResolvedValue(session);
+    fixture.repairBatchModel.findOne.mockResolvedValue(null);
+    fixture.repairBatchModel.create.mockResolvedValue([{ _id: 'batch-multi' }]);
+    jest
+      .spyOn(fixture.service as never, 'reserveReplacement' as never)
+      .mockResolvedValue({ _id: 'reservation-multi' } as never);
+    jest
+      .spyOn(fixture.service as never, 'applyAggregateIdentifier' as never)
+      .mockResolvedValue(undefined as never);
+
+    await (fixture.service as any).prepareBatch(
+      {
+        operationId: 'repair-multi-checkpoint',
+        manifestKeyVersion: 1,
+        requestedBy: { subjectId: 'admin-1' },
+      },
+      { _id: 'conflict-1' },
+      manifest.reassignments.slice(0, 2),
+      0,
+      1,
+    );
+
+    expect(
+      fixture.repairBatchModel.create.mock.calls[0][0][0].checkpointHash,
+    ).toBe('Z7UVMofw4kQVfLl2ZsX5hu_hlFNIbvNHDRlypQDZTLE');
   });
 
   it('activates a prepared batch and keeps its identifiers gated until parent completion', async () => {
@@ -888,22 +1179,39 @@ describe('AuthIdentifierRepairService', () => {
     fixture.operationModel.db.startSession.mockResolvedValue(session);
     fixture.repairBatchModel.findOne.mockResolvedValue({
       status: 'prepared',
-      assignments: [{ targetReservationId: 'reservation-1' }],
+      assignments: [
+        { targetReservationId: 'reservation-1' },
+        { targetReservationId: undefined },
+      ],
+    });
+    fixture.identifierModel.updateMany.mockImplementation(async (filter) => {
+      expect(filter._id.$in).toStrictEqual(['reservation-1']);
+      return { modifiedCount: 1 };
     });
     await (fixture.service as any).activateBatch('repair-activate', 0);
 
+    expect(fixture.repairBatchModel.findOne).toHaveBeenCalledWith({
+      parentOperationId: 'repair-activate',
+      batchNumber: 0,
+    });
     expect(fixture.identifierModel.updateMany).toHaveBeenCalledWith(
-      expect.objectContaining({ pendingOperationId: 'repair-activate' }),
-      expect.objectContaining({
-        $set: expect.objectContaining({ activationGateOperationId: 'repair-activate' }),
-      }),
+      {
+        _id: { $in: ['reservation-1'] },
+        pendingOperationId: 'repair-activate',
+      },
+      {
+        $set: {
+          status: AuthIdentifierStatus.Active,
+          activationGateOperationId: 'repair-activate',
+          lastOperationId: 'repair-activate',
+        },
+        $unset: { pendingOperationId: '', pendingAction: '' },
+      },
       { session },
     );
     expect(fixture.repairBatchModel.updateOne).toHaveBeenCalledWith(
       { parentOperationId: 'repair-activate', batchNumber: 0 },
-      expect.objectContaining({
-        $set: expect.objectContaining({ status: 'activated' }),
-      }),
+      { $set: { status: 'activated', activatedAt: expect.any(Date) } },
       { session },
     );
   });
@@ -917,7 +1225,9 @@ describe('AuthIdentifierRepairService', () => {
     fixture.operationModel.db.startSession.mockResolvedValue(session);
     jest
       .spyOn(fixture.service as never, 'loadConflict' as never)
-      .mockResolvedValue({ normalizedIdentifier: 'shared@example.test' } as never);
+      .mockResolvedValue({
+        normalizedIdentifier: 'shared@example.test',
+      } as never);
     const restore = jest
       .spyOn(fixture.service as never, 'setAggregateIdentifier' as never)
       .mockResolvedValue(undefined as never);
@@ -932,25 +1242,58 @@ describe('AuthIdentifierRepairService', () => {
             subjectId: 'member-1',
             targetReservationId: 'reservation-1',
           },
+          {
+            subjectType: AuthIdentifierSubjectType.Member,
+            subjectId: 'member-2',
+            targetReservationId: 'reservation-2',
+          },
         ],
       },
       manifest,
     );
 
-    expect(restore).toHaveBeenCalledWith(
-      AuthIdentifierSubjectType.Member,
+    expect(restore.mock.calls.map((call) => call[1])).toEqual([
+      'member-2',
       'member-1',
-      'shared@example.test',
-      session,
-    );
-    expect(fixture.identifierModel.updateOne).toHaveBeenCalledWith(
-      { _id: 'reservation-1' },
-      expect.objectContaining({ $set: expect.objectContaining({ status: 'released' }) }),
-      { session },
-    );
+    ]);
+    expect(
+      fixture.identifierModel.updateOne.mock.calls.map((call) => call[0]),
+    ).toEqual([{ _id: 'reservation-2' }, { _id: 'reservation-1' }]);
+    expect(fixture.identifierModel.updateOne.mock.calls).toEqual([
+      [
+        { _id: 'reservation-2' },
+        {
+          $set: {
+            status: AuthIdentifierStatus.Released,
+            releasedAt: expect.any(Date),
+          },
+          $unset: {
+            activationGateOperationId: '',
+            pendingOperationId: '',
+            pendingAction: '',
+          },
+        },
+        { session },
+      ],
+      [
+        { _id: 'reservation-1' },
+        {
+          $set: {
+            status: AuthIdentifierStatus.Released,
+            releasedAt: expect.any(Date),
+          },
+          $unset: {
+            activationGateOperationId: '',
+            pendingOperationId: '',
+            pendingAction: '',
+          },
+        },
+        { session },
+      ],
+    ]);
     expect(fixture.repairBatchModel.updateOne).toHaveBeenCalledWith(
       { _id: 'batch-1' },
-      expect.objectContaining({ $set: expect.objectContaining({ status: 'compensated' }) }),
+      { $set: { status: 'compensated', compensatedAt: expect.any(Date) } },
       { session },
     );
   });
@@ -1007,10 +1350,12 @@ describe('AuthIdentifierRepairService', () => {
     fixture.identifierModel.updateOne.mockImplementation(async () => {
       calls.push('identifier');
     });
-    fixture.securityActivity.recordIdentifierOperationTerminal.mockImplementation(async () => {
-      calls.push('event');
-      return 'event-1';
-    });
+    fixture.securityActivity.recordIdentifierOperationTerminal.mockImplementation(
+      async () => {
+        calls.push('event');
+        return 'event-1';
+      },
+    );
     fixture.operationModel.updateOne.mockImplementation(async () => {
       calls.push('operation');
     });
@@ -1022,11 +1367,44 @@ describe('AuthIdentifierRepairService', () => {
     );
 
     expect(calls).toEqual(['identifier', 'event', 'operation']);
+    expect(fixture.identifierModel.updateOne).toHaveBeenCalledWith(
+      { _id: 'conflict-1', status: AuthIdentifierStatus.Conflict },
+      {
+        $set: {
+          status: AuthIdentifierStatus.Active,
+          subjectType: AuthIdentifierSubjectType.Staff,
+          subjectId: 'staff-1',
+          lastOperationId: 'repair-parent',
+        },
+        $unset: {
+          conflictingSubjects: '',
+          conflictResolutionStatus: '',
+          pendingOperationId: '',
+          pendingAction: '',
+          releasedAt: '',
+        },
+      },
+      { session },
+    );
     expect(fixture.operationModel.updateOne).toHaveBeenCalledWith(
-      expect.objectContaining({ status: AuthIdentifierOperationStatus.Finalizing }),
-      expect.objectContaining({
-        $set: expect.objectContaining({ status: AuthIdentifierOperationStatus.Completed }),
-      }),
+      {
+        operationId: 'repair-parent',
+        status: AuthIdentifierOperationStatus.Finalizing,
+      },
+      {
+        $set: {
+          status: AuthIdentifierOperationStatus.Completed,
+          result: {
+            outcome: 'success',
+            reasonCategory: 'identifier-offline-repair-completed',
+            httpStatus: 200,
+          },
+          terminalEventId: 'event-1',
+          terminalEventRecordedAt: expect.any(Date),
+          completedAt: expect.any(Date),
+          cleanupStatus: AuthIdentifierOperationCleanupStatus.Pending,
+        },
+      },
       { session },
     );
   });
@@ -1039,9 +1417,14 @@ describe('AuthIdentifierRepairService', () => {
     };
     fixture.operationModel.db.startSession.mockResolvedValue(session);
 
-    await (fixture.service as any).finishFailedParent('repair-failed', 'admin-1');
+    await (fixture.service as any).finishFailedParent(
+      'repair-failed',
+      'admin-1',
+    );
 
-    expect(fixture.securityActivity.recordIdentifierOperationTerminal).toHaveBeenCalledWith(
+    expect(
+      fixture.securityActivity.recordIdentifierOperationTerminal,
+    ).toHaveBeenCalledWith(
       expect.objectContaining({
         operationId: 'repair-failed',
         terminalStatus: 'failed-terminal',
@@ -1049,10 +1432,24 @@ describe('AuthIdentifierRepairService', () => {
       session,
     );
     expect(fixture.operationModel.updateOne).toHaveBeenCalledWith(
-      expect.objectContaining({ status: AuthIdentifierOperationStatus.Finalizing }),
-      expect.objectContaining({
-        $set: expect.objectContaining({ status: AuthIdentifierOperationStatus.FailedTerminal }),
-      }),
+      {
+        operationId: 'repair-failed',
+        status: AuthIdentifierOperationStatus.Finalizing,
+      },
+      {
+        $set: {
+          status: AuthIdentifierOperationStatus.FailedTerminal,
+          result: {
+            outcome: 'failure',
+            reasonCategory: 'identifier-offline-repair-cancelled',
+            httpStatus: 409,
+          },
+          terminalEventId: 'event-1',
+          terminalEventRecordedAt: expect.any(Date),
+          completedAt: expect.any(Date),
+          cleanupStatus: AuthIdentifierOperationCleanupStatus.Pending,
+        },
+      },
       { session },
     );
   });
@@ -1060,7 +1457,9 @@ describe('AuthIdentifierRepairService', () => {
   it('reserves a replacement with pending ownership for the repair operation', async () => {
     const fixture = createFixture();
     const session = {};
-    fixture.identifierModel.findOneAndUpdate.mockResolvedValue({ _id: 'reservation-1' });
+    fixture.identifierModel.findOneAndUpdate.mockResolvedValue({
+      _id: 'reservation-1',
+    });
 
     await expect(
       (fixture.service as any).reserveReplacement(
@@ -1074,11 +1473,58 @@ describe('AuthIdentifierRepairService', () => {
     ).resolves.toMatchObject({ _id: 'reservation-1' });
 
     expect(fixture.identifierModel.findOneAndUpdate).toHaveBeenCalledWith(
-      expect.objectContaining({ normalizedIdentifier: 'member-1@example.test' }),
+      {
+        normalizedIdentifier: 'member-1@example.test',
+        $or: [
+          { pendingOperationId: 'repair-reserve' },
+          { status: AuthIdentifierStatus.Released },
+        ],
+      },
+      {
+        $set: {
+          normalizedIdentifier: 'member-1@example.test',
+          identifierType: AuthIdentifierType.LoginIdentifier,
+          subjectType: AuthIdentifierSubjectType.Member,
+          subjectId: 'member-1',
+          status: AuthIdentifierStatus.Pending,
+          pendingAction: AuthIdentifierPendingAction.Replace,
+          pendingOperationId: 'repair-reserve',
+          updatedBy: 'admin-1',
+        },
+        $setOnInsert: { createdBy: 'admin-1' },
+      },
+      { upsert: true, returnDocument: 'after', session },
+    );
+  });
+
+  it('reserves a staff replacement with the exact email identifier type', async () => {
+    const fixture = createFixture();
+    const session = {};
+    fixture.identifierModel.findOneAndUpdate.mockResolvedValue({
+      _id: 'reservation-staff',
+    });
+
+    await (fixture.service as any).reserveReplacement(
+      {
+        operationId: 'repair-staff-reserve',
+        requestedBy: { subjectId: 'admin-1' },
+      },
+      {
+        subjectType: AuthIdentifierSubjectType.Staff,
+        subjectId: 'staff-reassigned',
+        newIdentifier: 'staff-reassigned@example.test',
+      },
+      session,
+    );
+
+    expect(
+      fixture.identifierModel.findOneAndUpdate.mock.calls[0][1].$set,
+    ).toEqual(
       expect.objectContaining({
-        $set: expect.objectContaining({ pendingOperationId: 'repair-reserve' }),
+        identifierType: AuthIdentifierType.Email,
+        subjectType: AuthIdentifierSubjectType.Staff,
+        subjectId: 'staff-reassigned',
       }),
-      expect.objectContaining({ upsert: true, session }),
     );
   });
 
@@ -1088,11 +1534,61 @@ describe('AuthIdentifierRepairService', () => {
 
     await expect(
       (fixture.service as any).reserveReplacement(
-        { operationId: 'repair-duplicate', requestedBy: { subjectId: 'admin-1' } },
+        {
+          operationId: 'repair-duplicate',
+          requestedBy: { subjectId: 'admin-1' },
+        },
         manifest.reassignments[0],
         {},
       ),
     ).rejects.toThrow('Replacement identifier is already reserved');
+  });
+
+  it.each([
+    ['null', null],
+    ['string', 'replacement-write-failed'],
+    ['empty object', {}],
+    ['nonduplicate code', { code: 1 }],
+  ])(
+    'rethrows the exact %s nonduplicate replacement rejection',
+    async (_case, error) => {
+      const fixture = createFixture();
+      fixture.identifierModel.findOneAndUpdate.mockRejectedValue(error);
+
+      await expect(
+        (fixture.service as any).reserveReplacement(
+          {
+            operationId: 'repair-nonduplicate',
+            requestedBy: { subjectId: 'admin-1' },
+          },
+          manifest.reassignments[0],
+          {},
+        ),
+      ).rejects.toBe(error);
+    },
+  );
+
+  it('honors the duplicate-code ownership check before reading the code value', async () => {
+    const fixture = createFixture();
+    const error = new Proxy(
+      {},
+      {
+        has: () => false,
+        get: (_target, property) => (property === 'code' ? 11000 : undefined),
+      },
+    );
+    fixture.identifierModel.findOneAndUpdate.mockRejectedValue(error);
+
+    await expect(
+      (fixture.service as any).reserveReplacement(
+        {
+          operationId: 'repair-proxy-error',
+          requestedBy: { subjectId: 'admin-1' },
+        },
+        manifest.reassignments[0],
+        {},
+      ),
+    ).rejects.toBe(error);
   });
 
   it('rejects a mismatched pending batch checkpoint before aggregate mutation and ends the session', async () => {
@@ -1128,13 +1624,18 @@ describe('AuthIdentifierRepairService', () => {
 
   it('rejects activation when a public apply observes a batch that is no longer prepared', async () => {
     const fixture = createFixture();
-    const operation = repairOperation('repair-activation-state', oneMemberManifest);
+    const operation = repairOperation(
+      'repair-activation-state',
+      oneMemberManifest,
+    );
     fixture.operationModel.findOne.mockResolvedValue(operation);
     fixture.identifierModel.findById.mockResolvedValue(
       conflictFor(oneMemberManifest),
     );
     fixture.repairBatchModel.findOne
-      .mockResolvedValueOnce({ status: AuthIdentifierRepairBatchStatus.Prepared })
+      .mockResolvedValueOnce({
+        status: AuthIdentifierRepairBatchStatus.Prepared,
+      })
       .mockResolvedValueOnce({
         status: AuthIdentifierRepairBatchStatus.Pending,
         assignments: [],
@@ -1155,7 +1656,10 @@ describe('AuthIdentifierRepairService', () => {
 
   it('fails before repair writes when MongoDB transaction support is absent', async () => {
     const fixture = createFixture();
-    const operation = repairOperation('repair-transaction-check', oneMemberManifest);
+    const operation = repairOperation(
+      'repair-transaction-check',
+      oneMemberManifest,
+    );
     const endSession = jest.fn().mockResolvedValue(undefined);
     fixture.operationModel.findOne.mockResolvedValue(operation);
     fixture.identifierModel.findById.mockResolvedValue(
@@ -1209,14 +1713,19 @@ describe('AuthIdentifierRepairService', () => {
 
   it('maps duplicate replacement writes to the fixed reservation conflict', async () => {
     const fixture = createFixture();
-    const operation = repairOperation('repair-duplicate-upsert', oneMemberManifest);
+    const operation = repairOperation(
+      'repair-duplicate-upsert',
+      oneMemberManifest,
+    );
     const session = transactionSession();
     fixture.operationModel.findOne.mockResolvedValue(operation);
     fixture.identifierModel.findById.mockResolvedValue(
       conflictFor(oneMemberManifest),
     );
     fixture.repairBatchModel.findOne.mockResolvedValue(null);
-    fixture.repairBatchModel.create.mockResolvedValue([{ _id: 'batch-duplicate' }]);
+    fixture.repairBatchModel.create.mockResolvedValue([
+      { _id: 'batch-duplicate' },
+    ]);
     fixture.identifierModel.findOneAndUpdate.mockRejectedValue({ code: 11000 });
     fixture.operationModel.db.startSession.mockResolvedValue(session);
 
@@ -1237,7 +1746,10 @@ describe('AuthIdentifierRepairService', () => {
 
   it('rethrows a nonduplicate replacement write failure unchanged', async () => {
     const fixture = createFixture();
-    const operation = repairOperation('repair-storage-failure', oneMemberManifest);
+    const operation = repairOperation(
+      'repair-storage-failure',
+      oneMemberManifest,
+    );
     const session = transactionSession();
     const storageFailure = new Error('replacement-write-failed');
     fixture.operationModel.findOne.mockResolvedValue(operation);
@@ -1245,7 +1757,9 @@ describe('AuthIdentifierRepairService', () => {
       conflictFor(oneMemberManifest),
     );
     fixture.repairBatchModel.findOne.mockResolvedValue(null);
-    fixture.repairBatchModel.create.mockResolvedValue([{ _id: 'batch-storage' }]);
+    fixture.repairBatchModel.create.mockResolvedValue([
+      { _id: 'batch-storage' },
+    ]);
     fixture.identifierModel.findOneAndUpdate.mockRejectedValue(storageFailure);
     fixture.operationModel.db.startSession.mockResolvedValue(session);
 
@@ -1263,8 +1777,18 @@ describe('AuthIdentifierRepairService', () => {
   });
 
   it.each([
-    ['staff', AuthIdentifierSubjectType.Staff, 'staff-missing', 'staffUserModel'],
-    ['member', AuthIdentifierSubjectType.Member, 'member-missing', 'memberModel'],
+    [
+      'staff',
+      AuthIdentifierSubjectType.Staff,
+      'staff-missing',
+      'staffUserModel',
+    ],
+    [
+      'member',
+      AuthIdentifierSubjectType.Member,
+      'member-missing',
+      'memberModel',
+    ],
   ] as const)(
     'maps a missing %s aggregate to the fixed subject-not-found error',
     async (_label, subjectType, subjectId, modelName) => {
@@ -1322,7 +1846,10 @@ describe('AuthIdentifierRepairService', () => {
 
   it('skips the aggregate update when the replacement identifier is already assigned', async () => {
     const fixture = createFixture();
-    const operation = repairOperation('repair-already-assigned', oneMemberManifest);
+    const operation = repairOperation(
+      'repair-already-assigned',
+      oneMemberManifest,
+    );
     const completed = {
       ...operation,
       status: AuthIdentifierOperationStatus.Completed,
@@ -1348,7 +1875,9 @@ describe('AuthIdentifierRepairService', () => {
         status: AuthIdentifierRepairBatchStatus.Prepared,
         assignments: [{ targetReservationId: 'reservation-existing' }],
       });
-    fixture.repairBatchModel.create.mockResolvedValue([{ _id: 'batch-existing' }]);
+    fixture.repairBatchModel.create.mockResolvedValue([
+      { _id: 'batch-existing' },
+    ]);
     fixture.identifierModel.findOneAndUpdate.mockResolvedValue({
       _id: 'reservation-existing',
     });
@@ -1391,9 +1920,10 @@ describe('AuthIdentifierRepairService', () => {
       aggregateManifest,
     );
     const session = transactionSession();
-    const staffModel = fixture.staffUserModel as typeof fixture.staffUserModel & {
-      findById: jest.Mock;
-    };
+    const staffModel =
+      fixture.staffUserModel as typeof fixture.staffUserModel & {
+        findById: jest.Mock;
+      };
     const memberModel = fixture.memberModel as typeof fixture.memberModel & {
       findById: jest.Mock;
     };
@@ -1421,7 +1951,9 @@ describe('AuthIdentifierRepairService', () => {
           { targetReservationId: 'reservation-member' },
         ],
       });
-    fixture.repairBatchModel.create.mockResolvedValue([{ _id: 'batch-fields' }]);
+    fixture.repairBatchModel.create.mockResolvedValue([
+      { _id: 'batch-fields' },
+    ]);
     fixture.identifierModel.findOneAndUpdate
       .mockResolvedValueOnce({ _id: 'reservation-staff' })
       .mockResolvedValueOnce({ _id: 'reservation-member' });
@@ -1452,6 +1984,119 @@ describe('AuthIdentifierRepairService', () => {
       { session },
     );
     expect(session.endSession).toHaveBeenCalledTimes(3);
+  });
+
+  it('continues an exact matching pending checkpoint without recreating its batch', async () => {
+    const fixture = createFixture();
+    const operation = repairOperation(
+      'repair-checkpoint-match',
+      oneMemberManifest,
+    );
+    const session = transactionSession();
+    fixture.repairBatchModel.findOne.mockResolvedValue({
+      status: AuthIdentifierRepairBatchStatus.Pending,
+      checkpointHash: 'bSCC8d3imhakz4DV1B28AjiTd_9_pTP5FS3nsPWpyas',
+    });
+    fixture.operationModel.db.startSession.mockResolvedValue(session);
+    jest
+      .spyOn(fixture.service as never, 'reserveReplacement' as never)
+      .mockResolvedValue({ _id: 'reservation-checkpoint-match' } as never);
+    jest
+      .spyOn(fixture.service as never, 'applyAggregateIdentifier' as never)
+      .mockResolvedValue(undefined as never);
+
+    await (fixture.service as any).prepareBatch(
+      operation,
+      { _id: oneMemberManifest.conflictId },
+      oneMemberManifest.reassignments,
+      0,
+      1,
+    );
+
+    expect(fixture.repairBatchModel.create).not.toHaveBeenCalled();
+    expect(fixture.repairBatchModel.updateOne).toHaveBeenCalledTimes(2);
+    expect(session.endSession).toHaveBeenCalledTimes(1);
+  });
+
+  it('restores the exact staff aggregate owner during compensation', async () => {
+    const fixture = createFixture();
+    const session = {};
+
+    await (fixture.service as any).setAggregateIdentifier(
+      AuthIdentifierSubjectType.Staff,
+      'staff-restored',
+      'restored@example.test',
+      session,
+    );
+
+    expect(fixture.staffUserModel.updateOne).toHaveBeenCalledWith(
+      { _id: 'staff-restored' },
+      {
+        $set: { email: 'restored@example.test' },
+        $inc: { authVersion: 1 },
+      },
+      { session },
+    );
+    expect(fixture.memberModel.updateOne).not.toHaveBeenCalled();
+  });
+
+  it('rejects a manifest when the conflict has no persisted claimants', () => {
+    const fixture = createFixture();
+
+    expect(() =>
+      (fixture.service as any).validateManifestSubjects(
+        { status: AuthIdentifierStatus.Conflict },
+        manifest,
+      ),
+    ).toThrow('Repair manifest must account for every conflict claimant');
+  });
+
+  it('accepts an exact empty claimant set during direct manifest validation', () => {
+    const fixture = createFixture();
+
+    expect(() =>
+      (fixture.service as any).validateManifestSubjects(
+        { status: AuthIdentifierStatus.Conflict },
+        { conflictId: 'conflict-empty', reassignments: [] },
+      ),
+    ).not.toThrow();
+  });
+
+  it('rejects direct persisted-manifest verification for a changed manifest', () => {
+    const fixture = createFixture();
+    const operation = repairOperation('repair-verify-direct', manifest);
+
+    expect(() =>
+      (fixture.service as any).verifyPersistedManifest(operation, {
+        ...manifest,
+        reassignments: [
+          {
+            ...manifest.reassignments[0],
+            newIdentifier: 'changed@example.test',
+          },
+          ...manifest.reassignments.slice(1),
+        ],
+      }),
+    ).toThrow('Repair manifest does not match dry run');
+  });
+
+  it.each([
+    [
+      'wrong operation type',
+      { operationType: AuthIdentifierOperationType.Claim },
+    ],
+    ['missing manifest hash', { manifestHash: undefined }],
+    ['missing manifest key version', { manifestKeyVersion: undefined }],
+  ])('rejects persisted-manifest authorization with %s', (_case, overrides) => {
+    const fixture = createFixture();
+    const operation = {
+      ...repairOperation('repair-invalid-direct', manifest),
+      ...overrides,
+    };
+
+    expect(() =>
+      (fixture.service as any).verifyPersistedManifest(operation, manifest),
+    ).toThrow('Repair operation is invalid');
   });
 
   it('releases the original conflict under the first reassigned subject and records the terminal event first', async () => {
@@ -1574,7 +2219,9 @@ describe('AuthIdentifierRepairService', () => {
       });
     fixture.operationModel.updateOne.mockImplementation(
       async (_filter: unknown, update: { $set?: { status?: string } }) => {
-        if (update.$set?.status === AuthIdentifierOperationStatus.FailedTerminal) {
+        if (
+          update.$set?.status === AuthIdentifierOperationStatus.FailedTerminal
+        ) {
           terminalOrder.push('operation');
         }
         return { modifiedCount: 1 };

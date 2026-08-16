@@ -703,8 +703,8 @@ function writeUpdaterFixture() {
   return { root, manifest };
 }
 
-// Production break caught: the tracked manifest or allowlist is absent or stale.
-test('checks the tracked critical-rule manifest and strict empty allowlist', () => {
+// Production break caught: the tracked manifest or reviewed allowlist is absent or stale.
+test('checks the tracked critical-rule manifest and reviewed allowlist', () => {
   const result = updaterResult(REPOSITORY_ROOT, '--check');
 
   assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
@@ -728,9 +728,18 @@ test('checks the tracked critical-rule manifest and strict empty allowlist', () 
   );
 
   assert.deepEqual(validateCriticalManifest(manifest, realSources), manifest);
+  assert.equal(allowlist.entries.length, 3);
+  assert.deepEqual(
+    allowlist.entries.map((entry) => entry.fingerprint),
+    [
+      '0108d029ef22842e4c8a00d900136b2dbc483f0013d796483b852f024a550cc5',
+      'c010a2ec5f4bb9177df61f0bc8326b2d04d2463a59bf5dd2337b840dedc2f36e',
+      'b4a9385a539d4b16ca74d4f3f5c70adb2775a73e50a66a80aa1acf17e30bd51a',
+    ],
+  );
   assert.deepEqual(
     validateEquivalentAllowlist(allowlist, manifest, new Date().toISOString()),
-    { schemaVersion: 1, entries: [] },
+    allowlist,
   );
   assert.deepEqual(
     [...new Set(manifest.rules.map((rule) => rule.source))],

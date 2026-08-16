@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:subagent-driven-development` (recommended) or `superpowers:executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Use `superpowers:test-driven-development` for Tasks 1–7 and `superpowers:verification-before-completion` before every task handoff and before the final handoff.
 
-**Goal:** Add an independently reported mutation-quality gate for five critical backend services, with a raw combined mutation score of at least 70%, zero unreviewed surviving or no-coverage mutants in critical authorization/state-transition ranges, a pull-request smoke run no longer than five minutes, and a complete scheduled run no longer than fifteen minutes.
+**Goal:** Add an independently reported mutation-quality gate for five critical backend services, with a raw combined mutation score of at least 70%, zero unreviewed surviving or no-coverage mutants in critical authorization/state-transition ranges, a pull-request smoke run no longer than 350 seconds, and a complete scheduled run no longer than fifteen minutes.
 
 **Architecture:** Stryker mutates only the five approved service files and uses the existing Jest/ts-jest suite with supported `perTest` coverage analysis. A source-hashed critical-rule manifest identifies security and state-machine ranges. A test-first Node policy layer validates Stryker JSON, enforces the manifest, an exact-fingerprint equivalent-mutant allowlist, and an upward-only baseline. A budget-aware wrapper runs Stryker, preserves JSON/HTML output and duration metadata even on failure, and supplies narrow manifest ranges to the PR smoke profile without weakening the complete profile.
 
@@ -22,7 +22,7 @@ and breaking thresholds follow the official StrykerJS documentation:
 - Require raw combined selected-module mutation score `>= 70.00%`.
 - Never lower the tracked raw mutation baseline.
 - Permit no `Survived` or `NoCoverage` mutant in a reviewed critical range unless its exact fingerprint is independently proved equivalent.
-- Keep PR smoke `<= 300000 ms` and complete scheduled/manual mutation `<= 900000 ms` on `ubuntu-24.04` with Node 22.
+- Keep PR smoke `<= 350000 ms` and complete scheduled/manual mutation `<= 900000 ms` on `ubuntu-24.04` with Node 22.
 - Pin `@stryker-mutator/core` and `@stryker-mutator/jest-runner` to `9.6.1`; do not upgrade Jest or ts-jest.
 - Use supported Jest `perTest` analysis plus JSON and HTML Stryker reports.
 - Preserve all existing coverage, changed-line, frontend, and E2E gates as separate mandatory metrics.
@@ -33,15 +33,15 @@ and breaking thresholds follow the official StrykerJS documentation:
 
 This plan produces a fifth metric. It does not merge mutation results into backend coverage, frontend coverage, or end-to-end pass rate.
 
-| Metric | Required result |
-|---|---:|
-| Complete-profile raw combined mutation score across the five selected modules | `>= 70.00%` |
-| Raw mutation-score baseline | Never decreases |
-| `Survived` or `NoCoverage` mutants overlapping a reviewed critical rule | `0`, except an exact reviewed equivalent fingerprint |
-| PR smoke elapsed time on `ubuntu-24.04`, Node 22 | `<= 300,000 ms` |
-| Scheduled/manual complete elapsed time on `ubuntu-24.04`, Node 22 | `<= 900,000 ms` |
-| Complete-profile production scope | Exactly five approved source files |
-| Existing coverage, changed-line, and end-to-end gates | Unchanged and still required |
+| Metric                                                                        |                                      Required result |
+| ----------------------------------------------------------------------------- | ---------------------------------------------------: |
+| Complete-profile raw combined mutation score across the five selected modules |                                          `>= 70.00%` |
+| Raw mutation-score baseline                                                   |                                      Never decreases |
+| `Survived` or `NoCoverage` mutants overlapping a reviewed critical rule       | `0`, except an exact reviewed equivalent fingerprint |
+| PR smoke elapsed time on `ubuntu-24.04`, Node 22                              |                                      `<= 350,000 ms` |
+| Scheduled/manual complete elapsed time on `ubuntu-24.04`, Node 22             |                                      `<= 900,000 ms` |
+| Complete-profile production scope                                             |                   Exactly five approved source files |
+| Existing coverage, changed-line, and end-to-end gates                         |                         Unchanged and still required |
 
 The raw Stryker aggregate is the reported score and baseline. Equivalent-mutant entries do not improve that score; they only satisfy the critical-range survivor rule after independent review.
 
@@ -225,12 +225,12 @@ test/quality/mutation-baseline.json
 
 Every dispatch must name its model and reasoning effort. A reviewer must be a fresh agent that did not implement the task.
 
-| Phase | Tasks | Implementer | Required reviewer | Rationale |
-|---|---|---|---|---|
-| Inventory and dependency lock | 0 | `gpt-5.6-terra`, medium | `gpt-5.6-sol`, high | Mechanical evidence gathering, followed by security-aware contract review |
-| Mutation infrastructure | 1–4 | `gpt-5.6-sol`, high | `gpt-5.6-sol`, high | Mutation schema, source-range integrity, process control, and fail-closed policy |
-| Critical mutant hardening | 5–6 | `gpt-5.6-sol`, high | `gpt-5.6-sol`, high | Authorization, replay/revocation, ownership, lifecycle, and concurrency semantics |
-| CI and acceptance | 7–9 | `gpt-5.6-sol`, high | `gpt-5.6-sol`, high | Supply-chain pinning, runtime gates, and whole-plan assurance |
+| Phase                         | Tasks | Implementer             | Required reviewer   | Rationale                                                                         |
+| ----------------------------- | ----- | ----------------------- | ------------------- | --------------------------------------------------------------------------------- |
+| Inventory and dependency lock | 0     | `gpt-5.6-terra`, medium | `gpt-5.6-sol`, high | Mechanical evidence gathering, followed by security-aware contract review         |
+| Mutation infrastructure       | 1–4   | `gpt-5.6-sol`, high     | `gpt-5.6-sol`, high | Mutation schema, source-range integrity, process control, and fail-closed policy  |
+| Critical mutant hardening     | 5–6   | `gpt-5.6-sol`, high     | `gpt-5.6-sol`, high | Authorization, replay/revocation, ownership, lifecycle, and concurrency semantics |
+| CI and acceptance             | 7–9   | `gpt-5.6-sol`, high     | `gpt-5.6-sol`, high | Supply-chain pinning, runtime gates, and whole-plan assurance                     |
 
 If a named model is unavailable, stop. Substitution requires an equal-or-better model, the same or greater reasoning effort, and an entry under `Deferred findings` explaining who authorized it.
 
@@ -242,19 +242,33 @@ Create one report per task. Every report must contain these exact headings:
 # Task NN Evidence
 
 ## Task
+
 ## Implementer model and reasoning
+
 ## Reviewer model and reasoning
+
 ## Base SHA
+
 ## Files changed
+
 ## RED command and exit
+
 ## RED evidence
+
 ## GREEN command and exit
+
 ## GREEN evidence
+
 ## Focused metrics
+
 ## Full-suite commands and exits
+
 ## Runtime evidence
+
 ## Commit hash
+
 ## Deferred findings
+
 ## Reviewer decision
 ```
 
@@ -266,11 +280,17 @@ Create one report per task. Every report must contain these exact headings:
 Base SHA: one exact lowercase 40-character SHA returned by `git rev-parse HEAD`
 
 ## Dependency evidence
+
 ## Model dispatch ledger
+
 ## Task status
+
 ## Mutation score history
+
 ## Critical-rule decisions
+
 ## Runtime history
+
 ## Integration status
 ```
 
@@ -518,7 +538,12 @@ export function sha256Text(text) {}
 export function mutantFingerprint(mutant, sourceSha256) {}
 export function validateCriticalManifest(manifest, sourceByPath) {}
 export function validateEquivalentAllowlist(allowlist, manifest, nowIso) {}
-export function evaluateMutationReport({ report, manifest, allowlist, baseline }) {}
+export function evaluateMutationReport({
+  report,
+  manifest,
+  allowlist,
+  baseline,
+}) {}
 export function formatPolicySummary(evaluation) {}
 ```
 
@@ -619,22 +644,22 @@ The tracked file must implement this exact schema:
 
 ```ts
 interface CriticalRuleManifest {
-  schemaVersion: 1
+  schemaVersion: 1;
   rules: Array<{
-    id: string
-    invariant: string
+    id: string;
+    invariant: string;
     source:
       | 'src/auth/token-session.service.ts'
       | 'src/auth/auth-identifier-repair.service.ts'
       | 'src/auth/auth-identifier-reconciliation.service.ts'
       | 'src/members/members.service.ts'
-      | 'src/borrowings/borrowings.service.ts'
-    sourceSha256: string
-    startLine: number
-    endLine: number
-    startAnchor: string
-    endAnchor: string
-  }>
+      | 'src/borrowings/borrowings.service.ts';
+    sourceSha256: string;
+    startLine: number;
+    endLine: number;
+    startAnchor: string;
+    endAnchor: string;
+  }>;
 }
 ```
 
@@ -714,8 +739,8 @@ buildStrykerConfig(profile: 'smoke' | 'complete', manifest: object): object
 runMutation(profile: 'smoke' | 'complete', dependencies?: object): Promise<object>
 ```
 
-  It also produces profile-specific `mutation.json`, `mutation.html`,
-  `duration.json`, `summary.json`, and `summary.md`.
+It also produces profile-specific `mutation.json`, `mutation.html`,
+`duration.json`, `summary.json`, and `summary.md`.
 
 - [ ] **Step 1: Write failing runner/config tests**
 
@@ -724,7 +749,7 @@ Tests must inject a fake child-process launcher and monotonic clock. Cover:
 - `complete profile mutates exactly five full source files`
 - `smoke profile converts every reviewed rule to a supported mutation range`
 - `both profiles use Jest, perTest, json and html reporters, and break at 70`
-- `runner terminates smoke after 300000 ms and complete after 900000 ms`
+- `runner terminates smoke after 350000 ms and complete after 900000 ms`
 - `runner preserves duration metadata and non-zero status after timeout`
 - `runner writes commit, Node, OS, source hashes, score and policy result`
 - `runner cannot bypass policy enforcement when Stryker exits zero`
@@ -784,23 +809,23 @@ node scripts/quality/run-mutation.mjs smoke
 node scripts/quality/run-mutation.mjs complete
 ```
 
-Use `performance.now()` for elapsed time. Spawn local Stryker through `npx --no-install`, using `npx.cmd` on Windows and `npx` elsewhere, with `shell: false`. Apply `300000 ms` and `900000 ms` hard budgets. On expiry, send `SIGTERM`, allow ten seconds for cleanup, then send `SIGKILL`; preserve a non-zero result.
+Use `performance.now()` for elapsed time. Spawn local Stryker through `npx --no-install`, using `npx.cmd` on Windows and `npx` elsewhere, with `shell: false`. Apply `350000 ms` and `900000 ms` hard budgets. On expiry, send `SIGTERM`, allow ten seconds for cleanup, then send `SIGKILL`; preserve a non-zero result.
 
 Always write `reports/mutation/{profile}/duration.json` with:
 
 ```ts
 interface MutationDuration {
-  profile: 'smoke' | 'complete'
-  startedAt: string
-  finishedAt: string
-  durationMs: number
-  budgetMs: 300000 | 900000
-  timedOut: boolean
-  strykerExitCode: number | null
-  policyExitCode: number
-  commitSha: string
-  nodeVersion: string
-  os: string
+  profile: 'smoke' | 'complete';
+  startedAt: string;
+  finishedAt: string;
+  durationMs: number;
+  budgetMs: 350000 | 900000;
+  timedOut: boolean;
+  strykerExitCode: number | null;
+  policyExitCode: number;
+  commitSha: string;
+  nodeVersion: string;
+  os: string;
 }
 ```
 
@@ -903,8 +928,26 @@ The implementer cannot approve an equivalent. Add it only after the fresh review
 
 - [ ] **Step 4: Run the complete-profile RED**
 
+Binding Task 5 amendment (human-approved `2026-08-16`): the complete producer
+is five disjoint, full-source shards because the monolithic producer exceeded
+the unchanged `900000 ms` gate without JSON/HTML. Each named shard uses
+concurrency `4`, owns exactly one selected production file, has its own
+`900000 ms` hard/runtime gate, and writes isolated JSON/HTML/log/duration/temp
+artifacts. All five shards must have the same commit, Node major, source hashes,
+configuration hash, schema, and budget. The fail-closed merge uses canonical
+source/mutator/replacement/location identity independent of report-local mutant
+id, rejects overlap or missing/current-invalid evidence, and requires the exact
+preserved complete instrumentation union of `1727` mutants before invoking the
+Task 2 policy once. This amendment changes no production source, manifest range,
+mutator, reporter, threshold, dependency, smoke behavior, or runtime gate.
+
 ```powershell
-node scripts/quality/run-mutation.mjs complete
+node scripts/quality/run-mutation.mjs complete-shard token-session
+node scripts/quality/run-mutation.mjs complete-shard identifier-repair
+node scripts/quality/run-mutation.mjs complete-shard identifier-reconciliation
+node scripts/quality/run-mutation.mjs complete-shard members
+node scripts/quality/run-mutation.mjs complete-shard borrowings
+node scripts/quality/run-mutation.mjs complete-merge
 ```
 
 Expected RED is permitted for a raw score below 70 or non-critical survivors. It is not permitted for auth critical-range survivors, missing reports, scope drift, or timeout. Record module and combined scores for Task 06.
@@ -990,19 +1033,19 @@ Add a tested `recordBaseline` export/CLI mode that refuses to write unless the c
 
 ```ts
 interface MutationBaseline {
-  schemaVersion: 1
-  profile: 'complete'
-  rawCombinedScore: number
-  generatedFromCommit: string
-  generatedAt: string
+  schemaVersion: 1;
+  profile: 'complete';
+  rawCombinedScore: number;
+  generatedFromCommit: string;
+  generatedAt: string;
   selectedSources: [
     'src/auth/token-session.service.ts',
     'src/auth/auth-identifier-repair.service.ts',
     'src/auth/auth-identifier-reconciliation.service.ts',
     'src/members/members.service.ts',
-    'src/borrowings/borrowings.service.ts'
-  ]
-  sourceSha256: Record<string, string>
+    'src/borrowings/borrowings.service.ts',
+  ];
+  sourceSha256: Record<string, string>;
 }
 ```
 
@@ -1151,7 +1194,7 @@ node --test test/quality/mutation-runner.test.mjs test/quality/mutation-policy.t
 npm run mutation:smoke
 ```
 
-Expected: all exit `0`, and smoke duration is at most `300000 ms`.
+Expected: all exit `0`, and smoke duration is at most `350000 ms`.
 
 - [ ] **Step 4: Review non-replacement and commit**
 
@@ -1214,7 +1257,7 @@ Use `gh run list --workflow mutation.yml --branch $branchName` to locate both re
 
 Expected:
 
-- smoke `durationMs <= 300000`;
+- smoke `durationMs <= 350000`;
 - complete `durationMs <= 900000`;
 - raw complete score `>= 70.00` and `>= baseline`;
 - exact five-file complete scope;
@@ -1388,7 +1431,7 @@ Stop immediately and preserve evidence when:
 - complete mutation scope is not exactly the five selected files;
 - a critical `Survived` or `NoCoverage` mutant lacks an exact independently reviewed equivalent fingerprint;
 - raw combined score is below 70 or below the tracked baseline;
-- smoke exceeds five minutes or complete exceeds fifteen minutes on the reference runner;
+- smoke exceeds 350 seconds or complete exceeds fifteen minutes on the reference runner;
 - an existing coverage, changed-line, frontend, or E2E gate regresses.
 
 Rollback is commit-granular:

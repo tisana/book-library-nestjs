@@ -1,4 +1,35 @@
 {
   "schemaVersion": 1,
-  "entries": []
+  "entries": [
+    {
+      "fingerprint": "0108d029ef22842e4c8a00d900136b2dbc483f0013d796483b852f024a550cc5",
+      "ruleId": "token-interrupted-cas-finalization",
+      "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051",
+      "proof": "The original rejection handler returns null and the mutant returns undefined. In both cases Promise.prototype.catch converts commitMarker rejection into fulfillment; finalizeAndRevoke awaits that promise without binding or returning its fulfillment value, then executes the same awaited revokeFamily call. On commitMarker fulfillment the handler is not invoked. Therefore no service input can distinguish their public results, thrown errors, durable marker/family writes, call order, or microtask scheduling.",
+      "reviewerModel": "gpt-5.6-sol",
+      "reviewerReasoning": "high",
+      "reviewedAt": "2026-08-12T00:00:00.000Z",
+      "expiresAt": "2026-11-10T00:00:00.000Z"
+    },
+    {
+      "fingerprint": "c010a2ec5f4bb9177df61f0bc8326b2d04d2463a59bf5dd2337b840dedc2f36e",
+      "ruleId": "repair-batch-identity-and-checkpoint",
+      "sourceSha256": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
+      "proof": "At this call, item.newIdentifier is a normalized non-empty JavaScript string. On the binding Node 22 runtime, Hmac.update normalizes both the explicit utf8 encoding and the mutant empty encoding string to UTF-8; Buffer, TypedArray, and DataView inputs ignore inputEncoding, although those types are not service-supported here. Both forms synchronously consume identical bytes, return the same Hmac object, produce the same base64url digest or the same error, and preserve all reads, writes, calls, and ordering. Therefore no supported service input distinguishes this exact mutant.",
+      "reviewerModel": "gpt-5.6-sol",
+      "reviewerReasoning": "high",
+      "reviewedAt": "2026-08-12T00:00:00.000Z",
+      "expiresAt": "2026-11-10T00:00:00.000Z"
+    },
+    {
+      "fingerprint": "b4a9385a539d4b16ca74d4f3f5c70adb2775a73e50a66a80aa1acf17e30bd51a",
+      "ruleId": "reconciliation-secret-decoding",
+      "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803",
+      "proof": "Every valid call reaching the mutated expression passes a primitive JavaScript string: key material is string or Buffer, and Buffer material bypasses decodeConfiguredSecret. In Node 22.22.2, Buffer.from dispatches string input to fromString, where both the falsy empty encoding and exact utf8 select the identical encodingOps.utf8 object before the same allocation and byte conversion. Therefore the original and mutant produce byte-identical buffers and identical errors for every supported input; the canonical-base64url branch, HMAC result, writes, calls, and ordering are unchanged. Distinguishing the literal argument requires monkey-patching Buffer.from or violating the typed key-material contract, which is implementation-private or mock-only evidence rather than an observable supported service behavior.",
+      "reviewerModel": "gpt-5.6-sol",
+      "reviewerReasoning": "high",
+      "reviewedAt": "2026-08-16T00:00:00.000Z",
+      "expiresAt": "2026-11-14T00:00:00.000Z"
+    }
+  ]
 }

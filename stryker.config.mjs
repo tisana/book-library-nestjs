@@ -45,16 +45,10 @@ function requireProfile(profile) {
 }
 
 function requireShard(profile, shardId) {
-  if (profile === 'complete') {
-    if (shardId !== undefined) {
-      throw new TypeError('MUTATION_SHARD must be absent for complete.');
-    }
-    return null;
-  }
   const shard = SMOKE_SHARDS.find((entry) => entry.id === shardId);
   if (!shard) {
     throw new TypeError(
-      `MUTATION_SHARD must be exactly one of ${SMOKE_SHARDS.map((entry) => entry.id).join(', ')} for smoke.`,
+      `MUTATION_SHARD must be exactly one of ${SMOKE_SHARDS.map((entry) => entry.id).join(', ')} for ${profile}.`,
     );
   }
   return shard;
@@ -96,10 +90,7 @@ function smokeRanges(manifest, shard) {
 export function buildStrykerConfig(profile, manifest, shardId) {
   const validatedProfile = requireProfile(profile);
   const shard = requireShard(validatedProfile, shardId);
-  const reportRoot =
-    validatedProfile === 'complete'
-      ? 'reports/mutation/complete'
-      : `reports/mutation/smoke/shards/${shard.id}`;
+  const reportRoot = `reports/mutation/${validatedProfile}/shards/${shard.id}`;
   return {
     testRunner: 'jest',
     coverageAnalysis: 'perTest',
@@ -113,7 +104,7 @@ export function buildStrykerConfig(profile, manifest, shardId) {
     },
     mutate:
       validatedProfile === 'complete'
-        ? [...SELECTED_SOURCES]
+        ? [shard.source]
         : smokeRanges(manifest, shard),
     jsonReporter: { fileName: `${reportRoot}/mutation.json` },
     htmlReporter: { fileName: `${reportRoot}/mutation.html` },

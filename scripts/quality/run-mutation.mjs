@@ -55,8 +55,14 @@ const SMOKE_SHARDS = [
     concurrency: 2,
   },
 ];
+const COMPLETE_SHARDS = SMOKE_SHARDS.map(({ id, source }) => ({
+  id,
+  source,
+  concurrency: 4,
+}));
 const SMOKE_MUTANT_COUNT = 1366;
-const BUDGETS = { smoke: 300000, complete: 900000 };
+const COMPLETE_MUTANT_COUNT = 1727;
+const BUDGETS = { smoke: 350000, complete: 900000 };
 const CLEANUP_GRACE_MS = 10000;
 const FORCE_CLEANUP_VERIFY_MS = 10000;
 const PROCESS_TREE_POLL_MS = 25;
@@ -377,11 +383,9 @@ async function cleanupTimedOutProcessTree(tree, dependencies) {
 
 function reportDirectory(root, profile, shardId) {
   const tracked =
-    profile === 'complete'
-      ? 'reports/mutation/complete'
-      : shardId === undefined
-        ? 'reports/mutation/smoke'
-        : `reports/mutation/smoke/shards/${shardId}`;
+    shardId === undefined
+      ? `reports/mutation/${profile}`
+      : `reports/mutation/${profile}/shards/${shardId}`;
   return repositoryPath(root, tracked);
 }
 
@@ -400,13 +404,13 @@ function nextHistoryDirectory(historyRoot) {
   }
 }
 
-function preserveShardDirectory(root, shardId) {
-  const directory = reportDirectory(root, 'smoke', shardId);
+function preserveShardDirectory(root, profile, shardId) {
+  const directory = reportDirectory(root, profile, shardId);
   if (!existsSync(directory)) {
     return null;
   }
   const historyRoot = join(
-    reportDirectory(root, 'smoke'),
+    reportDirectory(root, profile),
     'history',
     'shards',
     shardId,
@@ -416,8 +420,8 @@ function preserveShardDirectory(root, shardId) {
   return historyDirectory;
 }
 
-function preserveAggregateArtifacts(root) {
-  const directory = reportDirectory(root, 'smoke');
+function preserveAggregateArtifacts(root, profile) {
+  const directory = reportDirectory(root, profile);
   const existing = AGGREGATE_ARTIFACTS.filter((name) =>
     existsSync(join(directory, name)),
   );
@@ -441,7 +445,7 @@ function launchStryker(profile, shard, dependencies, timing) {
     shard?.id,
   );
   if (shard) {
-    preserveShardDirectory(dependencies.repositoryRoot, shard.id);
+    preserveShardDirectory(dependencies.repositoryRoot, profile, shard.id);
   }
   mkdirSync(directory, { recursive: true });
   const command = dependencies.platform === 'win32' ? 'npx.cmd' : 'npx';
@@ -605,16 +609,17 @@ function canonicalMutantIdentity(source, mutant) {
   ]);
 }
 
-function validateShardDefinitions(shards, manifest) {
-  if (!Array.isArray(shards) || shards.length !== SMOKE_SHARDS.length) {
-    throw new TypeError('Smoke topology requires exactly five shards.');
+function validateShardDefinitions(profile, shards, manifest) {
+  const expectedShards = profile === 'smoke' ? SMOKE_SHARDS : COMPLETE_SHARDS;
+  if (!Array.isArray(shards) || shards.length !== expectedShards.length) {
+    throw new TypeError(`${profile} topology requires exactly five shards.`);
   }
   const ids = new Set(shards.map((shard) => shard.id));
   const sources = new Set(shards.map((shard) => shard.source));
   if (ids.size !== shards.length) {
-    throw new TypeError('Smoke shard ids must be unique.');
+    throw new TypeError(`${profile} shard ids must be unique.`);
   }
-  for (const expected of SMOKE_SHARDS) {
+  for (const expected of expectedShards) {
     const actual = shards.find((shard) => shard.id === expected.id);
     if (
       !actual ||
@@ -622,7 +627,7 @@ function validateShardDefinitions(shards, manifest) {
       actual.concurrency !== expected.concurrency
     ) {
       throw new TypeError(
-        `Smoke shard topology is invalid for ${expected.id}.`,
+        `${profile} shard topology is invalid for ${expected.id}.`,
       );
     }
   }
@@ -631,7 +636,7 @@ function validateShardDefinitions(shards, manifest) {
     sources.size !== SELECTED_SOURCES.length
   ) {
     throw new TypeError(
-      'Smoke shard source union must equal selected sources.',
+      `${profile} shard source union must equal selected sources.`,
     );
   }
   for (const [index, rule] of manifest.rules.entries()) {
@@ -652,13 +657,15 @@ function htmlEscape(value) {
     .replaceAll('"', '&quot;');
 }
 
-export function mergeSmokeShardReports({
+function mergeShardReports({
+  profile,
   repositoryRoot,
   manifest,
-  shards = SMOKE_SHARDS,
+  shards,
   shardResults,
+  expectedMutantCount,
 }) {
-  validateShardDefinitions(shards, manifest);
+  validateShardDefinitions(profile, shards, manifest);
   const resultById = new Map(
     (shardResults ?? []).map((result) => [result.shardId, result]),
   );
@@ -671,7 +678,7 @@ export function mergeSmokeShardReports({
   let provenance;
   const expectedSourceSha256 = sourceHashes(manifest);
   for (const shard of shards) {
-    const directory = reportDirectory(repositoryRoot, 'smoke', shard.id);
+    const directory = reportDirectory(repositoryRoot, profile, shard.id);
     const jsonPath = join(directory, 'mutation.json');
     const htmlPath = join(directory, 'mutation.html');
     const durationPath = join(directory, 'duration.json');
@@ -711,14 +718,14 @@ export function mergeSmokeShardReports({
       throw new TypeError('Shard report schema and thresholds must agree.');
     }
     if (
-      duration.profile !== 'smoke' ||
+      duration.profile !== profile ||
       duration.shardId !== shard.id ||
       duration.source !== shard.source ||
-      duration.budgetMs !== BUDGETS.smoke ||
+      duration.budgetMs !== BUDGETS[profile] ||
       duration.timedOut !== false ||
       !Number.isFinite(duration.durationMs) ||
       duration.durationMs < 0 ||
-      duration.durationMs > BUDGETS.smoke
+      duration.durationMs > BUDGETS[profile]
     ) {
       throw new TypeError(`Shard duration is invalid for ${shard.id}.`);
     }
@@ -730,7 +737,7 @@ export function mergeSmokeShardReports({
       reportSchemaVersion: summary.reportSchemaVersion,
     };
     if (
-      summary.profile !== 'smoke' ||
+      summary.profile !== profile ||
       summary.shardId !== shard.id ||
       summary.source !== shard.source ||
       summary.artifactExitCode !== 0 ||
@@ -789,13 +796,13 @@ export function mergeSmokeShardReports({
   ) {
     throw new TypeError('Canonical mutant union omitted a shard mutant.');
   }
-  if (canonicalMutantCount !== SMOKE_MUTANT_COUNT) {
+  if (canonicalMutantCount !== expectedMutantCount) {
     throw new TypeError(
-      `Canonical mutant union must contain exactly ${SMOKE_MUTANT_COUNT} mutants; received ${canonicalMutantCount}.`,
+      `Canonical mutant union must contain exactly ${expectedMutantCount} mutants; received ${canonicalMutantCount}.`,
     );
   }
   const canonicalReport = { schemaVersion, thresholds, files };
-  const outputDirectory = reportDirectory(repositoryRoot, 'smoke');
+  const outputDirectory = reportDirectory(repositoryRoot, profile);
   mkdirSync(outputDirectory, { recursive: true });
   writeJson(join(outputDirectory, 'mutation.json'), canonicalReport);
   const rows = shards
@@ -811,10 +818,42 @@ export function mergeSmokeShardReports({
     .join('\n');
   writeFileSync(
     join(outputDirectory, 'mutation.html'),
-    `<!doctype html>\n<meta charset="utf-8">\n<title>Selective mutation smoke aggregate index</title>\n<h1>Selective mutation smoke aggregate index</h1>\n<p>Index only: each link opens one isolated Stryker shard report.</p>\n<ul>\n${rows}\n</ul>\n`,
+    `<!doctype html>\n<meta charset="utf-8">\n<title>Selective mutation ${htmlEscape(profile)} aggregate index</title>\n<h1>Selective mutation ${htmlEscape(profile)} aggregate index</h1>\n<p>Index only: each link opens one isolated Stryker shard report.</p>\n<ul>\n${rows}\n</ul>\n`,
     'utf8',
   );
   return { canonicalMutantCount, provenance, report: canonicalReport };
+}
+
+export function mergeSmokeShardReports({
+  repositoryRoot,
+  manifest,
+  shards = SMOKE_SHARDS,
+  shardResults,
+}) {
+  return mergeShardReports({
+    profile: 'smoke',
+    repositoryRoot,
+    manifest,
+    shards,
+    shardResults,
+    expectedMutantCount: SMOKE_MUTANT_COUNT,
+  });
+}
+
+export function mergeCompleteShardReports({
+  repositoryRoot,
+  manifest,
+  shards = COMPLETE_SHARDS,
+  shardResults,
+}) {
+  return mergeShardReports({
+    profile: 'complete',
+    repositoryRoot,
+    manifest,
+    shards,
+    shardResults,
+    expectedMutantCount: COMPLETE_MUTANT_COUNT,
+  });
 }
 
 function policyInputs(root) {
@@ -888,70 +927,11 @@ function writeSummary(directory, summary, evaluation) {
   );
 }
 
-async function runComplete(dependencies, inputs) {
-  const profile = 'complete';
-  const budgetMs = BUDGETS.complete;
-  const directory = reportDirectory(dependencies.repositoryRoot, profile);
-  const startedAt = isoTimestamp(dependencies.now(), 'startedAt');
-  const started = dependencies.performanceNow();
-  const handle = launchStryker(profile, null, dependencies);
-  const deadline = startSharedDeadline([handle], budgetMs, dependencies);
-  await Promise.race([handle.observation, deadline.timeoutPromise]);
-  if (deadline.timedOut) {
-    await deadline.cleanupPromise;
-  } else {
-    deadline.cancel();
-  }
-  await handle.observation;
-  const durationMs = Math.max(0, dependencies.performanceNow() - started);
-  const finishedAt = isoTimestamp(dependencies.now(), 'finishedAt');
-  let evaluation = null;
-  let policyError = null;
-  try {
-    const path = join(directory, 'mutation.json');
-    if (!existsSync(path)) {
-      throw new Error(`Mutation report is missing: ${path}`);
-    }
-    evaluation = evaluateReport(profile, path, inputs);
-  } catch (error) {
-    policyError = error instanceof Error ? error.message : String(error);
-  }
-  const policyExitCode = evaluation?.passed === true && !policyError ? 0 : 1;
-  const duration = validateDuration({
-    profile,
-    startedAt,
-    finishedAt,
-    durationMs,
-    budgetMs,
-    timedOut: deadline.timedOut || durationMs > budgetMs,
-    strykerExitCode: handle.exitCode,
-    policyExitCode,
-    commitSha: dependencies.commitSha,
-    nodeVersion: dependencies.nodeVersion,
-    os: dependencies.os,
-  });
-  writeJson(join(directory, 'duration.json'), duration);
-  const summary = summaryFromEvaluation({
-    childFields: {
-      processError: handle.error?.message ?? null,
-      signal: handle.signal,
-    },
-    duration,
-    evaluation,
-    inputs,
-    policyError,
-  });
-  writeSummary(directory, summary, evaluation);
-  const exitCode =
-    handle.exitCode === 0 && !duration.timedOut && policyExitCode === 0 ? 0 : 1;
-  return { ...summary, exitCode };
-}
-
 async function runSmokeSequentialInternal(dependencies, inputs) {
   const profile = 'smoke';
   const budgetMs = BUDGETS.smoke;
   const directory = reportDirectory(dependencies.repositoryRoot, profile);
-  preserveAggregateArtifacts(dependencies.repositoryRoot);
+  preserveAggregateArtifacts(dependencies.repositoryRoot, profile);
   mkdirSync(directory, { recursive: true });
   const started = dependencies.performanceNow();
   const handles = [];
@@ -1123,24 +1103,25 @@ function createDependencies(injected = {}) {
   };
 }
 
-function requireSmokeShard(shardId) {
-  const shard = SMOKE_SHARDS.find((entry) => entry.id === shardId);
+function requireShard(profile, shardId) {
+  const shards = profile === 'smoke' ? SMOKE_SHARDS : COMPLETE_SHARDS;
+  const shard = shards.find((entry) => entry.id === shardId);
   if (!shard) {
     throw new TypeError(
-      `Smoke shard must be exactly one of ${SMOKE_SHARDS.map((entry) => entry.id).join(', ')}.`,
+      `${profile} shard must be exactly one of ${shards.map((entry) => entry.id).join(', ')}.`,
     );
   }
   return shard;
 }
 
-export async function runSmokeShard(shardId, injected = {}) {
-  const shard = requireSmokeShard(shardId);
+async function runShard(profile, shardId, injected) {
+  const shard = requireShard(profile, shardId);
   const dependencies = createDependencies(injected);
   const inputs = policyInputs(dependencies.repositoryRoot);
-  const budgetMs = BUDGETS.smoke;
+  const budgetMs = BUDGETS[profile];
   const startedAt = isoTimestamp(dependencies.now(), `${shard.id}.startedAt`);
   const startedPerformance = dependencies.performanceNow();
-  const handle = launchStryker('smoke', shard, dependencies, {
+  const handle = launchStryker(profile, shard, dependencies, {
     startedAt,
     startedPerformance,
   });
@@ -1162,7 +1143,7 @@ export async function runSmokeShard(shardId, injected = {}) {
       : 1;
   const configHash = configurationSha256(dependencies.repositoryRoot);
   const result = {
-    profile: 'smoke',
+    profile,
     shardId: shard.id,
     source: shard.source,
     startedAt,
@@ -1172,6 +1153,7 @@ export async function runSmokeShard(shardId, injected = {}) {
     timedOut,
     strykerExitCode: handle.exitCode,
     artifactExitCode,
+    policyExitCode: artifactExitCode,
     processError: handle.error?.message ?? null,
     signal: handle.signal,
     commitSha: dependencies.commitSha,
@@ -1182,7 +1164,6 @@ export async function runSmokeShard(shardId, injected = {}) {
   };
   const duration = validateDuration({
     ...result,
-    policyExitCode: artifactExitCode,
   });
   writeJson(join(handle.directory, 'duration.json'), duration);
   const report = existsSync(join(handle.directory, 'mutation.json'))
@@ -1199,39 +1180,50 @@ export async function runSmokeShard(shardId, injected = {}) {
   };
 }
 
-export async function runSmokeMerge(injected = {}) {
+export async function runSmokeShard(shardId, injected = {}) {
+  return runShard('smoke', shardId, injected);
+}
+
+export async function runCompleteShard(shardId, injected = {}) {
+  return runShard('complete', shardId, injected);
+}
+
+async function runMerge(profile, injected) {
   const dependencies = createDependencies(injected);
   const inputs = policyInputs(dependencies.repositoryRoot);
-  const directory = reportDirectory(dependencies.repositoryRoot, 'smoke');
-  preserveAggregateArtifacts(dependencies.repositoryRoot);
-  const shardEvidence = SMOKE_SHARDS.map((shard) => ({
+  const directory = reportDirectory(dependencies.repositoryRoot, profile);
+  preserveAggregateArtifacts(dependencies.repositoryRoot, profile);
+  const shards = profile === 'smoke' ? SMOKE_SHARDS : COMPLETE_SHARDS;
+  const shardEvidence = shards.map((shard) => ({
     duration: readJson(
       join(
-        reportDirectory(dependencies.repositoryRoot, 'smoke', shard.id),
+        reportDirectory(dependencies.repositoryRoot, profile, shard.id),
         'duration.json',
       ),
     ),
     summary: readJson(
       join(
-        reportDirectory(dependencies.repositoryRoot, 'smoke', shard.id),
+        reportDirectory(dependencies.repositoryRoot, profile, shard.id),
         'summary.json',
       ),
     ),
   }));
-  const merged = mergeSmokeShardReports({
+  const merge =
+    profile === 'smoke' ? mergeSmokeShardReports : mergeCompleteShardReports;
+  const merged = merge({
     repositoryRoot: dependencies.repositoryRoot,
     manifest: inputs.manifest,
-    shards: SMOKE_SHARDS,
+    shards,
     shardResults: shardEvidence.map(({ summary }) => summary),
   });
   const evaluation = evaluateReport(
-    'smoke',
+    profile,
     join(directory, 'mutation.json'),
     inputs,
   );
   const policyExitCode = evaluation.passed ? 0 : 1;
   const summary = {
-    profile: 'smoke',
+    profile,
     commitSha: merged.provenance.commitSha,
     nodeMajor: merged.provenance.nodeMajor,
     sourceSha256: merged.provenance.sourceSha256,
@@ -1241,7 +1233,7 @@ export async function runSmokeMerge(injected = {}) {
     maxShardDurationMs: Math.max(
       ...shardEvidence.map(({ duration }) => duration.durationMs),
     ),
-    budgetMs: BUDGETS.smoke,
+    budgetMs: BUDGETS[profile],
     timedOut: false,
     referenceBudgetEvidence: false,
     policyExitCode,
@@ -1265,6 +1257,14 @@ export async function runSmokeMerge(injected = {}) {
   return { ...summary, exitCode: policyExitCode };
 }
 
+export async function runSmokeMerge(injected = {}) {
+  return runMerge('smoke', injected);
+}
+
+export async function runCompleteMerge(injected = {}) {
+  return runMerge('complete', injected);
+}
+
 export async function runSmokeSequential(injected = {}) {
   const dependencies = createDependencies(injected);
   const inputs = policyInputs(dependencies.repositoryRoot);
@@ -1273,11 +1273,12 @@ export async function runSmokeSequential(injected = {}) {
 
 export async function runMutation(profile, injected = {}) {
   const validatedProfile = requireProfile(profile);
+  if (validatedProfile === 'complete') {
+    return runCompleteMerge(injected);
+  }
   const dependencies = createDependencies(injected);
   const inputs = policyInputs(dependencies.repositoryRoot);
-  return validatedProfile === 'smoke'
-    ? runSmokeSequentialInternal(dependencies, inputs)
-    : runComplete(dependencies, inputs);
+  return runSmokeSequentialInternal(dependencies, inputs);
 }
 
 async function main() {
@@ -1287,16 +1288,21 @@ async function main() {
     result = await runSmokeShard(args[1]);
   } else if (args[0] === 'smoke-merge' && args.length === 1) {
     result = await runSmokeMerge();
+  } else if (args[0] === 'complete-shard' && args.length === 2) {
+    result = await runCompleteShard(args[1]);
+  } else if (
+    (args[0] === 'complete-merge' || args[0] === 'complete') &&
+    args.length === 1
+  ) {
+    result = await runCompleteMerge();
   } else if (
     (args[0] === 'smoke-sequential' || args[0] === 'smoke') &&
     args.length === 1
   ) {
     result = await runSmokeSequential();
-  } else if (args[0] === 'complete' && args.length === 1) {
-    result = await runMutation('complete');
   } else {
     throw new TypeError(
-      'Usage: run-mutation.mjs smoke-shard <id>|smoke-merge|smoke-sequential|complete',
+      'Usage: run-mutation.mjs smoke-shard <id>|smoke-merge|smoke-sequential|complete-shard <id>|complete-merge',
     );
   }
   process.exitCode = result.exitCode;

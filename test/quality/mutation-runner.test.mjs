@@ -56,6 +56,38 @@ const SMOKE_SHARDS = [
   },
 ];
 const WHOLE_SOURCE_SHARDS = SMOKE_SHARDS;
+const COMPLETE_SHARDS = [
+  {
+    id: 'token-session',
+    source: SELECTED_SOURCES[0],
+    concurrency: 4,
+    mutantCount: 300,
+  },
+  {
+    id: 'identifier-repair',
+    source: SELECTED_SOURCES[1],
+    concurrency: 4,
+    mutantCount: 400,
+  },
+  {
+    id: 'identifier-reconciliation',
+    source: SELECTED_SOURCES[2],
+    concurrency: 4,
+    mutantCount: 400,
+  },
+  {
+    id: 'members',
+    source: SELECTED_SOURCES[3],
+    concurrency: 4,
+    mutantCount: 300,
+  },
+  {
+    id: 'borrowings',
+    source: SELECTED_SOURCES[4],
+    concurrency: 4,
+    mutantCount: 327,
+  },
+];
 const MANIFEST = JSON.parse(
   readFileSync(
     join(REPOSITORY_ROOT, 'test', 'quality', 'critical-rule-manifest.json'),
@@ -70,7 +102,8 @@ process.env.MUTATION_SHARD = WHOLE_SOURCE_SHARDS[0].id;
 const { buildStrykerConfig, default: defaultConfig } =
   await import('../../stryker.config.mjs');
 const runnerModule = await import('../../scripts/quality/run-mutation.mjs');
-const { mergeSmokeShardReports, runMutation } = runnerModule;
+const { mergeCompleteShardReports, mergeSmokeShardReports, runMutation } =
+  runnerModule;
 
 let temporaryRoots;
 
@@ -220,7 +253,7 @@ function writeWholeSourceEvidence(
       startedAt: '2026-08-12T10:00:00.000Z',
       finishedAt: '2026-08-12T10:01:00.000Z',
       durationMs: 60000,
-      budgetMs: 300000,
+      budgetMs: 350000,
       timedOut: false,
       strykerExitCode: 1,
       policyExitCode: 0,
@@ -240,6 +273,97 @@ function writeWholeSourceEvidence(
 
 function shardDirectory(root, shardId) {
   return join(root, 'reports', 'mutation', 'smoke', 'shards', shardId);
+}
+
+function completeShardDirectory(root, shardId) {
+  return join(root, 'reports', 'mutation', 'complete', 'shards', shardId);
+}
+
+function writeCompleteShardArtifacts(
+  root,
+  shard,
+  report,
+  { html = true } = {},
+) {
+  const directory = completeShardDirectory(root, shard.id);
+  mkdirSync(directory, { recursive: true });
+  writeFileSync(
+    join(directory, 'mutation.json'),
+    `${JSON.stringify(report, null, 2)}\n`,
+    'utf8',
+  );
+  if (html) {
+    writeFileSync(
+      join(directory, 'mutation.html'),
+      `<!doctype html><title>complete ${shard.id}</title>\n`,
+      'utf8',
+    );
+  }
+}
+
+function writeCompleteShardEvidence(
+  root,
+  shard,
+  {
+    commitSha = '0123456789abcdef0123456789abcdef01234567',
+    configurationSha256 = 'a'.repeat(64),
+    nodeVersion = 'v22.18.0',
+    mutants = canonicalMutantsForWholeSource(shard),
+  } = {},
+) {
+  writeCompleteShardArtifacts(
+    root,
+    shard,
+    makeShardReport(shard.source, mutants),
+  );
+  const directory = completeShardDirectory(root, shard.id);
+  writeFileSync(join(directory, 'stryker.log'), '', 'utf8');
+  const common = {
+    profile: 'complete',
+    shardId: shard.id,
+    source: shard.source,
+    commitSha,
+    nodeVersion,
+    os: 'Linux 6.11 x64',
+    sourceSha256: Object.fromEntries(
+      SELECTED_SOURCES.map((source) => [
+        source,
+        MANIFEST.rules.find((rule) => rule.source === source).sourceSha256,
+      ]),
+    ),
+    configurationSha256,
+  };
+  writeFileSync(
+    join(directory, 'duration.json'),
+    `${JSON.stringify({
+      ...common,
+      startedAt: '2026-08-16T10:00:00.000Z',
+      finishedAt: '2026-08-16T10:01:00.000Z',
+      durationMs: 60000,
+      budgetMs: 900000,
+      timedOut: false,
+      strykerExitCode: 0,
+      policyExitCode: 0,
+    })}\n`,
+    'utf8',
+  );
+  writeFileSync(
+    join(directory, 'summary.json'),
+    `${JSON.stringify({
+      ...common,
+      reportSchemaVersion: '2.0',
+      artifactExitCode: 0,
+      timedOut: false,
+      strykerExitCode: 0,
+    })}\n`,
+    'utf8',
+  );
+}
+
+function writeAllCompleteShardEvidence(root) {
+  for (const shard of COMPLETE_SHARDS) {
+    writeCompleteShardEvidence(root, shard);
+  }
 }
 
 function writeShardArtifacts(root, shard, report, { html = true } = {}) {
@@ -305,6 +429,45 @@ function shardedDependencies(root, mutantsBySource = {}, calls = []) {
           root,
           shard,
           makeShardReport(shard.source, mutants),
+        );
+      }
+      return fakeChild();
+    },
+  };
+}
+
+function completeShardedDependencies(root, mutantsBySource = {}, calls = []) {
+  let clock = 100;
+  let dateTick = 0;
+  return {
+    repositoryRoot: root,
+    platform: 'linux',
+    environment: { KEEP_ME: 'preserved' },
+    commitSha: '0123456789abcdef0123456789abcdef01234567',
+    nodeVersion: 'v22.18.0',
+    os: 'Linux 6.11 x64',
+    now() {
+      return new Date(Date.UTC(2026, 7, 16, 10, 0, 0, dateTick++));
+    },
+    performanceNow() {
+      const value = clock;
+      clock += 10;
+      return value;
+    },
+    spawnProcess(command, args, options) {
+      calls.push({ command, args, options });
+      const shard = COMPLETE_SHARDS.find(
+        (entry) => entry.id === options.env.MUTATION_SHARD,
+      );
+      if (shard) {
+        writeCompleteShardArtifacts(
+          root,
+          shard,
+          makeShardReport(
+            shard.source,
+            mutantsBySource[shard.source] ??
+              canonicalMutantsForWholeSource(shard),
+          ),
         );
       }
       return fakeChild();
@@ -466,7 +629,7 @@ function realProcessTreeDependencies(root, { ignoreSigterm = false } = {}) {
       scheduleTimeout(callback, delay) {
         return setTimeout(
           callback,
-          delay === 300000 || delay === 900000 ? 750 : delay,
+          delay === 350000 || delay === 900000 ? 750 : delay,
         );
       },
       cancelTimeout: clearTimeout,
@@ -488,20 +651,36 @@ function mergeShardReports(root, shards = SMOKE_SHARDS) {
   });
 }
 
-// Production break caught: the complete profile narrows or expands production scope.
-test('complete profile mutates exactly five full source files', () => {
-  const config = buildStrykerConfig('complete', MANIFEST);
+function mergeCompleteReports(root, shards = COMPLETE_SHARDS) {
+  return mergeCompleteShardReports({
+    repositoryRoot: root,
+    manifest: MANIFEST,
+    shards,
+    shardResults: shards.map((shard) => ({
+      shardId: shard.id,
+      source: shard.source,
+      strykerExitCode: 0,
+      timedOut: false,
+    })),
+  });
+}
 
-  assert.deepEqual(config.mutate, SELECTED_SOURCES);
-  assert.equal(
-    config.jsonReporter.fileName,
-    'reports/mutation/complete/mutation.json',
-  );
-  assert.equal(
-    config.htmlReporter.fileName,
-    'reports/mutation/complete/mutation.html',
-  );
-  assert.equal(config.tempDirName, 'reports/mutation/complete/.stryker-tmp');
+// Production break caught: complete sharding narrows a source by manifest range,
+// overlaps ownership, or changes the exact five full-source topology.
+test('complete profile has five disjoint full-source shards', () => {
+  const owned = [];
+  for (const shard of COMPLETE_SHARDS) {
+    const config = buildStrykerConfig('complete', MANIFEST, shard.id);
+    owned.push(...config.mutate);
+    assert.deepEqual(config.mutate, [shard.source]);
+    assert.equal(config.concurrency, 4);
+    const root = `reports/mutation/complete/shards/${shard.id}`;
+    assert.equal(config.jsonReporter.fileName, `${root}/mutation.json`);
+    assert.equal(config.htmlReporter.fileName, `${root}/mutation.html`);
+    assert.equal(config.tempDirName, `${root}/.stryker-tmp`);
+  }
+  assert.deepEqual(owned, SELECTED_SOURCES);
+  assert.equal(new Set(owned).size, 5);
 });
 
 // Production break caught: a shard owns another source's rule, omits an owned
@@ -555,7 +734,10 @@ test('all shards and complete use exact Jest, reporters, mutators, thresholds, a
       concurrency: shard.concurrency,
       config: buildStrykerConfig('smoke', MANIFEST, shard.id),
     })),
-    { concurrency: 4, config: buildStrykerConfig('complete', MANIFEST) },
+    ...COMPLETE_SHARDS.map((shard) => ({
+      concurrency: 4,
+      config: buildStrykerConfig('complete', MANIFEST, shard.id),
+    })),
   ];
   for (const { concurrency, config } of configs) {
     assert.deepEqual(
@@ -590,7 +772,7 @@ test('all shards and complete use exact Jest, reporters, mutators, thresholds, a
 });
 
 // Production break caught: module-load configuration silently selects a default profile.
-test('module load requires an exact smoke shard and rejects shards for complete', () => {
+test('module load requires an exact shard for both profiles', () => {
   for (const profile of [undefined, '', 'SMOKE', 'preview']) {
     const script = `${
       profile === undefined
@@ -607,7 +789,7 @@ test('module load requires an exact smoke shard and rejects shards for complete'
   }
   for (const [profile, shard] of [
     ['smoke', 'token-session'],
-    ['complete', undefined],
+    ['complete', 'token-session'],
   ]) {
     const result = spawnSync(
       process.execPath,
@@ -627,7 +809,8 @@ test('module load requires an exact smoke shard and rejects shards for complete'
   for (const script of [
     "process.env.MUTATION_PROFILE='smoke'; delete process.env.MUTATION_SHARD;",
     "process.env.MUTATION_PROFILE='smoke'; process.env.MUTATION_SHARD='unknown';",
-    "process.env.MUTATION_PROFILE='complete'; process.env.MUTATION_SHARD='members';",
+    "process.env.MUTATION_PROFILE='complete'; delete process.env.MUTATION_SHARD;",
+    "process.env.MUTATION_PROFILE='complete'; process.env.MUTATION_SHARD='unknown';",
   ]) {
     const result = spawnSync(
       process.execPath,
@@ -672,13 +855,13 @@ test('launches the local npx shim with shell disabled', async () => {
 
 // Production break caught: the unchanged complete run loses its 900-second
 // deadline or single-tree graceful/forced escalation while smoke is sharded.
-test('complete runner retains the 900000 ms deadline and escalation', async () => {
+test('complete shard retains the 900000 ms deadline and escalation', async () => {
   const profile = 'complete';
   const budgetMs = 900000;
   const root = temporaryRepository();
   const scheduled = [];
   const signals = [];
-  const result = await runMutation(profile, {
+  const result = await runnerModule.runCompleteShard('token-session', {
     repositoryRoot: root,
     platform: 'linux',
     environment: { KEEP_ME: 'preserved' },
@@ -718,20 +901,20 @@ test('complete runner retains the 900000 ms deadline and escalation', async () =
   assert.deepEqual(scheduled, [budgetMs, 10000, 10000]);
   assert.deepEqual(signals, ['SIGTERM', 'SIGKILL']);
   assert.equal(result.exitCode, 1);
-  const duration = readArtifact(root, profile, 'duration.json');
-  assert.deepEqual(duration, {
-    profile,
-    startedAt: '2026-08-09T10:00:00.000Z',
-    finishedAt: '2026-08-09T10:05:00.001Z',
-    durationMs: budgetMs + 1,
-    budgetMs,
-    timedOut: true,
-    strykerExitCode: null,
-    policyExitCode: 1,
-    commitSha: '0123456789abcdef0123456789abcdef01234567',
-    nodeVersion: 'v22.18.0',
-    os: 'Linux 6.11 x64',
-  });
+  const duration = JSON.parse(
+    readFileSync(
+      join(completeShardDirectory(root, 'token-session'), 'duration.json'),
+      'utf8',
+    ),
+  );
+  assert.equal(duration.profile, profile);
+  assert.equal(duration.shardId, 'token-session');
+  assert.equal(duration.source, SELECTED_SOURCES[0]);
+  assert.equal(duration.durationMs, budgetMs + 1);
+  assert.equal(duration.budgetMs, budgetMs);
+  assert.equal(duration.timedOut, true);
+  assert.equal(duration.strykerExitCode, null);
+  assert.equal(duration.policyExitCode, 1);
 });
 
 // Production break caught: timing out only the npx shim or parent leaves a real
@@ -740,7 +923,10 @@ test('timeout gracefully terminates and verifies a real descendant process tree'
   const root = temporaryRepository();
   const fixture = realProcessTreeDependencies(root);
   try {
-    const result = await runMutation('complete', fixture.dependencies);
+    const result = await runnerModule.runCompleteShard(
+      'token-session',
+      fixture.dependencies,
+    );
     await waitForFile(fixture.pidFile);
     const pids = JSON.parse(readFileSync(fixture.pidFile, 'utf8'));
 
@@ -768,7 +954,10 @@ test(
     const fixture = realProcessTreeDependencies(root, { ignoreSigterm: true });
     const started = Date.now();
     try {
-      const result = await runMutation('complete', fixture.dependencies);
+      const result = await runnerModule.runCompleteShard(
+        'token-session',
+        fixture.dependencies,
+      );
       const elapsed = Date.now() - started;
       await waitForFile(fixture.pidFile);
       const pids = JSON.parse(readFileSync(fixture.pidFile, 'utf8'));
@@ -1248,7 +1437,7 @@ test('local smoke evidence runs five shards sequentially with independent budget
     WHOLE_SOURCE_SHARDS.map((shard) => shard.id),
   );
   assert.equal(maximumActive, 1);
-  assert.equal(scheduled.filter(({ delay }) => delay === 300000).length, 5);
+  assert.equal(scheduled.filter(({ delay }) => delay === 350000).length, 5);
   assert.equal(result.canonicalMutantCount, 1366);
   assert.equal(result.policyExitCode, 0);
   assert.equal(result.referenceBudgetEvidence, false);
@@ -1422,15 +1611,219 @@ test('whole-source merge writes a complete distributed policy summary', async ()
   assert.equal(result.exitCode, 0);
   assert.equal(summary.nodeMajor, 22);
   assert.equal(summary.maxShardDurationMs, 60000);
-  assert.equal(summary.budgetMs, 300000);
+  assert.equal(summary.budgetMs, 350000);
   assert.equal(summary.referenceBudgetEvidence, false);
   assert.deepEqual(
     summary.shards.map((shard) => shard.shardId),
     WHOLE_SOURCE_SHARDS.map((shard) => shard.id),
   );
   assert.match(markdown, /Node major: 22/);
-  assert.match(markdown, /Maximum shard duration: 60000 ms \/ 300000 ms/);
+  assert.match(markdown, /Maximum shard duration: 60000 ms \/ 350000 ms/);
   assert.doesNotMatch(markdown, /undefined/);
+});
+
+// Production break caught: complete execution starts the five-source producer
+// or writes into a shared aggregate path instead of exactly one owned shard.
+test('named complete shard runs once with isolated 900000 ms evidence', async () => {
+  const root = temporaryRepository();
+  const calls = [];
+  const scheduled = [];
+  const dependencies = completeShardedDependencies(root, {}, calls);
+  dependencies.scheduleTimeout = (callback, delay) => {
+    scheduled.push(delay);
+    return { callback, delay };
+  };
+  dependencies.cancelTimeout = () => {};
+
+  const result = await runnerModule.runCompleteShard(
+    'token-session',
+    dependencies,
+  );
+
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].options.env.MUTATION_PROFILE, 'complete');
+  assert.equal(calls[0].options.env.MUTATION_SHARD, 'token-session');
+  assert.deepEqual(scheduled, [900000]);
+  assert.equal(result.artifactExitCode, 0);
+  assert.equal(result.timedOut, false);
+  const directory = completeShardDirectory(root, 'token-session');
+  for (const name of [
+    'mutation.json',
+    'mutation.html',
+    'duration.json',
+    'summary.json',
+    'stryker.log',
+  ]) {
+    assert.equal(existsSync(join(directory, name)), true, name);
+  }
+  const summary = JSON.parse(readFileSync(join(directory, 'summary.json')));
+  assert.equal(summary.profile, 'complete');
+  assert.equal(summary.shardId, 'token-session');
+  assert.equal(summary.source, SELECTED_SOURCES[0]);
+  assert.equal(summary.commitSha, dependencies.commitSha);
+  assert.equal(summary.nodeVersion, dependencies.nodeVersion);
+});
+
+// Production break caught: a failed complete shard relabels stale JSON/HTML as
+// evidence from the current process instead of preserving and rejecting it.
+test('named complete shard preserves but rejects stale mutation artifacts', async () => {
+  const root = temporaryRepository();
+  const shard = COMPLETE_SHARDS[0];
+  const directory = completeShardDirectory(root, shard.id);
+  mkdirSync(directory, { recursive: true });
+  writeFileSync(
+    join(directory, 'mutation.json'),
+    '{"staleCompleteShard":true}\n',
+    'utf8',
+  );
+  writeFileSync(
+    join(directory, 'mutation.html'),
+    '<p>stale complete shard</p>\n',
+    'utf8',
+  );
+  const dependencies = completeShardedDependencies(root);
+  dependencies.spawnProcess = () => fakeChild({ exitCode: 1 });
+
+  const result = await runnerModule.runCompleteShard(shard.id, dependencies);
+
+  assert.equal(result.strykerExitCode, 1);
+  assert.equal(result.artifactExitCode, 1);
+  assert.equal(result.exitCode, 1);
+  assert.equal(existsSync(join(directory, 'mutation.json')), false);
+  assert.equal(existsSync(join(directory, 'mutation.html')), false);
+  const history = join(root, 'reports', 'mutation', 'complete', 'history');
+  assert.notEqual(
+    findPreservedFile(history, 'mutation.json', 'staleCompleteShard'),
+    null,
+  );
+  assert.notEqual(
+    findPreservedFile(history, 'mutation.html', 'stale complete shard'),
+    null,
+  );
+});
+
+// Production break caught: complete merge trusts report-local mutant ids,
+// accepts mixed provenance, or omits part of the preserved 1,727 denominator.
+test('complete canonical merge is id-independent and requires exact provenance and 1727 union', async (t) => {
+  await t.test('exact five-source union', () => {
+    const root = temporaryRepository();
+    writeAllCompleteShardEvidence(root);
+
+    const result = mergeCompleteReports(root);
+
+    assert.equal(result.canonicalMutantCount, 1727);
+    assert.deepEqual(Object.keys(result.report.files), SELECTED_SOURCES);
+  });
+
+  await t.test('duplicate identity with different local ids', () => {
+    const root = temporaryRepository();
+    writeAllCompleteShardEvidence(root);
+    const shard = COMPLETE_SHARDS[0];
+    const path = join(completeShardDirectory(root, shard.id), 'mutation.json');
+    const report = JSON.parse(readFileSync(path, 'utf8'));
+    report.files[shard.source].mutants[1] = {
+      ...report.files[shard.source].mutants[0],
+      id: 'different-report-local-id',
+    };
+    writeFileSync(path, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
+
+    assert.throws(() => mergeCompleteReports(root), /duplicate.+canonical/i);
+  });
+
+  await t.test('one omitted mutant', () => {
+    const root = temporaryRepository();
+    writeAllCompleteShardEvidence(root);
+    const shard = COMPLETE_SHARDS[4];
+    const path = join(completeShardDirectory(root, shard.id), 'mutation.json');
+    const report = JSON.parse(readFileSync(path, 'utf8'));
+    report.files[shard.source].mutants.pop();
+    writeFileSync(path, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
+
+    assert.throws(
+      () => mergeCompleteReports(root),
+      /1727|canonical mutant union/i,
+    );
+  });
+
+  await t.test('mixed commit provenance', () => {
+    const root = temporaryRepository();
+    writeAllCompleteShardEvidence(root);
+    writeCompleteShardEvidence(root, COMPLETE_SHARDS[2], {
+      commitSha: 'fedcba9876543210fedcba9876543210fedcba98',
+    });
+
+    assert.throws(() => mergeCompleteReports(root), /provenance|commit/i);
+  });
+});
+
+// Production break caught: standalone complete merge leaves stale aggregate
+// outputs active or invokes policy on a structurally incomplete shard set.
+test('complete merge fails closed on missing current artifacts', async () => {
+  const root = temporaryRepository();
+  writeAllCompleteShardEvidence(root);
+  const aggregate = join(root, 'reports', 'mutation', 'complete');
+  writeFileSync(
+    join(aggregate, 'mutation.json'),
+    '{"staleCompleteAggregate":true}\n',
+    'utf8',
+  );
+  writeFileSync(
+    join(aggregate, 'mutation.html'),
+    '<p>stale complete aggregate</p>\n',
+    'utf8',
+  );
+  rmSync(
+    join(completeShardDirectory(root, COMPLETE_SHARDS[0].id), 'mutation.json'),
+  );
+
+  await assert.rejects(
+    runnerModule.runCompleteMerge({
+      repositoryRoot: root,
+      commitSha: '0123456789abcdef0123456789abcdef01234567',
+      nodeVersion: 'v22.18.0',
+      os: 'Linux 6.11 x64',
+    }),
+    /Missing token-session mutation\.json/,
+  );
+
+  assert.equal(existsSync(join(aggregate, 'mutation.json')), false);
+  assert.equal(existsSync(join(aggregate, 'mutation.html')), false);
+  const history = join(aggregate, 'history');
+  assert.notEqual(
+    findPreservedFile(history, 'mutation.json', 'staleCompleteAggregate'),
+    null,
+  );
+  assert.notEqual(
+    findPreservedFile(history, 'mutation.html', 'stale complete aggregate'),
+    null,
+  );
+});
+
+// Production break caught: complete distributed evidence skips the one merged
+// Task 2 policy evaluation or writes smoke/monolithic provenance fields.
+test('complete merge writes one canonical policy summary for all five shards', async () => {
+  const root = temporaryRepository();
+  writeAllCompleteShardEvidence(root);
+
+  const result = await runnerModule.runCompleteMerge({
+    repositoryRoot: root,
+    commitSha: '0123456789abcdef0123456789abcdef01234567',
+    nodeVersion: 'v22.18.0',
+    os: 'Linux 6.11 x64',
+  });
+  const summary = readArtifact(root, 'complete', 'summary.json');
+
+  assert.equal(result.exitCode, 0);
+  assert.equal(result.canonicalMutantCount, 1727);
+  assert.equal(result.policyExitCode, 0);
+  assert.equal(summary.profile, 'complete');
+  assert.equal(summary.nodeMajor, 22);
+  assert.equal(summary.maxShardDurationMs, 60000);
+  assert.equal(summary.budgetMs, 900000);
+  assert.deepEqual(
+    summary.shards.map((shard) => shard.shardId),
+    COMPLETE_SHARDS.map((shard) => shard.id),
+  );
 });
 
 // Production break caught: named-shard timeout returns while its exact child

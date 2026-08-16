@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { Connection, Types } from 'mongoose';
@@ -117,10 +118,10 @@ describe('AuthIdentifierReconciliationService', () => {
     };
     const values: Record<string, number> = {
       'auth.auditCorrelationKeyRing.currentVersion': 1,
-      'auth.identifierLeaseSeconds': 300,
+      'auth.identifierLeaseSeconds': 301,
       'auth.identifierReconciliationBatchSize': 2,
       'auth.identifierMaxOperationAssignments': 2,
-      'auth.identifierOperationRetentionDays': 90,
+      'auth.identifierOperationRetentionDays': 91,
     };
     config = { get: (key: string) => values[key] } as ConfigService;
     service = createReconciliationService();
@@ -151,9 +152,56 @@ describe('AuthIdentifierReconciliationService', () => {
     expect(identifiers.updateOne).not.toHaveBeenCalled();
   });
 
+  it('reports an offline repair key available only when policy and material agree', () => {
+    const offlineRepair = operation({
+      operationType: AuthIdentifierOperationType.OfflineRepair,
+      manifestKeyVersion: 1,
+    });
+
+    expect((service as any).repairKeyAvailable(offlineRepair)).toBe(true);
+    expect(policy.repairWorkerDecision).toHaveBeenCalledWith(1);
+    expect(policy.getKeyMaterial).toHaveBeenCalledWith(1);
+
+    (policy.repairWorkerDecision as jest.Mock).mockReturnValue({
+      allowed: false,
+    });
+    expect((service as any).repairKeyAvailable(offlineRepair)).toBe(false);
+  });
+
+  it('uses exact legacy correlation keying, secret decoding, and duration defaults', () => {
+    const legacyConfig = {
+      get: jest.fn((key: string) =>
+        key === 'auth.auditCorrelationKeyVersion' ? 7 : undefined,
+      ),
+    } as unknown as ConfigService;
+    (policy.getKeyMaterial as jest.Mock).mockReturnValue(
+      Buffer.from([1, 2, 3]),
+    );
+    const defaults = createReconciliationService({ config: legacyConfig });
+
+    expect((defaults as any).correlationFor('member@example.test')).toEqual({
+      hash: expect.any(String),
+      version: 7,
+    });
+    expect(policy.getKeyMaterial).toHaveBeenCalledWith(7);
+    expect((defaults as any).decodeConfiguredSecret('AQID')).toEqual(
+      Buffer.from([1, 2, 3]),
+    );
+    expect((defaults as any).decodeConfiguredSecret('not base64!')).toEqual(
+      Buffer.from('not base64!', 'utf8'),
+    );
+    expect((defaults as any).leaseSeconds).toBe(300);
+    expect((defaults as any).retentionDays).toBe(90);
+  });
+
   it('uses MongoDB time for atomic lease acquisition and renewal', async () => {
+    const now = new Date('2026-07-15T00:00:00.000Z');
+    jest.useFakeTimers().setSystemTime(now);
     const candidate = operation();
-    operations.find.mockReturnValue(criticalQueryResult([candidate]));
+    const candidateCapture: { sort?: unknown; limit?: number } = {};
+    operations.find.mockReturnValue(
+      criticalQueryResult([candidate], candidateCapture),
+    );
     operations.findOneAndUpdate
       .mockResolvedValueOnce(candidate)
       .mockResolvedValueOnce(candidate);
@@ -161,12 +209,135 @@ describe('AuthIdentifierReconciliationService', () => {
     await service.reconcileOnce();
     await expect(service.renewLease(candidate.operationId)).resolves.toBe(true);
 
+    expect(operations.find).toHaveBeenCalledWith({
+      $and: [
+        {
+          $or: [
+            {
+              status: {
+                $in: [
+                  AuthIdentifierOperationStatus.Pending,
+                  AuthIdentifierOperationStatus.Applying,
+                  AuthIdentifierOperationStatus.Compensating,
+                  AuthIdentifierOperationStatus.Finalizing,
+                  AuthIdentifierOperationStatus.FailedRetryable,
+                ],
+              },
+            },
+            {
+              status: {
+                $in: [
+                  AuthIdentifierOperationStatus.Completed,
+                  AuthIdentifierOperationStatus.FailedTerminal,
+                ],
+              },
+              cleanupStatus: AuthIdentifierOperationCleanupStatus.Pending,
+            },
+          ],
+        },
+        {
+          $or: [
+            { leaseExpiresAt: { $exists: false } },
+            { leaseExpiresAt: { $lte: new Date(now.getTime() - 5_000) } },
+          ],
+        },
+      ],
+    });
+    expect(candidateCapture).toEqual({
+      sort: { updatedAt: 1, _id: 1 },
+      limit: 4,
+    });
+
     const claimCall = operations.findOneAndUpdate.mock.calls[0];
-    expect(JSON.stringify(claimCall[0])).toContain('$dateSubtract');
-    expect(JSON.stringify(claimCall[1])).toContain('$$NOW');
+    expect(claimCall).toEqual([
+      {
+        _id: candidate._id,
+        $and: [
+          {
+            $or: [
+              {
+                status: {
+                  $in: [
+                    AuthIdentifierOperationStatus.Pending,
+                    AuthIdentifierOperationStatus.Applying,
+                    AuthIdentifierOperationStatus.Compensating,
+                    AuthIdentifierOperationStatus.Finalizing,
+                    AuthIdentifierOperationStatus.FailedRetryable,
+                  ],
+                },
+              },
+              {
+                status: {
+                  $in: [
+                    AuthIdentifierOperationStatus.Completed,
+                    AuthIdentifierOperationStatus.FailedTerminal,
+                  ],
+                },
+                cleanupStatus: AuthIdentifierOperationCleanupStatus.Pending,
+              },
+            ],
+          },
+          {
+            $or: [
+              { leaseExpiresAt: { $exists: false } },
+              {
+                $expr: {
+                  $lte: [
+                    '$leaseExpiresAt',
+                    {
+                      $dateSubtract: {
+                        startDate: '$$NOW',
+                        unit: 'second',
+                        amount: 5,
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      },
+      [
+        {
+          $set: {
+            leaseOwner: expect.any(String),
+            leaseExpiresAt: {
+              $dateAdd: {
+                startDate: '$$NOW',
+                unit: 'second',
+                amount: 301,
+              },
+            },
+            updatedAt: '$$NOW',
+          },
+        },
+      ],
+      { returnDocument: 'after', updatePipeline: true },
+    ]);
     const renewalCall = operations.findOneAndUpdate.mock.calls[1];
-    expect(JSON.stringify(renewalCall[0])).toContain('$$NOW');
-    expect(JSON.stringify(renewalCall[1])).toContain('$dateAdd');
+    expect(renewalCall).toEqual([
+      {
+        operationId: candidate.operationId,
+        leaseOwner: expect.any(String),
+        $expr: { $gt: ['$leaseExpiresAt', '$$NOW'] },
+      },
+      [
+        {
+          $set: {
+            leaseExpiresAt: {
+              $dateAdd: {
+                startDate: '$$NOW',
+                unit: 'second',
+                amount: 301,
+              },
+            },
+            updatedAt: '$$NOW',
+          },
+        },
+      ],
+      { returnDocument: 'after', updatePipeline: true },
+    ]);
   });
 
   it('discovers pending reservations and attaches an HMAC-only reference', async () => {
@@ -185,12 +356,25 @@ describe('AuthIdentifierReconciliationService', () => {
       pendingAction: AuthIdentifierPendingAction.Claim,
       pendingOperationId: 'operation-1',
     };
-    identifiers.find.mockReturnValue(criticalQueryResult([reservation]));
+    const discoveryCapture: { limit?: number } = {};
+    identifiers.find.mockReturnValue(
+      criticalQueryResult([reservation], discoveryCapture),
+    );
 
     await (service as any).attachMissingReservationReferences(
       operation({ assignments: [assignment] }),
     );
 
+    expect(identifiers.find).toHaveBeenCalledWith({
+      pendingOperationId: 'operation-1',
+    });
+    expect(discoveryCapture.limit).toBe(3);
+    expect(operations.updateOne.mock.calls[0][0]).toEqual({
+      operationId: 'operation-1',
+      'assignments.assignmentId': 'assignment-1',
+      'assignments.targetReservationId': { $exists: false },
+      leaseOwner: expect.any(String),
+    });
     const update = operations.updateOne.mock.calls[0][1].$set;
     expect(update['assignments.$.targetReservationId']).toEqual(
       reservation._id,
@@ -203,6 +387,121 @@ describe('AuthIdentifierReconciliationService', () => {
       reservation.normalizedIdentifier,
     );
   });
+
+  it('moves an operation to retryable failure when owned reservations exceed the assignment cap', async () => {
+    const discoveryCapture: { limit?: number } = {};
+    identifiers.find.mockReturnValue(
+      criticalQueryResult(
+        [
+          { _id: new Types.ObjectId() },
+          { _id: new Types.ObjectId() },
+          { _id: new Types.ObjectId() },
+        ],
+        discoveryCapture,
+      ),
+    );
+
+    await (service as any).attachMissingReservationReferences(
+      operation({ status: AuthIdentifierOperationStatus.Applying }),
+    );
+
+    expect(discoveryCapture.limit).toBe(3);
+    expect(operations.updateOne).toHaveBeenCalledWith(
+      {
+        operationId: 'operation-1',
+        status: AuthIdentifierOperationStatus.Applying,
+        leaseOwner: expect.any(String),
+      },
+      { $set: { status: AuthIdentifierOperationStatus.FailedRetryable } },
+    );
+  });
+
+  it('attaches exactly the maximum owned reservations without treating the boundary as over-cap', async () => {
+    const reservations = [
+      {
+        _id: new Types.ObjectId(),
+        normalizedIdentifier: 'first@example.test',
+        subjectType: AuthIdentifierSubjectType.Member,
+        subjectId: 'member-first',
+        pendingAction: AuthIdentifierPendingAction.Claim,
+      },
+      {
+        _id: new Types.ObjectId(),
+        normalizedIdentifier: 'second@example.test',
+        subjectType: AuthIdentifierSubjectType.Member,
+        subjectId: 'member-second',
+        pendingAction: AuthIdentifierPendingAction.Claim,
+      },
+    ];
+    identifiers.find.mockReturnValue(criticalQueryResult(reservations));
+
+    await (service as any).attachMissingReservationReferences(
+      operation({
+        assignments: [
+          assignment({
+            assignmentId: 'assignment-first',
+            subjectId: 'member-first',
+          }),
+          assignment({
+            assignmentId: 'assignment-second',
+            subjectId: 'member-second',
+          }),
+        ],
+      }),
+    );
+
+    expect(operations.updateOne).toHaveBeenCalledTimes(2);
+    expect(operations.updateOne.mock.calls.map((call) => call[0])).toEqual([
+      expect.objectContaining({
+        'assignments.assignmentId': 'assignment-first',
+      }),
+      expect.objectContaining({
+        'assignments.assignmentId': 'assignment-second',
+      }),
+    ]);
+  });
+
+  it.each([
+    [
+      'an assignment already linked',
+      { targetReservationId: new Types.ObjectId() },
+      {},
+    ],
+    [
+      'a subject-type mismatch',
+      {},
+      { subjectType: AuthIdentifierSubjectType.Staff },
+    ],
+    ['a subject-id mismatch', {}, { subjectId: 'different-member' }],
+    [
+      'an action mismatch',
+      {},
+      { pendingAction: AuthIdentifierPendingAction.Release },
+    ],
+  ])(
+    'does not attach a discovered reservation with %s',
+    async (_case, assignmentOverrides, reservationOverrides) => {
+      identifiers.find.mockReturnValue(
+        criticalQueryResult([
+          {
+            _id: new Types.ObjectId(),
+            normalizedIdentifier: 'candidate@example.test',
+            subjectType: AuthIdentifierSubjectType.Member,
+            subjectId: 'member-1',
+            pendingAction: AuthIdentifierPendingAction.Claim,
+            pendingOperationId: 'operation-1',
+            ...reservationOverrides,
+          },
+        ]),
+      );
+
+      await (service as any).attachMissingReservationReferences(
+        operation({ assignments: [assignment(assignmentOverrides)] }),
+      );
+
+      expect(operations.updateOne).not.toHaveBeenCalled();
+    },
+  );
 
   it('moves a recoverable failed operation through a valid retry transition', async () => {
     jest
@@ -221,6 +520,141 @@ describe('AuthIdentifierReconciliationService', () => {
       { $set: { status: AuthIdentifierOperationStatus.Applying } },
     );
   });
+
+  it('finds an assignment reservation by exact operation-owned identity', async () => {
+    const reservation = { _id: new Types.ObjectId() };
+    identifiers.findOne.mockResolvedValue(reservation);
+    const candidate = operation({ operationId: 'operation-owned-reservation' });
+    const pending = assignment({
+      subjectType: AuthIdentifierSubjectType.Member,
+      subjectId: 'member-owned',
+      action: AuthIdentifierAssignmentAction.Replace,
+    });
+
+    await expect(
+      (service as any).findReservation(candidate, pending),
+    ).resolves.toBe(reservation);
+
+    expect(identifiers.findOne).toHaveBeenCalledWith({
+      pendingOperationId: 'operation-owned-reservation',
+      subjectType: AuthIdentifierSubjectType.Member,
+      subjectId: 'member-owned',
+      pendingAction: AuthIdentifierPendingAction.Replace,
+    });
+  });
+
+  it('does not persist a no-op transition and releases only its owned lease', async () => {
+    await (service as any).transition(
+      'operation-noop-transition',
+      AuthIdentifierOperationStatus.Applying,
+      AuthIdentifierOperationStatus.Applying,
+    );
+    expect(operations.updateOne).not.toHaveBeenCalled();
+
+    await (service as any).releaseLease('operation-noop-transition');
+    expect(operations.updateOne).toHaveBeenCalledWith(
+      {
+        operationId: 'operation-noop-transition',
+        leaseOwner: expect.any(String),
+      },
+      [
+        {
+          $set: { leaseExpiresAt: '$$NOW', updatedAt: '$$NOW' },
+        },
+      ],
+      { updatePipeline: true },
+    );
+  });
+
+  it.each([
+    ['missing reservation', null],
+    [
+      'wrong durable status',
+      { status: AuthIdentifierStatus.Released, lastOperationId: 'operation-1' },
+    ],
+    [
+      'wrong operation owner',
+      {
+        status: AuthIdentifierStatus.Active,
+        lastOperationId: 'other-operation',
+      },
+    ],
+  ])('returns incomplete application recovery for %s', async (_case, found) => {
+    const candidate = operation({
+      status: AuthIdentifierOperationStatus.Applying,
+      assignments: [assignment()],
+    });
+    jest.spyOn(service as any, 'findReservation').mockResolvedValue(found);
+
+    await (service as any).recoverApplying(candidate);
+
+    expect(operations.updateOne).toHaveBeenCalledWith(
+      {
+        operationId: 'operation-1',
+        status: AuthIdentifierOperationStatus.Applying,
+        leaseOwner: expect.any(String),
+      },
+      { $set: { status: AuthIdentifierOperationStatus.FailedRetryable } },
+    );
+  });
+
+  it('recovers a durable release assignment only from released state owned by the operation', async () => {
+    const updatedAt = new Date('2026-07-15T00:00:00.000Z');
+    const candidate = operation({
+      status: AuthIdentifierOperationStatus.Applying,
+      assignments: [
+        assignment({ action: AuthIdentifierAssignmentAction.Release }),
+      ],
+    });
+    jest.spyOn(service as any, 'findReservation').mockResolvedValue({
+      status: AuthIdentifierStatus.Released,
+      lastOperationId: 'operation-1',
+      updatedAt,
+    });
+
+    await (service as any).recoverApplying(candidate);
+
+    expect(operations.updateOne).toHaveBeenNthCalledWith(
+      1,
+      {
+        operationId: 'operation-1',
+        'assignments.assignmentId': 'assignment-1',
+        leaseOwner: expect.any(String),
+      },
+      {
+        $set: {
+          'assignments.$.status': 'applied',
+          'assignments.$.appliedAt': updatedAt,
+        },
+      },
+    );
+  });
+
+  it.each([
+    ['missing reservation', null],
+    ['wrong operation owner', { pendingOperationId: 'other-operation' }],
+  ])(
+    'returns incomplete compensation recovery for %s',
+    async (_case, found) => {
+      const candidate = operation({
+        status: AuthIdentifierOperationStatus.Compensating,
+        assignments: [assignment()],
+      });
+      jest.spyOn(service as any, 'findReservation').mockResolvedValue(found);
+
+      await (service as any).recoverCompensating(candidate);
+
+      expect(identifiers.updateOne).not.toHaveBeenCalled();
+      expect(operations.updateOne).toHaveBeenCalledWith(
+        {
+          operationId: 'operation-1',
+          status: AuthIdentifierOperationStatus.Compensating,
+          leaseOwner: expect.any(String),
+        },
+        { $set: { status: AuthIdentifierOperationStatus.FailedRetryable } },
+      );
+    },
+  );
 
   it('persists the idempotent terminal event before writing terminal TTL state', async () => {
     const calls: string[] = [];
@@ -484,9 +918,11 @@ describe('AuthIdentifierReconciliationService', () => {
     const connection = {
       db: {
         collection: jest.fn().mockReturnValue({
-          findOne: jest.fn().mockImplementation(async () =>
-            migrationReady ? { version: '003' } : null,
-          ),
+          findOne: jest
+            .fn()
+            .mockImplementation(async () =>
+              migrationReady ? { version: '003' } : null,
+            ),
         }),
       },
     };
@@ -694,10 +1130,24 @@ describe('AuthIdentifierReconciliationService', () => {
       deleteInterval: jest.fn(),
     };
     const concurrent = new (AuthIdentifierReconciliationService as any)(
-      operations, identifiers, batches, policy, events, config, registry,
-      { db: { collection: jest.fn().mockReturnValue({ findOne: jest.fn().mockReturnValue(pending) }) } },
+      operations,
+      identifiers,
+      batches,
+      policy,
+      events,
+      config,
+      registry,
+      {
+        db: {
+          collection: jest
+            .fn()
+            .mockReturnValue({ findOne: jest.fn().mockReturnValue(pending) }),
+        },
+      },
     );
-    const reconcile = jest.spyOn(concurrent, 'reconcileOnce').mockResolvedValue({});
+    const reconcile = jest
+      .spyOn(concurrent, 'reconcileOnce')
+      .mockResolvedValue({});
 
     const first = concurrent.startWhenMigrationsReady();
     const second = concurrent.startWhenMigrationsReady();
@@ -711,11 +1161,29 @@ describe('AuthIdentifierReconciliationService', () => {
 
   it('does not start after shutdown when an in-flight readiness query resolves', async () => {
     let resolveReady!: (value: unknown) => void;
-    const pending = new Promise((resolve) => { resolveReady = resolve; });
-    const registry = { addInterval: jest.fn(), doesExist: jest.fn().mockReturnValue(true), deleteInterval: jest.fn() };
+    const pending = new Promise((resolve) => {
+      resolveReady = resolve;
+    });
+    const registry = {
+      addInterval: jest.fn(),
+      doesExist: jest.fn().mockReturnValue(true),
+      deleteInterval: jest.fn(),
+    };
     const late = new (AuthIdentifierReconciliationService as any)(
-      operations, identifiers, batches, policy, events, config, registry,
-      { db: { collection: jest.fn().mockReturnValue({ findOne: jest.fn().mockReturnValue(pending) }) } },
+      operations,
+      identifiers,
+      batches,
+      policy,
+      events,
+      config,
+      registry,
+      {
+        db: {
+          collection: jest
+            .fn()
+            .mockReturnValue({ findOne: jest.fn().mockReturnValue(pending) }),
+        },
+      },
     );
     const reconcile = jest.spyOn(late, 'reconcileOnce');
     const check = late.startWhenMigrationsReady();
@@ -732,12 +1200,24 @@ describe('AuthIdentifierReconciliationService', () => {
       .fn()
       .mockRejectedValueOnce(new Error('mongo unavailable'))
       .mockResolvedValueOnce({ version: '003' });
-    const registry = { addInterval: jest.fn(), doesExist: jest.fn().mockReturnValue(true), deleteInterval: jest.fn() };
+    const registry = {
+      addInterval: jest.fn(),
+      doesExist: jest.fn().mockReturnValue(true),
+      deleteInterval: jest.fn(),
+    };
     const retryable = new (AuthIdentifierReconciliationService as any)(
-      operations, identifiers, batches, policy, events, config, registry,
+      operations,
+      identifiers,
+      batches,
+      policy,
+      events,
+      config,
+      registry,
       { db: { collection: jest.fn().mockReturnValue({ findOne }) } },
     );
-    const reconcile = jest.spyOn(retryable, 'reconcileOnce').mockResolvedValue({});
+    const reconcile = jest
+      .spyOn(retryable, 'reconcileOnce')
+      .mockResolvedValue({});
 
     await expect(retryable.runReadinessProbe()).resolves.toBeUndefined();
     expect(registry.addInterval).not.toHaveBeenCalled();
@@ -760,7 +1240,12 @@ describe('AuthIdentifierReconciliationService', () => {
     const second = service.reconcileOnce();
     expect(first).toBe(second);
     expect(run).toHaveBeenCalledTimes(1);
-    resolvePass({ examined: 0, claimed: 0, processed: 0, skippedMissingKey: 0 });
+    resolvePass({
+      examined: 0,
+      claimed: 0,
+      processed: 0,
+      skippedMissingKey: 0,
+    });
     await expect(first).resolves.toMatchObject({ examined: 0 });
   });
 
@@ -815,7 +1300,8 @@ describe('AuthIdentifierReconciliationService', () => {
     operations.find.mockReturnValue(criticalQueryResult(candidates, capture));
     operations.findOneAndUpdate.mockImplementation(
       async (filter: { _id: Types.ObjectId }) =>
-        candidates.find((candidate) => candidate._id.equals(filter._id)) ?? null,
+        candidates.find((candidate) => candidate._id.equals(filter._id)) ??
+        null,
     );
 
     await expect(service.reconcileOnce()).resolves.toEqual({
@@ -831,10 +1317,9 @@ describe('AuthIdentifierReconciliationService', () => {
       ([, update]: unknown[]) => Array.isArray(update),
     );
     expect(releases).toHaveLength(2);
-    expect(releases.map(([filter]: [{ operationId: string }]) => filter.operationId)).toEqual([
-      'operation-1',
-      'operation-2',
-    ]);
+    expect(
+      releases.map(([filter]: [{ operationId: string }]) => filter.operationId),
+    ).toEqual(['operation-1', 'operation-2']);
   });
 
   it('processes claimed terminal cleanup and releases its lease through the public pass', async () => {
@@ -880,16 +1365,51 @@ describe('AuthIdentifierReconciliationService', () => {
 
     await (service as any).process(operation({ status: 'invalid-state' }));
 
-    expect(events.recordIdentifierOperationTerminal).toHaveBeenCalledWith(
-      expect.objectContaining({
-        terminalStatus: AuthIdentifierOperationStatus.FailedTerminal,
-        reasonCategory: 'identifier-operation-invalid-state',
-      }),
+    expect(events.recordIdentifierOperationTerminal).toHaveBeenCalledWith({
+      operationId: 'operation-1',
+      operationType: AuthIdentifierOperationType.Claim,
+      terminalStatus: AuthIdentifierOperationStatus.FailedTerminal,
+      actor: {
+        actorType: 'staff',
+        actorId: staffRequester._id.toString(),
+      },
+      outcome: 'failure',
+      reasonCategory: 'identifier-operation-invalid-state',
+    });
+    expect(
+      JSON.stringify(events.recordIdentifierOperationTerminal.mock.calls),
+    ).not.toContain('normalizedIdentifier');
+    expect(operations.findOneAndUpdate).toHaveBeenCalledWith(
+      {
+        operationId: 'operation-1',
+        status: 'invalid-state',
+        leaseOwner: expect.any(String),
+      },
+      [
+        {
+          $set: {
+            status: AuthIdentifierOperationStatus.FailedTerminal,
+            result: {
+              outcome: 'failure',
+              reasonCategory: 'identifier-operation-invalid-state',
+              httpStatus: 409,
+            },
+            terminalEventId: 'auth-identifier-operation:operation-1:completed',
+            terminalEventRecordedAt: '$$NOW',
+            completedAt: '$$NOW',
+            expiresAt: {
+              $dateAdd: {
+                startDate: '$$NOW',
+                unit: 'day',
+                amount: 91,
+              },
+            },
+            updatedAt: '$$NOW',
+          },
+        },
+      ],
+      { returnDocument: 'after', updatePipeline: true },
     );
-    expect(JSON.stringify(events.recordIdentifierOperationTerminal.mock.calls)).not.toContain(
-      'normalizedIdentifier',
-    );
-    expect(operations.findOneAndUpdate).toHaveBeenCalled();
   });
 
   it('continues processing later claimed operations after one operation fails', async () => {
@@ -963,10 +1483,14 @@ describe('AuthIdentifierReconciliationService', () => {
 
     expect(operations.updateOne).toHaveBeenCalledWith(
       expect.objectContaining({ 'assignments.assignmentId': 'assignment-1' }),
-      expect.objectContaining({ $set: expect.objectContaining({ 'assignments.$.status': 'applied' }) }),
+      expect.objectContaining({
+        $set: expect.objectContaining({ 'assignments.$.status': 'applied' }),
+      }),
     );
     expect(operations.updateOne).toHaveBeenLastCalledWith(
-      expect.objectContaining({ status: AuthIdentifierOperationStatus.Applying }),
+      expect.objectContaining({
+        status: AuthIdentifierOperationStatus.Applying,
+      }),
       { $set: { status: AuthIdentifierOperationStatus.Finalizing } },
     );
   });
@@ -991,10 +1515,16 @@ describe('AuthIdentifierReconciliationService', () => {
 
     expect(identifiers.updateOne).toHaveBeenCalledWith(
       expect.any(Object),
-      expect.objectContaining({ $set: expect.objectContaining({ status: AuthIdentifierStatus.Released }) }),
+      expect.objectContaining({
+        $set: expect.objectContaining({
+          status: AuthIdentifierStatus.Released,
+        }),
+      }),
     );
     expect(operations.updateOne).toHaveBeenLastCalledWith(
-      expect.objectContaining({ status: AuthIdentifierOperationStatus.Compensating }),
+      expect.objectContaining({
+        status: AuthIdentifierOperationStatus.Compensating,
+      }),
       { $set: { status: AuthIdentifierOperationStatus.Finalizing } },
     );
   });
@@ -1002,14 +1532,18 @@ describe('AuthIdentifierReconciliationService', () => {
   it('returns incomplete application recovery to a retryable state', async () => {
     const current = operation({
       status: AuthIdentifierOperationStatus.Applying,
-      assignments: [{ assignmentId: 'assignment-1', action: 'claim', status: 'pending' }],
+      assignments: [
+        { assignmentId: 'assignment-1', action: 'claim', status: 'pending' },
+      ],
     });
     jest.spyOn(service as any, 'findReservation').mockResolvedValue(null);
 
     await (service as any).recoverApplying(current);
 
     expect(operations.updateOne).toHaveBeenLastCalledWith(
-      expect.objectContaining({ status: AuthIdentifierOperationStatus.Applying }),
+      expect.objectContaining({
+        status: AuthIdentifierOperationStatus.Applying,
+      }),
       { $set: { status: AuthIdentifierOperationStatus.FailedRetryable } },
     );
   });
@@ -1018,13 +1552,279 @@ describe('AuthIdentifierReconciliationService', () => {
     await (service as any).recoverCompensating(
       operation({
         status: AuthIdentifierOperationStatus.Compensating,
-        assignments: [{ assignmentId: 'assignment-1', action: 'claim', status: 'applied' }],
+        assignments: [
+          { assignmentId: 'assignment-1', action: 'claim', status: 'applied' },
+        ],
       }),
     );
 
     expect(operations.updateOne).toHaveBeenLastCalledWith(
-      expect.objectContaining({ status: AuthIdentifierOperationStatus.Compensating }),
+      expect.objectContaining({
+        status: AuthIdentifierOperationStatus.Compensating,
+      }),
       { $set: { status: AuthIdentifierOperationStatus.FailedRetryable } },
+    );
+  });
+
+  it('contains a real processing failure, logs its fixed category, and releases the exact lease', async () => {
+    const candidate = operation({ operationId: 'operation-contained-failure' });
+    const failedDiscovery = criticalQueryResult([]);
+    (failedDiscovery.exec as jest.Mock).mockRejectedValue(
+      new Error('identifier query failed'),
+    );
+    const warn = jest.spyOn(Logger.prototype, 'warn').mockImplementation();
+    operations.find.mockReturnValueOnce(criticalQueryResult([candidate]));
+    operations.findOneAndUpdate.mockResolvedValueOnce(candidate);
+    identifiers.find.mockReturnValueOnce(failedDiscovery);
+
+    await expect(service.reconcileOnce()).resolves.toEqual({
+      examined: 1,
+      claimed: 1,
+      processed: 0,
+      skippedMissingKey: 0,
+    });
+
+    expect(warn).toHaveBeenCalledWith(
+      'Auth identifier reconciliation operation failed',
+    );
+    expect(operations.updateOne).toHaveBeenCalledWith(
+      {
+        operationId: 'operation-contained-failure',
+        leaseOwner: expect.any(String),
+      },
+      [{ $set: { leaseExpiresAt: '$$NOW', updatedAt: '$$NOW' } }],
+      { updatePipeline: true },
+    );
+  });
+
+  it('dispatches a pending operation through the exact Applying transition', async () => {
+    const candidate = operation({
+      operationId: 'operation-pending-dispatch',
+      status: AuthIdentifierOperationStatus.Pending,
+    });
+    operations.find.mockReturnValueOnce(criticalQueryResult([candidate]));
+    operations.findOneAndUpdate.mockResolvedValueOnce(candidate);
+    identifiers.find.mockReturnValueOnce(criticalQueryResult([]));
+
+    await expect(service.reconcileOnce()).resolves.toMatchObject({
+      claimed: 1,
+      processed: 1,
+    });
+
+    expect(operations.updateOne).toHaveBeenCalledWith(
+      {
+        operationId: 'operation-pending-dispatch',
+        status: AuthIdentifierOperationStatus.Pending,
+        leaseOwner: expect.any(String),
+      },
+      { $set: { status: AuthIdentifierOperationStatus.Applying } },
+    );
+  });
+
+  it('records a member actor when an invalid member-owned operation fails terminally', async () => {
+    const candidate = operation({
+      operationId: 'operation-invalid-member',
+      status: 'invalid-state',
+      requestedBy: {
+        subjectType: AuthIdentifierSubjectType.Member,
+        subjectId: 'member-requester',
+      },
+    });
+
+    await (service as any).process(candidate);
+
+    expect(events.recordIdentifierOperationTerminal).toHaveBeenCalledWith(
+      expect.objectContaining({
+        operationId: 'operation-invalid-member',
+        actor: { actorType: 'member', actorId: 'member-requester' },
+      }),
+    );
+  });
+
+  it('compensates pending assignments in reverse with exact owned assignment writes', async () => {
+    const firstReservationId = new Types.ObjectId('507f1f77bcf86cd799439061');
+    const secondReservationId = new Types.ObjectId('507f1f77bcf86cd799439062');
+    const candidate = operation({
+      operationId: 'operation-reverse-compensation',
+      status: AuthIdentifierOperationStatus.Compensating,
+      assignments: [
+        assignment({
+          assignmentId: 'assignment-first',
+          targetReservationId: firstReservationId,
+        }),
+        assignment({
+          assignmentId: 'assignment-second',
+          targetReservationId: secondReservationId,
+        }),
+      ],
+    });
+    identifiers.findById.mockImplementation(
+      async (reservationId: Types.ObjectId) => ({
+        _id: reservationId,
+        pendingOperationId: candidate.operationId,
+      }),
+    );
+
+    await (service as any).recoverCompensating(candidate);
+
+    expect(
+      identifiers.updateOne.mock.calls.map(
+        ([filter]: [{ _id: Types.ObjectId }]) => filter._id,
+      ),
+    ).toEqual([secondReservationId, firstReservationId]);
+    expect(operations.updateOne.mock.calls.slice(0, 2)).toEqual([
+      [
+        {
+          operationId: 'operation-reverse-compensation',
+          'assignments.assignmentId': 'assignment-second',
+          leaseOwner: expect.any(String),
+        },
+        { $set: { 'assignments.$.status': 'compensated' } },
+      ],
+      [
+        {
+          operationId: 'operation-reverse-compensation',
+          'assignments.assignmentId': 'assignment-first',
+          leaseOwner: expect.any(String),
+        },
+        { $set: { 'assignments.$.status': 'compensated' } },
+      ],
+    ]);
+  });
+
+  it('does not look up or compensate an assignment already durably applied', async () => {
+    const candidate = operation({
+      operationId: 'operation-applied-compensation',
+      status: AuthIdentifierOperationStatus.Compensating,
+      assignments: [
+        assignment({ status: AuthIdentifierAssignmentStatus.Applied }),
+      ],
+    });
+
+    await (service as any).recoverCompensating(candidate);
+
+    expect(identifiers.findById).not.toHaveBeenCalled();
+    expect(identifiers.findOne).not.toHaveBeenCalled();
+    expect(identifiers.updateOne).not.toHaveBeenCalled();
+    expect(operations.updateOne).toHaveBeenCalledTimes(1);
+    expect(operations.updateOne).toHaveBeenCalledWith(
+      {
+        operationId: 'operation-applied-compensation',
+        status: AuthIdentifierOperationStatus.Compensating,
+        leaseOwner: expect.any(String),
+      },
+      { $set: { status: AuthIdentifierOperationStatus.FailedRetryable } },
+    );
+  });
+
+  it('treats mixed compensated and applied finalization as a successful recovery', async () => {
+    const candidate = operation({
+      operationId: 'operation-mixed-finalization',
+      status: AuthIdentifierOperationStatus.Finalizing,
+      cleanupStatus: AuthIdentifierOperationCleanupStatus.NotRequired,
+      assignments: [
+        assignment({
+          assignmentId: 'assignment-compensated',
+          status: AuthIdentifierAssignmentStatus.Compensated,
+        }),
+        assignment({
+          assignmentId: 'assignment-applied',
+          status: AuthIdentifierAssignmentStatus.Applied,
+        }),
+      ],
+    });
+
+    await (service as any).finalize(candidate);
+
+    expect(events.recordIdentifierOperationTerminal).toHaveBeenCalledWith({
+      operationId: 'operation-mixed-finalization',
+      operationType: AuthIdentifierOperationType.Claim,
+      terminalStatus: AuthIdentifierOperationStatus.Completed,
+      actor: {
+        actorType: 'staff',
+        actorId: staffRequester._id.toString(),
+      },
+      outcome: 'success',
+      reasonCategory: 'identifier-operation-recovered',
+    });
+    expect(operations.findOneAndUpdate).toHaveBeenCalledWith(
+      {
+        operationId: 'operation-mixed-finalization',
+        status: AuthIdentifierOperationStatus.Finalizing,
+        leaseOwner: expect.any(String),
+      },
+      [
+        {
+          $set: {
+            status: AuthIdentifierOperationStatus.Completed,
+            terminalEventId: 'auth-identifier-operation:operation-1:completed',
+            terminalEventRecordedAt: '$$NOW',
+            completedAt: '$$NOW',
+            updatedAt: '$$NOW',
+            expiresAt: {
+              $dateAdd: {
+                startDate: '$$NOW',
+                unit: 'day',
+                amount: 91,
+              },
+            },
+          },
+        },
+      ],
+      { returnDocument: 'after', updatePipeline: true },
+    );
+  });
+
+  it('emits exact bounded cleanup queries and terminal parent retention when no work remains', async () => {
+    const candidate = operation({
+      operationId: 'operation-empty-cleanup',
+      status: AuthIdentifierOperationStatus.Completed,
+      cleanupStatus: AuthIdentifierOperationCleanupStatus.Pending,
+      terminalEventId: 'event-empty-cleanup',
+      terminalEventRecordedAt: new Date('2026-01-01T00:00:00.000Z'),
+    });
+
+    await (service as any).cleanup(candidate);
+
+    const gatedQuery = identifiers.find.mock.results[0].value;
+    const batchQuery = batches.find.mock.results[0].value;
+    expect(gatedQuery.select).toHaveBeenCalledWith({ _id: 1 });
+    expect(gatedQuery.limit).toHaveBeenCalledWith(2);
+    expect(batchQuery.select).toHaveBeenCalledWith({ _id: 1 });
+    expect(batchQuery.limit).toHaveBeenCalledWith(2);
+    expect(identifiers.updateMany).not.toHaveBeenCalled();
+    expect(batches.updateMany).not.toHaveBeenCalled();
+    expect(operations.findOneAndUpdate).toHaveBeenNthCalledWith(
+      2,
+      {
+        operationId: 'operation-empty-cleanup',
+        status: {
+          $in: [
+            AuthIdentifierOperationStatus.Completed,
+            AuthIdentifierOperationStatus.FailedTerminal,
+          ],
+        },
+        cleanupStatus: AuthIdentifierOperationCleanupStatus.Pending,
+        terminalEventId: { $exists: true },
+        terminalEventRecordedAt: { $exists: true },
+        leaseOwner: expect.any(String),
+      },
+      [
+        {
+          $set: {
+            cleanupStatus: AuthIdentifierOperationCleanupStatus.Completed,
+            expiresAt: {
+              $dateAdd: {
+                startDate: '$$NOW',
+                unit: 'day',
+                amount: 91,
+              },
+            },
+            updatedAt: '$$NOW',
+          },
+        },
+      ],
+      { returnDocument: 'after', updatePipeline: true },
     );
   });
 
@@ -1190,12 +1990,10 @@ describe('AuthIdentifierReconciliationService', () => {
       identifiers.find
         .mockReturnValueOnce(criticalQueryResult([]))
         .mockReturnValueOnce(criticalQueryResult([]));
-      identifiers.findById
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce({
-          _id: mismatchedReservationId,
-          pendingOperationId: 'another-operation',
-        });
+      identifiers.findById.mockResolvedValueOnce(null).mockResolvedValueOnce({
+        _id: mismatchedReservationId,
+        pendingOperationId: 'another-operation',
+      });
 
       await expect(service.reconcileOnce()).resolves.toMatchObject({
         claimed: 2,
@@ -1236,7 +2034,9 @@ describe('AuthIdentifierReconciliationService', () => {
       const candidate = operation({
         operationId: `operation-compensate-${action}`,
         status: AuthIdentifierOperationStatus.Compensating,
-        assignments: [assignment({ action, targetReservationId: reservationId })],
+        assignments: [
+          assignment({ action, targetReservationId: reservationId }),
+        ],
       });
       operations.find.mockReturnValueOnce(criticalQueryResult([candidate]));
       operations.findOneAndUpdate.mockResolvedValueOnce(candidate);
@@ -1309,16 +2109,19 @@ describe('AuthIdentifierReconciliationService', () => {
       operations.find.mockReturnValueOnce(criticalQueryResult([candidate]));
       operations.findOneAndUpdate.mockResolvedValueOnce(candidate);
       identifiers.find.mockReturnValueOnce(
-        criticalQueryResult([
-          {
-            _id: reservationId,
-            normalizedIdentifier: 'secret@example.test',
-            pendingOperationId: 'operation-hmac',
-            pendingAction: AuthIdentifierPendingAction.Replace,
-            subjectType: AuthIdentifierSubjectType.Member,
-            subjectId: 'member-1',
-          },
-        ], discoveryCapture),
+        criticalQueryResult(
+          [
+            {
+              _id: reservationId,
+              normalizedIdentifier: 'secret@example.test',
+              pendingOperationId: 'operation-hmac',
+              pendingAction: AuthIdentifierPendingAction.Replace,
+              subjectType: AuthIdentifierSubjectType.Member,
+              subjectId: 'member-1',
+            },
+          ],
+          discoveryCapture,
+        ),
       );
 
       await expect(service.reconcileOnce()).resolves.toMatchObject({
@@ -1336,7 +2139,8 @@ describe('AuthIdentifierReconciliationService', () => {
         expect.objectContaining({
           $set: expect.objectContaining({
             'assignments.$.targetReservationId': reservationId,
-            'assignments.$.identifierCorrelationHash': expect.any(String),
+            'assignments.$.identifierCorrelationHash':
+              'bLZ0rnuyCTGVKJOxxRCrP2kL4CD91UgzgPHXkPxGkSw',
             'assignments.$.correlationKeyVersion': 7,
           }),
         }),
@@ -1377,7 +2181,9 @@ describe('AuthIdentifierReconciliationService', () => {
         );
         (policy.getKeyMaterial as jest.Mock).mockReturnValue(keyMaterial);
         if (manifestKeyVersion === undefined) {
-          const noVersionConfig = { get: jest.fn() } as unknown as ConfigService;
+          const noVersionConfig = {
+            get: jest.fn(),
+          } as unknown as ConfigService;
           service = createReconciliationService({ config: noVersionConfig });
         }
 
@@ -1572,7 +2378,7 @@ describe('AuthIdentifierReconciliationService', () => {
           $dateAdd: {
             startDate: '$$NOW',
             unit: 'day',
-            amount: 90,
+            amount: 91,
           },
         },
       });
@@ -1611,9 +2417,7 @@ describe('AuthIdentifierReconciliationService', () => {
         identifiers.find.mockReturnValueOnce(
           criticalQueryResult([gate], gateCapture),
         );
-        batches.find.mockReturnValueOnce(
-          criticalQueryResult([], batchCapture),
-        );
+        batches.find.mockReturnValueOnce(criticalQueryResult([], batchCapture));
 
         await expect(service.reconcileOnce()).resolves.toMatchObject({
           claimed: 1,
@@ -1758,18 +2562,18 @@ describe('AuthIdentifierReconciliationService', () => {
         terminalEventId: { $exists: true },
         terminalEventRecordedAt: { $exists: true },
       });
-      expect(operations.findOneAndUpdate.mock.calls[2][1][0].$set).toMatchObject(
-        {
-          cleanupStatus: AuthIdentifierOperationCleanupStatus.Completed,
-          expiresAt: {
-            $dateAdd: {
-              startDate: '$$NOW',
-              unit: 'day',
-              amount: 90,
-            },
+      expect(
+        operations.findOneAndUpdate.mock.calls[2][1][0].$set,
+      ).toMatchObject({
+        cleanupStatus: AuthIdentifierOperationCleanupStatus.Completed,
+        expiresAt: {
+          $dateAdd: {
+            startDate: '$$NOW',
+            unit: 'day',
+            amount: 91,
           },
         },
-      );
+      });
       expect(identifiers.find).toHaveBeenCalledWith({
         activationGateOperationId: candidate.operationId,
       });
