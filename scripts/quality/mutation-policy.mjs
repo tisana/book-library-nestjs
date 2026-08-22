@@ -1,4 +1,8 @@
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const SELECTED_SOURCES = [
   'src/auth/token-session.service.ts',
@@ -684,6 +688,203 @@ export function evaluateMutationReport({
   };
 }
 
+function requireEqualJson(actual, expected, label) {
+  if (
+    JSON.stringify(stableObject(actual)) !==
+    JSON.stringify(stableObject(expected))
+  ) {
+    fail(`${label} does not match the evaluated complete report.`);
+  }
+}
+
+function validateCompleteProvenance({
+  report,
+  summary,
+  evaluation,
+  manifest,
+  currentCommit,
+}) {
+  requireExactKeys(
+    summary,
+    [
+      'profile',
+      'commitSha',
+      'nodeMajor',
+      'sourceSha256',
+      'configurationSha256',
+      'reportSchemaVersion',
+      'canonicalMutantCount',
+      'maxShardDurationMs',
+      'budgetMs',
+      'timedOut',
+      'referenceBudgetEvidence',
+      'policyExitCode',
+      'policyPassed',
+      'rawCombinedScore',
+      'moduleScores',
+      'criticalFindings',
+      'violations',
+      'policyError',
+      'shards',
+    ],
+    'complete summary',
+  );
+  if (
+    typeof currentCommit !== 'string' ||
+    !COMMIT_PATTERN.test(currentCommit)
+  ) {
+    fail('currentCommit must be a 40-character lowercase commit SHA.');
+  }
+  if (summary.profile !== 'complete') {
+    fail('complete summary profile must equal complete.');
+  }
+  if (summary.commitSha !== currentCommit) {
+    fail('complete summary commitSha must equal the current committed state.');
+  }
+  if (summary.nodeMajor !== 22) {
+    fail('complete summary nodeMajor must equal 22.');
+  }
+  requireSha256(
+    summary.configurationSha256,
+    'complete summary.configurationSha256',
+  );
+  if (summary.reportSchemaVersion !== report.schemaVersion) {
+    fail('complete summary report schema must match the canonical report.');
+  }
+  const actualMutantCount = SELECTED_SOURCES.reduce(
+    (count, source) => count + report.files[source].mutants.length,
+    0,
+  );
+  if (summary.canonicalMutantCount !== 1727 || actualMutantCount !== 1727) {
+    fail('complete report must contain exactly 1727 canonical mutants.');
+  }
+  if (
+    !Number.isFinite(summary.maxShardDurationMs) ||
+    summary.maxShardDurationMs < 0 ||
+    summary.maxShardDurationMs > 900000 ||
+    summary.budgetMs !== 900000 ||
+    summary.timedOut !== false
+  ) {
+    fail('complete summary must satisfy the exact 900000 ms shard gate.');
+  }
+  if (
+    summary.referenceBudgetEvidence !== false ||
+    summary.policyExitCode !== 0 ||
+    summary.policyPassed !== true ||
+    summary.policyError !== null
+  ) {
+    fail('complete summary must be a local policy-green producer.');
+  }
+  if (summary.rawCombinedScore !== evaluation.rawCombinedScore) {
+    fail('complete summary score must match the evaluated complete report.');
+  }
+  requireEqualJson(
+    summary.moduleScores,
+    evaluation.moduleScores,
+    'complete summary moduleScores',
+  );
+  requireEqualJson(
+    summary.criticalFindings,
+    evaluation.criticalFindings,
+    'complete summary criticalFindings',
+  );
+  requireEqualJson(
+    summary.violations,
+    evaluation.violations,
+    'complete summary violations',
+  );
+
+  const hashes = manifestHashes(manifest);
+  requirePlainObject(summary.sourceSha256, 'complete summary.sourceSha256');
+  if (
+    Object.keys(summary.sourceSha256).length !== SELECTED_SOURCES.length ||
+    SELECTED_SOURCES.some(
+      (source) => summary.sourceSha256[source] !== hashes.get(source),
+    )
+  ) {
+    fail('complete summary source hashes must match the exact selected scope.');
+  }
+
+  const shardIds = [
+    'token-session',
+    'identifier-repair',
+    'identifier-reconciliation',
+    'members',
+    'borrowings',
+  ];
+  if (!Array.isArray(summary.shards) || summary.shards.length !== 5) {
+    fail('complete summary must contain exactly five shard results.');
+  }
+  summary.shards.forEach((shard, index) => {
+    requireExactKeys(
+      shard,
+      [
+        'shardId',
+        'source',
+        'durationMs',
+        'budgetMs',
+        'timedOut',
+        'strykerExitCode',
+        'artifactExitCode',
+      ],
+      `complete summary.shards[${index}]`,
+    );
+    if (
+      shard.shardId !== shardIds[index] ||
+      shard.source !== SELECTED_SOURCES[index] ||
+      !Number.isFinite(shard.durationMs) ||
+      shard.durationMs < 0 ||
+      shard.durationMs > 900000 ||
+      shard.budgetMs !== 900000 ||
+      shard.timedOut !== false ||
+      shard.strykerExitCode !== 0 ||
+      shard.artifactExitCode !== 0
+    ) {
+      fail(`complete summary.shards[${index}] is not policy-green.`);
+    }
+  });
+}
+
+export function recordBaseline({
+  report,
+  summary,
+  manifest,
+  allowlist,
+  previousBaseline = null,
+  currentCommit,
+  generatedAt,
+}) {
+  const evaluation = evaluateMutationReport({
+    profile: 'complete',
+    report,
+    manifest,
+    allowlist,
+    baseline: previousBaseline,
+  });
+  if (!evaluation.passed) {
+    fail('complete report must be policy-green before recording a baseline.');
+  }
+  validateCompleteProvenance({
+    report,
+    summary,
+    evaluation,
+    manifest,
+    currentCommit,
+  });
+  parseIsoUtc(generatedAt, 'generatedAt');
+  const baseline = {
+    schemaVersion: 1,
+    profile: 'complete',
+    rawCombinedScore: evaluation.rawCombinedScore,
+    generatedFromCommit: summary.commitSha,
+    generatedAt,
+    selectedSources: [...SELECTED_SOURCES],
+    sourceSha256: Object.fromEntries(manifestHashes(manifest)),
+  };
+  validateBaseline(baseline, manifest);
+  return baseline;
+}
+
 export function formatPolicySummary(evaluation) {
   requirePlainObject(evaluation, 'evaluation');
   if (
@@ -723,4 +924,95 @@ export function formatPolicySummary(evaluation) {
       : evaluation.violations.map((violation) => `- ${violation}`)),
   );
   return `${lines.join('\n')}\n`;
+}
+
+function readJsonFile(path, label) {
+  let parsed;
+  try {
+    parsed = JSON.parse(readFileSync(path, 'utf8'));
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    fail(`${label} is not readable JSON: ${message}`);
+  }
+  return parsed;
+}
+
+function currentCommit(repositoryRoot) {
+  let commit;
+  try {
+    commit = execFileSync('git', ['rev-parse', 'HEAD'], {
+      cwd: repositoryRoot,
+      encoding: 'utf8',
+      windowsHide: true,
+    }).trim();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    fail(`Unable to resolve the current commit: ${message}`);
+  }
+  if (!COMMIT_PATTERN.test(commit)) {
+    fail('Current Git HEAD is not a 40-character lowercase commit SHA.');
+  }
+  return commit;
+}
+
+function recordBaselineCli(args) {
+  if (args.length !== 2 || args[0] !== 'record-baseline') {
+    fail(
+      'Usage: mutation-policy.mjs record-baseline reports/mutation/complete/mutation.json',
+    );
+  }
+  const repositoryRoot = process.cwd();
+  const expectedReportPath = resolve(
+    repositoryRoot,
+    'reports/mutation/complete/mutation.json',
+  );
+  const reportPath = resolve(repositoryRoot, args[1]);
+  if (reportPath !== expectedReportPath) {
+    fail('record-baseline requires the canonical complete mutation report.');
+  }
+  const qualityDirectory = join(repositoryRoot, 'test', 'quality');
+  const baselinePath = join(qualityDirectory, 'mutation-baseline.json');
+  const report = readJsonFile(reportPath, 'complete mutation report');
+  const summary = readJsonFile(
+    join(dirname(reportPath), 'summary.json'),
+    'complete mutation summary',
+  );
+  const manifest = readJsonFile(
+    join(qualityDirectory, 'critical-rule-manifest.json'),
+    'critical mutation manifest',
+  );
+  const allowlist = readJsonFile(
+    join(qualityDirectory, 'mutation-equivalents.json'),
+    'mutation equivalent allowlist',
+  );
+  const previousBaseline = existsSync(baselinePath)
+    ? readJsonFile(baselinePath, 'mutation baseline')
+    : null;
+  const baseline = recordBaseline({
+    report,
+    summary,
+    manifest,
+    allowlist,
+    previousBaseline,
+    currentCommit: currentCommit(repositoryRoot),
+    generatedAt: new Date().toISOString(),
+  });
+  writeFileSync(baselinePath, `${JSON.stringify(baseline, null, 2)}\n`, 'utf8');
+  process.stdout.write(
+    `Recorded mutation baseline ${baseline.rawCombinedScore.toFixed(2)}% from ${baseline.generatedFromCommit}.\n`,
+  );
+}
+
+const isMainModule =
+  process.argv[1] !== undefined &&
+  resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url));
+
+if (isMainModule) {
+  try {
+    recordBaselineCli(process.argv.slice(2));
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    process.stderr.write(`${message}\n`);
+    process.exitCode = 1;
+  }
 }

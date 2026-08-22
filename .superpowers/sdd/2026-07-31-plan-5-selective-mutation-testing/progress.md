@@ -378,3 +378,26 @@ paths`), containing only the three auth specs and policy quality regression.
 - Fresh byte-exact WSL-native snapshot `/home/tisana/book-library-plan5-task6-precommit4-20260822/repo` is clean at temporary provenance `b8f6c7def9a74f1a9918f13c8d8da34f5e9a8eff`, Node `v22.22.2`, npm `10.9.8`, with fresh `npm ci` `21.16 s`; WSL focused Jest is `93/93` and runner/policy is `93/93` with no skips.
 - Authoritative smoke is exact `1366`, raw `99.78038067349927`, maximum shard `235145.30313699995/350000 ms`, policy PASS, zero violations, and exactly three approved auth equivalents. Authoritative complete is exact `1727`, raw `95.2518818760857`, maximum shard `286728.066774/900000 ms`, policy PASS, zero violations, and exactly three approved auth equivalents. Task 6 member/borrowing critical findings are `0`.
 - Preserved formatted final WSL trees are `reports/mutation/diagnostics/task6-precommit4-final-smoke-wsl-350k/` and `reports/mutation/diagnostics/task6-precommit4-final-complete-wsl-900k/`. Task 7, push, and Actions remain blocked.
+
+## Task 06 baseline and upward-only proof
+
+- Immutable first commit is `1b624f4c0b859d4fb2d8b8181ab1d3f6b9d8de99`
+  (`test: harden member and borrowing mutations`); it was not amended. Baseline
+  TDD recorded three focused RED/GREEN cycles for the export, fail-closed
+  provenance, and validate-before-write CLI. Final policy suite is `50/50`.
+- Same-commit WSL Node `v22.22.2` producer at exact first-commit provenance
+  merged `1727` mutants, raw `95.2518818760857`, policy PASS, zero violations,
+  and exactly three approved auth equivalents. It generated schema-v1 baseline
+  SHA-256 `cb1932bfb4f06cdd9a59ae617048143d696fc3fc0dedf8b66e2193d3209ce51a`
+  with `generatedFromCommit` exactly equal to the first commit.
+- The second five-shard WSL producer proved upward-only comparison: exact
+  `1727`, raw `95.2518818760857` equal to baseline, policy PASS, maximum shard
+  `254653.03687/900000 ms`, zero violations/unapproved critical findings, and
+  exactly three approved auth equivalents. Durable 58-file proof tree hash is
+  `b636106ccad09f54d206bfc216bcc5b8b13e7953cb965051d1c98a632991e2a5`.
+- Final Windows verification is focused Jest `93/93`, full backend unit
+  `559/559` in `35/35` suites, deterministic policy/runner `95` passed plus one
+  intentional POSIX-only skip, manifest `89`, ESLint, Prettier, and whitespace
+  checks. Open implementer findings are Critical/Important/Minor `0/0/0`.
+  Task 7, push, and Actions remain blocked pending fresh independent Task 6
+  review.

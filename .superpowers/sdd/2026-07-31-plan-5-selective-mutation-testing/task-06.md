@@ -191,7 +191,83 @@ Authoritative formatted-test commands:
 
 ## Commit hash
 
-Pending until the first immutable Task 6 implementation commit exists. Its full SHA will be backfilled in the distinct baseline/evidence commit without amending the first commit.
+The immutable member/borrowing test-hardening commit is
+`1b624f4c0b859d4fb2d8b8181ab1d3f6b9d8de99` with exact subject
+`test: harden member and borrowing mutations`. It contains only the two
+authorized specs and Task 6 evidence. It was not amended.
+
+## Baseline TDD
+
+- Missing `recordBaseline` export RED: exit `1`, focused `0/1`; minimal export
+  GREEN: `1/1`.
+- Fail-closed complete-provenance RED: exit `1`, focused `0/1` because a wrong
+  profile was accepted; provenance validation GREEN: `2/2`. The table also
+  rejects wrong Node major, canonical count, timeout/gate, policy status, score,
+  selected-source hashes, and failed shard evidence.
+- Validate-before-write CLI RED: exit `1`, focused `0/1`, no baseline written;
+  CLI GREEN: `1/1`. Its temporary Git repository proves a valid canonical
+  report writes schema v1 and an invalid summary exits `1` without creating or
+  truncating the tracked baseline.
+- Final policy suite: `50/50`. Final combined policy/runner suite on Windows:
+  `95` passed, `0` failed, one intentional POSIX-only process-tree skip.
+
+## Same-commit baseline producer
+
+- Clean WSL-native snapshot:
+  `/home/tisana/book-library-plan5-task6-baseline-run1-20260822/repo`, exact
+  committed state `1b624f4c0b859d4fb2d8b8181ab1d3f6b9d8de99`, Node `v22.22.2`,
+  npm `10.9.8`, fresh `npm ci` `20.95 s`.
+- Snapshot inputs matched the Windows worktree byte-for-byte; focused Jest was
+  `93/93`, manifest check was `89`, and Prettier passed.
+- Five complete shards and merge exited `0`: token `89167.619071`, repair
+  `57540.853031`, reconciliation `83890.319698`, members `251392.833945`,
+  borrowings `34510.433456 ms`; every shard used the exact `900000 ms` gate and
+  produced JSON/HTML/log/duration/summary.
+- Canonical merge: exact `1727`, raw `95.2518818760857`, policy PASS, zero
+  violations/unapproved critical findings, and exactly three approved auth
+  equivalents. Aggregate JSON SHA-256 is
+  `11904f157a0464d3843e95bb866754f78e5d7cc61cb9f2cc67a79cacbb41e995`;
+  summary SHA-256 is
+  `c93a6e7fabd73f37e85d18c5ab9a0d45abd93d078d374493781a25c1209ddc1b`.
+- Durable evidence is
+  `reports/mutation/diagnostics/task6-baseline-run1-complete-wsl-900k/`; copied
+  29-file tree hash is
+  `4d364beae3a5bc5f507ead209f5c3156424ba3fb4c875e6fa9a1b65d9088b496`.
+- The reviewed CLI generated `test/quality/mutation-baseline.json` from that
+  report. Baseline SHA-256 is
+  `cb1932bfb4f06cdd9a59ae617048143d696fc3fc0dedf8b66e2193d3209ce51a`;
+  `generatedFromCommit` exactly equals
+  `1b624f4c0b859d4fb2d8b8181ab1d3f6b9d8de99` and its score is
+  `95.2518818760857`.
+
+## Upward-only proof
+
+- The same retained WSL-native snapshot used byte-identical policy and tracked
+  baseline inputs, then reran all five complete shards and the canonical merge.
+- Shard durations were token `88973.316886`, repair `58912.802011`,
+  reconciliation `84076.811706`, members `254653.03687`, and borrowings
+  `35853.963361 ms`; all exited `0`, stayed below their independent exact
+  `900000 ms` gates, and retained every required artifact.
+- The merge exited `0`: exact `1727`, raw `95.2518818760857`, equal to and not
+  below the tracked baseline, policy PASS, zero violations/unapproved critical
+  findings, and exactly three approved auth equivalents. Aggregate JSON SHA-256
+  is `887256fba105dab13b8b1605786f23834fc52de0b1bd5906b1e19294ab17ddd3`;
+  summary SHA-256 is
+  `15f1238f9f11f378f57d3b2ed6c7c590e9795f15da93fa20e416498618afe103`.
+- Durable evidence is
+  `reports/mutation/diagnostics/task6-baseline-upward-proof-complete-wsl-900k/`,
+  containing `58` files with tree hash
+  `b636106ccad09f54d206bfc216bcc5b8b13e7953cb965051d1c98a632991e2a5`.
+
+## Final self-review
+
+- Exact second-commit implementation scope is baseline JSON, mutation policy,
+  policy tests, and Task 6 evidence only. No production, manifest, runner,
+  config, dependency, package, workflow, frontend, or Task 7+ path changed.
+- Final focused Jest: `93/93`; full backend unit: `559/559` in `35/35` suites;
+  deterministic policy/runner: `95` passed plus one intentional Windows skip;
+  manifest `89`; ESLint, Prettier, and `git diff --check` all pass.
+- Open self-review findings: Critical `0`, Important `0`, Minor `0`.
 
 ## Deferred findings
 

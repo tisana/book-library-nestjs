@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {
+  existsSync,
   mkdtempSync,
   mkdirSync,
   readFileSync,
@@ -15,6 +16,7 @@ import {
   evaluateMutationReport,
   formatPolicySummary,
   mutantFingerprint,
+  recordBaseline,
   sha256Text,
   validateCriticalManifest,
   validateEquivalentAllowlist,
@@ -49,6 +51,12 @@ const UPDATER_PATH = join(
   'scripts',
   'quality',
   'update-critical-rule-manifest.mjs',
+);
+const POLICY_PATH = join(
+  REPOSITORY_ROOT,
+  'scripts',
+  'quality',
+  'mutation-policy.mjs',
 );
 
 const TASK5_PUBLIC_PATH_RULES = [
@@ -136,6 +144,71 @@ function makeReport(mutantsBySource = {}) {
         },
       ]),
     ),
+  };
+}
+
+function makeCanonicalCompleteReport() {
+  const counts = [346, 346, 345, 345, 345];
+  return makeReport(
+    Object.fromEntries(
+      SELECTED_SOURCES.map((source, sourceIndex) => [
+        source,
+        Array.from({ length: counts[sourceIndex] }, (_, mutantIndex) =>
+          makeMutant('Killed', {
+            id: `${sourceIndex + 1}-${mutantIndex + 1}`,
+          }),
+        ),
+      ]),
+    ),
+  );
+}
+
+function makeCompleteSummary(overrides = {}) {
+  const counts = [346, 346, 345, 345, 345];
+  return {
+    profile: 'complete',
+    commitSha: '0123456789abcdef0123456789abcdef01234567',
+    nodeMajor: 22,
+    sourceSha256: Object.fromEntries(
+      SELECTED_SOURCES.map((source) => [source, SOURCE_SHA256]),
+    ),
+    configurationSha256:
+      'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    reportSchemaVersion: '2.0',
+    canonicalMutantCount: 1727,
+    maxShardDurationMs: 100,
+    budgetMs: 900000,
+    timedOut: false,
+    referenceBudgetEvidence: false,
+    policyExitCode: 0,
+    policyPassed: true,
+    rawCombinedScore: 100,
+    moduleScores: SELECTED_SOURCES.map((source, index) => ({
+      source,
+      detected: counts[index],
+      undetected: 0,
+      ignored: 0,
+      rawScore: 100,
+    })),
+    criticalFindings: [],
+    violations: [],
+    policyError: null,
+    shards: SELECTED_SOURCES.map((source, index) => ({
+      shardId: [
+        'token-session',
+        'identifier-repair',
+        'identifier-reconciliation',
+        'members',
+        'borrowings',
+      ][index],
+      source,
+      durationMs: 100,
+      budgetMs: 900000,
+      timedOut: false,
+      strykerExitCode: 0,
+      artifactExitCode: 0,
+    })),
+    ...overrides,
   };
 }
 
@@ -266,6 +339,198 @@ test('accepts a null baseline for smoke and complete profiles', () => {
     assert.equal(evaluation.rawCombinedScore, 100);
     assert.equal(evaluation.passed, true);
   }
+});
+
+// Production break caught: the tracked baseline is not tied to the exact
+// policy-green canonical complete producer and its committed test state.
+test('records a schema-v1 baseline from exact complete provenance', () => {
+  const baseline = recordBaseline({
+    report: makeCanonicalCompleteReport(),
+    summary: makeCompleteSummary(),
+    manifest: makeManifest(),
+    allowlist: { schemaVersion: 1, entries: [] },
+    previousBaseline: null,
+    currentCommit: '0123456789abcdef0123456789abcdef01234567',
+    generatedAt: '2026-08-22T04:00:00.000Z',
+  });
+
+  assert.deepEqual(baseline, {
+    schemaVersion: 1,
+    profile: 'complete',
+    rawCombinedScore: 100,
+    generatedFromCommit: '0123456789abcdef0123456789abcdef01234567',
+    generatedAt: '2026-08-22T04:00:00.000Z',
+    selectedSources: [...SELECTED_SOURCES],
+    sourceSha256: Object.fromEntries(
+      SELECTED_SOURCES.map((source) => [source, SOURCE_SHA256]),
+    ),
+  });
+});
+
+// Production break caught: a forged or incomplete merge summary can write a
+// baseline even though it did not come from the exact five-shard producer.
+test('refuses a baseline when complete provenance is not exact', () => {
+  const cases = [
+    [
+      'wrong profile',
+      (summary) => {
+        summary.profile = 'smoke';
+      },
+      /profile must equal complete/,
+    ],
+    [
+      'wrong Node major',
+      (summary) => {
+        summary.nodeMajor = 20;
+      },
+      /nodeMajor must equal 22/,
+    ],
+    [
+      'wrong canonical count',
+      (summary) => {
+        summary.canonicalMutantCount = 1726;
+      },
+      /exactly 1727/,
+    ],
+    [
+      'timed out producer',
+      (summary) => {
+        summary.timedOut = true;
+      },
+      /900000 ms shard gate/,
+    ],
+    [
+      'policy failure',
+      (summary) => {
+        summary.policyPassed = false;
+        summary.policyExitCode = 1;
+      },
+      /policy-green producer/,
+    ],
+    [
+      'score disagreement',
+      (summary) => {
+        summary.rawCombinedScore = 99;
+      },
+      /score must match/,
+    ],
+    [
+      'source hash disagreement',
+      (summary) => {
+        summary.sourceSha256[SELECTED_SOURCES[0]] =
+          'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
+      },
+      /source hashes must match/,
+    ],
+    [
+      'failed shard',
+      (summary) => {
+        summary.shards[4].artifactExitCode = 1;
+      },
+      /shards\[4\] is not policy-green/,
+    ],
+  ];
+
+  for (const [label, mutate, expected] of cases) {
+    const summary = makeCompleteSummary();
+    mutate(summary);
+    assert.throws(
+      () =>
+        recordBaseline({
+          report: makeCanonicalCompleteReport(),
+          summary,
+          manifest: makeManifest(),
+          allowlist: { schemaVersion: 1, entries: [] },
+          previousBaseline: null,
+          currentCommit: '0123456789abcdef0123456789abcdef01234567',
+          generatedAt: '2026-08-22T04:00:00.000Z',
+        }),
+      expected,
+      label,
+    );
+  }
+});
+
+// Production break caught: the CLI writes or truncates the tracked baseline
+// before the canonical complete report and provenance are policy-green.
+test('record-baseline CLI validates before writing the tracked baseline', () => {
+  const root = mkdtempSync(join(tmpdir(), 'mutation-baseline-cli-'));
+  const qualityDirectory = join(root, 'test', 'quality');
+  const reportDirectory = join(root, 'reports', 'mutation', 'complete');
+  const baselinePath = join(qualityDirectory, 'mutation-baseline.json');
+  mkdirSync(qualityDirectory, { recursive: true });
+  mkdirSync(reportDirectory, { recursive: true });
+  writeFileSync(join(root, '.gitignore'), 'reports/mutation/\n', 'utf8');
+  writeFileSync(
+    join(qualityDirectory, 'critical-rule-manifest.json'),
+    `${JSON.stringify(makeManifest(), null, 2)}\n`,
+    'utf8',
+  );
+  writeFileSync(
+    join(qualityDirectory, 'mutation-equivalents.json'),
+    `${JSON.stringify({ schemaVersion: 1, entries: [] }, null, 2)}\n`,
+    'utf8',
+  );
+
+  const git = (...args) =>
+    spawnSync('git', args, { cwd: root, encoding: 'utf8', shell: false });
+  assert.equal(git('init').status, 0);
+  assert.equal(git('config', 'user.name', 'Mutation Baseline Test').status, 0);
+  assert.equal(
+    git('config', 'user.email', 'mutation-baseline@example.invalid').status,
+    0,
+  );
+  assert.equal(git('add', '.gitignore', 'test/quality').status, 0);
+  assert.equal(git('commit', '-m', 'test fixture').status, 0);
+  const currentCommit = git('rev-parse', 'HEAD').stdout.trim();
+  assert.match(currentCommit, /^[0-9a-f]{40}$/);
+
+  writeFileSync(
+    join(reportDirectory, 'mutation.json'),
+    `${JSON.stringify(makeCanonicalCompleteReport())}\n`,
+    'utf8',
+  );
+  writeFileSync(
+    join(reportDirectory, 'summary.json'),
+    `${JSON.stringify(makeCompleteSummary({ commitSha: currentCommit }))}\n`,
+    'utf8',
+  );
+
+  const valid = spawnSync(
+    process.execPath,
+    [POLICY_PATH, 'record-baseline', 'reports/mutation/complete/mutation.json'],
+    { cwd: root, encoding: 'utf8', shell: false },
+  );
+  assert.equal(valid.status, 0, valid.stderr);
+  const baseline = JSON.parse(readFileSync(baselinePath, 'utf8'));
+  assert.equal(baseline.generatedFromCommit, currentCommit);
+  assert.equal(baseline.rawCombinedScore, 100);
+  assert.match(
+    baseline.generatedAt,
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,
+  );
+
+  rmSync(baselinePath, { force: true });
+  writeFileSync(
+    join(reportDirectory, 'summary.json'),
+    `${JSON.stringify(
+      makeCompleteSummary({
+        commitSha: currentCommit,
+        policyExitCode: 1,
+        policyPassed: false,
+      }),
+    )}\n`,
+    'utf8',
+  );
+  const invalid = spawnSync(
+    process.execPath,
+    [POLICY_PATH, 'record-baseline', 'reports/mutation/complete/mutation.json'],
+    { cwd: root, encoding: 'utf8', shell: false },
+  );
+  assert.equal(invalid.status, 1);
+  assert.equal(existsSync(baselinePath), false);
+
+  rmSync(root, { recursive: true, force: true });
 });
 
 // Production break caught: a one-based last-line survivor escapes the inclusive rule.
