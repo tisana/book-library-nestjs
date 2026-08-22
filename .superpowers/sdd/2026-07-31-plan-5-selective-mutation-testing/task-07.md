@@ -21,8 +21,10 @@ canonical identities. The superseded monolithic complete producer is not used.
 ## Reviewer model and reasoning
 
 - Required: fresh `gpt-5.6-sol`, high reasoning, separate from the implementer.
-- Actual: pending fresh independent review.
-- Substitution: none expected; approval is not presumed.
+- Actual: fresh `/root/plan5_task7_final_reviewer`, `gpt-5.6-sol`, high
+  reasoning.
+- Substitution: none. Final verdict: `APPROVED`, Critical `0`, Important `0`,
+  Minor `0`.
 
 ## Base SHA
 
@@ -137,8 +139,12 @@ The same WSL Node 22 focused command exited `0`; `2/2` focused tests passed.
 
 ## Commit hash
 
-- Pending the required independent review and exact Task 7 commit.
-- Required subject: `ci: report selective mutation quality`.
+- Immutable implementation commit:
+  `f8d182979b7926609f6d9379fefbff7d803dbe10`.
+- Exact subject: `ci: report selective mutation quality`.
+- Exact scope: `.github/workflows/mutation.yml`, `package.json`,
+  `test/quality/mutation-runner.test.mjs`, this Task 7 evidence, and
+  `progress.md` only.
 
 ## Deferred findings
 
@@ -150,4 +156,19 @@ The same WSL Node 22 focused command exited `0`; `2/2` focused tests passed.
 
 ## Reviewer decision
 
-- Pending fresh independent Task 7 review; no approval is presumed.
+`APPROVED`, Critical `0`, Important `0`, Minor `0`.
+
+The fresh independent reviewer verified the immutable subject and five-path
+scope; genuine parent-state RED `0/2`; WSL Node 22 GREEN `98/98`; manifest
+`89`; exact package literals; trigger, path, matrix, runtime, concurrency, and
+artifact contracts; and the preserved exact-`1366` policy-green smoke evidence.
+The reviewer confirmed aggregate execution remains fail-closed: wrapper
+failures are encoded in missing or invalid current artifacts, exit codes,
+timeouts, provenance, ownership, budgets, or exact-union checks; failures
+outside the wrapper keep the overall workflow red even while the always-run
+aggregate preserves partial diagnostics. Pre-existing workflows and every
+forbidden path are byte-unchanged. No push or Actions dispatch occurred.
+
+Task 7 is approved. Task 8 may begin only after this evidence-only closeout is
+committed and the worktree is clean; Task 8 still requires explicit user
+authorization before pushing or manually dispatching GitHub Actions.
