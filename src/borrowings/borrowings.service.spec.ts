@@ -1,12 +1,6 @@
 import { BorrowingsRulesService } from './borrowings-rules.service';
 import { BorrowingsService } from './borrowings.service';
-import {
-  BadRequestException,
-  ConflictException,
-  ForbiddenException,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import {
   LibraryItemStatus,
   LoanState,
@@ -115,15 +109,19 @@ describe('BorrowingsService', () => {
         memberId: '665f4d3b8f4c8a001f5f0a12',
         bookId: '665f4d3b8f4c8a001f5f0a13',
       }),
-    ).rejects.toBeInstanceOf(UnauthorizedException);
+    ).rejects.toMatchObject({
+      message: 'Authenticated staff actor is required',
+    });
   });
 
   it('requires an authenticated staff actor before returning borrowing records', async () => {
     const service = createService();
 
-    await expect(
-      service.returnBorrowing('borrowing-id'),
-    ).rejects.toBeInstanceOf(UnauthorizedException);
+    await expect(service.returnBorrowing('borrowing-id')).rejects.toMatchObject(
+      {
+        message: 'Authenticated staff actor is required',
+      },
+    );
   });
 
   it('filters current borrowings to unreturned active and overdue records', async () => {
@@ -153,7 +151,29 @@ describe('BorrowingsService', () => {
         page: 1,
         limit: 20,
       }),
-    ).rejects.toBeInstanceOf(ForbiddenException);
+    ).rejects.toMatchObject({
+      message: 'Member id must come from the token',
+    });
+  });
+
+  it('accepts an explicit member filter only when it matches the authenticated owner', async () => {
+    const memberId = '665f4d3b8f4c8a001f5f0a12';
+    const queryBuilder = createFindQuery([]);
+    const find = jest.fn().mockReturnValue(queryBuilder);
+    const service = createService({ find });
+
+    await expect(
+      service.findByMember(memberId, {
+        memberId,
+        page: 1,
+        limit: 20,
+      }),
+    ).resolves.toStrictEqual([]);
+
+    const filter = find.mock.calls[0][0] as {
+      memberId: { $eq: { toHexString: () => string } };
+    };
+    expect(filter.memberId.$eq.toHexString()).toBe(memberId);
   });
 
   it('creates a borrowing only after active member, book, category, and membership policy pass', async () => {
@@ -192,10 +212,26 @@ describe('BorrowingsService', () => {
       fixture.session,
     );
     expect(fixture.overdueQuery.session).toHaveBeenCalledWith(fixture.session);
+    const overdueFilter = (fixture.borrowingModel as { exists: jest.Mock })
+      .exists.mock.calls[0][0] as {
+      memberId: { $eq: { toHexString: () => string } };
+      returnedAt: { $exists: boolean };
+      status: { $in: LoanState[] };
+      dueAt: { $lt: Date };
+    };
+    expect(overdueFilter.memberId.$eq.toHexString()).toBe(fixture.memberId);
+    expect(overdueFilter).toStrictEqual({
+      memberId: { $eq: overdueFilter.memberId.$eq },
+      returnedAt: { $exists: false },
+      status: { $in: [LoanState.Active, LoanState.Overdue] },
+      dueAt: { $lt: expect.any(Date) },
+    });
     expect(fixture.createdBorrowing.save).toHaveBeenCalledWith({
       session: fixture.session,
     });
-    expect(fixture.book.save).toHaveBeenCalledWith({ session: fixture.session });
+    expect(fixture.book.save).toHaveBeenCalledWith({
+      session: fixture.session,
+    });
     expect(fixture.member.save).toHaveBeenCalledWith({
       session: fixture.session,
     });
@@ -255,6 +291,13 @@ describe('BorrowingsService', () => {
     expect(borrowing.status).toBe(LoanState.Returned);
     expect(fixture.book.availableQuantity).toBe(3);
     expect(fixture.member.activeLoanCount).toBe(0);
+    expect(borrowing.save).toHaveBeenCalledWith({ session: fixture.session });
+    expect(fixture.book.save).toHaveBeenCalledWith({
+      session: fixture.session,
+    });
+    expect(fixture.member.save).toHaveBeenCalledWith({
+      session: fixture.session,
+    });
   });
 
   it('returns an overdue loan at the supplied time without a negative loan count', async () => {
@@ -320,7 +363,9 @@ describe('BorrowingsService', () => {
 
     await expect(
       service.returnBorrowing(fixture.borrowingId, {}, actor),
-    ).rejects.toBeInstanceOf(ConflictException);
+    ).rejects.toMatchObject({
+      message: 'Borrowing record has already been returned',
+    });
 
     expect(fixture.book.availableQuantity).toBe(2);
     expect(fixture.member.activeLoanCount).toBe(1);
@@ -342,6 +387,50 @@ describe('BorrowingsService', () => {
     expect(queryBuilder.skip).toHaveBeenCalledWith(10);
     expect(queryBuilder.limit).toHaveBeenCalledWith(5);
   });
+
+  it('applies exact book and status filters without widening the list query', async () => {
+    const queryBuilder = createFindQuery([]);
+    const find = jest.fn().mockReturnValue(queryBuilder);
+    const service = createService({ find });
+    const bookId = '665f4d3b8f4c8a001f5f0a13';
+
+    await service.findAll({
+      bookId,
+      status: LoanState.Returned,
+      page: 1,
+      limit: 20,
+    });
+
+    const filter = find.mock.calls[0][0] as {
+      bookId: { $eq: { toHexString: () => string } };
+      status: { $eq: LoanState };
+    };
+    expect(filter.bookId.$eq.toHexString()).toBe(bookId);
+    expect(filter.status).toStrictEqual({ $eq: LoanState.Returned });
+    expect(Object.keys(filter).sort()).toStrictEqual(['bookId', 'status']);
+  });
+
+  it.each([
+    [
+      'memberId',
+      { memberId: 'not-a-member-id', page: 1, limit: 20 },
+      'memberId must be a valid MongoDB ObjectId',
+    ],
+    [
+      'bookId',
+      { bookId: 'not-a-book-id', page: 1, limit: 20 },
+      'bookId must be a valid MongoDB ObjectId',
+    ],
+  ])(
+    'reports the exact %s field when a list identifier is malformed',
+    async (_field, query, message) => {
+      const find = jest.fn();
+      const service = createService({ find });
+
+      await expect(service.findAll(query)).rejects.toMatchObject({ message });
+      expect(find).not.toHaveBeenCalled();
+    },
+  );
 
   it('applies the overdue-only filter before listing overdue borrowings', async () => {
     const queryBuilder = createFindQuery([]);
@@ -369,10 +458,12 @@ describe('BorrowingsService', () => {
 
   it('looks up a borrowing with an exact ObjectId equality filter', async () => {
     const borrowingId = '665f4d3b8f4c8a001f5f0a14';
-    const query = createFindQuery(createBorrowingDocument({
-      _id: objectId(borrowingId),
-      id: borrowingId,
-    }));
+    const query = createFindQuery(
+      createBorrowingDocument({
+        _id: objectId(borrowingId),
+        id: borrowingId,
+      }),
+    );
     const findOne = jest.fn().mockReturnValue(query);
     const service = createService({ findOne });
 
@@ -389,15 +480,19 @@ describe('BorrowingsService', () => {
   it('applies both borrowing and member ObjectId ownership filters for self-service detail', async () => {
     const borrowingId = '665f4d3b8f4c8a001f5f0a14';
     const memberId = '665f4d3b8f4c8a001f5f0a12';
-    const query = createFindQuery(createBorrowingDocument({
-      _id: objectId(borrowingId),
-      id: borrowingId,
-      memberId: objectId(memberId),
-    }));
+    const query = createFindQuery(
+      createBorrowingDocument({
+        _id: objectId(borrowingId),
+        id: borrowingId,
+        memberId: objectId(memberId),
+      }),
+    );
     const findOne = jest.fn().mockReturnValue(query);
     const service = createService({ findOne });
 
-    await expect(service.findOneForMember(borrowingId, memberId)).resolves.toMatchObject({
+    await expect(
+      service.findOneForMember(borrowingId, memberId),
+    ).resolves.toMatchObject({
       id: borrowingId,
       memberId,
     });
@@ -408,7 +503,186 @@ describe('BorrowingsService', () => {
     };
     expect(filter._id.$eq.toHexString()).toBe(borrowingId);
     expect(filter.memberId.$eq.toHexString()).toBe(memberId);
+    expect(query.populate).toHaveBeenNthCalledWith(1, 'bookId');
+    expect(query.populate).toHaveBeenNthCalledWith(2, 'memberId');
   });
+
+  it('reports the member ownership field for malformed self-service detail input', async () => {
+    const findOne = jest.fn();
+    const service = createService({ findOne });
+
+    await expect(
+      service.findOneForMember('665f4d3b8f4c8a001f5f0a14', 'not-a-member-id'),
+    ).rejects.toMatchObject({
+      message: 'memberId must be a valid MongoDB ObjectId',
+    });
+    expect(findOne).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [new Date('2026-06-10T00:00:00.000Z'), LoanState.Active],
+    [undefined, LoanState.Returned],
+  ])(
+    'rejects either persisted returned marker (%s, %s) before any side effect',
+    async (returnedAt, status) => {
+      const fixture = createBorrowingLifecycleFixture({
+        existingBorrowing: {
+          returnedAt,
+          status,
+          save: jest.fn(),
+        },
+      });
+      const service = createService(
+        fixture.borrowingModel,
+        fixture.dependencies,
+      );
+
+      await expect(
+        service.returnBorrowing(fixture.borrowingId, {}, actor),
+      ).rejects.toMatchObject({
+        message: 'Borrowing record has already been returned',
+      });
+
+      expect(fixture.book.save).not.toHaveBeenCalled();
+      expect(fixture.member.save).not.toHaveBeenCalled();
+      expect(fixture.session.endSession).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it('returns the exact transactional not-found contract when the borrowing is absent', async () => {
+    const fixture = createBorrowingLifecycleFixture();
+    (fixture.borrowingModel as { findOne: jest.Mock }).findOne = jest
+      .fn()
+      .mockReturnValue(createSessionQuery(null));
+    const service = createService(fixture.borrowingModel, fixture.dependencies);
+
+    await expect(
+      service.returnBorrowing(fixture.borrowingId, {}, actor),
+    ).rejects.toMatchObject({ message: 'Borrowing record not found' });
+
+    expect(fixture.bookQuery.exec).not.toHaveBeenCalled();
+    expect(fixture.memberQuery.exec).not.toHaveBeenCalled();
+    expect(fixture.session.endSession).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    ['member', 'memberQuery', 'Member not found'],
+    ['book', 'bookQuery', 'Book not found'],
+    ['category', 'categoryQuery', 'Book category not found'],
+    ['membership type', 'membershipTypeQuery', 'Membership type not found'],
+  ])(
+    'stops borrowing creation at a missing %s with the exact public contract',
+    async (_label, queryName, message) => {
+      const fixture = createBorrowingLifecycleFixture();
+      const query =
+        fixture[
+          queryName as
+            | 'memberQuery'
+            | 'bookQuery'
+            | 'categoryQuery'
+            | 'membershipTypeQuery'
+        ];
+      query.exec.mockResolvedValue(null);
+      const service = createService(
+        fixture.borrowingModel,
+        fixture.dependencies,
+      );
+
+      await expect(
+        service.create(
+          { memberId: fixture.memberId, bookId: fixture.bookId },
+          actor,
+        ),
+      ).rejects.toMatchObject({ message });
+
+      expect(fixture.createdBorrowing).toStrictEqual({});
+      expect(fixture.book.save).not.toHaveBeenCalled();
+      expect(fixture.member.save).not.toHaveBeenCalled();
+      expect(fixture.session.endSession).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it('reports the overdue member-id field when persisted ownership is malformed', async () => {
+    const fixture = createBorrowingLifecycleFixture();
+    fixture.member._id = objectId('not-a-member-id');
+    const service = createService(fixture.borrowingModel, fixture.dependencies);
+
+    await expect(
+      service.create(
+        { memberId: fixture.memberId, bookId: fixture.bookId },
+        actor,
+      ),
+    ).rejects.toMatchObject({
+      message: 'memberId must be a valid MongoDB ObjectId',
+    });
+
+    expect(
+      (fixture.borrowingModel as { exists: jest.Mock }).exists,
+    ).not.toHaveBeenCalled();
+    expect(fixture.createdBorrowing).toStrictEqual({});
+  });
+
+  it.each([
+    ['bookId', 'book', 'bookId must be a valid MongoDB ObjectId'],
+    ['memberId', 'member', 'memberId must be a valid MongoDB ObjectId'],
+  ])(
+    'reports the exact %s field when a persisted borrowing reference is malformed',
+    async (_field, reference, message) => {
+      const fixture = createBorrowingLifecycleFixture({
+        existingBorrowing: {
+          bookId:
+            reference === 'book'
+              ? objectId('not-a-book-id')
+              : objectId('665f4d3b8f4c8a001f5f0a13'),
+          memberId:
+            reference === 'member'
+              ? objectId('not-a-member-id')
+              : objectId('665f4d3b8f4c8a001f5f0a12'),
+        },
+      });
+      const service = createService(
+        fixture.borrowingModel,
+        fixture.dependencies,
+      );
+
+      await expect(
+        service.returnBorrowing(fixture.borrowingId, {}, actor),
+      ).rejects.toMatchObject({ message });
+      expect(fixture.book.save).not.toHaveBeenCalled();
+      expect(fixture.member.save).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each([
+    ['categoryId', 'category', 'categoryId must be a valid MongoDB ObjectId'],
+    [
+      'membershipTypeId',
+      'membership',
+      'membershipTypeId must be a valid MongoDB ObjectId',
+    ],
+  ])(
+    'reports the exact %s field when a persisted creation reference is malformed',
+    async (_field, reference, message) => {
+      const fixture = createBorrowingLifecycleFixture();
+      if (reference === 'category') {
+        fixture.book.categoryId = objectId('not-a-category-id');
+      } else {
+        fixture.member.membershipTypeId = objectId('not-a-membership-id');
+      }
+      const service = createService(
+        fixture.borrowingModel,
+        fixture.dependencies,
+      );
+
+      await expect(
+        service.create(
+          { memberId: fixture.memberId, bookId: fixture.bookId },
+          actor,
+        ),
+      ).rejects.toMatchObject({ message });
+      expect(fixture.createdBorrowing).toStrictEqual({});
+    },
+  );
 
   it('does not reveal a foreign borrowing when the owner filter is absent or wrong', async () => {
     const borrowingId = '665f4d3b8f4c8a001f5f0a14';
@@ -560,7 +834,14 @@ function createBorrowingLifecycleFixture(
     } as never);
     (borrowingModel as { findOne: jest.Mock }).findOne = jest
       .fn()
-      .mockReturnValue(createSessionQuery(existingBorrowing));
+      .mockImplementation((filter: Record<string, unknown>) => {
+        const requestedId = (
+          filter._id as { $eq?: { toHexString?: () => string } } | undefined
+        )?.$eq?.toHexString?.();
+        return createSessionQuery(
+          requestedId === borrowingId ? existingBorrowing : null,
+        );
+      });
   }
   const memberQuery = createSessionQuery(member);
   const bookQuery = createSessionQuery(book);
@@ -592,15 +873,53 @@ function createBorrowingLifecycleFixture(
       connection: {
         startSession: jest.fn().mockResolvedValue(session),
       },
-      bookModel: { findOne: jest.fn().mockReturnValue(bookQuery) },
+      bookModel: {
+        findOne: jest
+          .fn()
+          .mockImplementation((filter: Record<string, unknown>) => {
+            const requestedId = (
+              filter._id as { $eq?: { toHexString?: () => string } } | undefined
+            )?.$eq?.toHexString?.();
+            return requestedId === bookId
+              ? bookQuery
+              : createSessionQuery(null);
+          }),
+      },
       bookCategoryModel: {
-        findOne: jest.fn().mockReturnValue(categoryQuery),
+        findOne: jest
+          .fn()
+          .mockImplementation((filter: Record<string, unknown>) => {
+            const requestedId = (
+              filter._id as { $eq?: { toHexString?: () => string } } | undefined
+            )?.$eq?.toHexString?.();
+            return requestedId === categoryId
+              ? categoryQuery
+              : createSessionQuery(null);
+          }),
       },
       memberModel: {
-        findOne: jest.fn().mockReturnValue(memberQuery),
+        findOne: jest
+          .fn()
+          .mockImplementation((filter: Record<string, unknown>) => {
+            const requestedId = (
+              filter._id as { $eq?: { toHexString?: () => string } } | undefined
+            )?.$eq?.toHexString?.();
+            return requestedId === memberId
+              ? memberQuery
+              : createSessionQuery(null);
+          }),
       },
       membershipTypeModel: {
-        findOne: jest.fn().mockReturnValue(membershipTypeQuery),
+        findOne: jest
+          .fn()
+          .mockImplementation((filter: Record<string, unknown>) => {
+            const requestedId = (
+              filter._id as { $eq?: { toHexString?: () => string } } | undefined
+            )?.$eq?.toHexString?.();
+            return requestedId === membershipTypeId
+              ? membershipTypeQuery
+              : createSessionQuery(null);
+          }),
       },
       rulesService,
     },

@@ -224,6 +224,8 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 05 Fix Round 1 implementer dispatch requested and actual: `/root/plan5_task5_recovery_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. The immutable final review verdict was CHANGES_REQUIRED with Critical `0`, Important `3`, Minor `0`; Task 6 remains blocked.
 - Task 05 Fix Round 1 scoped re-review dispatch requested and actual: `/root/plan5_task5_final_reviewer`, fresh `gpt-5.6-sol`, high reasoning; substitution none. Review target is implementation `b90460231c8cbdb5ceeee3de6bde93c424f8ecc0` plus evidence `57d878a3b698d789f4d4576d365a1a935efa4b0a`; Task 6 remains blocked pending verdict.
 - Task 05 review-closeout implementer dispatch requested and actual: `/root/plan5_task5_recovery_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. The scoped re-review verdict is APPROVED with Critical `0`, Important `0`, Minor `0`; closeout is documentation-only and Task 6 remains blocked until its commit is clean.
+- Task 06 implementer dispatch requested and actual: `/root/plan5_task6_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. Starting HEAD is clean `0383ac5d0d082ba9c065dc16638e573ff37174bd`; Task 5 dependency is APPROVED and no concurrent protected-path work is authorized.
+- Task 06 interruption recovery implementer dispatch requested and actual: `/root/plan5_task6_recovery_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. The prior agent disappeared during the same-provenance complete producer; token/repair/reconciliation artifacts are retained, the incomplete member run is invalid, and Task 7 remains blocked.
 - Complete-distributed amendment TDD: focused RED `0/13` on the monolithic
   config/missing shard APIs; focused GREEN `13/13`. Final Windows runner/policy
   verification is `91` pass, `0` fail, one intentional POSIX skip. The
@@ -368,3 +370,11 @@ paths`), containing only the three auth specs and policy quality regression.
 - Task 5 is complete at the reviewed immutable boundary. This closeout changes
   evidence only; no implementation amend, Task 6, push, or Actions work was
   started.
+
+## Task 06 precommit recovery and formatted final producer
+
+- The interrupted `507d88170b5126e46f6090d18278ca35e2020466` WSL snapshot was recovered without counting its incomplete members run. The invalid member log was preserved with SHA-256 `3c39a53d6b0b20f360b3ab9abe093627ef800870e6afc71876e148af9f292432`; the recovered exact-`1727` merge passed but is superseded because pre-commit Prettier changed both authorized spec byte streams.
+- Only Prettier formatting was applied to the two authorized specs. Fresh focused Jest is `93/93`; full backend unit is `559/559`; Windows runner/policy is `92` passed plus one intentional POSIX skip; ESLint, Prettier, manifest `89`, and diff checks pass.
+- Fresh byte-exact WSL-native snapshot `/home/tisana/book-library-plan5-task6-precommit4-20260822/repo` is clean at temporary provenance `b8f6c7def9a74f1a9918f13c8d8da34f5e9a8eff`, Node `v22.22.2`, npm `10.9.8`, with fresh `npm ci` `21.16 s`; WSL focused Jest is `93/93` and runner/policy is `93/93` with no skips.
+- Authoritative smoke is exact `1366`, raw `99.78038067349927`, maximum shard `235145.30313699995/350000 ms`, policy PASS, zero violations, and exactly three approved auth equivalents. Authoritative complete is exact `1727`, raw `95.2518818760857`, maximum shard `286728.066774/900000 ms`, policy PASS, zero violations, and exactly three approved auth equivalents. Task 6 member/borrowing critical findings are `0`.
+- Preserved formatted final WSL trees are `reports/mutation/diagnostics/task6-precommit4-final-smoke-wsl-350k/` and `reports/mutation/diagnostics/task6-precommit4-final-complete-wsl-900k/`. Task 7, push, and Actions remain blocked.
