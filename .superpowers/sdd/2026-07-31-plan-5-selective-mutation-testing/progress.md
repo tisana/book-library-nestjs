@@ -226,6 +226,8 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 05 review-closeout implementer dispatch requested and actual: `/root/plan5_task5_recovery_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. The scoped re-review verdict is APPROVED with Critical `0`, Important `0`, Minor `0`; closeout is documentation-only and Task 6 remains blocked until its commit is clean.
 - Task 06 implementer dispatch requested and actual: `/root/plan5_task6_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. Starting HEAD is clean `0383ac5d0d082ba9c065dc16638e573ff37174bd`; Task 5 dependency is APPROVED and no concurrent protected-path work is authorized.
 - Task 06 interruption recovery implementer dispatch requested and actual: `/root/plan5_task6_recovery_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. The prior agent disappeared during the same-provenance complete producer; token/repair/reconciliation artifacts are retained, the incomplete member run is invalid, and Task 7 remains blocked.
+- Task 06 final independent reviewer dispatch requested and actual: fresh `/root/plan5_task6_final_reviewer`, `gpt-5.6-sol`, high reasoning; substitution none. Review target is immutable commits `1b624f4c0b859d4fb2d8b8181ab1d3f6b9d8de99` and `3c5129e70fa2dd0dbc07c4d60a951dd5094e9c73`; approval is not presumed and Task 7 remains blocked pending verdict.
+- Task 06 review-closeout implementer dispatch requested and actual: `/root/plan5_task6_recovery_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. The fresh independent verdict is `APPROVED` with Critical `0`, Important `0`, Minor `0`; closeout is evidence-only and Task 7 remains blocked until its commit is clean.
 - Complete-distributed amendment TDD: focused RED `0/13` on the monolithic
   config/missing shard APIs; focused GREEN `13/13`. Final Windows runner/policy
   verification is `91` pass, `0` fail, one intentional POSIX skip. The
@@ -399,5 +401,6 @@ paths`), containing only the three auth specs and policy quality regression.
   `559/559` in `35/35` suites, deterministic policy/runner `95` passed plus one
   intentional POSIX-only skip, manifest `89`, ESLint, Prettier, and whitespace
   checks. Open implementer findings are Critical/Important/Minor `0/0/0`.
-  Task 7, push, and Actions remain blocked pending fresh independent Task 6
-  review.
+  Fresh independent Task 6 review is `APPROVED`, Critical `0`, Important `0`,
+  Minor `0`; Task 7 remains blocked until the evidence-only closeout commit is
+  clean. Push and Actions remain unauthorized.

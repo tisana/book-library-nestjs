@@ -17,7 +17,9 @@ Binding runtime amendments: smoke uses exact `350000 ms` shard gates; complete i
 ## Reviewer model and reasoning
 
 - Required: fresh `gpt-5.6-sol`, high reasoning, separate from the implementer.
-- Actual identity and verdict: pending controller dispatch after implementation.
+- Actual reviewer identity: fresh `/root/plan5_task6_final_reviewer`, requested
+  and actual `gpt-5.6-sol`, high reasoning; substitution none. Final verdict:
+  `APPROVED`, Critical `0`, Important `0`, Minor `0`.
 
 ## Base SHA
 
@@ -277,4 +279,25 @@ authorized specs and Task 6 evidence. It was not amended.
 
 ## Reviewer decision
 
-Pending fresh independent review after implementation.
+`APPROVED`, Critical `0`, Important `0`, Minor `0`.
+
+The fresh independent reviewer verified all `77/77` Task 5 member/borrowing
+critical fingerprints are now `Killed` with no new equivalents; recomputed the
+complete reports as exact `1727`, raw `95.2518818760857`, policy PASS, zero
+unapproved critical findings, and exactly three pre-existing auth equivalents;
+and recomputed smoke as exact `1366` with maximum shard
+`235145.303137/350000 ms`. The schema-v1 baseline, exact first-commit
+provenance, selected-source order and hashes, fail-closed validate-before-write
+behavior, two immutable commit subjects/scopes, upward-only proof, protected
+path identity, and no-push/no-Actions boundary all passed. Fresh verification
+also passed focused Jest `93/93`, full backend unit `559/559`, deterministic
+policy/runner `95` plus one intentional Windows skip, manifest `89`, ESLint,
+Prettier, scope, and whitespace checks.
+
+The reviewer also confirmed the added member and borrowing assertions exercise
+public service methods and observable state, ownership, error, transaction, and
+persistence contracts rather than private implementation details.
+
+Task 6 is approved. Task 7 may begin only after this evidence-only closeout is
+committed and the worktree is clean. Reference-runner proof remains Task 8-owned
+and is not waived.
