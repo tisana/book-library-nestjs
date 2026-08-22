@@ -1853,3 +1853,144 @@ test('mutation report directory is ignored by Git', () => {
   );
   assert.equal(lines.filter((line) => line === '/reports/mutation/').length, 1);
 });
+
+// Production break caught: package entry points drift from the reviewed
+// manifest check, local smoke producer, or fail-closed five-shard complete
+// merge contract.
+test('package exposes the exact selective mutation entry points', () => {
+  const packageJson = JSON.parse(
+    readFileSync(join(REPOSITORY_ROOT, 'package.json'), 'utf8'),
+  );
+
+  assert.equal(
+    packageJson.scripts['mutation:check'],
+    'node scripts/quality/update-critical-rule-manifest.mjs --check',
+  );
+  assert.equal(
+    packageJson.scripts['mutation:smoke'],
+    'node scripts/quality/run-mutation.mjs smoke',
+  );
+  assert.equal(
+    packageJson.scripts['mutation:complete'],
+    'node scripts/quality/run-mutation.mjs complete',
+  );
+});
+
+// Production break caught: CI collapses the distributed mutation topology,
+// overlaps event profiles, weakens least privilege/artifact retention, or
+// replaces an existing coverage, changed-line, or end-to-end workflow.
+test('mutation workflow distributes five shards and merges one exact profile', () => {
+  const workflow = readFileSync(
+    join(REPOSITORY_ROOT, '.github', 'workflows', 'mutation.yml'),
+    'utf8',
+  );
+  const expectedPaths = [
+    'src/auth/token-session.service.ts',
+    'src/auth/token-session.service.spec.ts',
+    'src/auth/auth-identifier-repair.service.ts',
+    'src/auth/auth-identifier-repair.service.spec.ts',
+    'src/auth/auth-identifier-reconciliation.service.ts',
+    'src/auth/auth-identifier-reconciliation.service.spec.ts',
+    'src/members/members.service.ts',
+    'src/members/members.service.spec.ts',
+    'src/borrowings/borrowings.service.ts',
+    'src/borrowings/borrowings.service.spec.ts',
+    'test/support/**',
+    'test/quality/**',
+    'scripts/quality/**',
+    'stryker.config.mjs',
+    'package.json',
+    'package-lock.json',
+    '.github/workflows/mutation.yml',
+  ];
+  const pathBlock = workflow.match(
+    /pull_request:\s*\r?\n\s+paths:\s*\r?\n(?<paths>(?:\s+-\s+'[^']+'\s*\r?\n)+)\s+schedule:/,
+  );
+  assert.ok(pathBlock, 'pull-request path filter must precede schedule');
+  assert.deepEqual(
+    [...pathBlock.groups.paths.matchAll(/-\s+'([^']+)'/g)].map(
+      (match) => match[1],
+    ),
+    expectedPaths,
+  );
+
+  assert.match(workflow, /^name: Selective mutation$/m);
+  assert.match(workflow, /permissions:\s*\r?\n\s+contents: read/);
+  assert.match(
+    workflow,
+    /cancel-in-progress:\s*\$\{\{\s*github\.event_name == 'pull_request'\s*\}\}/,
+  );
+  assert.match(workflow, /- cron: '17 3 \* \* \*'/);
+  assert.match(workflow, /description: 'Mutation profile'/);
+  assert.match(workflow, /default: 'smoke'/);
+  assert.match(workflow, /type: choice/);
+  assert.match(workflow, /options:\s*\r?\n\s+- 'smoke'\s*\r?\n\s+- 'complete'/);
+
+  assert.match(workflow, /mutation-shards:\s*\r?\n/);
+  assert.match(workflow, /mutation-aggregate:\s*\r?\n/);
+  assert.match(workflow, /needs: mutation-shards/);
+  assert.match(workflow, /fail-fast: false/);
+  assert.match(
+    workflow,
+    /shard:\s*\r?\n\s+- token-session\s*\r?\n\s+- identifier-repair\s*\r?\n\s+- identifier-reconciliation\s*\r?\n\s+- members\s*\r?\n\s+- borrowings/,
+  );
+  assert.equal((workflow.match(/runs-on: ubuntu-24\.04/g) ?? []).length, 2);
+  assert.equal((workflow.match(/timeout-minutes: 17/g) ?? []).length, 2);
+  assert.equal((workflow.match(/node-version: '22'/g) ?? []).length, 2);
+  assert.equal((workflow.match(/run: npm ci/g) ?? []).length, 2);
+
+  const shardRuns = [
+    {
+      condition: "github.event_name == 'pull_request'",
+      command:
+        'node scripts/quality/run-mutation.mjs smoke-shard ${{ matrix.shard }}',
+    },
+    {
+      condition: "github.event_name == 'schedule'",
+      command:
+        'node scripts/quality/run-mutation.mjs complete-shard ${{ matrix.shard }}',
+    },
+    {
+      condition: "github.event_name == 'workflow_dispatch'",
+      command:
+        'node scripts/quality/run-mutation.mjs ${{ inputs.profile }}-shard ${{ matrix.shard }}',
+    },
+  ];
+  for (const { condition, command } of shardRuns) {
+    assert.match(workflow, new RegExp(`if: \\$\\{\\{ ${condition} \\}\\}`));
+    assert.ok(workflow.includes(`run: ${command}`), command);
+  }
+  assert.equal(
+    (
+      workflow.match(
+        /if: \$\{\{ github\.event_name == '(?:pull_request|schedule|workflow_dispatch)' \}\}/g,
+      ) ?? []
+    ).length,
+    3,
+  );
+  assert.ok(
+    workflow.includes(
+      "node scripts/quality/run-mutation.mjs ${{ github.event_name == 'schedule' && 'complete-merge' || (github.event_name == 'pull_request' && 'smoke-merge' || format('{0}-merge', inputs.profile)) }}",
+    ),
+  );
+
+  assert.equal(
+    (workflow.match(/uses: actions\/upload-artifact@v4/g) ?? []).length,
+    2,
+  );
+  assert.equal((workflow.match(/if: always\(\)/g) ?? []).length, 3);
+  assert.equal(
+    (workflow.match(/path: reports\/mutation\/\*\*/g) ?? []).length,
+    2,
+  );
+  assert.match(workflow, /uses: actions\/download-artifact@v4/);
+  assert.match(workflow, /merge-multiple: true/);
+  assert.doesNotMatch(
+    workflow,
+    /test:cov|test:e2e|frontend|quality:report|changed-line|ci\.yml|workflow_call/,
+  );
+  assert.doesNotMatch(
+    workflow,
+    /npm run mutation:(?:smoke|complete)|run-mutation\.mjs complete\s*$/m,
+  );
+});

@@ -228,6 +228,7 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 06 interruption recovery implementer dispatch requested and actual: `/root/plan5_task6_recovery_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. The prior agent disappeared during the same-provenance complete producer; token/repair/reconciliation artifacts are retained, the incomplete member run is invalid, and Task 7 remains blocked.
 - Task 06 final independent reviewer dispatch requested and actual: fresh `/root/plan5_task6_final_reviewer`, `gpt-5.6-sol`, high reasoning; substitution none. Review target is immutable commits `1b624f4c0b859d4fb2d8b8181ab1d3f6b9d8de99` and `3c5129e70fa2dd0dbc07c4d60a951dd5094e9c73`; approval is not presumed and Task 7 remains blocked pending verdict.
 - Task 06 review-closeout implementer dispatch requested and actual: `/root/plan5_task6_recovery_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. The fresh independent verdict is `APPROVED` with Critical `0`, Important `0`, Minor `0`; closeout is evidence-only and Task 7 remains blocked until its commit is clean.
+- Task 07 implementer dispatch requested and actual: fresh `/root/plan5_task7_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. Starting HEAD is clean `3a2c021ff9766ceb22834b5ea6721edd02252282`; Task 6 is independently APPROVED and no concurrent protected-path work is authorized.
 - Complete-distributed amendment TDD: focused RED `0/13` on the monolithic
   config/missing shard APIs; focused GREEN `13/13`. Final Windows runner/policy
   verification is `91` pass, `0` fail, one intentional POSIX skip. The
@@ -404,3 +405,36 @@ paths`), containing only the three auth specs and policy quality regression.
   Fresh independent Task 6 review is `APPROVED`, Critical `0`, Important `0`,
   Minor `0`; Task 7 remains blocked until the evidence-only closeout commit is
   clean. Push and Actions remain unauthorized.
+
+## Task 07 package scripts and distributed workflow
+
+- Task 7 started from clean approved HEAD
+  `3a2c021ff9766ceb22834b5ea6721edd02252282`; the only inherited worktree change
+  was the controller-authored Task 7 dispatch line. Requested and actual
+  implementer: fresh `/root/plan5_task7_implementer`, `gpt-5.6-sol`, high
+  reasoning; substitution none.
+- Focused static contract RED under WSL Node 22 exited `1`, `0/2`: the package
+  mutation scripts were absent and `.github/workflows/mutation.yml` did not
+  exist. The identical focused GREEN exited `0`, `2/2` after the minimal Task 7
+  implementation.
+- The new separate `Selective mutation` workflow distributes exactly five
+  named shards, uses mutually exclusive PR/schedule/manual producer steps,
+  performs one event-selected merge, retains exact Ubuntu 24.04/Node 22/npm-ci/
+  17-minute/least-privilege/PR-cancellation/artifact contracts, and does not
+  call or replace another quality workflow. The package `mutation:complete`
+  literal remains exact while the current runner resolves `complete` to the
+  approved merge-only contract.
+- Clean WSL-native snapshot
+  `/home/tisana/book-library-plan5-task7-smoke-20260822-M6DFI9/repo` at temporary
+  provenance `29b33184b4b96d57ee8da4c69601a1b0b6712cc2`, Node `v22.22.2`, npm
+  `10.9.8`, and fresh `npm ci` `19 s` passed manifest `89`, deterministic
+  runner/policy `98/98`, Prettier, and `npm run mutation:smoke`.
+- Smoke merged exact `1366`, raw `99.78038067349927`, policy PASS, zero
+  violations/unapproved critical findings, and exactly three approved auth
+  equivalents. Maximum shard runtime was `185345.765855/350000 ms`; all five
+  shard Stryker/artifact exits were `0` and none timed out. The full artifact
+  tree is preserved in ignored archive
+  `reports/mutation/diagnostics/task7-smoke-wsl-350k.tar`, SHA-256
+  `df9d5f3e8a156ad81eb0377079d0f1da2b2963eab165c4f817cd07f7a9c70c6e`.
+- Fresh independent review and exact Task 7 commit remain pending. Task 8,
+  push, and Actions dispatch remain unstarted and unauthorized.

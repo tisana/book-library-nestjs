@@ -40,6 +40,9 @@
     "pretest:e2e:report": "node -e \"require('fs').mkdirSync('test-results', { recursive: true })\"",
     "test:e2e:report": "jest --config ./test/jest-e2e.json --runInBand --detectOpenHandles --json --outputFile=./test-results/backend-e2e.json",
     "test:quality-reporting": "jest --config ./test/jest-quality.json --runInBand",
+    "mutation:check": "node scripts/quality/update-critical-rule-manifest.mjs --check",
+    "mutation:smoke": "node scripts/quality/run-mutation.mjs smoke",
+    "mutation:complete": "node scripts/quality/run-mutation.mjs complete",
     "quality:report:backend": "ts-node --transpile-only scripts/quality/report-quality.ts --stream backend --coverage coverage/backend-unit/coverage-summary.json --unit-tests test-results/backend-unit.json --e2e-tests test-results/backend-e2e.json --baselines quality/coverage-baselines.json --expected-files 87 --markdown test-results/backend-summary.md --json test-results/backend-summary.json",
     "quality:report:frontend-unit": "ts-node --transpile-only scripts/quality/report-quality.ts --stream frontend-unit --coverage frontend/coverage/coverage-summary.json --unit-tests frontend/test-results/vitest-results.json --baselines quality/coverage-baselines.json --markdown frontend/test-results/unit-summary.md --json frontend/test-results/unit-summary.json",
     "quality:report:frontend-e2e": "ts-node --transpile-only scripts/quality/report-quality.ts --stream frontend-e2e --e2e-tests frontend/test-results/playwright-results.json --baselines quality/coverage-baselines.json --markdown frontend/test-results/e2e-summary.md --json frontend/test-results/e2e-summary.json"
