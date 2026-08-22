@@ -1,0 +1,24 @@
+name: Selective mutation
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: 'Mutation profile'
+        required: true
+        default: 'smoke'
+        type: choice
+        options:
+          - 'smoke'
+          - 'complete'
+
+permissions:
+  contents: read
+
+jobs:
+  bootstrap:
+    name: Register selective mutation workflow
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Emit registration notice
+        run: echo "::notice::Selective mutation workflow bootstrap only; no repository checkout or mutation command is executed."
