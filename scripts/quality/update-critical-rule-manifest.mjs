@@ -2,7 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 import {
-  sha256Text,
+  sourceSha256,
   validateCriticalManifest,
   validateEquivalentAllowlist,
 } from './mutation-policy.mjs';
@@ -154,7 +154,7 @@ function buildCandidate(manifest, sourceByPath) {
       }
       return {
         ...rule,
-        sourceSha256: sha256Text(sourceText),
+        sourceSha256: sourceSha256(sourceText),
         startLine,
         endLine,
       };

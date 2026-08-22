@@ -18,6 +18,7 @@ import {
   mutantFingerprint,
   recordBaseline,
   sha256Text,
+  sourceSha256,
   validateCriticalManifest,
   validateEquivalentAllowlist,
 } from '../../scripts/quality/mutation-policy.mjs';
@@ -33,11 +34,11 @@ const SELECTED_SOURCES = [
 const SOURCE =
   'line one\ncritical start\ncritical middle\ncritical end\nline five\nline six\n';
 const SOURCE_SHA256 =
-  'dfbb14b8cdf560c0ad5ed64ae0f0fae8793880c2abfcd38763c9c32be6f2d3cb';
+  '90aa032f845f2b274d0abcdaa3a252d1f0908986812dcdc5af10a439c203cf77';
 const FIRST_RULE_FINGERPRINT =
-  '04b269fc86fb3776a2f2c4f930609336afd7098516f7925d61d7d1338a3e1a46';
+  'e643d8126f9beb3954735803eb6fa6c2686429a0545ae97ae330f13b34693387';
 const LAST_RULE_FINGERPRINT =
-  'ace30be0d737116114d5e96e76c5f4d8f07cb395c9fc40b09c64b2b7574d2089';
+  'cd5b59a0c73a3bda309554493437748dd3fc2e942d5d4a68e0796b65f2c965fa';
 const TEST_CLOCK_MS = Date.now();
 const VALID_REVIEWED_AT = new Date(
   TEST_CLOCK_MS - 24 * 60 * 60 * 1000,
@@ -705,6 +706,30 @@ test('rejects stale source SHA, expired equivalent entries, and wildcard entries
   });
 });
 
+// Production break caught: Git's LF source and a Windows CRLF checkout produce
+// different manifest hashes even though their source content is unchanged.
+test('validates source hashes canonically across LF and CRLF without accepting drift', () => {
+  const crlfSources = new Map(
+    [...sourceByPath].map(([source, text]) => [
+      source,
+      text.replace(/\n/g, '\r\n'),
+    ]),
+  );
+
+  assert.doesNotThrow(() =>
+    validateCriticalManifest(makeManifest(), crlfSources),
+  );
+
+  crlfSources.set(
+    SELECTED_SOURCES[0],
+    `${crlfSources.get(SELECTED_SOURCES[0])}true source drift\r\n`,
+  );
+  assert.throws(
+    () => validateCriticalManifest(makeManifest(), crlfSources),
+    /stale sourceSha256/,
+  );
+});
+
 // Production break caught: missing, extra, or non-normalized production paths pass scope review.
 test('rejects reports whose mutated file set is not exactly the five selected files', async (t) => {
   await t.test('missing file', () => {
@@ -1142,7 +1167,7 @@ test('check mode rejects stale SHA and missing or ambiguous anchors', async (t) 
         source,
         'utf8',
       );
-      fixture.manifest.rules[0].sourceSha256 = sha256Text(source);
+      fixture.manifest.rules[0].sourceSha256 = sourceSha256(source);
       writeFileSync(
         join(fixture.root, 'test', 'quality', 'critical-rule-manifest.json'),
         `${JSON.stringify(fixture.manifest, null, 2)}\n`,
@@ -1188,9 +1213,40 @@ test('candidate mode writes only a refreshed review candidate below reports', ()
       'critical-rule-manifest.candidate.json',
     );
     const candidate = JSON.parse(readFileSync(candidatePath, 'utf8'));
-    assert.equal(candidate.rules[0].sourceSha256, sha256Text(editedSource));
+    assert.equal(candidate.rules[0].sourceSha256, sourceSha256(editedSource));
     assert.equal(candidate.rules[0].startLine, 3);
     assert.equal(candidate.rules[0].endLine, 5);
+  } finally {
+    rmSync(fixture.root, { recursive: true, force: true });
+  }
+});
+
+// Production break caught: candidate generation records checkout-specific line
+// endings instead of a platform-stable source hash.
+test('candidate mode emits the same source hash for LF and CRLF checkouts', () => {
+  const fixture = writeUpdaterFixture();
+  try {
+    writeFileSync(
+      join(fixture.root, ...SELECTED_SOURCES[0].split('/')),
+      SOURCE.replace(/\n/g, '\r\n'),
+      'utf8',
+    );
+
+    const result = updaterResult(fixture.root, '--candidate');
+
+    assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+    const candidate = JSON.parse(
+      readFileSync(
+        join(
+          fixture.root,
+          'reports',
+          'mutation',
+          'critical-rule-manifest.candidate.json',
+        ),
+        'utf8',
+      ),
+    );
+    assert.equal(candidate.rules[0].sourceSha256, SOURCE_SHA256);
   } finally {
     rmSync(fixture.root, { recursive: true, force: true });
   }

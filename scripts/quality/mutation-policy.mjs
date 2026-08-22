@@ -428,6 +428,13 @@ export function sha256Text(text) {
   return createHash('sha256').update(text, 'utf8').digest('hex');
 }
 
+export function sourceSha256(text) {
+  if (typeof text !== 'string') {
+    fail('sourceSha256 text must be a string.');
+  }
+  return sha256Text(text.replace(/\r\n?/g, '\n').replace(/\n/g, '\r\n'));
+}
+
 export function mutantFingerprint(mutant, sourceSha256) {
   requirePlainObject(mutant, 'mutant');
   requireSha256(sourceSha256, 'sourceSha256');
@@ -472,7 +479,7 @@ export function validateCriticalManifest(manifest, sourceByPath) {
     if (typeof text !== 'string') {
       fail(`sourceByPath entry for ${rule.source} must be a string.`);
     }
-    if (sha256Text(text) !== rule.sourceSha256) {
+    if (sourceSha256(text) !== rule.sourceSha256) {
       fail(`manifest.rules[${index}] has a stale sourceSha256.`);
     }
     const lines = text.split(/\r?\n/);

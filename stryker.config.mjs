@@ -7,6 +7,12 @@ const SELECTED_SOURCES = [
   'src/members/members.service.ts',
   'src/borrowings/borrowings.service.ts',
 ];
+const PACKAGE_JEST_CONFIG = JSON.parse(
+  readFileSync(new URL('./package.json', import.meta.url), 'utf8'),
+).jest;
+const PACKAGE_JEST_CONFIG_WITHOUT_TEST_REGEX = Object.fromEntries(
+  Object.entries(PACKAGE_JEST_CONFIG).filter(([key]) => key !== 'testRegex'),
+);
 const SMOKE_SHARDS = [
   {
     id: 'token-session',
@@ -97,11 +103,22 @@ export function buildStrykerConfig(profile, manifest, shardId) {
     reporters: ['clear-text', 'progress', 'json', 'html'],
     thresholds: { high: 80, low: 70, break: 70 },
     concurrency: validatedProfile === 'complete' ? 4 : shard.concurrency,
-    jest: {
-      projectType: 'custom',
-      configFile: 'package.json',
-      enableFindRelatedTests: true,
-    },
+    jest:
+      validatedProfile === 'smoke' && shard.id === 'members'
+        ? {
+            projectType: 'custom',
+            config: {
+              ...PACKAGE_JEST_CONFIG_WITHOUT_TEST_REGEX,
+              testMatch: ['<rootDir>/members/members.service.spec.ts'],
+              testRegex: [],
+            },
+            enableFindRelatedTests: true,
+          }
+        : {
+            projectType: 'custom',
+            configFile: 'package.json',
+            enableFindRelatedTests: true,
+          },
     mutate:
       validatedProfile === 'complete'
         ? [shard.source]

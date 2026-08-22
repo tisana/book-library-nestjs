@@ -88,6 +88,25 @@ const COMPLETE_SHARDS = [
     mutantCount: 327,
   },
 ];
+const MEMBERS_SMOKE_JEST = {
+  projectType: 'custom',
+  config: {
+    moduleFileExtensions: ['js', 'json', 'ts'],
+    rootDir: 'src',
+    testMatch: ['<rootDir>/members/members.service.spec.ts'],
+    testRegex: [],
+    transform: { '^.+\\.(t|j)s$': 'ts-jest' },
+    collectCoverageFrom: [
+      '**/*.ts',
+      '!**/*.spec.ts',
+      '!books/interfaces/book.interface.ts',
+    ],
+    coverageDirectory: '../coverage/backend-unit',
+    coverageReporters: ['text-summary', 'json-summary', 'lcov', 'html'],
+    testEnvironment: 'node',
+  },
+  enableFindRelatedTests: true,
+};
 const MANIFEST = JSON.parse(
   readFileSync(
     join(REPOSITORY_ROOT, 'test', 'quality', 'critical-rule-manifest.json'),
@@ -727,19 +746,78 @@ test('smoke uses the exact five-shard concurrency map', () => {
   });
 });
 
+// Production break caught: the smoke members shard discovers ten transitive
+// suites (129 tests) even though its selected production scope has one direct
+// specification, exhausting the unchanged reference-runner budget.
+test('smoke members selects only its direct service specification', () => {
+  const config = buildStrykerConfig('smoke', MANIFEST, 'members');
+
+  assert.deepEqual(config.jest, MEMBERS_SMOKE_JEST);
+  assert.equal(config.concurrency, 4);
+  assert.ok(
+    config.mutate.every((range) =>
+      range.startsWith('src/members/members.service.ts:'),
+    ),
+  );
+});
+
+test('smoke members Jest config discovers exactly the intended specification', () => {
+  const config = buildStrykerConfig('smoke', MANIFEST, 'members');
+  const result = spawnSync(
+    process.execPath,
+    [
+      join(REPOSITORY_ROOT, 'node_modules', 'jest', 'bin', 'jest.js'),
+      '--config',
+      JSON.stringify(config.jest.config),
+      '--listTests',
+    ],
+    { cwd: REPOSITORY_ROOT, encoding: 'utf8', shell: false },
+  );
+
+  assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+  assert.deepEqual(
+    result.stdout
+      .trim()
+      .split(/\r?\n/)
+      .filter(Boolean)
+      .map((file) => file.replaceAll('\\', '/')),
+    [
+      join(
+        REPOSITORY_ROOT,
+        'src',
+        'members',
+        'members.service.spec.ts',
+      ).replaceAll('\\', '/'),
+    ],
+  );
+});
+
 // Production break caught: a profile weakens the agreed runner, reporters, or score gate.
 test('all shards and complete use exact Jest, reporters, mutators, thresholds, and fixed concurrency', () => {
   const configs = [
     ...SMOKE_SHARDS.map((shard) => ({
       concurrency: shard.concurrency,
+      jest:
+        shard.id === 'members'
+          ? MEMBERS_SMOKE_JEST
+          : {
+              projectType: 'custom',
+              configFile: 'package.json',
+              enableFindRelatedTests: true,
+            },
       config: buildStrykerConfig('smoke', MANIFEST, shard.id),
     })),
     ...COMPLETE_SHARDS.map((shard) => ({
       concurrency: 4,
+      jest: {
+        projectType: 'custom',
+        configFile: 'package.json',
+        enableFindRelatedTests: true,
+      },
       config: buildStrykerConfig('complete', MANIFEST, shard.id),
     })),
   ];
-  for (const { concurrency, config } of configs) {
+  for (const { concurrency, jest, config } of configs) {
     assert.deepEqual(
       {
         testRunner: config.testRunner,
@@ -755,11 +833,7 @@ test('all shards and complete use exact Jest, reporters, mutators, thresholds, a
         reporters: ['clear-text', 'progress', 'json', 'html'],
         thresholds: { high: 80, low: 70, break: 70 },
         concurrency,
-        jest: {
-          projectType: 'custom',
-          configFile: 'package.json',
-          enableFindRelatedTests: true,
-        },
+        jest,
       },
     );
     assert.equal('mutator' in config, false);
