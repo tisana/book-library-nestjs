@@ -232,7 +232,12 @@ performed here.
 
 ## Commit hash
 
-**PENDING**. Per the phase-A instruction, no commit was created.
+Phase A correctly created no commit. The later immutable handoff candidate is
+exact `59b19f6a836cdce7c0b5b0f5106c1aa07917585a`, parent
+`5a75302143778301786ffaf1d1b310ba43540a94`, subject
+`docs: record selective mutation handoff`, tree
+`96fcc8f4441f6057849b742d8303e2d4b7051364`, with exactly three documentation
+paths and `781` insertions, `0` deletions.
 
 ## Deferred findings
 
@@ -245,7 +250,8 @@ performed here.
 
 ## Reviewer decision
 
-**PENDING**. No reviewer verdict is represented by this phase-A candidate.
+The phase-A candidate initially had no reviewer verdict. It is superseded by
+the conditional reviewer record and the final postcommit approval below.
 
 ## Implementer self-review
 
@@ -323,3 +329,34 @@ Smoke maximum `210293.28842/350000 ms`; complete maximum
 **APPROVED_FOR_HANDOFF_COMMIT — PRECOMMIT/CONDITIONAL — C0/I0/M0.** Final
 Plan 5 verdict remains pending exact postcommit SHA, scope, ancestry, and clean
 status verification. No external action is authorized.
+
+## Final postcommit verification
+
+Different fresh reviewer `/root/plan5_task9_reviewer`, requested and actual
+`gpt-5.6-sol` high with no substitution, verified immutable handoff candidate
+`59b19f6a836cdce7c0b5b0f5106c1aa07917585a` independently:
+
+- exact parent `5a75302143778301786ffaf1d1b310ba43540a94`;
+- exact subject `docs: record selective mutation handoff`;
+- exact tree `96fcc8f4441f6057849b742d8303e2d4b7051364`;
+- exact three-document scope and `781` insertions, `0` deletions;
+- unique Base SHA and complete required ancestry chain;
+- exact Base-to-candidate tracked inventory `36`, diff check exit `0`;
+- five selected production files unchanged and post-Action implementation
+  path count `0`;
+- committed Task 9/review evidence unchanged from the precommit audit;
+- before final evidence updates, staged paths `0`, no untracked owned
+  artifacts, and only the controller's append-only assignment dirty;
+- live smoke/complete runs still successful at exact accepted Action SHA, six
+  unexpired artifacts each, and feature ref unchanged;
+- fresh manifest check exit `0`, `89`; pinned-version check exit `0`; fresh
+  policy/runner tests exit `0`, tests `102`, pass `101`, fail `0`, intentional
+  POSIX-only skip `1`.
+
+## Final reviewer decision
+
+**APPROVED — C0/I0/M0. Plan 5 is complete, and Wave C is complete.**
+
+The review-closeout commit is evidence-only and follows the
+non-self-referential protocol: its exact SHA is returned out of band. No push,
+workflow dispatch, PR, merge, or other external action is authorized.

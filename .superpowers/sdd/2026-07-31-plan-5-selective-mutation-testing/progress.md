@@ -283,6 +283,7 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 09 reviewer requested and actual: different fresh `/root/plan5_task9_reviewer`, `gpt-5.6-sol`, high reasoning; substitution none. Review input is the uncommitted phase-A `task-09.md`/ledger candidate over exact reviewed Task 8 closeout `5a75302143778301786ffaf1d1b310ba43540a94`. The reviewer owns Step 3's independent raw-artifact audit, creates `review.md`, and runs Step 4; any precommit approval remains conditional until the exact handoff commit is created and post-commit SHA/scope verification completes.
 - Task 09 precommit reviewer verdict: `APPROVED_FOR_HANDOFF_COMMIT — PRECOMMIT/CONDITIONAL`, Critical `0`, Important `0`, Minor `0`. The different fresh reviewer independently recalculated raw/module scores, audited all `89` critical rules and exact three equivalents, verified both live Action runs and all artifact manifests, confirmed `19/19` independent gates and prohibited-file/source/version integrity, and classified Step 4's `84` matches as legitimate syntax with blocking matches `0`. Final Plan 5 approval remains pending the exact handoff commit and postcommit verification.
 - Task 09 handoff-commit implementer requested and actual: `/root/plan5_task9_implementer_continuation`, `gpt-5.6-sol`, high reasoning; substitution none. Under the conditional reviewer clearance, stage only `task-09.md`, reviewer-owned `review.md`, and append-only `progress.md`, then create the exact Step 5 commit with subject `docs: record selective mutation handoff`. No integration rerun is required because post-Action implementation path count is `0`; no push or external action is authorized.
+- Task 09 postcommit reviewer redispatch requested and actual: same different fresh `/root/plan5_task9_reviewer`, `gpt-5.6-sol`, high reasoning; substitution none. Immutable handoff candidate is `59b19f6a836cdce7c0b5b0f5106c1aa07917585a`, exact parent `5a75302143778301786ffaf1d1b310ba43540a94`, exact subject `docs: record selective mutation handoff`, and exact three-document scope. The reviewer must verify postcommit SHA/ancestry/scope/cleanliness and unchanged substantive evidence before recording the final verdict; approval is not presumed.
 - Complete-distributed amendment TDD: focused RED `0/13` on the monolithic
   config/missing shard APIs; focused GREEN `13/13`. Final Windows runner/policy
   verification is `91` pass, `0` fail, one intentional POSIX skip. The
@@ -692,3 +693,45 @@ paths`), containing only the three auth specs and policy quality regression.
   C0/I0/M0**. Final Task 9 and Plan 5 approval is explicitly pending exact
   postcommit handoff SHA/scope/ancestry/cleanliness verification. No push,
   workflow dispatch, PR, or merge is authorized.
+
+## Task 09 final postcommit review and Plan 5 closeout
+
+- Same different fresh reviewer requested and actual:
+  `/root/plan5_task9_reviewer`, `gpt-5.6-sol`, high reasoning; substitution
+  none. The historical conditional audit remains above; this entry records
+  its required postcommit resolution.
+- Immutable handoff candidate verified exact:
+  `59b19f6a836cdce7c0b5b0f5106c1aa07917585a`, parent
+  `5a75302143778301786ffaf1d1b310ba43540a94`, tree
+  `96fcc8f4441f6057849b742d8303e2d4b7051364`, subject
+  `docs: record selective mutation handoff`.
+- Candidate scope verified exact: only this `progress.md` modified and new
+  `review.md`/`task-09.md` added; per-path insertions `119/337/325`, total
+  `781`, deletions `0`. No implementation, production, dependency, workflow,
+  generated, or external state was included.
+- Postcommit integrity PASS: unique Base SHA count `1`; reviewed Plan 3
+  handoff/administrative boundary, Plan 5 Base, accepted Action SHA, Task 8
+  boundary, and candidate ancestry all valid; Base-to-candidate tracked path
+  count exact `36`; Base diff check exit `0`; five selected production files
+  unchanged; accepted Action-to-candidate implementation path count `0`.
+- Substantive-evidence PASS: committed `review.md` and `task-09.md` exactly
+  equal the precommit audit. Before final updates, only the controller's
+  append-only postcommit assignment was dirty, staged paths were `0`, and no
+  untracked owned artifact existed. No score, critical disposition,
+  equivalent proof, baseline comparison, gate result, runtime budget, or
+  metric boundary was weakened.
+- Live refresh PASS: feature ref exact
+  `bd056baa996160c17bac45dee8a68fc303030b5b`; master exact
+  `95be0de590b573b4d0a336a09d7afd9e864d0a37`; smoke run `32990160510` and
+  complete run `32990164438` remain completed/successful at the feature SHA,
+  with exactly six unexpired artifacts each.
+- Fresh proportional verification PASS: manifest check exit `0`, exact `89`;
+  installed versions exit `0`, Stryker `9.6.1/9.6.1`, Jest `30.2.0`, ts-jest
+  `29.4.6`; policy/runner suite exit `0`, tests `102`, pass `101`, fail `0`,
+  intentional POSIX-only skip `1`, duration `28578.8219 ms`.
+- Final reviewer verdict: **APPROVED**, Critical `0`, Important `0`, Minor
+  `0`. **Plan 5 is complete, and Wave C is complete.**
+- The administrative review-closeout commit contains only these three
+  evidence documents. Under the non-self-referential protocol, its exact SHA
+  is returned out of band. No push, workflow dispatch, PR, merge, or other
+  external action is authorized.

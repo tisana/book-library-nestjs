@@ -335,3 +335,48 @@ approval remains explicitly pending a different postcommit verification of
 the exact commit SHA, committed path set, ancestry, clean/ignored-aware
 status, and unchanged substantive evidence. No push, workflow dispatch, PR,
 or merge is authorized by this verdict.
+
+## Final postcommit verification and verdict
+
+This section supersedes the historical precommit/conditional verdict above
+without erasing it.
+
+- Immutable handoff candidate:
+  `59b19f6a836cdce7c0b5b0f5106c1aa07917585a`.
+- Exact parent: `5a75302143778301786ffaf1d1b310ba43540a94`.
+- Exact tree: `96fcc8f4441f6057849b742d8303e2d4b7051364`.
+- Exact subject: `docs: record selective mutation handoff`.
+- Exact scope: three documentation paths only — `progress.md` modified,
+  `review.md` added, and `task-09.md` added — with exact per-path insertions
+  `119`, `337`, and `325`, total `781`, deletions `0`.
+- Candidate, Task 8 boundary, Plan 5 Base SHA, accepted Action SHA, reviewed
+  Plan 3 handoff, and Plan 3 administrative boundary all satisfy the required
+  ancestry chain. The exact Base-SHA record still matches once.
+- Base-to-candidate inventory is exactly `36` tracked paths. Base diff check
+  exits `0`; the five selected production files remain byte-unchanged; the
+  accepted Action-to-candidate implementation path count is `0`.
+- Committed `review.md` and `task-09.md` have no worktree diff from the
+  precommit audit. Before this final update, the only dirty content was the
+  controller's append-only postcommit-review assignment in `progress.md`;
+  staged paths were `0` and no untracked owned artifact existed.
+- Live refresh on `2026-08-29`: feature ref remains exact accepted Action SHA
+  `bd056baa996160c17bac45dee8a68fc303030b5b`; master is
+  `95be0de590b573b4d0a336a09d7afd9e864d0a37`. Smoke run `32990160510` and
+  complete run `32990164438` remain completed/successful at the accepted SHA;
+  each retains exactly six named artifacts, expired `0`.
+- Fresh proportional checks: mutation manifest check exit `0`, exact `89`;
+  installed versions exit `0`, Stryker core/Jest runner `9.6.1`, Jest
+  `30.2.0`, ts-jest `29.4.6`; policy/runner tests exit `0`, tests `102`, pass
+  `101`, fail `0`, one intentional POSIX-only skip, duration
+  `28578.8219 ms`.
+- No substantive evidence, threshold, disposition, runtime budget, metric
+  boundary, or external state was weakened after the conditional audit.
+
+Final findings: Critical `0`, Important `0`, Minor `0`.
+
+**APPROVED — C0/I0/M0. Plan 5 is complete, and Wave C is complete.**
+
+The administrative review-closeout commit records only these three evidence
+documents. Its self-referential SHA is intentionally returned out of band
+rather than embedded in the commit it names. This approval authorizes no push,
+workflow dispatch, PR, merge, or other external action.
