@@ -278,6 +278,11 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 08 final reviewer requested and actual: fresh `/root/plan5_task8_final_reviewer`, `gpt-5.6-sol`, high reasoning; substitution none. Review target is immutable acceptance-evidence commit `fdc7f15fccfa457560358beadbfd8601ed6d50d1` over accepted feature boundary `bd056baa996160c17bac45dee8a68fc303030b5b`. Review includes reference artifacts, approved amendments, preserved stops, all 19 independent gates, scope/source integrity, temporary-registration cleanup, evidence schema, and acceptance/stop rules. Approval is not presumed; Task 9 remains blocked.
 - Task 08 final reviewer verdict: `APPROVED`, Critical `0`, Important `0`, Minor `0`; Task 8 can close. Fresh verification passed manifest `89`, mutation policy/runner `101` with one intentional POSIX skip, scoped ESLint, and diff/source-integrity checks. The reviewer independently recalculated both accepted mutation profiles, verified every entry in the smoke/complete/Step 3/E2E-amendment/Playwright-prerequisite manifests, confirmed all 19 independent gates and preserved stop classifications, checked live refs/runs/artifacts/PRs, and found the corrections minimal with no gate weakening.
 - Task 08 review-closeout implementer requested and actual: `/root/plan5_task8_evidence_continuation`, `gpt-5.6-sol`, high reasoning; substitution none. Record only the fresh final verdict and reviewer evidence in `task-08.md` and this append-only ledger, commit an evidence-only closeout, and leave implementation/ignored artifacts/external state unchanged. Task 9 remains blocked until the closeout commit is clean.
+- Task 09 implementer requested and actual: fresh `/root/plan5_task9_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. Starting boundary is clean Task 8 closeout `5a75302143778301786ffaf1d1b310ba43540a94`, with Task 8 independently `APPROVED` and reference evidence green. The implementer owns Steps 1–2 and candidate handoff preparation; the required different fresh reviewer owns Step 3 and `review.md`. No push or new workflow dispatch is authorized.
+- Task 09 phase-A usage-limit recovery requested and actual: fresh continuation `/root/plan5_task9_implementer_continuation`, `gpt-5.6-sol`, high reasoning; substitution none. The prior required-model agent stopped before creating `task-09.md`, `review.md`, or a commit; only the controller assignment row remains dirty. Resume implementer-owned Steps 1–2 and candidate evidence preparation from exact Task 8 closeout `5a75302143778301786ffaf1d1b310ba43540a94`; reviewer-owned Step 3 remains unstarted.
+- Task 09 reviewer requested and actual: different fresh `/root/plan5_task9_reviewer`, `gpt-5.6-sol`, high reasoning; substitution none. Review input is the uncommitted phase-A `task-09.md`/ledger candidate over exact reviewed Task 8 closeout `5a75302143778301786ffaf1d1b310ba43540a94`. The reviewer owns Step 3's independent raw-artifact audit, creates `review.md`, and runs Step 4; any precommit approval remains conditional until the exact handoff commit is created and post-commit SHA/scope verification completes.
+- Task 09 precommit reviewer verdict: `APPROVED_FOR_HANDOFF_COMMIT — PRECOMMIT/CONDITIONAL`, Critical `0`, Important `0`, Minor `0`. The different fresh reviewer independently recalculated raw/module scores, audited all `89` critical rules and exact three equivalents, verified both live Action runs and all artifact manifests, confirmed `19/19` independent gates and prohibited-file/source/version integrity, and classified Step 4's `84` matches as legitimate syntax with blocking matches `0`. Final Plan 5 approval remains pending the exact handoff commit and postcommit verification.
+- Task 09 handoff-commit implementer requested and actual: `/root/plan5_task9_implementer_continuation`, `gpt-5.6-sol`, high reasoning; substitution none. Under the conditional reviewer clearance, stage only `task-09.md`, reviewer-owned `review.md`, and append-only `progress.md`, then create the exact Step 5 commit with subject `docs: record selective mutation handoff`. No integration rerun is required because post-Action implementation path count is `0`; no push or external action is authorized.
 - Complete-distributed amendment TDD: focused RED `0/13` on the monolithic
   config/missing shard APIs; focused GREEN `13/13`. Final Windows runner/policy
   verification is `91` pass, `0` fail, one intentional POSIX skip. The
@@ -573,3 +578,117 @@ paths`), containing only the three auth specs and policy quality regression.
   records, preserves the non-self-referential commit protocol and all prior
   history, and leaves implementation, ignored evidence, and external state
   unchanged. Task 8 is closed; Task 9 was not started by this closeout.
+
+## Task 09 phase-A implementer evidence
+
+- Continuation implementer requested and actual:
+  `/root/plan5_task9_implementer_continuation`, `gpt-5.6-sol`, high reasoning;
+  substitution none. Starting reviewed boundary is exact
+  `5a75302143778301786ffaf1d1b310ba43540a94`. The prior required-model agent
+  created no Task 9 report, review, or commit.
+- Dependency/base verdict: PASS for implementer-owned Steps 1–2. The
+  fail-closed `^Base SHA: ([0-9a-f]{40})$` selector matched exactly once at
+  `b678209e23ef7020c21ff565327de1b229c835f6`; Base and reviewed Task 8
+  closeout ancestry checks exited `0`.
+- Scope/source verdict: base-to-HEAD `git diff --name-only` exited `0` with
+  exact tracked path count `34`; `git diff --check` exited `0`; the exact
+  five-selected-production-file `git diff --exit-code` exited `0` with no
+  output. Selected production remains byte-unchanged from the Plan 5 base.
+- Deterministic Step 2 evidence: `npm run mutation:check` exit `0`, manifest
+  `89`; accepted elevated
+  `node --test test/quality/mutation-policy.test.mjs test/quality/mutation-runner.test.mjs`
+  exit `0`, tests `102`, pass `101`, fail `0`, intentional POSIX-only skip
+  `1`, duration `28657.9427 ms`; `npm ls @stryker-mutator/core
+  @stryker-mutator/jest-runner jest ts-jest --depth=0` exit `0` with exact
+  versions `9.6.1`, `9.6.1`, `30.2.0`, and `29.4.6`.
+- The first sandboxed combined-suite invocation hit
+  `Get-CimInstance: Access denied` in the real Windows process-tree test and
+  made no progress for five minutes; it was interrupted exit `1` without a TAP
+  summary and is not a suite verdict. The identical permitted rerun above is
+  the accepted result.
+- Dependency integrity audit exit `0`: both Stryker manifest/root-lock/node
+  values are exact `9.6.1`; Jest remains `^30.2.0` and installed `30.2.0`;
+  ts-jest remains `^29.4.6` and installed `29.4.6`; Jest and ts-jest equal the
+  Task 1 pre-install evidence.
+- Task/commit/model inventory is recorded in `task-09.md`: Task 00 used
+  `gpt-5.6-terra` medium for implementation and `gpt-5.6-sol` high for review;
+  Tasks 01–08 used the prescribed `gpt-5.6-sol` high implementer/reviewer
+  lanes with no substitutions, and all accepted implementation/fix and review
+  boundary SHAs are listed. Task 9 phase A used the required
+  `gpt-5.6-sol` high continuation; the different fresh reviewer is pending.
+- Evidence interfaces: phase A consumes all Task 00–08 reports, the tracked
+  manifest/allowlist/baseline, the unique Base SHA, and the approved Task 8
+  reference/integration evidence. It produces only `task-09.md` and this
+  append-only ledger entry. Reviewer-owned Step 3 will audit raw artifacts and
+  create `review.md`; neither is claimed complete.
+- Exact Step 5 integration-rerun decision: NOT REQUIRED in phase A. From
+  accepted Action SHA `bd056baa996160c17bac45dee8a68fc303030b5b` through
+  reviewed HEAD, exactly two paths changed — this ledger and `task-08.md` — in
+  docs-only commits `fdc7f15fccfa457560358beadbfd8601ed6d50d1` and
+  `5a75302143778301786ffaf1d1b310ba43540a94`. The scoped post-Action tracked
+  implementation path count is `0`. No mutation profile, Task 8 integration
+  gate, push, or workflow dispatch was run.
+- Task 09 phase-A owned scope is exactly new `task-09.md` plus the inherited
+  controller and appended implementer changes in `progress.md`. `review.md`,
+  implementation, production, dependency, workflow, generated, and ignored
+  evidence paths remain untouched. No commit was created.
+- Implementer self-review: Critical `0`, Important `0`, Minor `0`. Open by
+  design: reviewer-owned Step 3, `review.md`, Step 4, final verdict, and handoff
+  commit are **PENDING**.
+- Ignored-aware final scope: `.superpowers/sdd/.gitignore:1` contains `*`, so
+  ordinary status shows only tracked `progress.md`; the specific ignored-
+  untracked query shows only new `task-09.md`. Combined owned scope count is
+  exactly `2`, `review.md` is absent, and no staging occurred.
+
+## Task 09 independent precommit review
+
+- Different fresh reviewer requested and actual:
+  `/root/plan5_task9_reviewer`, `gpt-5.6-sol`, high reasoning; substitution
+  none. Review boundary is exact Task 8 closeout
+  `5a75302143778301786ffaf1d1b310ba43540a94` plus the append-only uncommitted
+  Task 9 evidence candidate.
+- Dependency/base/chain verdict PASS: the unique Base SHA is exact
+  `b678209e23ef7020c21ff565327de1b229c835f6`; Plan 3 handoff,
+  administrative boundary, Base, accepted Action SHA, and Task 8 closeout are
+  ancestors; accepted Task 00–08 commit/model lanes are present with no
+  substitution.
+- Independent raw Action audit PASS: smoke exact `1366`, raw
+  `99.78038067349927`; complete exact `1727`, raw `95.36768963520556`; exact
+  five selected files, duplicate canonical identities `0`, source-hash drift
+  `0`. Complete per-module raw scores are token `94.6360153256705`, repair
+  `99.76019184652279`, reconciliation `93.98496240601504`, members
+  `97.2027972027972`, borrowings `89.17748917748918`.
+- Baseline/critical verdict PASS: baseline `95.2518818760857`, current delta
+  `+0.11580775911986052` points; all `89` critical rule IDs have complete
+  overlap; complete critical dispositions Killed `1458`, Timeout `10`, exact
+  approved equivalents `3`, unapproved Survived/NoCoverage `0`. All three
+  exact fingerprints, proofs, source hashes, rule IDs, independent reviews,
+  and 90-day expiries were revalidated.
+- Action/runtime/artifact verdict PASS: live runs `32990160510` and
+  `32990164438` are successful at exact SHA
+  `bd056baa996160c17bac45dee8a68fc303030b5b`; all twelve artifacts are present
+  and unexpired. Smoke/complete SHA manifests verified `57/57` each with no
+  missing/mismatch; maxima `210293.28842/350000` and
+  `503470.711527/900000 ms`. Runner `2.336.0`, `ubuntu-24.04`, Node
+  `v22.23.2`, npm `10.9.8`, Stryker exact `9.6.1`.
+- Existing independent gates PASS: hash manifest `475/475` with no mismatch;
+  all `19/19` commands exit `0`; quality `68/68`, backend unit `559/559`,
+  backend E2E `242/242`, frontend unit `182/182`, Playwright `87/87` with no
+  failed/flaky/skipped. Coverage and E2E streams remain separate.
+- Scope/config verdict PASS: exact five production sources and prohibited
+  paths are unchanged; only the Plan 5 mutation workflow was added; Jest
+  `30.2.0` and ts-jest `29.4.6` are unchanged; per-test coverage and all four
+  required reporters remain configured; no gate was weakened.
+- Reviewer deterministic checks: manifest check exit `0`, `89`; mutation
+  policy/runner tests exit `0`, tests `102`, pass `101`, fail `0`, intentional
+  POSIX skip `1`; installed version check exit `0`. The first sandbox-denied
+  Windows CIM attempt is invalid environment evidence only and was replaced by
+  the identical permitted green run.
+- Prescribed Step 4 search after `review.md` creation: exit `0`, exactly `84`
+  matches in `10` files; all are legitimate angle-bracket TypeScript, HTML,
+  Jest-config, regular-expression, CLI, or exact manifest-anchor syntax.
+  Blocking placeholder/failure-bypass matches `0`.
+- Precommit verdict: **APPROVED_FOR_HANDOFF_COMMIT — PRECOMMIT/CONDITIONAL —
+  C0/I0/M0**. Final Task 9 and Plan 5 approval is explicitly pending exact
+  postcommit handoff SHA/scope/ancestry/cleanliness verification. No push,
+  workflow dispatch, PR, or merge is authorized.
