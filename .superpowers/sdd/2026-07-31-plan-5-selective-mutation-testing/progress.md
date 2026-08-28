@@ -275,6 +275,9 @@ This append-only ledger corrects the initial flat Task 00 evidence into the bind
 - Task 08 temporary-registration cleanup closeout: reviewed commit `8a4bad4d7bca08c3f627880ee3dcb1bc74036384` was pushed unchanged and PR `#99` (`https://github.com/tisana/book-library-nestjs/pull/99`) passed Unit Tests, CodeQL Analysis, Build & Upload Artifact, and CodeQL. It squash-merged at `95be0de590b573b4d0a336a09d7afd9e864d0a37`; the merge has exact parent `63ccbbcf5131859d53833c5e3db8501d18e657f4`, exact reviewed tree, and only the 24-line workflow deletion. Fresh `origin/master` no longer contains `.github/workflows/mutation.yml`; remote Plan 5 remains exact `bd056baa996160c17bac45dee8a68fc303030b5b`.
 - Task 08 acceptance-evidence implementer requested and actual: `/root/plan5_task8_implementer`, `gpt-5.6-sol`, high reasoning; substitution none. Using the preserved local/reference-runner/independent-gate evidence and exact amendment history, create `task-08.md`, complete the append-only Task 8 ledger, verify evidence-schema and scope integrity, and commit only the Plan 5 task documentation with exact subject `docs: record mutation acceptance evidence`. Task 9 remains blocked pending a separate fresh Task 8 review.
 - Task 08 acceptance-evidence usage-limit recovery requested and actual: fresh continuation `/root/plan5_task8_evidence_continuation`, `gpt-5.6-sol`, high reasoning; substitution none. The prior required-model agent stopped before creating `task-08.md` or making a commit; the only worktree change remains the controller-authored append-only ledger. Resume the same evidence-only Step 5 scope from exact `bd056baa996160c17bac45dee8a68fc303030b5b`; Task 9 stays blocked pending fresh Task 8 review.
+- Task 08 final reviewer requested and actual: fresh `/root/plan5_task8_final_reviewer`, `gpt-5.6-sol`, high reasoning; substitution none. Review target is immutable acceptance-evidence commit `fdc7f15fccfa457560358beadbfd8601ed6d50d1` over accepted feature boundary `bd056baa996160c17bac45dee8a68fc303030b5b`. Review includes reference artifacts, approved amendments, preserved stops, all 19 independent gates, scope/source integrity, temporary-registration cleanup, evidence schema, and acceptance/stop rules. Approval is not presumed; Task 9 remains blocked.
+- Task 08 final reviewer verdict: `APPROVED`, Critical `0`, Important `0`, Minor `0`; Task 8 can close. Fresh verification passed manifest `89`, mutation policy/runner `101` with one intentional POSIX skip, scoped ESLint, and diff/source-integrity checks. The reviewer independently recalculated both accepted mutation profiles, verified every entry in the smoke/complete/Step 3/E2E-amendment/Playwright-prerequisite manifests, confirmed all 19 independent gates and preserved stop classifications, checked live refs/runs/artifacts/PRs, and found the corrections minimal with no gate weakening.
+- Task 08 review-closeout implementer requested and actual: `/root/plan5_task8_evidence_continuation`, `gpt-5.6-sol`, high reasoning; substitution none. Record only the fresh final verdict and reviewer evidence in `task-08.md` and this append-only ledger, commit an evidence-only closeout, and leave implementation/ignored artifacts/external state unchanged. Task 9 remains blocked until the closeout commit is clean.
 - Complete-distributed amendment TDD: focused RED `0/13` on the monolithic
   config/missing shard APIs; focused GREEN `13/13`. Final Windows runner/policy
   verification is `91` pass, `0` fail, one intentional POSIX skip. The
@@ -545,3 +548,28 @@ paths`), containing only the three auth specs and policy quality regression.
   Implementer self-review Critical/Important/Minor is `0/0/0`.
 - Final fresh independent Task 8 review remains pending and is not presumed.
   Task 9 remains blocked and unstarted.
+
+## Task 08 final review closeout
+
+- Fresh final reviewer requested and actual:
+  `/root/plan5_task8_final_reviewer`, `gpt-5.6-sol`, high reasoning;
+  substitution none. Review target was immutable acceptance-evidence commit
+  `fdc7f15fccfa457560358beadbfd8601ed6d50d1` over accepted feature boundary
+  `bd056baa996160c17bac45dee8a68fc303030b5b`.
+- Final reviewer verdict: `APPROVED`, Critical `0`, Important `0`, Minor `0`.
+  The reviewer independently confirmed exact scope and selected-source
+  integrity, recalculated both accepted mutation profiles and thresholds,
+  verified all smoke/complete/Step 3/E2E-amendment/Playwright-prerequisite
+  manifest entries, confirmed Step 3 commands `19/19` with independent metric
+  streams and preserved failure classifications, and checked live refs, runs,
+  artifacts, and the PR `#98`/`#99` registration lifecycle.
+- Fresh reviewer verification passed manifest `89`, mutation policy/runner
+  `101` with one intentional POSIX skip, scoped ESLint, and diff/source-
+  integrity checks. The corrections were minimal and maintainable with no
+  gate weakening and no open Task 8 findings.
+- Review-closeout implementer requested and actual:
+  `/root/plan5_task8_evidence_continuation`, `gpt-5.6-sol`, high reasoning;
+  substitution none. This closeout changes only the two Plan 5 documentation
+  records, preserves the non-self-referential commit protocol and all prior
+  history, and leaves implementation, ignored evidence, and external state
+  unchanged. Task 8 is closed; Task 9 was not started by this closeout.

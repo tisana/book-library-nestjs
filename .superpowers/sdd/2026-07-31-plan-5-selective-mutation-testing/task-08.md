@@ -39,9 +39,10 @@ or approving an unproved equivalent.
 
 ## Reviewer model and reasoning
 
-- Required final Task 8 reviewer: fresh `gpt-5.6-sol`, high reasoning,
-  separate from every Task 8 implementer. Final Task 8 review is pending and is
-  not presumed by this report.
+- Final Task 8 reviewer: fresh `/root/plan5_task8_final_reviewer`, requested
+  and actual `gpt-5.6-sol`, high reasoning; substitution none; separate from
+  every Task 8 implementer; verdict `APPROVED`, Critical `0`, Important `0`,
+  Minor `0`.
 - Temporary-registration bootstrap reviewer: fresh
   `/root/plan5_task8_bootstrap_reviewer`, requested and actual `gpt-5.6-sol`,
   high reasoning; substitution none; verdict `APPROVED`, Critical `0`,
@@ -372,9 +373,10 @@ protocol.
 
 ## Deferred findings
 
-- Required fresh independent final Task 8 review remains pending. Task 8 is
-  ready for that review but is not self-approved.
-- Task 9 remains blocked and was not started.
+- Fresh independent final Task 8 review approved immutable evidence commit
+  `fdc7f15fccfa457560358beadbfd8601ed6d50d1` with Critical `0`, Important
+  `0`, Minor `0`. Task 8 has no open review findings and is closed.
+- Task 9 was not started by this review closeout.
 - GitHub emitted a non-blocking notice that JavaScript Actions targeting Node
   20 were forced onto the Actions runtime's Node 24. Project processes and all
   mutation artifacts still record the required Node `v22.23.2`.
@@ -385,10 +387,22 @@ protocol.
 
 ## Reviewer decision
 
-Final Task 8 reviewer decision: **PENDING**.
+Final Task 8 reviewer decision: **APPROVED**, Critical `0`, Important `0`,
+Minor `0`.
+
+Fresh `/root/plan5_task8_final_reviewer`, requested and actual
+`gpt-5.6-sol`, high reasoning, substitution none, independently reviewed
+immutable evidence commit `fdc7f15fccfa457560358beadbfd8601ed6d50d1`.
+The reviewer confirmed exact scope and selected-source integrity; recalculated
+both accepted mutation profiles and their thresholds; verified every smoke,
+complete, Step 3, E2E-amendment, and Playwright-prerequisite manifest entry;
+confirmed all Step 3 commands `19/19` with separate metric streams and every
+preserved failure classification; checked live refs, runs, artifacts, and the
+PR `#98`/`#99` registration lifecycle; and passed manifest `89`, mutation
+policy/runner `101` with one intentional POSIX skip, scoped ESLint, and diff
+checks. The reviewer found the corrections minimal and maintainable with no
+gate weakening.
 
 Implementer self-review of this acceptance-evidence closeout: Critical `0`,
-Important `0`, Minor `0`. The final reference profiles and all independent
-gates are green at exact `bd056baa...`, but Task 8 may advance only after the
-required fresh reviewer accepts this report and evidence commit. Task 9 is
-forbidden before that checkpoint.
+Important `0`, Minor `0`. Task 8 is closed; Task 9 was not started by this
+review closeout.
