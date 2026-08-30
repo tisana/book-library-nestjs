@@ -1,0 +1,338 @@
+import { appendFile, readFile } from 'node:fs/promises';
+import { TextDecoder } from 'node:util';
+
+export type ChangedLineCoverageStatus = 'passed' | 'failed' | 'not-applicable';
+export type ChangedLineCoverageScope = 'backend' | 'frontend';
+
+export interface ChangedCoverageGate {
+  status: ChangedLineCoverageStatus;
+  passed: boolean;
+  pct: number;
+  covered: number;
+  total: number;
+  missingFiles: string[];
+  minimum: number;
+}
+
+function decodeGitPath(value: string): string {
+  if (!value.startsWith('"')) {
+    return value;
+  }
+
+  const bytes: number[] = [];
+  for (let index = 1; index < value.length; index += 1) {
+    const character = value[index];
+    if (character === '"') {
+      try {
+        return new TextDecoder('utf-8', { fatal: true }).decode(
+          Uint8Array.from(bytes),
+        );
+      } catch {
+        throw new Error('invalid-git-path');
+      }
+    }
+    if (character !== '\\') {
+      let literalEnd = index + 1;
+      while (
+        literalEnd < value.length &&
+        value[literalEnd] !== '"' &&
+        value[literalEnd] !== '\\'
+      ) {
+        literalEnd += 1;
+      }
+      bytes.push(...Buffer.from(value.slice(index, literalEnd), 'utf8'));
+      index = literalEnd - 1;
+      continue;
+    }
+
+    const escape = value[index + 1];
+    if (escape === undefined) {
+      throw new Error('invalid-git-path');
+    }
+    const escapes: Record<string, number> = {
+      '"': 0x22,
+      '\\': 0x5c,
+      a: 0x07,
+      b: 0x08,
+      f: 0x0c,
+      n: 0x0a,
+      r: 0x0d,
+      t: 0x09,
+      v: 0x0b,
+    };
+    if (escapes[escape] !== undefined) {
+      bytes.push(escapes[escape]);
+      index += 1;
+      continue;
+    }
+    if (/^[0-7]$/.test(escape)) {
+      const octal = value.slice(index + 1, index + 4);
+      if (!/^[0-7]{3}$/.test(octal)) {
+        throw new Error('invalid-git-path');
+      }
+      bytes.push(Number.parseInt(octal, 8));
+      index += 3;
+      continue;
+    }
+    throw new Error('invalid-git-path');
+  }
+  throw new Error('invalid-git-path');
+}
+
+function normalizeGitPath(value: string): string {
+  return decodeGitPath(value)
+    .replace(/\\/g, '/')
+    .replace(/^\.\//, '')
+    .replace(/^(?:a|b)\//, '');
+}
+
+export function parseChangedLines(
+  unifiedDiff: string,
+): Map<string, Set<number>> {
+  const changed = new Map<string, Set<number>>();
+  let path: string | undefined;
+  let nextAddedLine: number | undefined;
+  let awaitingNewFilePath = false;
+
+  for (const line of unifiedDiff.split(/\r?\n/)) {
+    if (line.startsWith('diff --git ')) {
+      path = undefined;
+      nextAddedLine = undefined;
+      awaitingNewFilePath = false;
+      continue;
+    }
+    const hunk = line.match(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@/);
+    if (hunk) {
+      nextAddedLine = Number(hunk[1]);
+      awaitingNewFilePath = false;
+      continue;
+    }
+    if (nextAddedLine !== undefined) {
+      if (!path) {
+        continue;
+      }
+      if (line.startsWith('+')) {
+        const lines = changed.get(path) ?? new Set<number>();
+        lines.add(nextAddedLine);
+        changed.set(path, lines);
+        nextAddedLine += 1;
+      } else if (!line.startsWith('-')) {
+        nextAddedLine += 1;
+      }
+      continue;
+    }
+    if (line.startsWith('--- ')) {
+      path = undefined;
+      awaitingNewFilePath = true;
+      continue;
+    }
+    if (awaitingNewFilePath && line.startsWith('+++ ')) {
+      const candidate = line.slice(4);
+      path =
+        candidate === '/dev/null' ? undefined : normalizeGitPath(candidate);
+      awaitingNewFilePath = false;
+    }
+  }
+  return changed;
+}
+
+function normalizeLcovPath(
+  value: string,
+  scope: ChangedLineCoverageScope,
+): string {
+  const normalized = value.replace(/\\/g, '/').replace(/^\.\//, '');
+  const isAbsolute =
+    normalized.startsWith('/') || /^[A-Za-z]:\//.test(normalized);
+
+  if (isAbsolute) {
+    const marker = scope === 'backend' ? '/src/' : '/frontend/src/';
+    const sourceRoot = normalized.lastIndexOf(marker);
+    if (sourceRoot >= 0) {
+      return normalized.slice(sourceRoot + 1);
+    }
+    return normalized;
+  }
+
+  if (scope === 'frontend' && normalized.startsWith('src/')) {
+    return `frontend/${normalized}`;
+  }
+  return normalized;
+}
+
+export function parseLcov(
+  raw: string,
+  scope: ChangedLineCoverageScope = 'backend',
+): Map<string, Map<number, number>> {
+  const lcov = new Map<string, Map<number, number>>();
+  let path: string | undefined;
+
+  for (const line of raw.split(/\r?\n/)) {
+    if (line.startsWith('SF:')) {
+      path = normalizeLcovPath(line.slice(3), scope);
+      if (!lcov.has(path)) {
+        lcov.set(path, new Map<number, number>());
+      }
+      continue;
+    }
+    const record = line.match(/^DA:(\d+),(\d+)/);
+    if (record && path) {
+      lcov.get(path)!.set(Number(record[1]), Number(record[2]));
+    }
+    if (line === 'end_of_record') {
+      path = undefined;
+    }
+  }
+  return lcov;
+}
+
+export function filterChangedLines(
+  changed: Map<string, Set<number>>,
+  scope: ChangedLineCoverageScope,
+): Map<string, Set<number>> {
+  return new Map(
+    [...changed].filter(([path]) => {
+      if (scope === 'backend') {
+        return (
+          /^src\/.*\.ts$/.test(path) &&
+          !/\.(?:spec|test)\.ts$/.test(path) &&
+          !/\.d\.ts$/.test(path) &&
+          path !== 'src/books/interfaces/book.interface.ts'
+        );
+      }
+
+      return (
+        /^frontend\/src\/.*\.tsx?$/.test(path) &&
+        !/\.(?:spec|test)\.(?:ts|tsx)$/.test(path) &&
+        !/^frontend\/src\/test\//.test(path) &&
+        !/^frontend\/src\/(?:.*\/)?__generated__\//.test(path) &&
+        !/\.d\.ts$/.test(path) &&
+        path !== 'frontend/src/main.tsx'
+      );
+    }),
+  );
+}
+
+export function evaluateChangedLineCoverage(
+  changed: Map<string, Set<number>>,
+  lcov: Map<string, Map<number, number>>,
+  minimum = 80,
+): ChangedCoverageGate {
+  if (!Number.isFinite(minimum) || minimum < 0 || minimum > 100) {
+    throw new Error('invalid-changed-line-minimum');
+  }
+  if (changed.size === 0) {
+    return {
+      status: 'not-applicable',
+      passed: true,
+      pct: 100,
+      covered: 0,
+      total: 0,
+      missingFiles: [],
+      minimum,
+    };
+  }
+
+  let covered = 0;
+  let total = 0;
+  const missingFiles: string[] = [];
+  for (const [path, changedLines] of changed) {
+    const lineHits = lcov.get(path);
+    if (!lineHits) {
+      missingFiles.push(path);
+      total += changedLines.size;
+      continue;
+    }
+    for (const line of changedLines) {
+      const hits = lineHits.get(line);
+      if (hits === undefined) {
+        continue;
+      }
+      total += 1;
+      if (hits > 0) {
+        covered += 1;
+      }
+    }
+  }
+  const pct = total === 0 ? 100 : Math.floor((covered / total) * 10000) / 100;
+  return {
+    status: pct >= minimum && missingFiles.length === 0 ? 'passed' : 'failed',
+    passed: pct >= minimum && missingFiles.length === 0,
+    pct,
+    covered,
+    total,
+    missingFiles,
+    minimum,
+  };
+}
+
+interface ChangedLineCoverageCliOptions {
+  scope?: ChangedLineCoverageScope;
+  diff?: string;
+  lcov?: string;
+  minimum: number;
+}
+
+function parseArguments(arguments_: string[]): ChangedLineCoverageCliOptions {
+  const options: ChangedLineCoverageCliOptions = { minimum: 80 };
+  for (let index = 0; index < arguments_.length; index += 1) {
+    const argument = arguments_[index];
+    const value = arguments_[index + 1];
+    if (!value || value.startsWith('--')) {
+      throw new Error(`invalid-changed-line-coverage:${argument}`);
+    }
+    if (
+      argument === '--scope' &&
+      (value === 'backend' || value === 'frontend')
+    ) {
+      options.scope = value;
+    } else if (argument === '--diff') {
+      options.diff = value;
+    } else if (argument === '--lcov') {
+      options.lcov = value;
+    } else if (argument === '--minimum' && /^\d+(?:\.\d+)?$/.test(value)) {
+      options.minimum = Number(value);
+    } else {
+      throw new Error(`invalid-changed-line-coverage:${argument}`);
+    }
+    index += 1;
+  }
+  if (!options.scope || !options.diff || !options.lcov) {
+    throw new Error('invalid-changed-line-coverage:missing-input');
+  }
+  return options;
+}
+
+export async function runChangedLineCoverageCli(
+  arguments_: string[],
+): Promise<ChangedCoverageGate> {
+  const options = parseArguments(arguments_);
+  const [diff, rawLcov] = await Promise.all([
+    readFile(options.diff!, 'utf8'),
+    readFile(options.lcov!, 'utf8'),
+  ]);
+  const gate = evaluateChangedLineCoverage(
+    filterChangedLines(parseChangedLines(diff), options.scope!),
+    parseLcov(rawLcov, options.scope!),
+    options.minimum,
+  );
+  const summary = `## ${options.scope} changed-line coverage\n\n| Status | Covered | Total | Coverage | Minimum |\n| --- | ---: | ---: | ---: | ---: |\n| ${gate.status} | ${gate.covered} | ${gate.total} | ${gate.pct.toFixed(2)}% | ${gate.minimum.toFixed(2)}% |\n`;
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    await appendFile(process.env.GITHUB_STEP_SUMMARY, summary);
+  }
+  process.stdout.write(
+    `${JSON.stringify({ scope: options.scope, ...gate })}\n`,
+  );
+  if (!gate.passed) {
+    throw new Error(`${options.scope}:changed-line-coverage-gate-failed`);
+  }
+  return gate;
+}
+
+if (require.main === module) {
+  runChangedLineCoverageCli(process.argv.slice(2)).catch((error: unknown) => {
+    process.exitCode = 1;
+    process.stderr.write(
+      `${error instanceof Error ? error.message : 'invalid-changed-line-coverage'}\n`,
+    );
+  });
+}

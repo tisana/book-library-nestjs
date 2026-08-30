@@ -72,7 +72,8 @@ async function mockMemberSession(page: Page, requestedUrls: string[]) {
     if (url.endsWith('/auth/login')) {
       await route.fulfill({
         json: {
-          accessToken: 'member-token',
+        accessToken: 'member-token',
+        roleArea: 'member',
           member: {
             id: 'member-1',
             memberNumber: 'M-1001',

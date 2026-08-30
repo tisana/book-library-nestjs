@@ -138,4 +138,41 @@ describe('IdentifierConflicts', () => {
       'You do not have permission to review identifier conflicts.',
     );
   });
+
+  it('shows a retryable safe error when conflict resolution fails', async () => {
+    const user = userEvent.setup();
+    api.resolve.mockRejectedValueOnce(new Error('stale operation details'));
+    render(<IdentifierConflicts />);
+
+    await user.selectOptions(
+      screen.getByLabelText('Account retaining current identifier'),
+      'staff:staff-1',
+    );
+    await user.type(
+      screen.getByLabelText('Replacement for Member account: M-1***'),
+      'member.one@example.test',
+    );
+    await user.click(screen.getByRole('button', { name: 'Resolve conflict' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Identifier conflict could not be resolved.',
+    );
+    expect(screen.queryByText(/stale operation details/i)).toBeNull();
+    expect(screen.getByRole('button', { name: 'Resolve conflict' })).toBeEnabled();
+  });
+
+  it('renders an empty state after stale conflict data is refreshed away', () => {
+    const { rerender } = render(<IdentifierConflicts />);
+    expect(screen.getByText('shared@example.test')).toBeInTheDocument();
+
+    api.useIdentifierConflicts.mockReturnValue({
+      data: [],
+      isLoading: false,
+      isError: false,
+      error: null,
+    });
+    rerender(<IdentifierConflicts />);
+
+    expect(screen.getByText('No identifier conflicts require review.')).toBeInTheDocument();
+  });
 });

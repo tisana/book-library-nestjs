@@ -1,10 +1,11 @@
 import { QueryClient } from '@tanstack/react-query';
 import { http, HttpResponse } from 'msw';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { queryClient } from '@/app/query-client';
 import { apiBaseUrl } from '@/lib/api/client';
 import type { AuthPermission } from '@/lib/api/types';
-import { refreshStaffSession } from '@/lib/api/auth';
+import { refreshStaffSession, staffLogoutAll } from '@/lib/api/auth';
+import { refreshMemberSession } from '@/lib/api/member-auth';
 import { authSession, createAuthSessionStore } from './session';
 import { signOut } from './sign-out';
 import { server } from '@/test/mocks/server';
@@ -17,6 +18,23 @@ const staffUser = {
   roleArea: 'staff' as const,
   permissions: ['catalog:read'] satisfies AuthPermission[],
 };
+
+const memberUser = {
+  id: 'member-1',
+  memberNumber: 'M-1001',
+  displayName: 'Member One',
+  membershipStatus: 'active' as const,
+  roleArea: 'member' as const,
+  permissions: ['member:self:read'] satisfies AuthPermission[],
+};
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((resolvePromise) => {
+    resolve = resolvePromise;
+  });
+  return { promise, resolve };
+}
 
 describe('auth session store', () => {
   beforeEach(() => {
@@ -103,6 +121,193 @@ describe('auth session store', () => {
     expect(cachedClient.getQueryData(['staff', 'books'])).toBeUndefined();
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('replaces every token metadata field during refresh without retaining the previous token', async () => {
+    authSession.setSession('previous-token', staffUser, {
+      tokenType: 'Bearer',
+      expiresIn: 30,
+      scope: 'stale:scope',
+      permissions: ['catalog:read'],
+      issuer: 'previous-issuer',
+      audience: 'previous-audience',
+      authVersion: 1,
+    });
+    server.use(
+      http.post(`${apiBaseUrl}/auth/refresh`, () =>
+        HttpResponse.json({
+          accessToken: 'replacement-token',
+          tokenType: 'Bearer',
+          expiresIn: 900,
+          scope: 'catalog:read staff-users:read',
+          permissions: ['catalog:read', 'staff-users:read'],
+          issuer: 'replacement-issuer',
+          audience: ['library-web'],
+          authVersion: 2,
+          user: { ...staffUser, permissions: ['catalog:read', 'staff-users:read'] },
+        }),
+      ),
+    );
+
+    await refreshStaffSession();
+
+    expect(authSession.getSnapshot()).toEqual({
+      accessToken: 'replacement-token',
+      tokenType: 'Bearer',
+      expiresIn: 900,
+      scope: 'catalog:read staff-users:read',
+      permissions: ['catalog:read', 'staff-users:read'],
+      issuer: 'replacement-issuer',
+      audience: ['library-web'],
+      authVersion: 2,
+      roleArea: 'staff',
+      user: { ...staffUser, permissions: ['catalog:read', 'staff-users:read'] },
+      reason: 'switched',
+    });
+  });
+
+  it('shares one refresh request and session outcome for concurrent callers', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          accessToken: 'shared-token',
+          tokenType: 'Bearer',
+          expiresIn: 900,
+          scope: 'catalog:read',
+          permissions: ['catalog:read'],
+          user: staffUser,
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      ),
+    );
+
+    const first = refreshStaffSession();
+    const second = refreshStaffSession();
+
+    await expect(Promise.all([first, second])).resolves.toEqual([
+      { ...staffUser, roleArea: 'staff', permissions: ['catalog:read'] },
+      { ...staffUser, roleArea: 'staff', permissions: ['catalog:read'] },
+    ]);
+    expect(authSession.getSnapshot().accessToken).toBe('shared-token');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not restore a logged-out session when a pending refresh resolves', async () => {
+    const response = deferred<Response>();
+    vi.spyOn(globalThis, 'fetch').mockReturnValue(response.promise);
+    authSession.setSession('staff-token', staffUser);
+
+    const refresh = refreshStaffSession();
+    authSession.clear('signed-out');
+    response.resolve(
+      new Response(
+        JSON.stringify({
+          accessToken: 'stale-token',
+          tokenType: 'Bearer',
+          expiresIn: 900,
+          scope: 'catalog:read',
+          permissions: ['catalog:read'],
+          user: staffUser,
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      ),
+    );
+
+    await expect(refresh).rejects.toThrow('Session changed during refresh.');
+    expect(authSession.getSnapshot()).toEqual({ reason: 'signed-out' });
+  });
+
+  it('does not overwrite a newer session when a pending refresh resolves', async () => {
+    const response = deferred<Response>();
+    vi.spyOn(globalThis, 'fetch').mockReturnValue(response.promise);
+    authSession.setSession('old-staff-token', staffUser);
+
+    const refresh = refreshStaffSession();
+    authSession.setSession('new-member-token', memberUser);
+    response.resolve(
+      new Response(
+        JSON.stringify({
+          accessToken: 'stale-staff-token',
+          tokenType: 'Bearer',
+          expiresIn: 900,
+          scope: 'catalog:read',
+          permissions: ['catalog:read'],
+          user: staffUser,
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      ),
+    );
+
+    await expect(refresh).rejects.toThrow('Session changed during refresh.');
+    expect(authSession.getSnapshot()).toMatchObject({
+      accessToken: 'new-member-token',
+      roleArea: 'member',
+    });
+  });
+
+  it('shares the rotating refresh request across concurrent staff and member callers', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          accessToken: 'staff-refresh-token',
+          tokenType: 'Bearer',
+          expiresIn: 900,
+          scope: 'catalog:read',
+          permissions: ['catalog:read'],
+          roleArea: 'staff',
+          user: staffUser,
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      ),
+    );
+
+    const staffRefresh = refreshStaffSession();
+    const memberRefresh = refreshMemberSession();
+
+    await expect(staffRefresh).resolves.toMatchObject({ roleArea: 'staff' });
+    await expect(memberRefresh).rejects.toThrow(
+      'Member login did not return a member session.',
+    );
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(authSession.getSnapshot()).toMatchObject({
+      accessToken: 'staff-refresh-token',
+      roleArea: 'staff',
+    });
+  });
+
+  it('clears a rejected refresh flight so a later retry can refresh the session', async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ message: 'Unavailable' }), {
+          status: 500,
+          headers: { 'content-type': 'application/json' },
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            accessToken: 'retry-token',
+            tokenType: 'Bearer',
+            expiresIn: 900,
+            scope: 'catalog:read',
+            permissions: ['catalog:read'],
+            user: staffUser,
+          }),
+          { status: 200, headers: { 'content-type': 'application/json' } },
+        ),
+      );
+
+    await expect(refreshStaffSession()).rejects.toMatchObject({ status: 500 });
+    await expect(refreshStaffSession()).resolves.toMatchObject({
+      roleArea: 'staff',
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(authSession.getSnapshot().accessToken).toBe('retry-token');
+  });
+
   it('clears local session even when server logout cannot be reached', async () => {
     const cachedClient = queryClient as QueryClient;
     cachedClient.setQueryData(
@@ -124,6 +329,24 @@ describe('auth session store', () => {
 
     await expect(signOut('member')).resolves.toBe('/login');
     expect(authSession.getSnapshot().accessToken).toBeUndefined();
+    expect(cachedClient.getQueryData(['member', 'borrowings'])).toBeUndefined();
+  });
+
+  it('clears every cached query when logout-all receives a server error', async () => {
+    const cachedClient = queryClient as QueryClient;
+    cachedClient.setQueryData(['staff', 'books'], [{ id: 'book-1' }]);
+    cachedClient.setQueryData(['member', 'borrowings'], [{ id: 'borrowing-1' }]);
+    authSession.setSession('staff-token', staffUser);
+    server.use(
+      http.post(`${apiBaseUrl}/auth/logout-all`, () =>
+        HttpResponse.json({ message: 'Unavailable' }, { status: 500 }),
+      ),
+    );
+
+    await expect(staffLogoutAll()).resolves.toBe('/login');
+
+    expect(authSession.getSnapshot()).toEqual({ reason: 'signed-out' });
+    expect(cachedClient.getQueryData(['staff', 'books'])).toBeUndefined();
     expect(cachedClient.getQueryData(['member', 'borrowings'])).toBeUndefined();
   });
 });

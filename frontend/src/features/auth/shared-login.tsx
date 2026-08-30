@@ -60,7 +60,9 @@ export function SharedLogin() {
           autoComplete="username"
           autoFocus
           id="login-identifier"
+          onInvalid={(event) => event.currentTarget.focus()}
           onChange={(event) => setIdentifier(event.target.value)}
+          required
           value={identifier}
         />
       </FormField>
@@ -68,7 +70,9 @@ export function SharedLogin() {
         <TextInput
           autoComplete="current-password"
           id="login-password"
+          onInvalid={(event) => event.currentTarget.focus()}
           onChange={(event) => setPassword(event.target.value)}
+          required
           type="password"
           value={password}
         />

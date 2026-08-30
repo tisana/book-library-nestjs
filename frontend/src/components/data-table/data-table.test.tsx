@@ -1,5 +1,7 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import type { ColumnDef } from '@tanstack/react-table';
+import { vi } from 'vitest';
 import { DataTable } from './data-table';
 
 interface Row {
@@ -65,5 +67,42 @@ describe('DataTable', () => {
     );
     expect(screen.getByRole('columnheader', { name: 'Title' })).toBeInTheDocument();
     expect(screen.getByText('Clean Code')).toBeInTheDocument();
+  });
+
+  it('keeps error copy safe and row actions keyboard operable', async () => {
+    const user = userEvent.setup();
+    const openRow = vi.fn();
+    const actionColumns: ColumnDef<Row>[] = [
+      ...columns,
+      {
+        id: 'actions',
+        header: 'Actions',
+        cell: ({ row }) => (
+          <button onClick={() => openRow(row.original.title)} type="button">
+            Open {row.original.title}
+          </button>
+        ),
+      },
+    ];
+    const { rerender } = render(
+      <DataTable
+        columns={actionColumns}
+        data={[{ title: 'Clean Code', status: 'active' }]}
+      />,
+    );
+
+    await user.tab();
+    await user.keyboard('{Enter}');
+    expect(openRow).toHaveBeenCalledWith('Clean Code');
+
+    rerender(
+      <DataTable
+        columns={columns}
+        data={[]}
+        errorMessage="Records could not be loaded."
+      />,
+    );
+    expect(screen.getByText('Unable to load records')).toBeInTheDocument();
+    expect(screen.getByText('Records could not be loaded.')).toBeInTheDocument();
   });
 });

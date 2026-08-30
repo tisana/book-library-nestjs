@@ -54,6 +54,7 @@ describe('SharedLogin', () => {
   it.each([
     ['staff@example.com', 'staff', ['catalog:read'], '/staff'],
     ['M-1001', 'member', ['member:self:read'], '/member'],
+    ['member-no-access@example.com', 'member', [], '/unauthorized'],
     ['no-role@example.com', 'staff', [], '/unauthorized'],
   ] as const)(
     'routes %s from authenticated role area and permissions',
@@ -124,9 +125,78 @@ describe('SharedLogin', () => {
       .getByRole('button', { name: /sign in/i })
       .closest('form');
     fireEvent.submit(form!);
+    expect(screen.getByRole('button', { name: 'Signing in' })).toBeDisabled();
     fireEvent.submit(form!);
 
     await waitFor(() => expect(navigateMock).toHaveBeenCalled());
     expect(attempts).toBe(1);
+  });
+
+  it('keeps the invalid password focused without sending a request', async () => {
+    const user = userEvent.setup();
+    const loginHandler = vi.fn();
+    server.use(
+      http.post(`${apiBaseUrl}/auth/login`, () => {
+        loginHandler();
+        return HttpResponse.json(authResponse('staff', ['catalog:read']));
+      }),
+    );
+    render(<SharedLogin />);
+
+    await user.type(
+      screen.getByLabelText(/email or login identifier/i),
+      'staff@example.com',
+    );
+
+    await user.click(screen.getByRole('button', { name: /sign in/i }));
+
+    expect(screen.getByLabelText(/password/i)).toHaveFocus();
+    expect(loginHandler).not.toHaveBeenCalled();
+  });
+
+  it('allows a retry after a generic authentication failure', async () => {
+    const user = userEvent.setup();
+    let attempt = 0;
+    server.use(
+      http.post(`${apiBaseUrl}/auth/login`, () => {
+        attempt += 1;
+        return attempt === 1
+          ? HttpResponse.json({ message: 'details hidden' }, { status: 401 })
+          : HttpResponse.json(authResponse('staff', ['catalog:read']));
+      }),
+    );
+    render(<SharedLogin />);
+
+    await user.type(screen.getByLabelText(/email or login identifier/i), 'staff@example.com');
+    await user.type(screen.getByLabelText(/password/i), 'Password#2026');
+    await user.click(screen.getByRole('button', { name: /sign in/i }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Invalid credentials.');
+
+    await user.click(screen.getByRole('button', { name: /sign in/i }));
+    await waitFor(() =>
+      expect(navigateMock).toHaveBeenCalledWith({ to: '/staff' }),
+    );
+    expect(attempt).toBe(2);
+  });
+
+  it('shows a generic error and does not route when the returned role area lacks its session', async () => {
+    const user = userEvent.setup();
+    server.use(
+      http.post(`${apiBaseUrl}/auth/login`, () =>
+        HttpResponse.json({
+          accessToken: 'mismatch-token', tokenType: 'Bearer', expiresIn: 900,
+          scope: 'member:self:read', permissions: ['member:self:read'], roleArea: 'member',
+          user: { id: 'staff-1', email: 'staff@example.com', displayName: 'Staff One', roles: ['staff'] },
+        }),
+      ),
+    );
+    render(<SharedLogin />);
+
+    await user.type(screen.getByLabelText(/email or login identifier/i), 'staff@example.com');
+    await user.type(screen.getByLabelText(/password/i), 'Password#2026');
+    await user.click(screen.getByRole('button', { name: /sign in/i }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Something went wrong while contacting the API.');
+    expect(navigateMock).not.toHaveBeenCalled();
   });
 });

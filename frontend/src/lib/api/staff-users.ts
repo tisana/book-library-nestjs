@@ -1,6 +1,5 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from './client';
-import { invalidateStaffUserMutation } from './mutations';
 import { queryKeys } from './query-keys';
 import type {
   CreateStaffUserInput,
@@ -56,13 +55,15 @@ export function useRoleReview() {
 }
 
 export function useCreateStaffUser() {
+  const client = useQueryClient();
   return useMutation({
     mutationFn: createStaffUser,
-    onSuccess: invalidateStaffUserMutation,
+    onSuccess: () => invalidateStaffUserQueries(client),
   });
 }
 
 export function useUpdateStaffUser() {
+  const client = useQueryClient();
   return useMutation({
     mutationFn: ({
       staffUserId,
@@ -71,6 +72,13 @@ export function useUpdateStaffUser() {
       staffUserId: string;
       input: UpdateStaffUserInput;
     }) => updateStaffUser(staffUserId, input),
-    onSuccess: invalidateStaffUserMutation,
+    onSuccess: () => invalidateStaffUserQueries(client),
   });
+}
+
+function invalidateStaffUserQueries(client: ReturnType<typeof useQueryClient>) {
+  return Promise.all([
+    client.invalidateQueries({ queryKey: ['staff', 'staff-users'] }),
+    client.invalidateQueries({ queryKey: queryKeys.staff.roleReview }),
+  ]);
 }

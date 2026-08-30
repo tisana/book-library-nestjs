@@ -1,40 +1,10 @@
-import { authSession } from '@/lib/auth/session';
 import { signOut } from '@/lib/auth/sign-out';
-import { login } from './auth';
+import { login, refreshSession } from './auth';
 import { apiClient } from './client';
 import type {
-  AuthTokenMetadata,
   CurrentAuthResponse,
-  LoginResponse,
   MemberLoginRequest,
-  MemberSessionUser,
 } from './types';
-
-function tokenMetadata(response: LoginResponse): AuthTokenMetadata {
-  return {
-    tokenType: response.tokenType,
-    expiresIn: response.expiresIn,
-    scope: response.scope,
-    permissions: response.permissions,
-    issuer: response.issuer,
-    audience: response.audience,
-    authVersion: response.authVersion,
-  };
-}
-
-function normalizeMemberUser(response: LoginResponse<MemberSessionUser>) {
-  const member = response.member ?? response.principal;
-
-  if (!member) {
-    throw new Error('Member login did not return a member session.');
-  }
-
-  return {
-    ...member,
-    roleArea: 'member' as const,
-    permissions: member.permissions ?? response.permissions,
-  };
-}
 
 export async function memberLogin(input: MemberLoginRequest) {
   const user = await login({
@@ -48,20 +18,11 @@ export async function memberLogin(input: MemberLoginRequest) {
 }
 
 export async function refreshMemberSession() {
-  const response = await apiClient.post<LoginResponse<MemberSessionUser>>(
-    '/auth/refresh',
-    undefined,
-    { auth: false },
-  );
-  const memberUser = normalizeMemberUser(response);
-
-  authSession.setSession(
-    response.accessToken,
-    memberUser,
-    tokenMetadata(response),
-  );
-
-  return memberUser;
+  const user = await refreshSession();
+  if (user.roleArea !== 'member') {
+    throw new Error('Member login did not return a member session.');
+  }
+  return user;
 }
 
 export async function getCurrentMemberAuthUser() {

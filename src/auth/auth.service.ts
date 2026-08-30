@@ -1,5 +1,10 @@
 import { createHmac, randomUUID } from 'node:crypto';
-import { Injectable, Optional, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  Optional,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
@@ -252,12 +257,26 @@ export class AuthService {
       });
 
     if (rotated.subjectType === AuthSubjectType.Member) {
-      const member = await this.membersService?.findActiveById(
-        rotated.subjectId,
-      );
+      let member:
+        | Awaited<ReturnType<MembersService['findActiveById']>>
+        | undefined;
+      try {
+        member = await this.membersService?.findActiveById(rotated.subjectId);
+      } catch (error) {
+        if (error instanceof NotFoundException) {
+          return this.denyRefreshAndRevoke(
+            rotated.familyId,
+            'inactive-subject',
+          );
+        }
+        throw error;
+      }
 
       if (!member || (member.authVersion ?? 0) !== rotated.authVersion) {
-        throw new UnauthorizedException('Invalid refresh session');
+        return this.denyRefreshAndRevoke(
+          rotated.familyId,
+          member ? 'stale-auth-version' : 'inactive-subject',
+        );
       }
 
       const memberId = getMemberId(member);
@@ -284,10 +303,23 @@ export class AuthService {
       };
     }
 
-    const user = await this.staffUsersService.findActiveById(rotated.subjectId);
+    let user:
+      | Awaited<ReturnType<StaffUsersService['findActiveById']>>
+      | undefined;
+    try {
+      user = await this.staffUsersService.findActiveById(rotated.subjectId);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return this.denyRefreshAndRevoke(rotated.familyId, 'inactive-subject');
+      }
+      throw error;
+    }
 
-    if ((user.authVersion ?? 0) !== rotated.authVersion) {
-      throw new UnauthorizedException('Invalid refresh session');
+    if (!user || (user.authVersion ?? 0) !== rotated.authVersion) {
+      return this.denyRefreshAndRevoke(
+        rotated.familyId,
+        user ? 'stale-auth-version' : 'inactive-subject',
+      );
     }
 
     const userId = getStaffUserId(user);
@@ -562,6 +594,16 @@ export class AuthService {
       refreshToken: session.refreshToken,
       refreshExpiresAt: session.expiresAt,
     };
+  }
+
+  private async denyRefreshAndRevoke(
+    familyId: string,
+    reason: 'inactive-subject' | 'stale-auth-version',
+  ): Promise<never> {
+    await this.getRequiredTokenSessionService()
+      .revokeFamily(familyId, reason)
+      .catch(() => undefined);
+    throw new UnauthorizedException('Invalid refresh session');
   }
 
   private getRequiredTokenSessionService(): TokenSessionService {

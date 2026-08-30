@@ -1,8 +1,7 @@
 import { authSession } from '@/lib/auth/session';
 import { signOut, signOutAll } from '@/lib/auth/sign-out';
-import { apiClient } from './client';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { invalidateIdentifierConflictMutation } from './mutations';
+import { ApiClientError, apiClient } from './client';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from './query-keys';
 import type {
   AuthTokenMetadata,
@@ -21,6 +20,8 @@ import type {
   SecurityActivityEventView,
   SecurityActivityQuery,
 } from './types';
+
+let pendingRefresh: Promise<SessionUser> | undefined;
 
 function tokenMetadata(response: LoginResponse): AuthTokenMetadata {
   return {
@@ -49,10 +50,7 @@ function normalizeStaffUser(response: LoginResponse<StaffSessionUser>) {
 }
 
 function normalizeSharedUser(response: SharedLoginResponse): SessionUser {
-  if (
-    response.roleArea === 'member' ||
-    ('member' in response && response.member)
-  ) {
+  if (response.roleArea === 'member') {
     const member = response.member;
     if (!member) {
       throw new Error('Member login did not return a member session.');
@@ -69,14 +67,35 @@ function normalizeSharedUser(response: SharedLoginResponse): SessionUser {
 }
 
 export async function login(input: SharedLoginRequest) {
-  const response = await apiClient.post<SharedLoginResponse>(
-    '/auth/login',
-    input,
-    { auth: false },
-  );
-  const user = normalizeSharedUser(response);
-  authSession.setSession(response.accessToken, user, tokenMetadata(response));
-  return user;
+  try {
+    const response = await apiClient.post<SharedLoginResponse>(
+      '/auth/login',
+      input,
+      { auth: false },
+    );
+    const user = normalizeSharedUser(response);
+    authSession.setSession(
+      response.accessToken,
+      user,
+      tokenMetadata(response),
+    );
+    return user;
+  } catch (caught) {
+    if (caught instanceof ApiClientError) {
+      const message =
+        caught.status === 401
+          ? 'Invalid credentials.'
+          : caught.status === 403
+            ? 'Browser session request denied'
+            : caught.status === 429
+              ? 'Authentication temporarily unavailable'
+              : 'Something went wrong while contacting the API.';
+      throw new ApiClientError(caught.status, message);
+    }
+    throw new Error('Something went wrong while contacting the API.', {
+      cause: caught,
+    });
+  }
 }
 
 export async function staffLogin(input: StaffLoginRequest) {
@@ -90,21 +109,43 @@ export async function staffLogin(input: StaffLoginRequest) {
   return user;
 }
 
-export async function refreshStaffSession() {
-  const response = await apiClient.post<LoginResponse<StaffSessionUser>>(
-    '/auth/refresh',
-    undefined,
-    { auth: false },
-  );
-  const staffUser = normalizeStaffUser(response);
+export function refreshStaffSession() {
+  return refreshSession().then((user) => {
+    if (user.roleArea !== 'staff') {
+      throw new Error('Staff login did not return a staff session.');
+    }
+    return user;
+  });
+}
 
-  authSession.setSession(
-    response.accessToken,
-    staffUser,
-    tokenMetadata(response),
-  );
+export function refreshSession() {
+  if (!pendingRefresh) {
+    const generation = authSession.getGeneration();
+    pendingRefresh = (async () => {
+      const response = await apiClient.post<SharedLoginResponse>(
+        '/auth/refresh',
+        undefined,
+        { auth: false },
+      );
+      const user = normalizeSharedUser(response);
 
-  return staffUser;
+      if (authSession.getGeneration() !== generation) {
+        throw new Error('Session changed during refresh.');
+      }
+
+      authSession.setSession(
+        response.accessToken,
+        user,
+        tokenMetadata(response),
+      );
+
+      return user;
+    })().finally(() => {
+      pendingRefresh = undefined;
+    });
+  }
+
+  return pendingRefresh;
 }
 
 export async function getCurrentAuthUser() {
@@ -167,6 +208,7 @@ export function useIdentifierConflicts() {
 }
 
 export function useResolveIdentifierConflict() {
+  const client = useQueryClient();
   return useMutation({
     mutationFn: ({
       conflictId,
@@ -176,7 +218,14 @@ export function useResolveIdentifierConflict() {
       input: ResolveAuthIdentifierConflictInput;
     }) => resolveIdentifierConflict(conflictId, input),
     onSuccess: (result) =>
-      invalidateIdentifierConflictMutation(result.operationId),
+      Promise.all([
+        client.invalidateQueries({
+          queryKey: ['staff', 'identifier-conflicts'],
+        }),
+        client.invalidateQueries({
+          queryKey: queryKeys.staff.identifierOperation(result.operationId),
+        }),
+      ]),
   });
 }
 

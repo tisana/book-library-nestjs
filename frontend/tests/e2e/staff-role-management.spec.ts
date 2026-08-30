@@ -27,6 +27,7 @@ test('an administrator creates a staff account, assigns admin, and the new accou
       status: 'active',
     },
   ];
+  let staffListRefreshed = false;
 
   await page.route(apiUrlPattern, async (route) => {
     const request = route.request();
@@ -54,7 +55,11 @@ test('an administrator creates a staff account, assigns admin, and the new accou
       ]);
     }
     if (path === '/staff-users' && request.method() === 'GET') {
-      return fulfillJson(route, users);
+      return fulfillJson(route, users.map((user) =>
+        user.id === 'staff-2' && staffListRefreshed
+          ? { ...user, displayName: 'New Staff (refreshed)' }
+          : user,
+      ));
     }
     if (path === '/staff-users' && request.method() === 'POST') {
       const input = request.postDataJSON() as Record<string, unknown>;
@@ -74,6 +79,7 @@ test('an administrator creates a staff account, assigns admin, and the new accou
       const user = users.find((item) => item.id === updateMatch[1])!;
       Object.assign(user, request.postDataJSON());
       user.permissions = user.roles.includes('admin') ? adminPermissions : ['catalog:read'];
+      staffListRefreshed = true;
       return fulfillJson(route, user);
     }
     return fulfillJson(route, []);
@@ -98,6 +104,8 @@ test('an administrator creates a staff account, assigns admin, and the new accou
   const row = page.getByRole('row').filter({ hasText: 'New Staff' });
   await row.getByRole('button', { name: 'Save' }).click();
   await expect(page.getByRole('status')).toContainText('New Staff updated');
+  await expect(page.getByText('New Staff (refreshed)')).toBeVisible();
+  await expect(page.getByLabel('Role for New Staff (refreshed)')).toHaveValue('admin');
 
   await page.getByRole('button', { name: /sign out/i }).first().click();
   await page.getByLabel('Email or login identifier').fill('new.staff@example.test');

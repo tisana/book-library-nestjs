@@ -1,0 +1,93 @@
+# Task 04 implementation report
+
+## Task
+Task 4 — Reconciliation startup, scheduling, claim, and lease races.
+
+## Status
+complete; Fix Round 1 approved by separate-context re-review with one Important addressed and zero open findings
+
+## Base SHA
+`c6735fc56c40fa0f51b691c0dc2e3c4831dfb0d7`
+
+## Starting commit
+`c6735fc56c40fa0f51b691c0dc2e3c4831dfb0d7`
+
+## Requested implementer model and reasoning
+`gpt-5.6-sol`, high
+
+## Actual implementer model and reasoning
+`gpt-5.6-sol`, high; identity `/root/plan3_task4_implementer`; substitution none
+
+## Files changed
+- Extended `src/auth/auth-identifier-reconciliation.service.spec.ts` with public lifecycle-generation, readiness-probe, scheduler ownership, shutdown race, bounded claim, lost-claim, terminal cleanup, and lease-release coverage plus the exact test-local `createReconciliationService` factory.
+- Replaced the copied local query/operation fixtures with the read-only Plan 2 and Task 1 fixture interfaces and kept all reconciliation-specific model extensions local to the spec.
+- Updated this Task 4 report and appended Task 4 implementation evidence to `progress.md`.
+- No production source, configuration, baseline, Plan 2 fixture/test, permission test, e2e, frontend, or generated output is included.
+
+## RED command and exit
+`npx jest --runInBand auth/auth-identifier-reconciliation.service.spec.ts --coverage --collectCoverageFrom=auth/auth-identifier-reconciliation.service.ts --coverageReporters=text`: exit 1; the suite failed before test execution.
+
+## RED evidence
+TypeScript reported `TS2304: Cannot find name 'createReconciliationService'` at each new lifecycle override call. This was the intended missing test-factory seam before scheduler/connection overrides and deferred migration readiness were installed; production code was unchanged.
+
+## GREEN command and exit
+`npx jest --runInBand auth/auth-identifier-reconciliation.service.spec.ts --coverage --collectCoverageFrom=auth/auth-identifier-reconciliation.service.ts --coverageReporters=text`: exit 0
+
+## GREEN evidence
+`1/1` suite and `34/34` tests passed. Public lifecycle calls prove no schedule without Mongo readiness or a scheduler, fresh startup after shutdown, readiness-probe transition to scheduled work, contained startup/scheduled failures, no late work registration when shutdown wins deferred readiness, idempotent shutdown when the registry no longer owns the interval, lost-claim accounting, configured claim caps, and lease release for every acquired operation. Fake timers are cleared/restored and every deferred promise is resolved and awaited.
+
+## Focused covered/total metrics
+- Statements: `206/228` (`90.35%`).
+- Branches: `151/191` (`79.05%`), exceeding the Task 4 floor of `150/191`.
+- Functions: `40/42` (`95.23%`).
+- Lines: `204/226` (`90.26%`).
+
+## Full-suite commands and exits
+- `npx eslint src/auth/auth-identifier-reconciliation.service.spec.ts`: exit 0; non-fixing focused lint.
+- `git diff --check`: exit 0.
+- `npm run test:cov`: exit 0; `35/35` suites and `423/423` tests passed.
+- Full backend coverage: statements `2937/3659` (`80.26%`), branches `2047/2815` (`72.71%`), functions `490/605` (`80.99%`), lines `2818/3496` (`80.6%`).
+- Generated `coverage/` and `test-results/` outputs remain ignored and unstaged.
+
+## Changed-line result
+not-run; the consolidated changed-line quality gate belongs to Task 9
+
+## Commit hash
+- Implementation: `05d9e1d929b7b11d3423faf506adf9a11c2834c4` (`test: cover reconciliation scheduling races`).
+- Fix and final reviewed head: `5bffafdf4224b5c7e22e945f0ae322900af46384` (`test: prove reconciliation lifecycle restart`).
+
+## Assumptions
+- The dispatcher-provided Task 4 assignment row and starting commit are authoritative and preserved.
+- Task 1's `createIdentifierOperation`/`criticalQueryResult` and Plan 2's `deferred`, `queryResult`, `createStaffModelHarness`, and `createIdentifierModelHarness` remain read-only; all model extensions are test-local.
+- Existing legacy private-path coverage in the pre-existing spec is unchanged; every Task 4 lifecycle/race addition exercises only `onApplicationBootstrap`, `onApplicationShutdown`, `reconcileOnce`, or `renewLease`.
+- The fresh separate-context reviewer owns `task-04-review.md`, the final verdict, and immutable commit-SHA backfill.
+
+## Deferred findings
+- Final separate-context reviewer `/root/plan3_task4_review`, `gpt-5.6-sol`, high: approved Fix Round 1 at `5bffafdf4224b5c7e22e945f0ae322900af46384`.
+- Reviewer verdict: approved; findings addressed `1`, open Critical/Important/Minor `0`.
+- Implementer findings: none.
+
+## Fix Round 1
+
+### Status
+Important lifecycle-generation finding addressed; separate-context re-review approved.
+
+### Finding addressed
+The original restart case settled its first readiness result before shutdown, so it could not fail when stale in-flight readiness escaped lifecycle-generation invalidation. The replacement keeps the first Mongo readiness promise pending across shutdown and the restarted bootstrap.
+
+### Test file and title
+- File: `src/auth/auth-identifier-reconciliation.service.spec.ts`.
+- Test: `invalidates stale in-flight readiness before a restarted lifecycle schedules work`.
+
+### Change
+The public test now starts the original bootstrap against deferred readiness, shuts down that generation, starts a new bootstrap generation, and only then resolves the stale result as migration-ready. It asserts that the stale generation registers no interval and runs no reconciliation. A subsequent public readiness-probe tick performs the fresh readiness query and permits exactly one schedule and startup pass. The deferred promise is resolved and both bootstrap promises are awaited; fake timers are cleared and restored.
+
+### Commands and outputs
+- `npx jest --runInBand auth/auth-identifier-reconciliation.service.spec.ts --coverage --collectCoverageFrom=auth/auth-identifier-reconciliation.service.ts --coverageReporters=text`: exit 0; `1/1` suite and `34/34` tests passed; reconciliation statements `206/228`, branches `151/191`, functions `40/42`, lines `204/226`. The branch denominator remains `191`.
+- `npx eslint src/auth/auth-identifier-reconciliation.service.spec.ts`: exit 0; non-fixing focused lint.
+- `git diff --check`: exit 0.
+
+### Review state
+- Reviewer `/root/plan3_task4_review` requested this Important fix against `05d9e1d929b7b11d3423faf506adf9a11c2834c4`; no Critical or Minor findings were open.
+- `task-04-review.md` is preserved as reviewer-written evidence.
+- Scoped re-review approved fix head `5bffafdf4224b5c7e22e945f0ae322900af46384`; the Important finding is addressed, new Critical/Important breakage is `0`, out-of-scope observations are `0`, and findings resolved are `1`.

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "profile": "complete",
+  "rawCombinedScore": 95.2518818760857,
+  "generatedFromCommit": "1b624f4c0b859d4fb2d8b8181ab1d3f6b9d8de99",
+  "generatedAt": "2026-08-22T03:56:59.043Z",
+  "selectedSources": [
+    "src/auth/token-session.service.ts",
+    "src/auth/auth-identifier-repair.service.ts",
+    "src/auth/auth-identifier-reconciliation.service.ts",
+    "src/members/members.service.ts",
+    "src/borrowings/borrowings.service.ts"
+  ],
+  "sourceSha256": {
+    "src/auth/token-session.service.ts": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051",
+    "src/auth/auth-identifier-repair.service.ts": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
+    "src/auth/auth-identifier-reconciliation.service.ts": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803",
+    "src/members/members.service.ts": "03e5a2d54626ef11cc9f9d73dfcda4a39d30d7bab3d2d249985dfeec2baf0ad9",
+    "src/borrowings/borrowings.service.ts": "91a41fb81abd1c1ebc57586fcb4f07299fc455735973f23289a62348c318b647"
+  }
+}

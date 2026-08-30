@@ -28,12 +28,24 @@
     "frontend:build": "npm run build --prefix frontend",
     "frontend:lint": "npm run lint --prefix frontend",
     "frontend:test": "npm run test --prefix frontend",
+    "frontend:test:coverage": "npm run test:coverage --prefix frontend",
     "frontend:test:e2e": "npm run test:e2e --prefix frontend",
+    "frontend:test:e2e:report": "npm run test:e2e:report --prefix frontend",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
+    "pretest:cov": "node -e \"require('fs').mkdirSync('test-results', { recursive: true })\"",
+    "test:cov": "jest --coverage --runInBand --json --outputFile=test-results/backend-unit.json",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json --runInBand --detectOpenHandles"
+    "test:e2e": "jest --config ./test/jest-e2e.json --runInBand --detectOpenHandles",
+    "pretest:e2e:report": "node -e \"require('fs').mkdirSync('test-results', { recursive: true })\"",
+    "test:e2e:report": "jest --config ./test/jest-e2e.json --runInBand --detectOpenHandles --json --outputFile=./test-results/backend-e2e.json",
+    "test:quality-reporting": "jest --config ./test/jest-quality.json --runInBand",
+    "mutation:check": "node scripts/quality/update-critical-rule-manifest.mjs --check",
+    "mutation:smoke": "node scripts/quality/run-mutation.mjs smoke",
+    "mutation:complete": "node scripts/quality/run-mutation.mjs complete",
+    "quality:report:backend": "ts-node --transpile-only scripts/quality/report-quality.ts --stream backend --coverage coverage/backend-unit/coverage-summary.json --unit-tests test-results/backend-unit.json --e2e-tests test-results/backend-e2e.json --baselines quality/coverage-baselines.json --expected-files 87 --markdown test-results/backend-summary.md --json test-results/backend-summary.json",
+    "quality:report:frontend-unit": "ts-node --transpile-only scripts/quality/report-quality.ts --stream frontend-unit --coverage frontend/coverage/coverage-summary.json --unit-tests frontend/test-results/vitest-results.json --baselines quality/coverage-baselines.json --markdown frontend/test-results/unit-summary.md --json frontend/test-results/unit-summary.json",
+    "quality:report:frontend-e2e": "ts-node --transpile-only scripts/quality/report-quality.ts --stream frontend-e2e --e2e-tests frontend/test-results/playwright-results.json --baselines quality/coverage-baselines.json --markdown frontend/test-results/e2e-summary.md --json frontend/test-results/e2e-summary.json"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.17",
@@ -63,6 +75,8 @@
     "@nestjs/cli": "^11.0.16",
     "@nestjs/schematics": "^11.0.9",
     "@nestjs/testing": "^11.1.13",
+    "@stryker-mutator/core": "9.6.1",
+    "@stryker-mutator/jest-runner": "9.6.1",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.2.3",
@@ -92,7 +106,18 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
-    "coverageDirectory": "../coverage",
+    "collectCoverageFrom": [
+      "**/*.ts",
+      "!**/*.spec.ts",
+      "!books/interfaces/book.interface.ts"
+    ],
+    "coverageDirectory": "../coverage/backend-unit",
+    "coverageReporters": [
+      "text-summary",
+      "json-summary",
+      "lcov",
+      "html"
+    ],
     "testEnvironment": "node"
   }
 }

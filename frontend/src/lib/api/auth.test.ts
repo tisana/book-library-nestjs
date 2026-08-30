@@ -1,7 +1,8 @@
 import { http, HttpResponse } from 'msw';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   getCurrentAuthUser,
+  login,
   refreshStaffSession,
   staffLogin,
   staffLogout,
@@ -54,6 +55,8 @@ const memberAuthResponse = {
 describe('auth API client', () => {
   beforeEach(() => {
     authSession.clear('signed-out');
+    window.localStorage.clear();
+    window.sessionStorage.clear();
   });
 
   it('stores staff login token metadata and permissions in the memory session', async () => {
@@ -81,6 +84,8 @@ describe('auth API client', () => {
         permissions: ['catalog:read', 'staff-users:read'],
       },
     });
+    expect(window.localStorage).toHaveLength(0);
+    expect(window.sessionStorage).toHaveLength(0);
   });
 
   it('stores member login token metadata and member permissions in the memory session', async () => {
@@ -105,21 +110,72 @@ describe('auth API client', () => {
         permissions: ['member:self:read'],
       },
     });
+    expect(window.localStorage).toHaveLength(0);
+    expect(window.sessionStorage).toHaveLength(0);
   });
 
   it('returns one generic API error for a failed unified login', async () => {
     server.use(
       http.post(`${apiBaseUrl}/auth/login`, () =>
         HttpResponse.json(
-          { statusCode: 401, message: 'Invalid credentials' },
+          {
+            statusCode: 401,
+            message: 'Unknown identifier member-9919@example.com',
+          },
           { status: 401 },
         ),
       ),
     );
 
     await expect(
-      staffLogin({ email: 'unknown@example.com', password: 'wrong-password' }),
-    ).rejects.toMatchObject({ status: 401, message: 'Invalid credentials' });
+      login({ identifier: 'unknown@example.com', password: 'wrong-password' }),
+    ).rejects.toMatchObject({ status: 401, message: 'Invalid credentials.' });
+  });
+
+  it.each([
+    [403, 'member-9919@example.com is not from a trusted origin', 'Browser session request denied'],
+    [429, 'member-9919@example.com exceeded its retry window', 'Authentication temporarily unavailable'],
+    [500, 'member-9919@example.com database is unavailable', 'Something went wrong while contacting the API.'],
+  ])(
+    'returns a safe %i login error without backend details',
+    async (status, backendMessage, expectedMessage) => {
+      server.use(
+        http.post(`${apiBaseUrl}/auth/login`, () =>
+          HttpResponse.json(
+            { statusCode: status, message: backendMessage },
+            { status },
+          ),
+        ),
+      );
+
+      await expect(
+        login({
+          identifier: 'unknown@example.com',
+          password: 'wrong-password',
+        }),
+      ).rejects.toMatchObject({ status, message: expectedMessage });
+    },
+  );
+
+  it('uses a safe operational message when the login network request fails', async () => {
+    server.use(http.post(`${apiBaseUrl}/auth/login`, () => HttpResponse.error()));
+
+    await expect(
+      login({ identifier: 'unknown@example.com', password: 'wrong-password' }),
+    ).rejects.toThrow('Something went wrong while contacting the API.');
+  });
+
+  it('rejects a staff role area paired with a member payload without storing a session', async () => {
+    server.use(
+      http.post(`${apiBaseUrl}/auth/login`, () =>
+        HttpResponse.json({ ...memberAuthResponse, roleArea: 'staff' }),
+      ),
+    );
+
+    await expect(
+      staffLogin({ email: 'staff@example.com', password: 'password' }),
+    ).rejects.toThrow('Something went wrong while contacting the API.');
+    expect(authSession.getSnapshot()).toEqual({ reason: 'signed-out' });
   });
 
   it('refreshes staff and member sessions from the shared refresh endpoint', async () => {
@@ -180,6 +236,36 @@ describe('auth API client', () => {
       roleArea: 'member',
       member: { roleArea: 'member' },
     });
+  });
+
+  it('clears the session exactly once for auth/me and refresh 401 responses', async () => {
+    const clear = vi.spyOn(authSession, 'clear');
+    authSession.setSession('staff-token', {
+      ...staffAuthResponse.user,
+      roleArea: 'staff',
+      permissions: staffAuthResponse.permissions,
+    });
+    server.use(
+      http.get(`${apiBaseUrl}/auth/me`, () =>
+        HttpResponse.json({ message: 'Unauthorized' }, { status: 401 }),
+      ),
+      http.post(`${apiBaseUrl}/auth/refresh`, () =>
+        HttpResponse.json({ message: 'Unauthorized' }, { status: 401 }),
+      ),
+    );
+
+    await expect(getCurrentAuthUser()).rejects.toMatchObject({ status: 401 });
+    expect(clear).toHaveBeenCalledTimes(1);
+
+    authSession.setSession('replacement-token', {
+      ...staffAuthResponse.user,
+      roleArea: 'staff',
+      permissions: staffAuthResponse.permissions,
+    });
+    clear.mockClear();
+    await expect(refreshStaffSession()).rejects.toMatchObject({ status: 401 });
+    expect(clear).toHaveBeenCalledTimes(1);
+    clear.mockRestore();
   });
 
   it('posts logout endpoints and clears invalid sessions only on 401', async () => {

@@ -1,10 +1,12 @@
 import { describe, expect, it, beforeEach } from 'vitest';
 import {
+  requireMemberPermission,
   requireMemberSession,
   requireStaffPermission,
   requireStaffSession,
 } from './route-guards';
 import { authSession } from './session';
+import type { SessionUser } from '@/lib/api/types';
 
 function expectRedirect(callback: () => unknown, to: string) {
   try {
@@ -83,6 +85,40 @@ describe('route guards', () => {
 
     expect(requireStaffPermission('staff-users:read').user?.roleArea).toBe(
       'staff',
+    );
+  });
+
+  it('rejects a token without a role area and permits legacy login routes', () => {
+    authSession.setSession(
+      'missing-area-token',
+      {
+        id: 'staff-1',
+        email: 'staff@example.com',
+        displayName: 'Staff User',
+        roles: ['staff'],
+        roleArea: undefined,
+        permissions: ['catalog:read'],
+      } as unknown as SessionUser,
+    );
+
+    expectRedirect(() => requireStaffSession(), '/unauthorized');
+    expect(requireStaffSession({ location: { pathname: '/staff/login' } })).toBeUndefined();
+    expect(requireMemberSession({ location: { pathname: '/member/login' } })).toBeUndefined();
+  });
+
+  it('rejects member sessions missing a required self-service permission', () => {
+    authSession.setSession('member-token', {
+      id: 'member-1',
+      memberNumber: 'M-1001',
+      displayName: 'Member One',
+      membershipStatus: 'active',
+      roleArea: 'member',
+      permissions: [],
+    });
+
+    expectRedirect(
+      () => requireMemberPermission('member:self:read'),
+      '/unauthorized',
     );
   });
 });
