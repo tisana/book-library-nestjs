@@ -16,6 +16,15 @@ export function MemberBorrowingsRoute() {
       <ErrorState
         description="Your borrowing records could not be loaded."
         title="Borrowing list unavailable"
+        action={
+          <button
+            className="min-h-10 rounded-md border border-rose-300 bg-white px-4 text-sm font-medium text-rose-800"
+            onClick={() => void borrowings.refetch()}
+            type="button"
+          >
+            Try again
+          </button>
+        }
       />
     );
   }
@@ -29,7 +38,7 @@ export function MemberBorrowingsRoute() {
         title="My borrowed books"
       />
       {records.length > 0 ? (
-        <BorrowedBooksList borrowings={records} />
+        <BorrowedBooksList borrowings={records} currentOnly={false} />
       ) : (
         <NoCurrentBorrowingsState />
       )}

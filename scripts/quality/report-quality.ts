@@ -1,0 +1,545 @@
+import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { dirname, resolve } from 'node:path';
+import {
+  evaluateCoverage,
+  parseCoverageSummary,
+  ratchetCoverageBaseline,
+  type CoverageBaselineFile,
+  type CoverageMinimums,
+  type CoverageReport,
+} from './coverage-report';
+import { renderQualityMarkdown } from './render-quality-report';
+import {
+  evaluateChangedLineCoverage,
+  filterChangedLines,
+  parseChangedLines,
+  parseLcov,
+  type ChangedCoverageGate,
+} from './changed-line-coverage';
+import {
+  evaluateTestRun,
+  parseJestStyleResults,
+  parsePlaywrightResults,
+  type TestRunSummary,
+} from './test-result-report';
+
+export type QualityStream = 'backend' | 'frontend-unit' | 'frontend-e2e';
+
+export interface QualityGate {
+  passed: boolean;
+  reasons: string[];
+  warnings: string[];
+}
+
+export interface ProducerMetadata {
+  tool: 'Jest' | 'Vitest' | 'Playwright';
+  version: string;
+  command: string;
+}
+
+export interface QualityReport {
+  stream: QualityStream;
+  generatedAt: string;
+  toolVersions: { node: string };
+  sources: {
+    coverage?: ProducerMetadata;
+    unitTests?: ProducerMetadata;
+    e2eTests?: ProducerMetadata;
+  };
+  producerOutcomes: Record<
+    string,
+    'success' | 'failure' | 'cancelled' | 'skipped'
+  >;
+  coverage?: CoverageReport;
+  changedLineCoverage?: ChangedCoverageGate;
+  unitTests?: TestRunSummary;
+  e2eTests?: TestRunSummary;
+  gate: QualityGate;
+}
+
+async function readProducerVersion(
+  path: string,
+  stream: QualityStream,
+): Promise<string> {
+  const raw = await readJson(resolve(__dirname, path), stream);
+  if (
+    typeof raw !== 'object' ||
+    raw === null ||
+    Array.isArray(raw) ||
+    typeof (raw as Record<string, unknown>).version !== 'string' ||
+    !/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(
+      (raw as Record<string, string>).version,
+    )
+  ) {
+    throw new Error(`${stream}:invalid-producer-version`);
+  }
+  return (raw as Record<string, string>).version;
+}
+
+async function producerSources(
+  stream: QualityStream,
+): Promise<QualityReport['sources']> {
+  if (stream === 'backend') {
+    const version = await readProducerVersion(
+      '../../node_modules/jest/package.json',
+      stream,
+    );
+    return {
+      coverage: { tool: 'Jest', version, command: 'npm run test:cov' },
+      unitTests: { tool: 'Jest', version, command: 'npm run test:cov' },
+      e2eTests: {
+        tool: 'Jest',
+        version,
+        command: 'npm run test:e2e:report',
+      },
+    };
+  }
+  if (stream === 'frontend-unit') {
+    const version = await readProducerVersion(
+      '../../frontend/node_modules/vitest/package.json',
+      stream,
+    );
+    const source = {
+      tool: 'Vitest' as const,
+      version,
+      command: 'npm run frontend:test:coverage',
+    };
+    return { coverage: source, unitTests: source };
+  }
+  const version = await readProducerVersion(
+    '../../frontend/node_modules/@playwright/test/package.json',
+    stream,
+  );
+  return {
+    e2eTests: {
+      tool: 'Playwright',
+      version,
+      command: 'npm run frontend:test:e2e:report',
+    },
+  };
+}
+
+interface QualityReportOptions {
+  stream?: string;
+  coverage?: string;
+  unitTests?: string;
+  e2eTests?: string;
+  baselines?: string;
+  expectedFiles?: string;
+  markdown?: string;
+  json?: string;
+  changedLineDiff?: string;
+  changedLineLcov?: string;
+  producerOutcomes: string[];
+  writeBaseline: boolean;
+  checkOnly: boolean;
+}
+
+type ValueOption =
+  | 'stream'
+  | 'coverage'
+  | 'unitTests'
+  | 'e2eTests'
+  | 'baselines'
+  | 'expectedFiles'
+  | 'markdown'
+  | 'json'
+  | 'changedLineDiff'
+  | 'changedLineLcov';
+
+const valueFlags: Record<string, ValueOption> = {
+  '--stream': 'stream',
+  '--coverage': 'coverage',
+  '--unit-tests': 'unitTests',
+  '--e2e-tests': 'e2eTests',
+  '--baselines': 'baselines',
+  '--expected-files': 'expectedFiles',
+  '--markdown': 'markdown',
+  '--json': 'json',
+  '--changed-line-diff': 'changedLineDiff',
+  '--changed-line-lcov': 'changedLineLcov',
+};
+
+function parseArguments(arguments_: string[]): QualityReportOptions {
+  const options: QualityReportOptions = {
+    producerOutcomes: [],
+    writeBaseline: false,
+    checkOnly: false,
+  };
+
+  for (let index = 0; index < arguments_.length; index += 1) {
+    const argument = arguments_[index];
+    if (argument === '--write-baseline' || argument === '--check-only') {
+      const key =
+        argument === '--write-baseline' ? 'writeBaseline' : 'checkOnly';
+      if (options[key]) {
+        throw new Error(`invalid-quality-report:duplicate-${argument}`);
+      }
+      options[key] = true;
+      continue;
+    }
+    if (argument === '--producer-outcome') {
+      const value = arguments_[index + 1];
+      if (!value || value.startsWith('--')) {
+        throw new Error(`invalid-quality-report:${argument}`);
+      }
+      options.producerOutcomes.push(value);
+      index += 1;
+      continue;
+    }
+
+    const key = valueFlags[argument];
+    const value = arguments_[index + 1];
+    if (
+      !key ||
+      !value ||
+      value.startsWith('--') ||
+      options[key] !== undefined
+    ) {
+      throw new Error(`invalid-quality-report:${argument}`);
+    }
+    (options as Record<ValueOption, string | undefined>)[key] = value;
+    index += 1;
+  }
+
+  return options;
+}
+
+function parseProducerOutcomes(
+  values: string[],
+  stream: QualityStream,
+): QualityReport['producerOutcomes'] {
+  const outcomes: QualityReport['producerOutcomes'] = {};
+  for (const value of values) {
+    const match = value.match(
+      /^([a-z][a-z0-9-]*)=(success|failure|cancelled|skipped)$/,
+    );
+    if (!match || outcomes[match[1]] !== undefined) {
+      throw new Error(`${stream}:invalid-producer-outcome`);
+    }
+    outcomes[match[1]] = match[2] as QualityReport['producerOutcomes'][string];
+  }
+  return outcomes;
+}
+
+function assertStream(value: string | undefined): QualityStream {
+  if (
+    value === 'backend' ||
+    value === 'frontend-unit' ||
+    value === 'frontend-e2e'
+  ) {
+    return value;
+  }
+  throw new Error(`invalid-quality-report:stream:${value ?? 'missing'}`);
+}
+
+function assertInputs(
+  stream: QualityStream,
+  options: QualityReportOptions,
+): void {
+  const expected =
+    stream === 'backend'
+      ? { coverage: true, unitTests: true, e2eTests: true }
+      : stream === 'frontend-unit'
+        ? { coverage: true, unitTests: true, e2eTests: false }
+        : { coverage: false, unitTests: false, e2eTests: true };
+
+  for (const [key, required] of Object.entries(expected) as Array<
+    ['coverage' | 'unitTests' | 'e2eTests', boolean]
+  >) {
+    if (Boolean(options[key]) !== required) {
+      throw new Error(`${stream}:invalid-${key}`);
+    }
+  }
+
+  if (!options.baselines) {
+    throw new Error(`${stream}:missing-baselines`);
+  }
+  if (options.writeBaseline && stream === 'frontend-e2e') {
+    throw new Error(`${stream}:baseline-not-supported`);
+  }
+  if (options.expectedFiles && stream !== 'backend') {
+    throw new Error(`${stream}:invalid-expected-files`);
+  }
+  if (Boolean(options.changedLineDiff) !== Boolean(options.changedLineLcov)) {
+    throw new Error(`${stream}:invalid-changed-line-input`);
+  }
+  if (options.changedLineDiff && stream === 'frontend-e2e') {
+    throw new Error(`${stream}:invalid-changed-line-input`);
+  }
+}
+
+function parseExpectedFiles(
+  value: string | undefined,
+  stream: QualityStream,
+): number | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (!/^\d+$/.test(value)) {
+    throw new Error(`${stream}:invalid-expected-files`);
+  }
+  const expectedFiles = Number(value);
+  if (!Number.isSafeInteger(expectedFiles) || expectedFiles < 1) {
+    throw new Error(`${stream}:invalid-expected-files`);
+  }
+  return expectedFiles;
+}
+
+async function readJson(path: string, stream: QualityStream): Promise<unknown> {
+  try {
+    return JSON.parse(await readFile(path, 'utf8'));
+  } catch {
+    throw new Error(`${stream}:invalid-json`);
+  }
+}
+
+function isMinimums(value: unknown): value is CoverageMinimums {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
+  }
+  return ['statements', 'branches', 'functions', 'lines'].every((metric) => {
+    const minimum = (value as Record<string, unknown>)[metric];
+    return (
+      typeof minimum === 'number' && Number.isFinite(minimum) && minimum >= 0
+    );
+  });
+}
+
+function parseBaselines(
+  raw: unknown,
+  stream: QualityStream,
+): CoverageBaselineFile {
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
+    throw new Error(`${stream}:invalid-baselines`);
+  }
+  const baselines = raw as Record<string, unknown>;
+  if (!isMinimums(baselines.backend)) {
+    throw new Error(`${stream}:invalid-baselines`);
+  }
+  const frontend = baselines.frontend;
+  if (frontend !== undefined && !isMinimums(frontend)) {
+    throw new Error(`${stream}:invalid-baselines`);
+  }
+  if (frontend === undefined) {
+    return { backend: baselines.backend as CoverageMinimums };
+  }
+  return {
+    backend: baselines.backend as CoverageMinimums,
+    frontend: frontend as CoverageMinimums,
+  };
+}
+
+function coverageMinimums(report: CoverageReport): CoverageMinimums {
+  return {
+    statements: report.metrics.statements.pct,
+    branches: report.metrics.branches.pct,
+    functions: report.metrics.functions.pct,
+    lines: report.metrics.lines.pct,
+  };
+}
+
+async function evaluateChangedLines(
+  stream: QualityStream,
+  options: QualityReportOptions,
+): Promise<ChangedCoverageGate | undefined> {
+  if (!options.changedLineDiff || !options.changedLineLcov) {
+    return undefined;
+  }
+  try {
+    const [diff, rawLcov] = await Promise.all([
+      readFile(options.changedLineDiff, 'utf8'),
+      readFile(options.changedLineLcov, 'utf8'),
+    ]);
+    return evaluateChangedLineCoverage(
+      filterChangedLines(
+        parseChangedLines(diff),
+        stream === 'backend' ? 'backend' : 'frontend',
+      ),
+      parseLcov(rawLcov, stream === 'backend' ? 'backend' : 'frontend'),
+    );
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === 'invalid-changed-line-minimum'
+    ) {
+      throw error;
+    }
+    throw new Error(`${stream}:invalid-changed-line-input`);
+  }
+}
+
+function evaluateGate(
+  report: Omit<QualityReport, 'gate'>,
+  baselines: CoverageBaselineFile,
+  allowMissingCoverageBaseline: boolean,
+): QualityReport['gate'] {
+  const reasons: string[] = [];
+  const warnings: string[] = [];
+  reasons.push(
+    ...Object.entries(report.producerOutcomes)
+      .filter(([, outcome]) => outcome !== 'success')
+      .map(([producer, outcome]) => `producer:${producer}:${outcome}`),
+  );
+  if (report.coverage) {
+    const baseline =
+      report.stream === 'backend' ? baselines.backend : baselines.frontend;
+    if (!baseline) {
+      if (!allowMissingCoverageBaseline) {
+        reasons.push('missing-coverage-baseline');
+      }
+    } else {
+      reasons.push(
+        ...evaluateCoverage(report.coverage, baseline).failures.map(
+          (failure) =>
+            `coverage:${failure.metric}:${failure.actual}<${failure.required}`,
+        ),
+      );
+    }
+  }
+  if (report.changedLineCoverage && !report.changedLineCoverage.passed) {
+    reasons.push(
+      `changed-line-coverage:${report.changedLineCoverage.pct}<${report.changedLineCoverage.minimum}`,
+      ...report.changedLineCoverage.missingFiles.map(
+        (path) => `changed-line-coverage:missing-lcov:${path}`,
+      ),
+    );
+  }
+  for (const [name, summary] of [
+    ['unit-tests', report.unitTests],
+    ['e2e-tests', report.e2eTests],
+  ] as const) {
+    if (summary) {
+      const evaluation = evaluateTestRun(summary);
+      reasons.push(...evaluation.reasons.map((reason) => `${name}:${reason}`));
+      warnings.push(
+        ...evaluation.warnings.map((warning) => `${name}:${warning}`),
+      );
+    }
+  }
+  return { passed: reasons.length === 0, reasons, warnings };
+}
+
+async function writeOutput(path: string, contents: string): Promise<void> {
+  await mkdir(dirname(path), { recursive: true });
+  await writeFile(path, contents);
+}
+
+export async function runQualityReportCli(
+  arguments_: string[],
+): Promise<QualityReport> {
+  let stream: QualityStream;
+  try {
+    const options = parseArguments(arguments_);
+    stream = assertStream(options.stream);
+    assertInputs(stream, options);
+
+    const baselines = parseBaselines(
+      await readJson(options.baselines!, stream),
+      stream,
+    );
+    const coverage = options.coverage
+      ? parseCoverageSummary(
+          await readJson(options.coverage, stream),
+          stream === 'backend' ? 'backend' : 'frontend',
+        )
+      : undefined;
+    const expectedFiles = parseExpectedFiles(options.expectedFiles, stream);
+    if (expectedFiles !== undefined && coverage?.files !== expectedFiles) {
+      throw new Error(`${stream}-source-denominator-mismatch`);
+    }
+    const changedLineCoverage = await evaluateChangedLines(stream, options);
+    const unitTests = options.unitTests
+      ? parseJestStyleResults(await readJson(options.unitTests, stream))
+      : undefined;
+    const e2eTests = options.e2eTests
+      ? stream === 'frontend-e2e'
+        ? parsePlaywrightResults(await readJson(options.e2eTests, stream))
+        : parseJestStyleResults(await readJson(options.e2eTests, stream))
+      : undefined;
+    const reportWithoutGate = {
+      stream,
+      generatedAt: new Date().toISOString(),
+      toolVersions: { node: process.version },
+      sources: await producerSources(stream),
+      producerOutcomes: parseProducerOutcomes(options.producerOutcomes, stream),
+      ...(coverage ? { coverage } : {}),
+      ...(changedLineCoverage ? { changedLineCoverage } : {}),
+      ...(unitTests ? { unitTests } : {}),
+      ...(e2eTests ? { e2eTests } : {}),
+    };
+    const report: QualityReport = {
+      ...reportWithoutGate,
+      gate: evaluateGate(reportWithoutGate, baselines, options.writeBaseline),
+    };
+
+    if (
+      !options.checkOnly &&
+      options.writeBaseline &&
+      coverage &&
+      report.gate.passed
+    ) {
+      const nextBaselines: CoverageBaselineFile = {
+        ...baselines,
+        ...(stream === 'backend'
+          ? {
+              backend: ratchetCoverageBaseline(
+                baselines.backend,
+                coverageMinimums(coverage),
+              ),
+            }
+          : {
+              frontend: ratchetCoverageBaseline(
+                baselines.frontend,
+                coverageMinimums(coverage),
+              ),
+            }),
+      };
+      await writeOutput(
+        options.baselines!,
+        `${JSON.stringify(nextBaselines, null, 2)}\n`,
+      );
+    }
+
+    if (!options.checkOnly) {
+      const markdown = renderQualityMarkdown(report);
+      if (options.markdown) {
+        await writeOutput(options.markdown, `${markdown}\n`);
+      }
+      if (options.json) {
+        await writeOutput(options.json, `${JSON.stringify(report, null, 2)}\n`);
+      }
+      if (process.env.GITHUB_STEP_SUMMARY) {
+        await appendFile(process.env.GITHUB_STEP_SUMMARY, `${markdown}\n`);
+      }
+    }
+    if (!report.gate.passed) {
+      throw new Error(
+        `${stream}:quality-gate-failed:${report.gate.reasons.join(',')}`,
+      );
+    }
+    return report;
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'invalid-quality-report';
+    if (typeof stream === 'string' && !message.startsWith(`${stream}:`)) {
+      throw new Error(`${stream}:${message}`);
+    }
+    throw error;
+  }
+}
+
+async function main(): Promise<void> {
+  try {
+    await runQualityReportCli(process.argv.slice(2));
+  } catch (error) {
+    process.exitCode = 1;
+    process.stderr.write(
+      `${error instanceof Error ? error.message : 'invalid-quality-report'}\n`,
+    );
+  }
+}
+
+if (require.main === module) {
+  void main();
+}

@@ -34,8 +34,143 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
 
-  unit-test:
-    name: Unit Tests
+  backend-quality:
+    name: Backend coverage & e2e
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run backend unit coverage
+        id: backend-unit
+        run: npm run test:cov
+        continue-on-error: true
+
+      - name: Run backend e2e tests
+        id: backend-e2e
+        run: npm run test:e2e:report
+        continue-on-error: true
+
+      - name: Generate pull-request diff
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: git diff --unified=0 "$GITHUB_BASE_SHA...$GITHUB_SHA" > test-results/pull-request.diff
+
+      - name: Publish backend quality summary
+        if: always()
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            npm run quality:report:backend -- --producer-outcome backend-unit=${{ steps.backend-unit.outcome }} --producer-outcome backend-e2e=${{ steps.backend-e2e.outcome }} --changed-line-diff test-results/pull-request.diff --changed-line-lcov coverage/backend-unit/lcov.info
+          else
+            npm run quality:report:backend -- --producer-outcome backend-unit=${{ steps.backend-unit.outcome }} --producer-outcome backend-e2e=${{ steps.backend-e2e.outcome }}
+          fi
+
+      - name: Upload backend quality reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-quality-reports
+          path: |
+            coverage/backend-unit/
+            test-results/backend-*.json
+            test-results/backend-summary.md
+          if-no-files-found: warn
+
+      - name: Enforce backend quality gate
+        if: always()
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            npm run quality:report:backend -- --check-only --producer-outcome backend-unit=${{ steps.backend-unit.outcome }} --producer-outcome backend-e2e=${{ steps.backend-e2e.outcome }} --changed-line-diff test-results/pull-request.diff --changed-line-lcov coverage/backend-unit/lcov.info
+          else
+            npm run quality:report:backend -- --check-only --producer-outcome backend-unit=${{ steps.backend-unit.outcome }} --producer-outcome backend-e2e=${{ steps.backend-e2e.outcome }}
+          fi
+
+  frontend-unit-quality:
+    name: Frontend unit coverage
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+
+      - name: Install quality reporter dependencies
+        run: npm ci
+
+      - name: Install frontend dependencies
+        run: npm ci --prefix frontend
+
+      - name: Run frontend lint
+        id: frontend-lint
+        run: npm run lint --prefix frontend
+        continue-on-error: true
+
+      - name: Run frontend unit coverage
+        id: frontend-unit
+        run: npm run frontend:test:coverage
+        continue-on-error: true
+
+      - name: Generate pull-request diff
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: git diff --unified=0 "$GITHUB_BASE_SHA...$GITHUB_SHA" > frontend/test-results/pull-request.diff
+
+      - name: Publish frontend unit quality summary
+        if: always()
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            npm run quality:report:frontend-unit -- --producer-outcome frontend-lint=${{ steps.frontend-lint.outcome }} --producer-outcome frontend-unit=${{ steps.frontend-unit.outcome }} --changed-line-diff frontend/test-results/pull-request.diff --changed-line-lcov frontend/coverage/lcov.info
+          else
+            npm run quality:report:frontend-unit -- --producer-outcome frontend-lint=${{ steps.frontend-lint.outcome }} --producer-outcome frontend-unit=${{ steps.frontend-unit.outcome }}
+          fi
+
+      - name: Upload frontend unit quality reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-unit-quality-reports
+          path: |
+            frontend/coverage/
+            frontend/test-results/vitest-results.json
+            frontend/test-results/unit-summary.*
+          if-no-files-found: warn
+
+      - name: Enforce frontend unit quality gate
+        if: always()
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            npm run quality:report:frontend-unit -- --check-only --producer-outcome frontend-lint=${{ steps.frontend-lint.outcome }} --producer-outcome frontend-unit=${{ steps.frontend-unit.outcome }} --changed-line-diff frontend/test-results/pull-request.diff --changed-line-lcov frontend/coverage/lcov.info
+          else
+            npm run quality:report:frontend-unit -- --check-only --producer-outcome frontend-lint=${{ steps.frontend-lint.outcome }} --producer-outcome frontend-unit=${{ steps.frontend-unit.outcome }}
+          fi
+
+  frontend-e2e-quality:
+    name: Frontend Playwright e2e
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
@@ -50,26 +185,48 @@ jobs:
             package-lock.json
             frontend/package-lock.json
 
-      - name: Install dependencies
+      - name: Install quality reporter dependencies
         run: npm ci
 
       - name: Install frontend dependencies
         run: npm ci --prefix frontend
 
-      - name: Run backend unit tests
-        run: npm test
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+        working-directory: frontend
 
-      - name: Run frontend lint
-        run: npm run lint --prefix frontend
+      - name: Run frontend Playwright e2e
+        id: frontend-playwright
+        run: npm run frontend:test:e2e:report
+        continue-on-error: true
 
-      - name: Run frontend unit tests
-        run: npm run test --prefix frontend
+      - name: Publish frontend e2e quality summary
+        if: always()
+        run: npm run quality:report:frontend-e2e -- --producer-outcome frontend-playwright=${{ steps.frontend-playwright.outcome }}
+
+      - name: Upload frontend e2e quality reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-playwright-quality-reports
+          path: |
+            frontend/playwright-report/
+            frontend/test-results/playwright-results.json
+            frontend/test-results/playwright-artifacts/
+            frontend/test-results/e2e-summary.*
+          if-no-files-found: warn
+
+      - name: Enforce frontend e2e quality gate
+        if: always()
+        run: npm run quality:report:frontend-e2e -- --check-only --producer-outcome frontend-playwright=${{ steps.frontend-playwright.outcome }}
 
   build:
     name: Build & Upload Artifact
     runs-on: ubuntu-24.04
     needs:
-      - unit-test
+      - backend-quality
+      - frontend-unit-quality
+      - frontend-e2e-quality
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

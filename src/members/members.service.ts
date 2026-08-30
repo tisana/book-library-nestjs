@@ -380,10 +380,14 @@ export class MembersService {
   }
 
   async bumpAuthVersion(id: string): Promise<void> {
-    await this.memberModel.updateOne(
+    const result = await this.memberModel.updateOne(
       { _id: equals(toMongoObjectId(id)) },
       { $inc: { authVersion: 1 } },
     );
+
+    if (result.matchedCount === 0) {
+      throw new NotFoundException('Member not found');
+    }
   }
 
   private toResponse(member: MemberDocument): MemberResponseDto {

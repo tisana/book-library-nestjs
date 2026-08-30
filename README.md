@@ -73,8 +73,8 @@ npm run seed:users
 
 Seeded credentials:
 
-| Role | Email | Password |
-| --- | --- | --- |
+| Role  | Email               | Password        |
+| ----- | ------------------- | --------------- |
 | admin | `admin@example.com` | `AdminPass123!` |
 | staff | `staff@example.com` | `StaffPass123!` |
 
@@ -90,11 +90,11 @@ The demo seed creates book categories, membership types, books, members, and bor
 
 Demo member login credentials:
 
-| Member | Login identifier | Password |
-| --- | --- | --- |
-| Jane Reader | `M-1001` or `jane.reader@example.test` | `DemoMember#2026` |
-| Max Limit | `M-1002` or `max.limit@example.test` | `DemoMember#2026` |
-| Sam Suspended | `M-1003` or `sam.suspended@example.test` | `DemoMember#2026` |
+| Member         | Login identifier                          | Password          |
+| -------------- | ----------------------------------------- | ----------------- |
+| Jane Reader    | `M-1001` or `jane.reader@example.test`    | `DemoMember#2026` |
+| Max Limit      | `M-1002` or `max.limit@example.test`      | `DemoMember#2026` |
+| Sam Suspended  | `M-1003` or `sam.suspended@example.test`  | `DemoMember#2026` |
 | Olivia Overdue | `M-1004` or `olivia.overdue@example.test` | `DemoMember#2026` |
 
 If an existing local database already has demo ISBNs or demo member emails under different identifiers, the seed will reuse and update the matching record instead of inserting a duplicate. For a clean demo/e2e dataset, reset matching demo records and seed again:
@@ -245,6 +245,89 @@ Run migration verification against a local MongoDB instance:
 ```bash
 npm run migrate:status
 ```
+
+## Quality reporting and coverage ratchet
+
+CI publishes three independent reporting streams. Their percentages must never be
+added together or presented as one combined score:
+
+1. **Backend coverage and e2e** reports backend Jest unit coverage and backend
+   Jest e2e results side by side. The coverage denominator is executable lines,
+   statements, functions, and branches represented by the backend Istanbul
+   report; e2e results are a separate test-result metric.
+2. **Frontend unit coverage** reports only the frontend Vitest/Istanbul coverage
+   denominator and frontend unit-test result counts.
+3. **Frontend Playwright e2e** reports only frontend browser-test result counts;
+   it has no coverage percentage.
+
+Run the complete local reporting sequence with the same inputs used by CI:
+
+```bash
+npm run test:quality-reporting
+npm run test:cov
+npm run test:e2e:report
+npm run quality:report:backend
+npm run frontend:test:coverage
+npm run quality:report:frontend-unit
+npm run frontend:test:e2e:report
+npm run quality:report:frontend-e2e
+```
+
+The backend reports are written under `coverage/backend-unit/` and
+`test-results/backend-*.json` / `test-results/backend-summary.*`. Frontend unit
+artifacts are under `frontend/coverage/` and `frontend/test-results/unit-summary.*`;
+Playwright JSON, report, traces, screenshots, and videos are under
+`frontend/test-results/` and `frontend/playwright-report/`.
+
+For a pull-request-equivalent changed-line check, create a zero-context diff
+against the target branch after both coverage commands complete. The backend and
+frontend commands remain independent:
+
+```bash
+git diff --unified=0 origin/main...HEAD --output=test-results/pull-request.diff
+npm run quality:report:backend -- --changed-line-diff test-results/pull-request.diff --changed-line-lcov coverage/backend-unit/lcov.info
+
+npm run quality:report:frontend-unit -- --changed-line-diff test-results/pull-request.diff --changed-line-lcov frontend/coverage/lcov.info
+```
+
+Changed-line coverage considers only files eligible for that scope's coverage
+producer. Backend eligibility is production `src/**/*.ts` excluding
+`*.spec.ts`, `*.test.ts`, declarations, and the erased type-only
+`src/books/interfaces/book.interface.ts`. Frontend eligibility is production
+`frontend/src/**/*.{ts,tsx}` excluding `*.test.*`, `*.spec.*`, `src/test/`,
+declarations, `src/main.tsx`, and `src/**/__generated__/**`, matching
+`frontend/vitest.config.ts`. Tests and excluded support/bootstrap/generated
+sources in the repository-wide diff therefore do not affect either gate.
+
+Added lines with an LCOV `DA` record form the denominator; a changed line absent
+from a represented file's line records is non-executable and excluded. A changed
+eligible production file absent from its expected LCOV report fails closed.
+Backend LCOV paths remain repository-relative `src/...`; frontend Vitest paths
+such as `SF:src/...` (with either slash direction) are explicitly rebased to
+repository-relative `frontend/src/...`. Renames retain the new path, path
+separators and repository prefixes are normalized without changing path case,
+and an unaffected scope is reported as `not-applicable` and passes. Each affected
+pull-request scope requires at least **80%** changed-line coverage.
+
+Jest and Playwright results expose passed, failed, skipped, flaky, and total
+counts. Skipped tests are excluded from pass-rate denominators. `clean pass
+rate = first-attempt passed / (passed + flaky + failed)` and `eventual pass rate
+= (passed + flaky) / (passed + flaky + failed)`. A Playwright test that passes
+only after a retry is flaky: it contributes to eventual, not clean, pass rate.
+Jest/Vitest suite counts are reported separately from test counts, and any
+failed suite fails its stream even when all reported tests passed. Playwright
+top-level runner errors are reported with their diagnostics and fail the e2e
+stream. Any final failure or zero-test report fails its stream; flakiness is
+visible as a warning and must be investigated. Reports also record represented
+source-file counts plus the producer tool/version and exact source command.
+
+Coverage baselines are checked in at `quality/coverage-baselines.json` with
+separate backend and frontend denominators. Ratcheting can only keep or raise a
+metric; **baselines are never lowered to make CI green**. The release direction
+is at least **75% overall** coverage, **80% changed-line** coverage, and
+**85–90% critical-branch** coverage, with security-sensitive permission and
+token-session paths prioritized. Current checked-in baselines remain the
+enforced floor until deliberately raised with validated coverage evidence.
 
 ## Containers
 

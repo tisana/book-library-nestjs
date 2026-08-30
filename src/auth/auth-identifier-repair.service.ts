@@ -224,28 +224,40 @@ export class AuthIdentifierRepairService {
       .find({ parentOperationId: input.operationId })
       .sort({ batchNumber: -1 })
       .exec();
-    for (const batch of batches) {
+    try {
+      for (const batch of batches) {
+        await this.authorization.authorizeMutation(input.token);
+        await this.compensateBatch(batch, manifest);
+      }
       await this.authorization.authorizeMutation(input.token);
-      await this.compensateBatch(batch, manifest);
-    }
-    await this.identifierModel.updateOne(
-      { _id: manifest.conflictId },
-      {
-        $set: {
-          status: AuthIdentifierStatus.Conflict,
-          conflictResolutionStatus:
-            AuthIdentifierConflictResolutionStatus.ManualRepairRequired,
+      await this.identifierModel.updateOne(
+        { _id: manifest.conflictId },
+        {
+          $set: {
+            status: AuthIdentifierStatus.Conflict,
+            conflictResolutionStatus:
+              AuthIdentifierConflictResolutionStatus.ManualRepairRequired,
+          },
         },
-      },
-    );
-    await this.operationModel.updateOne(
-      {
-        operationId: input.operationId,
-        status: AuthIdentifierOperationStatus.Compensating,
-      },
-      { $set: { status: AuthIdentifierOperationStatus.Finalizing } },
-    );
-    await this.finishFailedParent(input.operationId, actor.subjectId);
+      );
+      await this.operationModel.updateOne(
+        {
+          operationId: input.operationId,
+          status: AuthIdentifierOperationStatus.Compensating,
+        },
+        { $set: { status: AuthIdentifierOperationStatus.Finalizing } },
+      );
+      await this.finishFailedParent(input.operationId, actor.subjectId);
+    } catch (error) {
+      await this.operationModel.updateOne(
+        {
+          operationId: input.operationId,
+          status: AuthIdentifierOperationStatus.Compensating,
+        },
+        { $set: { status: AuthIdentifierOperationStatus.FailedRetryable } },
+      );
+      throw error;
+    }
     operation = await this.requireOperation(input.operationId);
     return this.result(operation, manifest.reassignments.length, false);
   }

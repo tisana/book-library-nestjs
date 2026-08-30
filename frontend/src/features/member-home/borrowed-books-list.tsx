@@ -6,6 +6,7 @@ import { formatLocalDate, getDueStatus } from '@/lib/dates/due-status';
 
 interface BorrowedBooksListProps {
   borrowings: BorrowingView[];
+  currentOnly?: boolean;
   now?: Date;
 }
 
@@ -25,7 +26,18 @@ const dueTones = {
   open: 'success',
 } as const;
 
-export function BorrowedBooksList({ borrowings, now }: BorrowedBooksListProps) {
+export function BorrowedBooksList({
+  borrowings,
+  currentOnly = true,
+  now,
+}: BorrowedBooksListProps) {
+  const displayedBorrowings = currentOnly
+    ? borrowings.filter(
+        (borrowing) => borrowing.status !== 'returned' && !borrowing.returnedAt,
+      )
+    : borrowings;
+  const heading = currentOnly ? 'Current borrowed books' : 'Borrowing history';
+
   return (
     <section className="flex flex-col gap-3" aria-labelledby="borrowed-books">
       <div className="flex items-center justify-between gap-3">
@@ -33,14 +45,14 @@ export function BorrowedBooksList({ borrowings, now }: BorrowedBooksListProps) {
           id="borrowed-books"
           className="text-base font-semibold text-slate-950"
         >
-          Current borrowed books
+          {heading}
         </h2>
         <span className="text-sm tabular-nums text-slate-500">
-          {borrowings.length}
+          {displayedBorrowings.length}
         </span>
       </div>
       <div className="flex flex-col gap-3">
-        {borrowings.map((borrowing) => {
+        {displayedBorrowings.map((borrowing) => {
           const dueStatus = getDueStatus(borrowing.dueAt, {
             returnedAt: borrowing.returnedAt,
             now,

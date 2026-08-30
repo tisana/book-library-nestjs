@@ -1,0 +1,96 @@
+# Task 03 implementation report
+
+## Task
+Task 3 — Offline repair transaction, aggregate, and compensation recovery.
+
+## Status
+complete; final separate-context Fix Round 1 review approved with one Important addressed and the prior Minor deferred
+
+## Base SHA
+`1cf23a49aca3df4023b0c6f93208432bbef5d6c6`
+
+## Starting commit
+`1cf23a49aca3df4023b0c6f93208432bbef5d6c6`
+
+## Requested implementer model and reasoning
+`gpt-5.6-sol`, high
+
+## Actual implementer model and reasoning
+`gpt-5.6-sol`, high; identity `/root/plan3_task3_implementer`; substitution none
+
+## Files changed
+- Extended `src/auth/auth-identifier-repair.service.spec.ts` with public `apply`/`cancel` transaction, aggregate, compensation, terminal-event ordering, and cleanup coverage plus a local test-only aggregate query harness.
+- Updated this Task 3 report and appended Task 3 implementation evidence to `progress.md`.
+- No production source, configuration, baseline, Plan 2 helper/test, permission test, e2e, frontend, or generated output is included.
+
+## RED command and exit
+`npx jest --runInBand auth/auth-identifier-repair.service.spec.ts --coverage --collectCoverageFrom=auth/auth-identifier-repair.service.ts --coverageReporters=text`: exit 1; 1 suite failed, 5 tests failed, and 41 tests passed.
+
+## RED evidence
+The missing-staff, missing-member, already-assigned, staff/member field-selection, and no-retained-subject cases failed at the absent `findById` aggregate harness boundary with `Cannot read properties of undefined (reading 'mockReturnValue')`. Repair-service branches were `92/110` before the local query/session model was installed.
+
+## GREEN command and exit
+`npx jest --runInBand auth/auth-identifier-repair.service.spec.ts --coverage --collectCoverageFrom=auth/auth-identifier-repair.service.ts --coverageReporters=text`: exit 0
+
+## GREEN evidence
+`1/1` suite and `46/46` tests passed. Public `apply`/`cancel` calls prove stable transaction-support, checkpoint, activation-state, replacement, reservation-conflict, and missing-subject errors; unchanged propagation for nonduplicate storage failures; staff/member field selection and one `authVersion` increment; idempotent aggregate skipping; no-retained-subject release; compensation skips; terminal event-before-parent-update ordering; and session cleanup on success and failure. Terminal-event expectations are exact redacted payloads and contain no identifier or secret fields.
+
+## Focused covered/total metrics
+- Statements: `222/226` (`98.23%`).
+- Branches: `103/110` (`93.63%`), exceeding the Task 3 floor of `94/110`.
+- Functions: `37/37` (`100%`).
+- Lines: `209/213` (`98.12%`).
+
+## Full-suite commands and exits
+- `npx eslint src/auth/auth-identifier-repair.service.spec.ts`: exit 0; non-fixing focused lint.
+- `git diff --check`: exit 0.
+- `npm run test:cov`: exit 0; `35/35` suites and `412/412` tests passed.
+- Full backend coverage: statements `2919/3659` (`79.77%`), branches `2034/2815` (`72.25%`), functions `487/605` (`80.49%`), lines `2800/3496` (`80.09%`).
+- Generated `coverage/` and `test-results/` outputs remain ignored and unstaged.
+
+## Changed-line result
+not-run; the consolidated changed-line quality gate belongs to Task 9.
+
+## Commit hash
+- Initial implementation: `235b4cbd39ad089454a4decc405fdf25226c51de` (`test: harden repair transaction recovery`).
+- Fix and final reviewed head: `b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb` (`test: assert repair compensation skips`).
+
+## Assumptions
+- The dispatcher-provided Task 3 assignment row and starting commit are authoritative and preserved.
+- Plan 2's `createStaffModelHarness` and `queryResult` remain read-only; the repair spec extends only its local staff model with `findById` and a one-method `lean()` adapter.
+- The fresh separate-context reviewer owns `task-03-review.md`, the final verdict, and immutable commit-SHA backfill.
+
+## Deferred findings
+- Final separate-context reviewer `/root/plan3_task3_review`, `gpt-5.6-sol`, high: approved Fix Round 1 at `b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb`; Important addressed `1`, open Critical/Important `0`.
+- Task 3: minor (deferred): aggregate assertions accept any string instead of exact replacement/original identifiers
+- Implementer findings: none.
+
+## Fix Round 1
+
+### Status
+Important TQ-1 addressed; pending separate-context re-review. Minor TQ-2 is deferred to final whole-branch triage as directed.
+
+### Finding addressed
+The cancellation case previously excluded only the concrete reservation id on the unmapped assignment. That matcher would not fail if the mapped assignment without `targetReservationId` incorrectly emitted `identifierModel.updateOne({ _id: undefined }, ...)`.
+
+### Test file and title
+- File: `src/auth/auth-identifier-repair.service.spec.ts`.
+- Test: `skips non-releasable cancellation assignments and still records a redacted failed terminal event first`.
+
+### Change
+The test now asserts the complete observable `identifierModel.updateOne.mock.calls` sequence. Its only permitted request is the final conflict reset, so any extra reservation-release request, including an undefined target filter, fails the test.
+
+### Commands and outputs
+- `npx jest --runInBand auth/auth-identifier-repair.service.spec.ts --coverage --collectCoverageFrom=auth/auth-identifier-repair.service.ts --coverageReporters=text`: exit 0; `1/1` suite and `46/46` tests passed; repair statements `222/226`, branches `103/110`, functions `37/37`, lines `209/213`.
+- `npx eslint src/auth/auth-identifier-repair.service.spec.ts`: exit 0; non-fixing focused lint.
+- `git diff --check`: exit 0.
+
+### Deferred Minor
+Task 3: minor (deferred): aggregate assertions accept any string instead of exact replacement/original identifiers
+
+## Final Review
+
+- Reviewer: separate-context `gpt-5.6-sol`, high, identity `/root/plan3_task3_review`.
+- Reviewed fix head: `b4f0fa1d6b0925ecdd8b57258ea5c8498f7560cb`.
+- Verdict: approved; Fix Round 1 Important TQ-1 addressed, new Critical `0`, new Important `0`, open blocking findings `0`.
+- Findings resolved: `1`; prior Minor TQ-2 remains deferred to final whole-branch triage.

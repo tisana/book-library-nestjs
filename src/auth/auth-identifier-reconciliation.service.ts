@@ -6,10 +6,10 @@ import {
   Optional,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { createHmac, randomUUID } from 'node:crypto';
-import { Model, Types } from 'mongoose';
+import { Connection, Model, Types } from 'mongoose';
 import { AuthIdentifierRepairKeyPolicyService } from './auth-identifier-repair-key-policy.service';
 import {
   AuthIdentifierAssignmentStatus,
@@ -44,6 +44,8 @@ const DEFAULT_INTERVAL_SECONDS = 60;
 const DEFAULT_BATCH_SIZE = 100;
 const DEFAULT_RETENTION_DAYS = 90;
 const DEFAULT_MAX_ASSIGNMENTS = 20;
+const REQUIRED_AUTH_MIGRATION = '003';
+const MIGRATION_RECORDS_COLLECTION = 'migration_records';
 
 const RECONCILABLE_STATUSES = [
   AuthIdentifierOperationStatus.Pending,
@@ -75,6 +77,10 @@ export class AuthIdentifierReconciliationService
   private readonly instanceId = randomUUID();
   private activeRun?: Promise<AuthIdentifierReconciliationResult>;
   private scheduled = false;
+  private readinessProbe?: NodeJS.Timeout;
+  private readinessStart?: Promise<boolean>;
+  private lifecycleGeneration = 0;
+  private stopped = false;
 
   constructor(
     @InjectModel(AuthIdentifierOperationModelName)
@@ -87,18 +93,71 @@ export class AuthIdentifierReconciliationService
     private readonly securityActivityService: SecurityActivityService,
     private readonly configService: ConfigService,
     @Optional() private readonly schedulerRegistry?: SchedulerRegistry,
+    @Optional()
+    @InjectConnection()
+    private readonly connection?: Connection,
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
+    if (this.stopped) {
+      this.stopped = false;
+      this.lifecycleGeneration += 1;
+    }
+    let started = false;
+    try {
+      started = await this.startWhenMigrationsReady();
+    } catch {
+      this.logger.warn('Auth identifier migration readiness check failed');
+    }
+    if (!started) {
+      this.registerReadinessProbe();
+    }
+  }
+
+  private startWhenMigrationsReady(): Promise<boolean> {
+    if (!this.readinessStart) {
+      const generation = this.lifecycleGeneration;
+      this.readinessStart = this.startWhenMigrationsReadyOnce(generation).finally(
+        () => {
+          this.readinessStart = undefined;
+        },
+      );
+    }
+    return this.readinessStart;
+  }
+
+  private async startWhenMigrationsReadyOnce(
+    generation: number,
+  ): Promise<boolean> {
+    if (this.stopped || this.scheduled || !(await this.requiredMigrationsReady())) {
+      return this.scheduled;
+    }
+    if (
+      this.stopped ||
+      generation !== this.lifecycleGeneration ||
+      this.scheduled
+    ) {
+      return this.scheduled;
+    }
     this.registerSchedule();
+    if (this.stopped || generation !== this.lifecycleGeneration || !this.scheduled) {
+      return false;
+    }
     try {
       await this.reconcileOnce();
     } catch {
       this.logger.warn('Auth identifier reconciliation startup pass failed');
     }
+    return true;
   }
 
   onApplicationShutdown(): void {
+    this.stopped = true;
+    this.lifecycleGeneration += 1;
+    if (this.readinessProbe) {
+      clearInterval(this.readinessProbe);
+      this.readinessProbe = undefined;
+    }
     if (
       this.scheduled &&
       this.schedulerRegistry?.doesExist('interval', SCHEDULE_NAME)
@@ -195,6 +254,8 @@ export class AuthIdentifierReconciliationService
       try {
         await this.process(operation);
         result.processed += 1;
+      } catch {
+        this.logger.warn('Auth identifier reconciliation operation failed');
       } finally {
         await this.releaseLease(operation.operationId);
       }
@@ -234,8 +295,10 @@ export class AuthIdentifierReconciliationService
     if (operation.operationType !== AuthIdentifierOperationType.OfflineRepair) {
       return true;
     }
-    return this.keyPolicy.repairWorkerDecision(operation.manifestKeyVersion)
-      .allowed;
+    return (
+      this.keyPolicy.repairWorkerDecision(operation.manifestKeyVersion).allowed &&
+      Boolean(this.keyPolicy.getKeyMaterial(operation.manifestKeyVersion))
+    );
   }
 
   private async claim(
@@ -338,7 +401,95 @@ export class AuthIdentifierReconciliationService
       case AuthIdentifierOperationStatus.Finalizing:
         await this.finalize(operation);
         break;
+      default:
+        await this.failInvalidOperation(operation);
     }
+  }
+
+  private async requiredMigrationsReady(): Promise<boolean> {
+    if (!this.connection?.db) {
+      return false;
+    }
+    return Boolean(
+      await this.connection.db
+        .collection(MIGRATION_RECORDS_COLLECTION)
+        .findOne({ version: REQUIRED_AUTH_MIGRATION }),
+    );
+  }
+
+  private registerReadinessProbe(): void {
+    if (this.readinessProbe || this.scheduled) {
+      return;
+    }
+    this.readinessProbe = setInterval(() => {
+      void this.runReadinessProbe();
+    }, this.intervalSeconds * 1000);
+    this.readinessProbe.unref();
+  }
+
+  private async runReadinessProbe(): Promise<void> {
+    try {
+      if (!(await this.startWhenMigrationsReady())) {
+        return;
+      }
+      if (this.readinessProbe) {
+        clearInterval(this.readinessProbe);
+        this.readinessProbe = undefined;
+      }
+    } catch {
+      this.logger.warn('Auth identifier migration readiness check failed');
+    }
+  }
+
+  private async failInvalidOperation(
+    operation: AuthIdentifierOperationDocument,
+  ): Promise<void> {
+    const eventId =
+      await this.securityActivityService.recordIdentifierOperationTerminal({
+        operationId: operation.operationId,
+        operationType: operation.operationType,
+        terminalStatus: AuthIdentifierOperationStatus.FailedTerminal,
+        actor: {
+          actorType:
+            operation.requestedBy.subjectType === 'member'
+              ? SecurityActivityActorType.Member
+              : SecurityActivityActorType.Staff,
+          actorId: operation.requestedBy.subjectId,
+        },
+        outcome: SecurityActivityOutcome.Failure,
+        reasonCategory: 'identifier-operation-invalid-state',
+      });
+    await this.operationModel.findOneAndUpdate(
+      {
+        operationId: operation.operationId,
+        status: operation.status,
+        leaseOwner: this.instanceId,
+      },
+      [
+        {
+          $set: {
+            status: AuthIdentifierOperationStatus.FailedTerminal,
+            result: {
+              outcome: AuthIdentifierOperationResultOutcome.Failure,
+              reasonCategory: 'identifier-operation-invalid-state',
+              httpStatus: 409,
+            },
+            terminalEventId: eventId,
+            terminalEventRecordedAt: '$$NOW',
+            completedAt: '$$NOW',
+            expiresAt: {
+              $dateAdd: {
+                startDate: '$$NOW',
+                unit: 'day',
+                amount: this.retentionDays,
+              },
+            },
+            updatedAt: '$$NOW',
+          },
+        },
+      ],
+      { returnDocument: 'after', updatePipeline: true },
+    );
   }
 
   private async attachMissingReservationReferences(

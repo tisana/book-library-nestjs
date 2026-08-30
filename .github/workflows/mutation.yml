@@ -1,0 +1,125 @@
+name: Selective mutation
+
+on:
+  pull_request:
+    paths:
+      - 'src/auth/token-session.service.ts'
+      - 'src/auth/token-session.service.spec.ts'
+      - 'src/auth/auth-identifier-repair.service.ts'
+      - 'src/auth/auth-identifier-repair.service.spec.ts'
+      - 'src/auth/auth-identifier-reconciliation.service.ts'
+      - 'src/auth/auth-identifier-reconciliation.service.spec.ts'
+      - 'src/members/members.service.ts'
+      - 'src/members/members.service.spec.ts'
+      - 'src/borrowings/borrowings.service.ts'
+      - 'src/borrowings/borrowings.service.spec.ts'
+      - 'test/support/**'
+      - 'test/quality/**'
+      - 'scripts/quality/**'
+      - 'stryker.config.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/mutation.yml'
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: 'Mutation profile'
+        required: true
+        default: 'smoke'
+        type: choice
+        options:
+          - 'smoke'
+          - 'complete'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: selective-mutation-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  mutation-shards:
+    name: ${{ matrix.shard }} mutation shard
+    runs-on: ubuntu-24.04
+    timeout-minutes: 17
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - token-session
+          - identifier-repair
+          - identifier-reconciliation
+          - members
+          - borrowings
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run pull-request smoke shard
+        if: ${{ github.event_name == 'pull_request' }}
+        run: node scripts/quality/run-mutation.mjs smoke-shard ${{ matrix.shard }}
+
+      - name: Run scheduled complete shard
+        if: ${{ github.event_name == 'schedule' }}
+        run: node scripts/quality/run-mutation.mjs complete-shard ${{ matrix.shard }}
+
+      - name: Run manual mutation shard
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: node scripts/quality/run-mutation.mjs ${{ inputs.profile }}-shard ${{ matrix.shard }}
+
+      - name: Upload shard mutation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutation-shard-${{ github.event_name == 'schedule' && 'complete' || (github.event_name == 'pull_request' && 'smoke' || inputs.profile) }}-${{ matrix.shard }}
+          path: reports/mutation/**
+          if-no-files-found: warn
+
+  mutation-aggregate:
+    name: Aggregate mutation policy
+    needs: mutation-shards
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 17
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download shard mutation evidence
+        uses: actions/download-artifact@v4
+        with:
+          pattern: mutation-shard-*
+          path: reports/mutation
+          merge-multiple: true
+
+      - name: Merge shards and enforce mutation policy
+        run: node scripts/quality/run-mutation.mjs ${{ github.event_name == 'schedule' && 'complete-merge' || (github.event_name == 'pull_request' && 'smoke-merge' || format('{0}-merge', inputs.profile)) }}
+
+      - name: Upload aggregate mutation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutation-aggregate-${{ github.event_name == 'schedule' && 'complete' || (github.event_name == 'pull_request' && 'smoke' || inputs.profile) }}
+          path: reports/mutation/**
+          if-no-files-found: warn

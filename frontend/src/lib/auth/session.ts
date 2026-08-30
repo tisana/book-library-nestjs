@@ -24,6 +24,7 @@ type SessionListener = () => void;
 
 export function createAuthSessionStore() {
   let snapshot: AuthSessionSnapshot = { reason: 'signed-out' };
+  let generation = 0;
   const listeners = new Set<SessionListener>();
 
   function emit() {
@@ -34,6 +35,7 @@ export function createAuthSessionStore() {
 
   return {
     getSnapshot: () => snapshot,
+    getGeneration: () => generation,
     subscribe: (listener: SessionListener) => {
       listeners.add(listener);
       return () => listeners.delete(listener);
@@ -44,6 +46,7 @@ export function createAuthSessionStore() {
       metadata?: Partial<AuthTokenMetadata>,
     ) => {
       const permissions = metadata?.permissions ?? user.permissions ?? [];
+      generation += 1;
       snapshot = {
         accessToken,
         tokenType: metadata?.tokenType ?? 'Bearer',
@@ -60,6 +63,7 @@ export function createAuthSessionStore() {
       emit();
     },
     clear: (reason: AuthSessionSnapshot['reason'] = 'signed-out') => {
+      generation += 1;
       snapshot = { reason };
       emit();
     },

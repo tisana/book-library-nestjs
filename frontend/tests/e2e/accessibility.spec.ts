@@ -27,6 +27,13 @@ test('staff forms, route guards, dialogs, status badges, and sign-out controls a
   await expect(
     page.getByRole('button', { name: /sign out/i }).first(),
   ).toBeVisible();
+  expect(
+    await page.evaluate(() =>
+      [...Object.values(localStorage), ...Object.values(sessionStorage)].some(
+        (value) => /(?:access|refresh)[-_ ]?token/i.test(value),
+      ),
+    ),
+  ).toBe(false);
 
   await page.getByRole('link', { name: 'New borrowing' }).first().click();
   await expect(page.getByLabel('Member')).toBeVisible();
