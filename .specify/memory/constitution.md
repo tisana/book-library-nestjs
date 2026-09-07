@@ -1,21 +1,19 @@
 <!--
 Sync Impact Report
-Version change: 1.0.0 -> 1.1.0
+Version change: 1.1.0 -> 1.2.0
 Modified principles:
-- VII. Data Integrity and Auditability -> VII. Data Integrity and Auditability
-- VIII. Usability and Accessibility -> IX. Usability and Accessibility
-- IX. Performance With Practical Limits -> X. Performance With Practical Limits
-- X. Operability and Observability -> XI. Operability and Observability
+- V. Test the Rules That Matter (expanded with Unit Testing Policy)
+- Quality Gates (coverage evidence and critical-workflow integration tests)
+- Governance (amendment versioning and compliance review)
 Added sections:
-- VIII. Document-Oriented MongoDB Data Modeling
+- Unit Testing Policy within Principle V
 Removed sections:
 - None
-Templates requiring updates:
-- ✅ updated .specify/templates/plan-template.md
-- ✅ updated .specify/templates/tasks-template.md
-- ✅ reviewed .specify/templates/spec-template.md
-- ✅ reviewed .specify/templates/commands/
-- ✅ updated README.md
+Template synchronization:
+- No template changes required; dependent workflows read the constitution at runtime.
+Migration guidance:
+- Apply the policy to new or modified production code in future implementation and review.
+- Preserve stricter approved feature-specific quality gates.
 Follow-up TODOs:
 - None
 -->
@@ -113,7 +111,7 @@ Avoid:
 
 ### V. Test the Rules That Matter
 
-Testing MUST focus on business-critical behavior, not arbitrary coverage targets.
+Testing MUST focus on business-critical behavior. Coverage is a quality signal, not a goal by itself.
 
 Required behavior:
 - Domain rules for borrowing, returning, renewing, reserving, and overdue handling must have automated tests.
@@ -121,6 +119,23 @@ Required behavior:
 - Key API endpoints or user flows must have integration tests.
 - Bug fixes must include a regression test when practical.
 - Tests must be readable and describe the business scenario.
+
+Unit Testing Policy:
+1. New or modified production code SHOULD maintain at least 80% unit test line coverage.
+2. Critical business/domain logic SHOULD target at least 90% unit test line coverage.
+3. Branch coverage MUST be monitored alongside line coverage.
+4. Generated code, DTOs, trivial getters/setters, and framework boilerplate MAY be excluded
+   from coverage measurement. Exclusions MUST be documented and MUST NOT hide business logic.
+5. Coverage MUST be treated as a quality signal, not a goal by itself; tests MUST verify
+   meaningful behavior and assertions rather than merely execute lines.
+6. PRs MUST NOT reduce coverage of the changed code without documented justification.
+7. Critical workflows MUST have integration tests regardless of unit test coverage.
+
+Rationale: The 80% baseline and 90% critical-logic target guide implementation toward useful
+test coverage while allowing justified exceptions where percentages do not reflect test value.
+PRs MUST document shortfalls against these targets, report line and branch coverage for the
+new or modified code, and explain any coverage reduction. These targets do not replace stricter
+approved feature-specific quality gates or the requirement to test critical workflows.
 
 Recommended minimum:
 - Unit tests for domain rules.
@@ -286,6 +301,10 @@ A change is ready for review only when:
 4. MongoDB schema/index/reference-data migrations are included and reviewed if needed.
 5. Error, loading, and empty states are handled for user-facing changes.
 6. No secrets, sensitive data, or debug-only code are committed.
+7. Unit test line and branch coverage for new or modified production code is reported against
+   Principle V's 80% baseline and 90% critical-logic target, with documented exclusions,
+   target shortfalls, and justification for any coverage reduction.
+8. Critical workflows have integration tests regardless of unit test coverage.
 
 A change may skip some gates only when the reason is explicitly documented in the spec or pull request.
 
@@ -346,10 +365,15 @@ Amendments require:
 2. A summary of affected principles or quality gates.
 3. Migration guidance for existing specs or implementation where relevant.
 
+Constitution versions follow semantic versioning: MAJOR for incompatible principle changes
+or removals, MINOR for new principles or materially expanded guidance, and PATCH for
+non-semantic clarifications. Every implementation review MUST check compliance with the
+constitution and document any permitted exceptions in the spec or pull request.
+
 When there is conflict:
 1. Security and data integrity take priority.
 2. Domain correctness takes priority over UI convenience.
 3. Simplicity takes priority over architectural novelty.
 4. The approved spec takes priority over assumptions made during implementation.
 
-**Version**: 1.1.0 | **Ratified**: 2026-05-29 | **Last Amended**: 2026-06-10
+**Version**: 1.2.0 | **Ratified**: 2026-05-29 | **Last Amended**: 2026-09-07
