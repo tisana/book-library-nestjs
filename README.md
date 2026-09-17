@@ -33,7 +33,7 @@ Use [`.env.example`](./.env.example) as the authoritative variable list. At mini
 The frontend reads its REST API base URL from `frontend/.env`:
 
 ```env
-VITE_API_BASE_URL=http://localhost:3000
+VITE_API_BASE_URL=http://localhost:4000
 ```
 
 Copy `frontend/.env.example` to `frontend/.env` when you need to override the default API URL. For local development, use `http://localhost:5173` for the UI because the backend CORS default allows that origin.
@@ -128,13 +128,13 @@ http://localhost:5173/login
 Open API docs:
 
 ```text
-http://localhost:3000/docs
+http://localhost:4000/docs
 ```
 
 Health check:
 
 ```bash
-curl http://localhost:3000/health
+curl http://localhost:4000/health
 ```
 
 ## Auth
@@ -142,7 +142,7 @@ curl http://localhost:3000/health
 Log in through the shared staff/member contract:
 
 ```bash
-curl -X POST http://localhost:3000/auth/login \
+curl -X POST http://localhost:4000/auth/login \
   -H "Origin: http://localhost:5173" \
   -H "Content-Type: application/json" \
   -d '{"identifier":"admin@example.com","password":"AdminPass123!"}'
@@ -151,7 +151,7 @@ curl -X POST http://localhost:3000/auth/login \
 Use the returned access token for protected endpoints:
 
 ```bash
-curl http://localhost:3000/books \
+curl http://localhost:4000/books \
   -H "Authorization: Bearer <accessToken>"
 ```
 
@@ -332,6 +332,9 @@ enforced floor until deliberately raised with validated coverage evidence.
 ## Containers
 
 Build and start the app plus MongoDB replica set:
+
+Docker continues to expose the API on port `3000`; the local `npm run start:dev`
+configuration above uses port `4000`.
 
 ```bash
 docker compose up --build
