@@ -39,6 +39,8 @@ export interface SecurityActivityEventViewDto {
   eventType: SecurityActivityEventType;
   actorType: SecurityActivityActorType;
   actorId?: string;
+  /** Current account name, resolved at read time for a known actor. */
+  actorName?: string;
   targetType?: string;
   targetId?: string;
   clientId?: string;

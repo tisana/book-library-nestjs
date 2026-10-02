@@ -374,3 +374,5 @@ The API records events for:
 - revocation/sign-out
 
 Events must exclude passwords, raw tokens, token hashes, raw or normalized sign-in identifiers, and full sensitive payloads. Identifier correlation uses the versioned HMAC contract. Failed sign-in events include an opaque account reference only after exact-one account resolution; unresolved or ambiguous attempts include correlation only.
+
+For known staff/member actors, list responses include an optional `actorName` resolved from the account's current display name/full name. Names are not persisted into audit events; historical entries show the current name. Missing accounts omit `actorName` and retain `actorId` for tracing. Failed-sign-in subject references and correlation hashes are not resolved to names. The admin UI displays names first, readable system/unknown/unavailable labels otherwise, and retains IDs/correlation references in hover text.

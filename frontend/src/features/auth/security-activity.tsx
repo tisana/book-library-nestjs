@@ -49,11 +49,27 @@ export function SecurityActivity() {
       header: 'Actor or correlation',
       cell: ({ row }) => {
         const event = row.original;
-        if (event.actorId) return event.actorId;
-        if (event.correlationKeyVersion) {
-          return `Correlation v${event.correlationKeyVersion}`;
+        if (event.actorId) {
+          const fallbackLabels = {
+            staff: 'Staff account unavailable',
+            member: 'Member account unavailable',
+            system: 'System',
+            unknown: 'Unknown user',
+          };
+          return (
+            <span title={`User ID: ${event.actorId}`}>
+              {event.actorName || fallbackLabels[event.actorType]}
+            </span>
+          );
         }
-        return event.actorType;
+        if (event.identifierCorrelationHash) {
+          return (
+            <span title={`Correlation v${event.correlationKeyVersion ?? '?'}: ${event.identifierCorrelationHash}`}>
+              Unknown user
+            </span>
+          );
+        }
+        return event.actorType === 'system' ? 'System' : 'Unknown user';
       },
     },
     {
