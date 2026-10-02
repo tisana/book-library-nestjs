@@ -1,0 +1,13 @@
+db version v8.2.12
+Build Info: {
+    "version": "8.2.12",
+    "gitVersion": "0f912e80210b8fdfdcec618b14b6c0fced055cb8",
+    "openSSLVersion": "OpenSSL 3.5.7 9 Jun 2026",
+    "modules": [],
+    "allocator": "tcmalloc-google",
+    "environment": {
+        "distmod": "ubuntu2404",
+        "distarch": "x86_64",
+        "target_arch": "x86_64"
+    }
+}
