@@ -675,7 +675,7 @@ describe('Compiled production bootstrap (Nest 11 characterization)', () => {
       name: 'untrusted direct peer',
       cidrs: [],
       chains: ['198.51.100.1', '198.51.100.2, 10.0.0.2', 'malformed-address'],
-      counts: [4],
+      groups: ['peer', 'peer', 'peer', 'peer'],
     },
     {
       name: 'trusted right-to-left chain',
@@ -686,17 +686,48 @@ describe('Compiled production bootstrap (Nest 11 characterization)', () => {
         '198.51.100.6, 10.0.0.2',
         'malformed-address',
       ],
-      counts: [1, 2, 2],
+      groups: ['client-a', 'client-a', 'client-b', 'peer', 'peer'],
     },
   ])(
     'resolves source throttling for $name without spoofed forwarding bypass',
-    async ({ cidrs, chains, counts }) => {
+    async ({ cidrs, chains, groups }) => {
       const child = await launch(cidrs);
       try {
         await context.connection
           .collection('auth_throttle_buckets')
           .deleteMany({});
-        for (const chain of chains) {
+        const identities = new Map<string, string>();
+        let previous = new Map<string, number>();
+        async function assertBucketDelta(group: string): Promise<void> {
+          const buckets = await context.connection
+            .collection('auth_throttle_buckets')
+            .find(
+              {},
+              { projection: { _id: 0, dimension: 1, bucketKey: 1, count: 1 } },
+            )
+            .toArray();
+          expect(
+            buckets.every((bucket) => bucket.dimension === 'sign-in-source'),
+          ).toBe(true);
+          const changed = buckets.filter(
+            (bucket) => previous.get(bucket.bucketKey) !== bucket.count,
+          );
+          expect(changed.length).toBe(1);
+          const bucket = changed[0];
+          const identity = identities.get(group);
+          if (identity) {
+            expect(bucket.bucketKey === identity).toBe(true);
+          } else {
+            expect([...identities.values()].includes(bucket.bucketKey)).toBe(
+              false,
+            );
+            identities.set(group, bucket.bucketKey);
+          }
+          expect(bucket.count).toBe((previous.get(bucket.bucketKey) ?? 0) + 1);
+          expect(buckets.length).toBe(identities.size);
+          previous = new Map(buckets.map((row) => [row.bucketKey, row.count]));
+        }
+        for (const [index, chain] of chains.entries()) {
           const response = await request(child.baseUrl)
             .post('/auth/login')
             .set('Origin', origins[0])
@@ -711,6 +742,7 @@ describe('Compiled production bootstrap (Nest 11 characterization)', () => {
             ['identifier must be a string'],
             'Bad Request',
           );
+          await assertBucketDelta(groups[index]);
         }
         // Forwarded/X-Real-IP alone never replace the direct peer.
         await request(child.baseUrl)
@@ -720,16 +752,7 @@ describe('Compiled production bootstrap (Nest 11 characterization)', () => {
           .set('Forwarded', 'for=192.0.2.126')
           .send({ identifier: 42 })
           .expect(400);
-        const buckets = await context.connection
-          .collection('auth_throttle_buckets')
-          .find({}, { projection: { _id: 0, dimension: 1, count: 1 } })
-          .toArray();
-        expect(
-          buckets.every((bucket) => bucket.dimension === 'sign-in-source'),
-        ).toBe(true);
-        expect(
-          buckets.map((bucket) => bucket.count).sort((a, b) => a - b),
-        ).toEqual(counts);
+        await assertBucketDelta(groups[chains.length]);
       } finally {
         await stop(child);
       }
@@ -781,6 +804,41 @@ describe('Compiled production bootstrap (Nest 11 characterization)', () => {
         () => false,
       ),
     ).toBe(false);
+  });
+
+  it('redacts configured secret fragments when split output overflows the diagnostic cutoff', async () => {
+    const probe = join(staticDirectory, 'overflow-probe.cjs');
+    await writeFile(
+      probe,
+      `
+      const secret = process.env.AUTH_COOKIE_SECRET;
+      process.stdout.write(secret.slice(0, 12));
+      setTimeout(() => process.stdout.write(secret.slice(12) + '.'.repeat(63990)), 5);
+      setTimeout(() => process.exit(1), 100);
+    `,
+    );
+    let failure: Error | undefined;
+    try {
+      const child = await startProductionProcess({
+        entryPath: probe,
+        mongoUri: context.uri,
+        environment,
+        startupTimeoutMs: 5_000,
+      });
+      children.add(child);
+      await stop(child);
+    } catch (error) {
+      failure = error as Error;
+    }
+    expect(Boolean(failure)).toBe(true);
+    // Assert only booleans: failure output never prints the supplied secret or suffix.
+    expect(failure.message.includes(environment.AUTH_COOKIE_SECRET)).toBe(
+      false,
+    );
+    expect(
+      failure.message.includes(environment.AUTH_COOKIE_SECRET.slice(-10)),
+    ).toBe(false);
+    expect(failure.message.length).toBeLessThanOrEqual(64_100);
   });
 
   it('retries an actual address collision before launching the compiled bootstrap', async () => {
