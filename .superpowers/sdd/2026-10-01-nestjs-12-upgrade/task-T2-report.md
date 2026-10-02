@@ -93,3 +93,39 @@ Reviewed the full implementation diff and each brief acceptance item. Focused li
 Coverage/reporting/mutation producers and full mutation smoke were not rerun: T2 alters test harness/config/docs only; no application source/runtime/policy changed since T1's verified producers. This is explicit scope, not a claim of fresh coverage/mutation evidence. T3 consumes the new contracts and explicit compiled-entry interface; T4 owns new lifecycle behavior; T5 owns final container/quality integration acceptance.
 
 T1 actual devcontainer build remains blocked on MCR CDN access. The coordinator's existing progress ruling permits unaffected T2 on proven local Node24/Nest11/runtime-transformer interfaces while preserving that blocker. This report neither attempts the devcontainer nor weakens its acceptance. No deployment occurred. No worker/reviewer was spawned. Independent T2 review remains the coordinator's next step.
+
+## Fix round 1: independent review findings
+
+Fix base: `d47011f08e3438815ca5c76d9c6c0d009af6a60a`; review scope is that base through the following fix commit. Both accepted P2 findings from `task-T2-review.md` are addressed and self-reviewed; independent re-review remains pending. The earlier 47-test evidence above describes the original implementation; the final revised production count is **48 tests**.
+
+Files/ranges: `test/production-bootstrap.e2e-spec.ts:673-760` now tracks per-request source-bucket identity/deltas; `:809-842` adds the synthetic split/overflow redaction regression. `test/support/production-process.ts:102-105`, `:129`, `:149-164`, `:181`, `:199` preserve bounded diagnostic retention and route both exposed diagnostics/startup errors through the same safe redacted output. Baseline documentation now records 48 tests and these review corrections. No application/security contract, schema, migration, dependency or policy changed. Parent-owned progress/review/scratch artifacts are not modified by this fix.
+
+### Proxy assertion correction and RED/GREEN evidence
+
+Each real HTTP request now inspects opaque bucket keys and counts immediately afterward. It must change exactly one source bucket by one. Requests mapped to a previously observed group must increment that same opaque key; a new group must create a distinct key; the number of buckets must equal observed groups. Trusted requests have groups `[client-a, client-a, client-b, peer, peer]`, including the unsupported forwarding-only request. Untrusted requests all increment the same peer bucket. Assertions compare identity as booleans, so failures do not render raw client addresses, source HMACs or account credentials.
+
+For RED, a bounded diagnostic changed only the ignored compiled `dist/src/auth/auth-source-identity.service.js` resolver expression from `normalizedChain[normalizedChain.length - 1]` to `normalizedChain[1]`, reproducing the review's wrong rightmost-private-hop mapping. The strengthened actual HTTP trusted-chain test failed on the **second request** at `bucket.bucketKey === identity`: expected `true`, received `false`. The prior final-count histogram would not distinguish this mapping. A Python `finally` restored the original compiled file byte-for-byte; no application source mutation was made or committed. The restored resolver then passed both actual HTTP trusted/untrusted cases. The final production script rebuilt the ordinary unchanged source afterward.
+
+### Diagnostic retention correction and RED/GREEN evidence
+
+The new probe writes the configured synthetic cookie secret in two chunks, followed by 63,990 padding characters, then exits. It checks the full value and last-ten-character fragment only through boolean assertions; the secret is generated in memory and passed through the child's explicit environment, never interpolated into the saved probe or evidence. With the original helper, RED failed specifically on the fragment check: expected `false`, received `true`. Failure output contained only booleans, not the fragment, secret or startup diagnostic body.
+
+The helper keeps at most `64,000 + maximum configured sensitive-value length` raw characters. That overlap retains an unfinished trailing value for the next chunk. Before retention removes a prefix, it advances a cutoff lying inside any complete configured sensitive value to that value's end; a repeated bounded scan also handles intersecting values. Thus the retained buffer cannot begin with an unrecognizable suffix of a complete configured value. Exposed diagnostic output is redacted first and only then truncated to 64,000 characters; startup errors and `diagnostics()` use the same function. Existing split-chunk behavior, address-collision retries and process cleanup remain intact. This is a localized retention/redaction correction, not a new logging subsystem.
+
+### Fix verification commands and outcomes
+
+All Mongo commands use the same disposable-system-binary environment recorded earlier. Focused selectors intentionally skip unrelated production cases; the complete final production suite has zero skips.
+
+| Command / state | Exit | Result / exact failure |
+| --- | ---: | --- |
+| `npx jest --config test/jest-production.json --runInBand --detectOpenHandles -t 'secret fragments.*overflows'` before helper fix | 1 | **1 failed / 47 selector-skipped**; `redacts configured secret fragments when split output overflows the diagnostic cutoff`; suffix-presence boolean expected false / received true; 10.198 s |
+| Same Jest configuration with `-t 'source throttling for trusted right-to-left chain'` under temporary compiled wrong-hop diagnostic | 1 | **1 failed / 47 selector-skipped**; `resolves source throttling for trusted right-to-left chain without spoofed forwarding bypass`; second-request same-bucket boolean expected true / received false; 7.509 s; compiled bytes restored in finally |
+| Same Jest configuration with `-t 'output chunks\|secret fragments.*overflows'` after helper fix | 0 | **2 passed / 46 selector-skipped**; split-chunk timeout cleanup and overflow fragment tests; 11.271 s |
+| Same Jest configuration with `-t 'source throttling'` after restoring compiled resolver | 0 | **2 passed / 46 selector-skipped**; trusted/untrusted per-request identity/delta contracts; 8.413 s |
+| `npm run test:production` | 0 | Build plus **1 suite / 48 passed / 0 skipped**, no open handles; 21.445 s |
+| `npm test -- --runInBand src/auth/auth-source-identity.service.spec.ts src/auth/auth-browser-origin.guard.spec.ts src/common/filters/http-exception.filter.spec.ts src/health/health.service.spec.ts` | 0 | **3 matching existing suites / 26 passed / 0 skipped**, source/origin/filter regression tests; 5.932 s |
+| `npm run test:e2e` in isolation after other producers finished | 0 | **29 suites / 243 passed / 0 skipped**, including existing HTTP health/auth/proxy and compiled benchmark regression; 44.349 s |
+| Focused `npx eslint` and `npx prettier --check` for both changed TypeScript files | 0 | Clean lint and formatting |
+| Scoped implementation `git diff --check`, unchanged-source/policy/lock/container diff and fixture inspection | 0 | No implementation whitespace errors; no source/policy changes or production fixture leftovers |
+
+Transient logs `/tmp/nestjs-t2-round1-{red-diagnostics,red-proxy,green-diagnostics,green-proxy,production,focused-unit,e2e}.log` remain outside committed evidence. The command outputs above retain test names, counts, exits and exact boolean mismatch summaries without raw credentials. Self-review confirmed the full diff addresses both findings, the temporary compiled diagnostic is restored, raw capture and exposed output are bounded, and HTTP proxy assertions retain request-to-bucket relationships. No final failure, new skip/quarantine, lowered quality threshold or full mutation smoke run. T1's actual devcontainer verification remains pending; release/deployment readiness is not claimed.

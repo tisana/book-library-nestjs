@@ -99,6 +99,10 @@ export async function startProductionProcess(
       .map(([, value]) => value)
       .filter((value): value is string => Boolean(value)),
   ];
+  const diagnosticLimit = 64_000;
+  // An unfinished configured value at the tail must survive until the next chunk.
+  const rawLimit =
+    diagnosticLimit + Math.max(...sensitiveValues.map((value) => value.length));
   const redact = (value: string) => {
     let result = value.replace(/\u001b\[[0-9;]*m/g, '');
     for (const secret of sensitiveValues)
@@ -122,6 +126,7 @@ export async function startProductionProcess(
     let child: ChildProcess | undefined;
     let exited: Promise<ProductionExit> | undefined;
     let output = '';
+    const diagnostics = () => redact(output).slice(-diagnosticLimit);
     try {
       const port = await reservePort();
       const baseUrl = `http://127.0.0.1:${port}`;
@@ -142,8 +147,21 @@ export async function startProductionProcess(
         spawnError = true;
       });
       const capture = (chunk: Buffer) => {
-        // Retain raw chunks only in memory so split secrets can be redacted together.
-        output = (output + chunk.toString()).slice(-64_000);
+        // Keep bounded raw overlap for split values, but never start retention inside
+        // a complete configured value: redaction cannot recognize a retained suffix.
+        const combined = output + chunk.toString();
+        let cutoff = Math.max(0, combined.length - rawLimit);
+        let previousCutoff: number;
+        do {
+          previousCutoff = cutoff;
+          for (const value of sensitiveValues) {
+            const start = combined.lastIndexOf(value, cutoff);
+            if (start >= 0 && start < cutoff && start + value.length > cutoff) {
+              cutoff = start + value.length;
+            }
+          }
+        } while (cutoff !== previousCutoff);
+        output = combined.slice(cutoff);
       };
       child.stdout.on('data', capture);
       child.stderr.on('data', capture);
@@ -161,7 +179,7 @@ export async function startProductionProcess(
             return {
               baseUrl,
               exited: observedExit,
-              diagnostics: () => redact(output),
+              diagnostics,
               stop: () =>
                 (shutdown ??= (async () => {
                   try {
@@ -178,7 +196,7 @@ export async function startProductionProcess(
         await delay(50);
       }
       throw new Error(
-        `Compiled application did not become live (attempt ${attempt}):\n${redact(output)}`,
+        `Compiled application did not become live (attempt ${attempt}):\n${diagnostics()}`,
       );
     } catch (error) {
       try {
