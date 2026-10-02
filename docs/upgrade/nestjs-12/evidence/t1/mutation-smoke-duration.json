@@ -1,0 +1,13 @@
+{
+  "profile": "smoke",
+  "startedAt": "2026-10-02T15:13:01.407Z",
+  "finishedAt": "2026-10-02T15:30:04.304Z",
+  "durationMs": 1022896.8492409999,
+  "budgetMs": 350000,
+  "timedOut": false,
+  "strykerExitCode": null,
+  "policyExitCode": 0,
+  "commitSha": "df74b59c1354699b4050e947a3e1551c450ee59e",
+  "nodeVersion": "v24.19.0",
+  "os": "linux 6.18.44 x64"
+}
