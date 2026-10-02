@@ -1,4 +1,4 @@
-FROM node:22-alpine AS deps
+FROM node:24.19.0-alpine AS deps
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY tsconfig*.json nest-cli.json ./
 COPY src ./src
 RUN npm run build
 
-FROM node:22-alpine AS frontend-deps
+FROM node:24.19.0-alpine AS frontend-deps
 
 WORKDIR /app
 
@@ -23,7 +23,7 @@ FROM frontend-deps AS frontend-build
 COPY frontend ./frontend
 RUN npm run build --prefix frontend
 
-FROM node:22-alpine AS runtime
+FROM node:24.19.0-alpine AS runtime
 
 ENV NODE_ENV=production
 ENV PORT=3000

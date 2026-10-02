@@ -17,8 +17,8 @@ NestJS and React application for managing a library book collection, members, me
 
 ## Requirements
 
-- Node.js compatible with the current NestJS 11 project.
-- npm.
+- Node.js **24.19.0**, pinned in `.node-version` (supported range: `>=24.15.0 <25`).
+- npm **11.9.0** (the root lockfile package manager).
 - Docker and Docker Compose for local MongoDB replica set support.
 - MongoDB must run as a replica set for borrow/return transactions.
 
@@ -40,10 +40,12 @@ Copy `frontend/.env.example` to `frontend/.env` when you need to override the de
 
 ## Local Setup
 
-Install dependencies:
+CI, mutation jobs, Docker stages, and the devcontainer use the same pinned Node runtime.
+Select the version in `.node-version` with your Node version manager, then install dependencies:
 
 ```bash
-npm install
+npm install --global npm@11.9.0
+npm ci
 ```
 
 Start transaction-capable MongoDB:

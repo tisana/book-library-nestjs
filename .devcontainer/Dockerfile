@@ -1,5 +1,11 @@
 FROM mcr.microsoft.com/devcontainers/javascript-node:24-trixie
 
+# Keep the existing development image/tools, but select an exact runtime.
+ARG NODE_VERSION=24.19.0
+RUN bash -c 'source /usr/local/share/nvm/nvm.sh && nvm install "${NODE_VERSION}" && nvm alias default "${NODE_VERSION}"'
+ENV PATH=/usr/local/share/nvm/versions/node/v${NODE_VERSION}/bin:${PATH}
+RUN test "$(node --version)" = "v${NODE_VERSION}"
+
 # Install MongoDB command line tools - though mongo-database-tools not available on arm64
 ARG MONGO_TOOLS_VERSION=8.0
 RUN . /etc/os-release \
