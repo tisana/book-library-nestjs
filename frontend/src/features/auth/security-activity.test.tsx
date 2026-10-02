@@ -21,6 +21,7 @@ describe('SecurityActivity', () => {
             eventType: 'authorization-denied',
             actorType: 'member',
             actorId: 'member-opaque-id',
+            actorName: 'Morgan Reader',
             targetType: 'BooksController',
             targetId: 'create',
             outcome: 'denied',
@@ -53,8 +54,10 @@ describe('SecurityActivity', () => {
     render(<SecurityActivity />);
 
     expect(screen.getAllByText('authorization-denied')).toHaveLength(2);
-    expect(screen.getByText('member-opaque-id')).toBeInTheDocument();
-    expect(screen.getByText('Correlation v7')).toBeInTheDocument();
+    expect(screen.getByText('Morgan Reader')).toBeInTheDocument();
+    expect(screen.getByTitle('User ID: member-opaque-id')).toBeInTheDocument();
+    expect(screen.getByText('Unknown user')).toBeInTheDocument();
+    expect(screen.getByTitle('Correlation v7: opaque-correlation')).toBeInTheDocument();
     expect(document.body.textContent).not.toMatch(/password|reader@example/i);
 
     await user.selectOptions(
@@ -69,6 +72,28 @@ describe('SecurityActivity', () => {
         limit: 50,
       }),
     );
+  });
+
+  it.each([
+    ['staff', 'deleted-staff-id', 'Staff account unavailable'],
+    ['member', 'deleted-member-id', 'Member account unavailable'],
+    ['system', undefined, 'System'],
+    ['unknown', undefined, 'Unknown user'],
+  ])('labels %s events when no account name is available', (actorType, actorId, label) => {
+    const result = api.useSecurityActivity();
+    result.data.items = [{
+      id: 'fallback-event',
+      eventType: 'sign-in-failure',
+      actorType,
+      actorId,
+      outcome: 'failure',
+      createdAt: '2026-07-18T01:00:00.000Z',
+    }];
+    render(<SecurityActivity />);
+    expect(screen.getByText(label)).toBeInTheDocument();
+    if (actorId) {
+      expect(screen.getByTitle(`User ID: ${actorId}`)).toBeInTheDocument();
+    }
   });
 
   it('shows a clear forbidden state', () => {

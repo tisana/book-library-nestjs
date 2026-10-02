@@ -2,7 +2,12 @@ import { Injectable, Optional } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { createHmac } from 'node:crypto';
-import { ClientSession, Model } from 'mongoose';
+import { ClientSession, isObjectIdOrHexString, Model } from 'mongoose';
+import {
+  StaffUserDocument,
+  StaffUserModelName,
+} from '../staff-users/schemas/staff-user.schema';
+import { MemberDocument, MemberModelName } from '../members/schemas/member.schema';
 import {
   createPaginatedResult,
   PaginatedResult,
@@ -85,6 +90,12 @@ export class SecurityActivityService {
     @InjectModel(SecurityActivityEventModelName)
     private readonly securityActivityEventModel: Model<SecurityActivityEventDocument>,
     @Optional() private readonly configService?: ConfigService,
+    @Optional()
+    @InjectModel(StaffUserModelName)
+    private readonly staffUserModel?: Model<StaffUserDocument>,
+    @Optional()
+    @InjectModel(MemberModelName)
+    private readonly memberModel?: Model<MemberDocument>,
   ) {}
 
   async record(input: RecordSecurityActivityInput): Promise<void> {
@@ -171,11 +182,54 @@ export class SecurityActivityService {
         .exec(),
       this.securityActivityEventModel.countDocuments(filter).exec(),
     ]);
-    return createPaginatedResult(
-      events.map((event) => this.toView(event)),
-      total,
-      query,
-    );
+    const views = events.map((event) => this.toView(event));
+    await this.resolveActorNames(views);
+    return createPaginatedResult(views, total, query);
+  }
+
+  private async resolveActorNames(
+    events: SecurityActivityEventViewDto[],
+  ): Promise<void> {
+    const idsFor = (type: SecurityActivityActorType) => [
+      ...new Set(
+        events
+          .filter(
+            (event) =>
+              event.actorType === type && isObjectIdOrHexString(event.actorId),
+          )
+          .map((event) => event.actorId!),
+      ),
+    ];
+    const staffIds = idsFor(SecurityActivityActorType.Staff);
+    const memberIds = idsFor(SecurityActivityActorType.Member);
+    const [staff, members] = await Promise.all([
+      staffIds.length && this.staffUserModel
+        ? this.staffUserModel
+            .find({ _id: { $in: staffIds } })
+            .select('_id displayName')
+            .lean()
+            .exec()
+        : [],
+      memberIds.length && this.memberModel
+        ? this.memberModel
+            .find({ _id: { $in: memberIds } })
+            .select('_id fullName')
+            .lean()
+            .exec()
+        : [],
+    ]);
+    const names = new Map<string, string>([
+      ...staff.map((account): [string, string] => [
+        `staff:${account._id}`, account.displayName,
+      ]),
+      ...members.map((account): [string, string] => [
+        `member:${account._id}`, account.fullName,
+      ]),
+    ]);
+    for (const event of events) {
+      const name = names.get(`${event.actorType}:${event.actorId?.toLowerCase()}`);
+      if (name) event.actorName = name;
+    }
   }
 
   async recordIdentifierOperationTerminal(

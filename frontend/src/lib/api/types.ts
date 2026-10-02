@@ -246,6 +246,7 @@ export interface SecurityActivityEventView {
   eventType: SecurityActivityEventType;
   actorType: SecurityActivityActorType;
   actorId?: string;
+  actorName?: string;
   targetType?: string;
   targetId?: string;
   clientId?: string;

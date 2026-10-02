@@ -6,6 +6,64 @@ import {
 import { SecurityActivityService } from './security-activity.service';
 
 describe('SecurityActivityService', () => {
+  it('resolves current actor names in batches without identifying unverified subjects', async () => {
+    const staffId = '507f1f77bcf86cd799439011';
+    const memberId = '507f1f77bcf86cd799439012';
+    const missingId = '507f1f77bcf86cd799439013';
+    const events = [
+      { actorType: 'staff', actorId: staffId },
+      { actorType: 'staff', actorId: staffId },
+      { actorType: 'member', actorId: memberId },
+      { actorType: 'staff', actorId: missingId },
+      { actorType: 'member', actorId: 'legacy-invalid-id' },
+      { actorType: 'system' },
+      { actorType: 'unknown', subjectType: 'member', subjectId: memberId },
+    ].map((event, index) => ({
+      ...event,
+      _id: String(index),
+      eventType: 'sign-in-success',
+      outcome: 'success',
+      createdAt: new Date(),
+    }));
+    const eventQuery = {
+      sort: jest.fn().mockReturnThis(),
+      skip: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockReturnThis(),
+      lean: jest.fn().mockReturnThis(),
+      exec: jest.fn().mockResolvedValue(events),
+    };
+    const accountModel = (accounts: unknown[]) => ({
+      find: jest.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
+          lean: jest.fn().mockReturnValue({ exec: jest.fn().mockResolvedValue(accounts) }),
+        }),
+      }),
+    });
+    const staff = accountModel([{ _id: staffId, displayName: 'Alex Librarian' }]);
+    const members = accountModel([{ _id: memberId, fullName: 'Morgan Reader' }]);
+    const service = new SecurityActivityService(
+      {
+        find: jest.fn().mockReturnValue(eventQuery),
+        countDocuments: jest.fn().mockReturnValue({ exec: jest.fn().mockResolvedValue(events.length) }),
+      } as any,
+      undefined,
+      staff as any,
+      members as any,
+    );
+
+    const result = await service.list({ page: 1, limit: 50 });
+
+    expect(result.items.map((event) => event.actorName)).toEqual([
+      'Alex Librarian', 'Alex Librarian', 'Morgan Reader', undefined, undefined, undefined, undefined,
+    ]);
+    expect(staff.find).toHaveBeenCalledTimes(1);
+    expect(staff.find).toHaveBeenCalledWith({ _id: { $in: [staffId, missingId] } });
+    expect(members.find).toHaveBeenCalledTimes(1);
+    expect(members.find).toHaveBeenCalledWith({ _id: { $in: [memberId] } });
+    expect(staff.find.mock.results[0].value.select).toHaveBeenCalledWith('_id displayName');
+    expect(members.find.mock.results[0].value.select).toHaveBeenCalledWith('_id fullName');
+  });
+
   it('redacts passwords, tokens, cookies, and nested secrets before persistence', async () => {
     const create = jest.fn().mockResolvedValue(undefined);
     const service = new SecurityActivityService({ create } as any);
