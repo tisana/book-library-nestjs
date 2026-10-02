@@ -2,9 +2,9 @@
   "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": ".",
   "testEnvironment": "node",
-  "testRegex": "(?:.e2e-spec|performance[/\\\\].*.spec).ts$",
+  "testRegex": "^.*[/\\\\]production-bootstrap\\.e2e-spec\\.ts$",
+  "testTimeout": 60000,
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
-  },
-  "testPathIgnorePatterns": ["/production-bootstrap.e2e-spec.ts$"]
+  }
 }

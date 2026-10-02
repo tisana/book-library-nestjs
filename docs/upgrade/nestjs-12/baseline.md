@@ -72,3 +72,35 @@ Evidence: [first attempt](evidence/auth-performance-initial.txt), [isolated retr
 `64a2100d8f8263bf631f791d426a580d4c0f5709` replaces app.init with `app.listen(0, '127.0.0.1')` so the benchmark owns one ephemeral loopback listener until existing finally/app.close cleanup. The new regression compiles and executes the actual benchmark runner in a disposable directory against a dedicated seeded temporary Mongo replica set, including real auth and concurrent requests. It checks the existing fixed sample/warm-up/concurrency parameters and both existing performance gates. Red: one new test fails specifically with ECONNRESET (three existing pass); green: all four pass. [Red evidence](evidence/performance-regression-red.txt), [green evidence](evidence/performance-regression-green.txt). No application route, schema, auth settings, thresholds, sample method or fixtures changed.
 
 After the fix, all 29 e2e suites/243 tests pass (0 skips, 45.633 seconds): [new counts](evidence/backend-e2e-after-fix-counts.json). Backend quality gate passes again with real successful producers. Standalone `npm run verify:auth-performance` now exits **0**: boundary p50 **7.67 ms**, p95 **13.00 ms**, max **20.66 ms**; security activity first 50/10000 events **12.07 ms**. Both existing limits pass. Full unprotected/protected/runtime/sample metadata: [current baseline](evidence/auth-performance-baseline.md), [successful command log](evidence/auth-performance.txt). Historical spec evidence was restored byte-for-byte after copying the current result into upgrade evidence. This resolves the comparison blocker; the unchanged local entry-path defect and current-lock advisories remain concerns for owning tasks.
+
+## T2: compiled production contracts on Nest 11
+
+T2 runs `npm run test:production`: build the current application, then execute the dedicated serial production Jest configuration. It launches **`dist/src/main.js`** explicitly, matching T0's verified full-checkout artifact. T3 must update this one suite entry path after normalizing the build to `dist/main.js`; T2 does not pretend the baseline already meets that output requirement.
+
+The reusable process harness accepts an absolute compiled entry path, disposable Mongo URI, explicit test environment and optional static directory. Each child uses an available reserved port, an isolated temporary working directory (no checkout `.env`), and explicit production-mode disposable secrets. Startup polls actual public liveness with bounded timeouts; only an `EADDRINUSE` collision retries, up to the configured bounded attempt limit. Exit observation and idempotent shutdown use SIGTERM followed by bounded SIGKILL fallback. Output diagnostics redact configured credentials, Mongo URIs, bearer/JWT credentials, refresh-cookie values and account addresses. Startup failure and shutdown both clean up child processes and working directories. Process tests cover an actual address collision followed by the compiled bootstrap, timed-out child exit/directory cleanup, split-chunk secret redaction, early configuration rejection and controlled exit.
+
+The suite owns a disposable single-node Mongo replica set through memory-server, uses `createMongoTestContext`, seeds only synthetic staff/member/membership/book fixtures, then applies the existing `loadMigrations` / `runPendingMigrations` helpers. No migration definition, persisted application schema or production account/database changes. Synthetic frontend HTML and JavaScript live in a separately cleaned temporary static directory.
+
+**47 production tests pass.** They exercise actual `main.ts` bootstrap behavior through HTTP: exact credentialed CORS and negative preflights, every browser-session route denying missing/opaque/malformed/duplicate/suffix/different-port origins before DTO/cookie/state writes, production refresh cookie scope/lifetime, two rotations and older replay revocation, trusted logout, DTO whitelist/type validation and query transformation, malformed JSON, missing/invalid access credentials, staff/admin and member permission denial, token-derived member ownership, domain 404/409 with unchanged quantities, public Swagger UI/OpenAPI, liveness/readiness, static assets, login/staff/member deep links, and API/non-frontend JSON failures instead of HTML fallback. Trusted/untrusted proxy cases inspect real source-bucket partitions: untrusted peers ignore spoofed forwarding headers; configured loopback/private proxies resolve right-to-left to the first untrusted address; changing a spoofed leftmost address does not split its bucket; malformed chains and unsupported `Forwarded` / `X-Real-IP` headers use the direct peer. Only error timestamps are normalized; paths, status codes, validation messages and filter labels remain exact. Session-state equality hashes complete collection documents so failure evidence cannot render credentials or account data.
+
+### Existing readiness/filter discrepancy
+
+The service throws readiness failures as `{ "status": "error", "reason": "..." }`. With the actual global `HttpExceptionFilter`, both missing audit-key readiness and database loss return HTTP **503** with this envelope (timestamp alone varies):
+
+```json
+{
+  "statusCode": 503,
+  "path": "/health/ready",
+  "timestamp": "<ISO timestamp>",
+  "message": "Service Unavailable Exception",
+  "error": "ServiceUnavailableException"
+}
+```
+
+The filter omits the service's `status` and `reason`, including `throttle-key-required` and `database-unavailable`. Existing TestingModule health tests can expose the unfiltered service shape; that does not describe the compiled application's filtered body. This is an **existing Nest 11 discrepancy**, characterized and documented without repair or attribution to Nest 12. Database-loss readiness remains bounded under five seconds and liveness remains public.
+
+Passport missing/invalid bearer errors also use `error: "UnauthorizedException"` in the compiled response; explicit credential/permission/domain exceptions retain their respective existing labels. The test suite preserves these distinctions instead of broadly normalizing error bodies.
+
+The existing e2e configuration excludes `production-bootstrap.e2e-spec.ts`: matcher inspection returns **29 existing e2e files** and **one production file**, without overlap. Required regression counts remain **560 unit tests / 35 suites** and **243 e2e tests / 29 suites**, all passing with zero skips. Focused ESLint and `git diff --check` pass. Full mutation smoke and coverage producers were not rerun: T2 changes test harness/configuration/docs only, preserving application source, coverage floors, manifest and mutation policy; T0/T1 evidence remains the earlier source/runtime baseline. No dependency, lockfile, frontend architecture, application/security contract or schema changed.
+
+T1's actual devcontainer verification remains blocked on its MCR CDN prerequisite. The coordinator explicitly authorized T2 on the verified local Node 24.19.0/npm 11.9.0/Nest 11 interface; this passing production suite does not close T1, verify a final Docker image, or approve deployment.
