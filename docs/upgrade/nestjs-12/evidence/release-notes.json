@@ -1,0 +1,68 @@
+[
+  {
+    "package": "@nestjs/common",
+    "url": "https://github.com/nestjs/nest/releases/tag/v12.1.1",
+    "httpStatus": 200,
+    "technicalSummary": "12.1.1 fixes logger output/levels, enum values, circular dependencies, provider overrides and ParseArrayPipe numeric validation, plus microservice reconnect fixes."
+  },
+  {
+    "package": "@nestjs/config",
+    "url": "https://github.com/nestjs/config/releases/tag/12.0.1",
+    "httpStatus": 200,
+    "technicalSummary": "Fixes environment interpolation property paths/prefix handling; updates dotenv to 18.0.3."
+  },
+  {
+    "package": "@nestjs/jwt",
+    "url": "https://github.com/nestjs/jwt/releases/tag/12.0.2",
+    "httpStatus": 200,
+    "technicalSummary": "Adds decode overloads for complete option and nullable return."
+  },
+  {
+    "package": "@nestjs/mongoose",
+    "url": "https://github.com/nestjs/mongoose/releases/tag/12.0.0",
+    "httpStatus": 200,
+    "technicalSummary": "Native ESM/root exports; deep dist imports removed; CommonJS require(esm) supported on Node 20.19+/22.12+."
+  },
+  {
+    "package": "@nestjs/passport",
+    "url": "https://github.com/nestjs/passport/releases/tag/12.0.0",
+    "httpStatus": 200,
+    "technicalSummary": "Native ESM/root exports; legacy shims/deep imports removed; CommonJS require(esm) supported. PassportModule-only defaultStrategy/property options no longer forwarded to passport.authenticate; getAuthenticateOptions returns AuthGuardAuthenticateOptions."
+  },
+  {
+    "package": "@nestjs/schedule",
+    "url": "https://github.com/nestjs/schedule/releases/tag/12.0.2",
+    "httpStatus": 200,
+    "technicalSummary": "Adds timer return type generics; deleted cron jobs are not resurrected after initialDelay."
+  },
+  {
+    "package": "@nestjs/swagger",
+    "url": "https://github.com/nestjs/swagger/releases/tag/12.0.2",
+    "httpStatus": 200,
+    "technicalSummary": "Fixes literal enum/plugin/workspace imports, Standard Schema parameter handling, bundler Fastify static import and Swagger UI dollar escaping; optional TypeScript peer; HTTP QUERY support and dependency updates."
+  },
+  {
+    "package": "@nestjs/cli",
+    "url": "https://github.com/nestjs/nest-cli/releases/tag/12.0.8",
+    "httpStatus": 200,
+    "technicalSummary": "Preserves CommonJS entry exports in rspack/webpack; preserves parent links for aliased reexports."
+  },
+  {
+    "package": "@nestjs/schematics",
+    "url": "https://github.com/nestjs/schematics/releases/tag/12.0.6",
+    "httpStatus": 200,
+    "technicalSummary": "Angular CLI dependencies updated; library without prefix supported; generated ESM Supertest type fix; CommonJS sub-app e2e execution fix."
+  },
+  {
+    "package": "typescript",
+    "url": "https://github.com/microsoft/TypeScript/releases/tag/v6.0.2",
+    "httpStatus": 200,
+    "technicalSummary": "Release page points to TypeScript 6 announcement and beta/RC/stable issue lists; compiler compatibility remains T3 verification."
+  },
+  {
+    "package": "ts-jest",
+    "url": "https://github.com/kulshekhar/ts-jest/releases/tag/v29.4.14",
+    "httpStatus": 200,
+    "technicalSummary": "Release page points to CHANGELOG.md; tagged 29.4.14 changelog reverts compiler-util changes."
+  }
+]

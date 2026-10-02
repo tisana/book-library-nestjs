@@ -1,0 +1,86 @@
+[
+  {
+    "command": "npm_config_cache=/tmp/nestjs-t0-npm-cache npm view @nestjs/common@12.1.1 peerDependenciesMeta type exports --json",
+    "exit": 0,
+    "stdout": "{\n  \"peerDependenciesMeta\": {\n    \"class-validator\": {\n      \"optional\": true\n    },\n    \"class-transformer\": {\n      \"optional\": true\n    }\n  },\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./index.js\",\n    \"./*\": \"./*.js\",\n    \"./*.js\": \"./*.js\",\n    \"./internal\": \"./internal.js\"\n  }\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": "npm_config_cache=/tmp/nestjs-t0-npm-cache npm view @nestjs/core@12.1.1 peerDependenciesMeta type exports --json",
+    "exit": 0,
+    "stdout": "{\n  \"peerDependenciesMeta\": {\n    \"@nestjs/websockets\": {\n      \"optional\": true\n    },\n    \"@nestjs/microservices\": {\n      \"optional\": true\n    },\n    \"@nestjs/platform-express\": {\n      \"optional\": true\n    }\n  },\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./index.js\",\n    \"./*\": \"./*.js\",\n    \"./*.js\": \"./*.js\",\n    \"./internal\": \"./internal.js\"\n  }\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": "npm_config_cache=/tmp/nestjs-t0-npm-cache npm view @nestjs/platform-express@12.1.1 peerDependenciesMeta type exports --json",
+    "exit": 0,
+    "stdout": "{\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./index.js\",\n    \"./*\": \"./*.js\",\n    \"./*.js\": \"./*.js\"\n  }\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": "npm_config_cache=/tmp/nestjs-t0-npm-cache npm view @nestjs/testing@12.1.1 peerDependenciesMeta type exports --json",
+    "exit": 0,
+    "stdout": "{\n  \"peerDependenciesMeta\": {\n    \"@nestjs/microservices\": {\n      \"optional\": true\n    },\n    \"@nestjs/platform-express\": {\n      \"optional\": true\n    }\n  },\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./index.js\",\n    \"./*\": \"./*.js\",\n    \"./*.js\": \"./*.js\"\n  }\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": "npm_config_cache=/tmp/nestjs-t0-npm-cache npm view @nestjs/config@12.0.1 peerDependenciesMeta type exports --json",
+    "exit": 0,
+    "stdout": "{\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": {\n      \"types\": \"./dist/index.d.ts\",\n      \"import\": \"./dist/index.js\",\n      \"default\": \"./dist/index.js\"\n    },\n    \"./package.json\": \"./package.json\"\n  }\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": "npm_config_cache=/tmp/nestjs-t0-npm-cache npm view @nestjs/jwt@12.0.2 peerDependenciesMeta type exports --json",
+    "exit": 0,
+    "stdout": "{\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": {\n      \"types\": \"./dist/index.d.ts\",\n      \"import\": \"./dist/index.js\",\n      \"default\": \"./dist/index.js\"\n    }\n  }\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": "npm_config_cache=/tmp/nestjs-t0-npm-cache npm view @nestjs/mongoose@12.0.0 peerDependenciesMeta type exports --json",
+    "exit": 0,
+    "stdout": "{\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": {\n      \"types\": \"./dist/index.d.ts\",\n      \"default\": \"./dist/index.js\"\n    }\n  }\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": "npm_config_cache=/tmp/nestjs-t0-npm-cache npm view @nestjs/passport@12.0.0 peerDependenciesMeta type exports --json",
+    "exit": 0,
+    "stdout": "{\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": {\n      \"types\": \"./dist/index.d.ts\",\n      \"default\": \"./dist/index.js\"\n    },\n    \"./package.json\": \"./package.json\"\n  }\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": "npm_config_cache=/tmp/nestjs-t0-npm-cache npm view @nestjs/schedule@12.0.2 peerDependenciesMeta type exports --json",
+    "exit": 0,
+    "stdout": "{\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": {\n      \"types\": \"./dist/index.d.ts\",\n      \"default\": \"./dist/index.js\"\n    },\n    \"./package.json\": \"./package.json\"\n  }\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": "npm_config_cache=/tmp/nestjs-t0-npm-cache npm view @nestjs/swagger@12.0.2 peerDependenciesMeta type exports --json",
+    "exit": 0,
+    "stdout": "{\n  \"peerDependenciesMeta\": {\n    \"typescript\": {\n      \"optional\": true\n    },\n    \"@fastify/static\": {\n      \"optional\": true\n    },\n    \"class-validator\": {\n      \"optional\": true\n    },\n    \"class-transformer\": {\n      \"optional\": true\n    }\n  },\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": {\n      \"types\": \"./dist/index.d.ts\",\n      \"import\": \"./dist/index.js\",\n      \"default\": \"./dist/index.js\",\n      \"require\": \"./dist/index.js\"\n    },\n    \"./plugin\": {\n      \"types\": \"./dist/plugin/index.d.ts\",\n      \"import\": \"./dist/plugin/index.js\",\n      \"default\": \"./dist/plugin/index.js\",\n      \"require\": \"./dist/plugin/index.js\"\n    },\n    \"./package.json\": \"./package.json\"\n  }\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": "npm_config_cache=/tmp/nestjs-t0-npm-cache npm view @nestjs/cli@12.0.8 peerDependenciesMeta type exports --json",
+    "exit": 0,
+    "stdout": "{\n  \"peerDependenciesMeta\": {\n    \"webpack\": {\n      \"optional\": true\n    },\n    \"@swc/cli\": {\n      \"optional\": true\n    },\n    \"@swc/core\": {\n      \"optional\": true\n    },\n    \"ts-loader\": {\n      \"optional\": true\n    },\n    \"@rspack/core\": {\n      \"optional\": true\n    },\n    \"webpack-node-externals\": {\n      \"optional\": true\n    },\n    \"tsconfig-paths-webpack-plugin\": {\n      \"optional\": true\n    },\n    \"fork-ts-checker-webpack-plugin\": {\n      \"optional\": true\n    }\n  },\n  \"type\": \"module\"\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": "npm_config_cache=/tmp/nestjs-t0-npm-cache npm view @nestjs/schematics@12.0.6 peerDependenciesMeta type exports --json",
+    "exit": 0,
+    "stdout": "{\n  \"peerDependenciesMeta\": {\n    \"prettier\": {\n      \"optional\": true\n    }\n  },\n  \"type\": \"module\"\n}\n",
+    "stderr": ""
+  },
+  {
+    "command": "npm_config_cache=/tmp/nestjs-t0-npm-cache npm view typescript@6.0.2 peerDependenciesMeta type exports --json",
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": "npm_config_cache=/tmp/nestjs-t0-npm-cache npm view ts-jest@29.4.14 peerDependenciesMeta type exports --json",
+    "exit": 0,
+    "stdout": "{\n  \"peerDependenciesMeta\": {\n    \"esbuild\": {\n      \"optional\": true\n    },\n    \"jest-util\": {\n      \"optional\": true\n    },\n    \"babel-jest\": {\n      \"optional\": true\n    },\n    \"@babel/core\": {\n      \"optional\": true\n    },\n    \"@jest/types\": {\n      \"optional\": true\n    },\n    \"@jest/transform\": {\n      \"optional\": true\n    }\n  },\n  \"type\": \"commonjs\"\n}\n",
+    "stderr": ""
+  }
+]
