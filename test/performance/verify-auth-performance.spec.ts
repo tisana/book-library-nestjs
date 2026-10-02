@@ -3,6 +3,70 @@ import {
   renderPerformanceEvidence,
   summarizeDurations,
 } from '../../scripts/verify-auth-performance';
+import { execFile } from 'node:child_process';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
+import { promisify } from 'node:util';
+
+const execute = promisify(execFile);
+
+describe('compiled authentication performance runner', () => {
+  it('completes concurrent requests against its own disposable HTTP listener', async () => {
+    const repositoryRoot = resolve(__dirname, '../..');
+    const outputDirectory = await mkdtemp(
+      join(tmpdir(), 'auth-benchmark-regression-'),
+    );
+    try {
+      await execute(
+        process.execPath,
+        [
+          join(repositoryRoot, 'node_modules/typescript/bin/tsc'),
+          '-p',
+          join(repositoryRoot, 'tsconfig.performance.json'),
+          '--outDir',
+          outputDirectory,
+        ],
+        { cwd: repositoryRoot, timeout: 60_000 },
+      );
+      const outcome = await execute(
+        process.execPath,
+        [join(outputDirectory, 'scripts/verify-auth-performance.js')],
+        {
+          cwd: outputDirectory,
+          env: {
+            ...process.env,
+            NODE_PATH: join(repositoryRoot, 'node_modules'),
+          },
+          timeout: 90_000,
+        },
+      ).then(
+        (result) => ({ exitCode: 0, stderr: result.stderr }),
+        (error) => ({ exitCode: error.code, stderr: error.stderr }),
+      );
+      expect(outcome.stderr).not.toContain('ECONNRESET');
+      expect(outcome.exitCode).toBe(0);
+      const evidence = await readFile(
+        join(
+          outputDirectory,
+          'specs/003-auth-roles-permissions/evidence/auth-performance.md',
+        ),
+        'utf8',
+      );
+      expect(evidence).toContain('| Warm-ups per handler | 100 |');
+      expect(evidence).toContain('| Measured requests per handler | 500 |');
+      expect(evidence).toContain('| Concurrency | 10 |');
+      expect(evidence).toContain(
+        '| Authentication boundary p95 <= 50 ms | PASS |',
+      );
+      expect(evidence).toContain(
+        '| First 50 of 10,000 security events <= 2,000 ms | PASS |',
+      );
+    } finally {
+      await rm(outputDirectory, { recursive: true, force: true });
+    }
+  }, 180_000);
+});
 
 describe('authentication performance evidence helpers', () => {
   it('uses nearest-rank percentiles without interpolation', () => {
