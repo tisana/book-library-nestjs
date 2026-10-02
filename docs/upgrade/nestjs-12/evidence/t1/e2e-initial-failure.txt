@@ -1,0 +1,17 @@
+FAIL test/performance/verify-auth-performance.spec.ts (17.889 s)
+  ● compiled authentication performance runner › completes concurrent requests against its own disposable HTTP listener
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 1
+
+      46 |       );
+      47 |       expect(outcome.stderr).not.toContain('ECONNRESET');
+    > 48 |       expect(outcome.exitCode).toBe(0);
+         |                                ^
+      49 |       const evidence = await readFile(
+      50 |         join(
+      51 |           outputDirectory,
+
+      at Object.<anonymous> (performance/verify-auth-performance.spec.ts:48:32)

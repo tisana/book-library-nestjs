@@ -1,0 +1,202 @@
+{
+  "changes": [
+    {
+      "path": "node_modules/@types/node",
+      "before": "25.2.3",
+      "after": "24.19.1"
+    },
+    {
+      "path": "node_modules/ts-jest",
+      "before": "29.4.6",
+      "after": "29.4.14"
+    },
+    {
+      "path": "node_modules/ts-jest/node_modules/semver",
+      "before": null,
+      "after": "7.8.5"
+    },
+    {
+      "path": "node_modules/undici-types",
+      "before": "7.16.0",
+      "after": "7.24.6"
+    }
+  ],
+  "direct": [
+    {
+      "name": "@nestjs/common",
+      "version": "11.1.17"
+    },
+    {
+      "name": "@nestjs/config",
+      "version": "4.0.4"
+    },
+    {
+      "name": "@nestjs/core",
+      "version": "11.1.18"
+    },
+    {
+      "name": "@nestjs/jwt",
+      "version": "11.0.2"
+    },
+    {
+      "name": "@nestjs/mongoose",
+      "version": "11.0.4"
+    },
+    {
+      "name": "@nestjs/passport",
+      "version": "11.0.5"
+    },
+    {
+      "name": "@nestjs/platform-express",
+      "version": "11.2.6"
+    },
+    {
+      "name": "@nestjs/schedule",
+      "version": "6.1.3"
+    },
+    {
+      "name": "@nestjs/swagger",
+      "version": "11.4.7"
+    },
+    {
+      "name": "@types/passport-jwt",
+      "version": "4.0.1"
+    },
+    {
+      "name": "bcryptjs",
+      "version": "3.0.3"
+    },
+    {
+      "name": "class-transformer",
+      "version": "0.5.1"
+    },
+    {
+      "name": "class-validator",
+      "version": "0.14.3"
+    },
+    {
+      "name": "mongodb-memory-server",
+      "version": "11.2.0"
+    },
+    {
+      "name": "mongoose",
+      "version": "9.8.1"
+    },
+    {
+      "name": "passport",
+      "version": "0.7.0"
+    },
+    {
+      "name": "passport-jwt",
+      "version": "4.0.1"
+    },
+    {
+      "name": "proxy-addr",
+      "version": "2.0.7"
+    },
+    {
+      "name": "reflect-metadata",
+      "version": "0.2.2"
+    },
+    {
+      "name": "rimraf",
+      "version": "3.0.2"
+    },
+    {
+      "name": "rxjs",
+      "version": "7.8.2"
+    },
+    {
+      "name": "swagger-ui-express",
+      "version": "5.0.1"
+    },
+    {
+      "name": "@nestjs/cli",
+      "version": "11.0.19"
+    },
+    {
+      "name": "@nestjs/schematics",
+      "version": "11.0.10"
+    },
+    {
+      "name": "@nestjs/testing",
+      "version": "11.1.13"
+    },
+    {
+      "name": "@stryker-mutator/core",
+      "version": "9.6.1"
+    },
+    {
+      "name": "@stryker-mutator/jest-runner",
+      "version": "9.6.1"
+    },
+    {
+      "name": "@types/express",
+      "version": "5.0.6"
+    },
+    {
+      "name": "@types/jest",
+      "version": "30.0.0"
+    },
+    {
+      "name": "@types/node",
+      "version": "24.19.1"
+    },
+    {
+      "name": "@types/proxy-addr",
+      "version": "2.0.3"
+    },
+    {
+      "name": "@types/supertest",
+      "version": "6.0.3"
+    },
+    {
+      "name": "@typescript-eslint/eslint-plugin",
+      "version": "8.58.1"
+    },
+    {
+      "name": "@typescript-eslint/parser",
+      "version": "8.58.1"
+    },
+    {
+      "name": "eslint",
+      "version": "10.2.0"
+    },
+    {
+      "name": "eslint-config-prettier",
+      "version": "10.1.8"
+    },
+    {
+      "name": "jest",
+      "version": "30.2.0"
+    },
+    {
+      "name": "prettier",
+      "version": "3.8.1"
+    },
+    {
+      "name": "supertest",
+      "version": "4.0.2"
+    },
+    {
+      "name": "ts-jest",
+      "version": "29.4.14"
+    },
+    {
+      "name": "ts-loader",
+      "version": "9.5.4"
+    },
+    {
+      "name": "ts-node",
+      "version": "10.9.2"
+    },
+    {
+      "name": "tsconfig-paths",
+      "version": "4.2.0"
+    },
+    {
+      "name": "typescript",
+      "version": "5.9.3"
+    }
+  ]
+}

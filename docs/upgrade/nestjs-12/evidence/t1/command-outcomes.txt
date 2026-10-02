@@ -1,0 +1,13 @@
+ci exit=0 elapsed=20s
+tree exit=0 elapsed=1s
+build exit=0 elapsed=6s
+unit exit=0 elapsed=24s
+e2e exit=1 elapsed=54s
+reporting exit=0 elapsed=3s
+quality exit=1 elapsed=1s
+mutation-check exit=0 elapsed=0s
+audit exit=1
+mutation-smoke exit=0 elapsed=1023s
+performance-isolated exit=0 elapsed=15s
+e2e-isolated exit=0 elapsed=48s
+quality-isolated exit=0 elapsed=1s

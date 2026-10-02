@@ -1,0 +1,159 @@
+{
+  "profile": "smoke",
+  "commitSha": "df74b59c1354699b4050e947a3e1551c450ee59e",
+  "nodeVersion": "v24.19.0",
+  "os": "linux 6.18.44 x64",
+  "sourceSha256": {
+    "src/auth/token-session.service.ts": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051",
+    "src/auth/auth-identifier-repair.service.ts": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
+    "src/auth/auth-identifier-reconciliation.service.ts": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803",
+    "src/members/members.service.ts": "03e5a2d54626ef11cc9f9d73dfcda4a39d30d7bab3d2d249985dfeec2baf0ad9",
+    "src/borrowings/borrowings.service.ts": "91a41fb81abd1c1ebc57586fcb4f07299fc455735973f23289a62348c318b647"
+  },
+  "durationMs": 1022896.8492409999,
+  "budgetMs": 350000,
+  "timedOut": false,
+  "strykerExitCode": null,
+  "policyExitCode": 0,
+  "policyPassed": true,
+  "rawCombinedScore": 99.78038067349927,
+  "moduleScores": [
+    {
+      "source": "src/auth/token-session.service.ts",
+      "detected": 210,
+      "undetected": 1,
+      "ignored": 0,
+      "rawScore": 99.5260663507109
+    },
+    {
+      "source": "src/auth/auth-identifier-repair.service.ts",
+      "detected": 400,
+      "undetected": 1,
+      "ignored": 0,
+      "rawScore": 99.75062344139651
+    },
+    {
+      "source": "src/auth/auth-identifier-reconciliation.service.ts",
+      "detected": 414,
+      "undetected": 1,
+      "ignored": 0,
+      "rawScore": 99.75903614457832
+    },
+    {
+      "source": "src/members/members.service.ts",
+      "detected": 204,
+      "undetected": 0,
+      "ignored": 0,
+      "rawScore": 100
+    },
+    {
+      "source": "src/borrowings/borrowings.service.ts",
+      "detected": 135,
+      "undetected": 0,
+      "ignored": 0,
+      "rawScore": 100
+    }
+  ],
+  "criticalFindings": [
+    {
+      "source": "src/auth/token-session.service.ts",
+      "mutantId": "180",
+      "status": "Survived",
+      "ruleId": "token-interrupted-cas-finalization",
+      "fingerprint": "0108d029ef22842e4c8a00d900136b2dbc483f0013d796483b852f024a550cc5",
+      "manifestLine": 509,
+      "equivalent": true
+    },
+    {
+      "source": "src/auth/auth-identifier-repair.service.ts",
+      "mutantId": "103",
+      "status": "Survived",
+      "ruleId": "repair-batch-identity-and-checkpoint",
+      "fingerprint": "c010a2ec5f4bb9177df61f0bc8326b2d04d2463a59bf5dd2337b840dedc2f36e",
+      "manifestLine": 292,
+      "equivalent": true
+    },
+    {
+      "source": "src/auth/auth-identifier-reconciliation.service.ts",
+      "mutantId": "403",
+      "status": "Survived",
+      "ruleId": "reconciliation-secret-decoding",
+      "fingerprint": "b4a9385a539d4b16ca74d4f3f5c70adb2775a73e50a66a80aa1acf17e30bd51a",
+      "manifestLine": 879,
+      "equivalent": true
+    }
+  ],
+  "violations": [],
+  "policyError": null,
+  "processError": null,
+  "signal": null,
+  "shards": [
+    {
+      "shardId": "token-session",
+      "source": "src/auth/token-session.service.ts",
+      "startedAt": "2026-10-02T15:13:01.407Z",
+      "finishedAt": "2026-10-02T15:17:31.322Z",
+      "durationMs": 269913.972437,
+      "budgetMs": 350000,
+      "timedOut": false,
+      "strykerExitCode": 0,
+      "artifactExitCode": 0,
+      "processError": null,
+      "signal": null
+    },
+    {
+      "shardId": "identifier-repair",
+      "source": "src/auth/auth-identifier-repair.service.ts",
+      "startedAt": "2026-10-02T15:17:31.322Z",
+      "finishedAt": "2026-10-02T15:20:36.340Z",
+      "durationMs": 185017.66073499998,
+      "budgetMs": 350000,
+      "timedOut": false,
+      "strykerExitCode": 0,
+      "artifactExitCode": 0,
+      "processError": null,
+      "signal": null
+    },
+    {
+      "shardId": "identifier-reconciliation",
+      "source": "src/auth/auth-identifier-reconciliation.service.ts",
+      "startedAt": "2026-10-02T15:20:36.340Z",
+      "finishedAt": "2026-10-02T15:24:17.725Z",
+      "durationMs": 221385.48723199998,
+      "budgetMs": 350000,
+      "timedOut": false,
+      "strykerExitCode": 0,
+      "artifactExitCode": 0,
+      "processError": null,
+      "signal": null
+    },
+    {
+      "shardId": "members",
+      "source": "src/members/members.service.ts",
+      "startedAt": "2026-10-02T15:24:17.726Z",
+      "finishedAt": "2026-10-02T15:28:54.756Z",
+      "durationMs": 277031.145657,
+      "budgetMs": 350000,
+      "timedOut": false,
+      "strykerExitCode": 0,
+      "artifactExitCode": 0,
+      "processError": null,
+      "signal": null
+    },
+    {
+      "shardId": "borrowings",
+      "source": "src/borrowings/borrowings.service.ts",
+      "startedAt": "2026-10-02T15:28:54.757Z",
+      "finishedAt": "2026-10-02T15:30:04.148Z",
+      "durationMs": 69390.49817699997,
+      "budgetMs": 350000,
+      "timedOut": false,
+      "strykerExitCode": 0,
+      "artifactExitCode": 0,
+      "processError": null,
+      "signal": null
+    }
+  ],
+  "referenceBudgetEvidence": false,
+  "canonicalMutantCount": 1366
+}

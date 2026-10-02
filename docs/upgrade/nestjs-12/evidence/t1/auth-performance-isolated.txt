@@ -1,0 +1,17 @@
+
+> book-library@0.0.1 verify:auth-performance
+> npm run build && rimraf dist-performance && tsc -p tsconfig.performance.json && node dist-performance/scripts/verify-auth-performance.js
+
+
+> book-library@0.0.1 prebuild
+> rimraf dist
+
+
+> book-library@0.0.1 build
+> nest build
+
+Applied 000 migration-record
+Applied 001 library-core
+Applied 002 member-auth
+Applied 003 auth-roles-permissions
+auth-boundary-p95-ms=13.70 security-activity-first-50-ms=15.79 evidence=/workspace/book-library-nestjs/specs/003-auth-roles-permissions/evidence/auth-performance.md
