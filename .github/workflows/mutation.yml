@@ -17,6 +17,8 @@ on:
       - 'test/quality/**'
       - 'scripts/quality/**'
       - 'stryker.config.mjs'
+      - 'tsconfig.mutation.json'
+      - 'tsconfig.jest.json'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/mutation.yml'

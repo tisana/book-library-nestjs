@@ -1,0 +1,82 @@
+{
+  "stream": "frontend-unit",
+  "generatedAt": "2026-10-03T07:40:08.117Z",
+  "toolVersions": {
+    "node": "v24.19.0"
+  },
+  "sources": {
+    "coverage": {
+      "tool": "Vitest",
+      "version": "4.1.11",
+      "command": "npm run frontend:test:coverage"
+    },
+    "unitTests": {
+      "tool": "Vitest",
+      "version": "4.1.11",
+      "command": "npm run frontend:test:coverage"
+    }
+  },
+  "producerOutcomes": {
+    "frontend-lint": "success",
+    "frontend-unit": "success"
+  },
+  "coverage": {
+    "scope": "frontend",
+    "files": 65,
+    "metrics": {
+      "statements": {
+        "total": 1035,
+        "covered": 884,
+        "skipped": 0,
+        "pct": 85.41
+      },
+      "branches": {
+        "total": 735,
+        "covered": 607,
+        "skipped": 0,
+        "pct": 82.58
+      },
+      "functions": {
+        "total": 443,
+        "covered": 361,
+        "skipped": 0,
+        "pct": 81.48
+      },
+      "lines": {
+        "total": 990,
+        "covered": 851,
+        "skipped": 0,
+        "pct": 85.95
+      }
+    }
+  },
+  "changedLineCoverage": {
+    "status": "not-applicable",
+    "passed": true,
+    "pct": 100,
+    "covered": 0,
+    "total": 0,
+    "missingFiles": [],
+    "minimum": 80
+  },
+  "unitTests": {
+    "passed": 186,
+    "failed": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "total": 186,
+    "cleanPassRate": 100,
+    "eventualPassRate": 100,
+    "suites": {
+      "passed": 84,
+      "failed": 0,
+      "skipped": 0,
+      "total": 84
+    }
+  },
+  "gate": {
+    "passed": true,
+    "reasons": [],
+    "warnings": []
+  }
+}

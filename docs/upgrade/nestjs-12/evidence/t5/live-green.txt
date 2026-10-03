@@ -1,0 +1,80 @@
+
+> book-library@0.0.1 frontend:test:live
+> npm run test:live --prefix frontend
+
+
+> book-library-frontend@0.0.1 test:live
+> playwright test --config playwright.live.config.ts
+
+[2m[WebServer] [22m(node:40772) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+[2m[WebServer] [22m(node:40814) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:41154) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:41154) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/live/nestjs-upgrade.spec.ts:13:1 › built app signs in, rotates real refresh credentials, serves deep links and signs out (6.2s)
+  ✓  2 tests/live/nestjs-upgrade.spec.ts:35:1 › live server enforces staff permissions and member ownership (7.8s)
+  ✓  3 tests/live/nestjs-upgrade.spec.ts:52:1 › staff records and returns a real borrowing visible to the member (18.3s)
+[2m[WebServer] [22mMongoServerSelectionError: connect ECONNREFUSED 127.0.0.1:34479
+[2m[WebServer] [22m    at Topology.selectServer [90m(/workspace/book-library-nestjs/[39mnode_modules/[4mmongodb[24m/src/sdam/topology.ts:638:30[90m)[39m
+[2m[WebServer] [22m    at async Topology._connect [90m(/workspace/book-library-nestjs/[39mnode_modules/[4mmongodb[24m/src/sdam/topology.ts:466:22[90m)[39m
+[2m[WebServer] [22m    at async Topology.connect [90m(/workspace/book-library-nestjs/[39mnode_modules/[4mmongodb[24m/src/sdam/topology.ts:402:7[90m)[39m
+[2m[WebServer] [22m    at async topologyConnect [90m(/workspace/book-library-nestjs/[39mnode_modules/[4mmongodb[24m/src/mongo_client.ts:684:9[90m)[39m
+[2m[WebServer] [22m    at async MongoClient._connect [90m(/workspace/book-library-nestjs/[39mnode_modules/[4mmongodb[24m/src/mongo_client.ts:696:7[90m)[39m
+[2m[WebServer] [22m    at async MongoClient.connect [90m(/workspace/book-library-nestjs/[39mnode_modules/[4mmongodb[24m/src/mongo_client.ts:608:7[90m)[39m
+[2m[WebServer] [22m    at async MongoClient.connect [90m(/workspace/book-library-nestjs/[39mnode_modules/[4mmongodb[24m/src/mongo_client.ts:887:12[90m)[39m
+[2m[WebServer] [22m    at async [90m/workspace/book-library-nestjs/[39mnode_modules/[4mmongodb-memory-server-core[24m/src/util/MongoInstance.ts:447:19
+[2m[WebServer] [22m    at async MongoMemoryServer.stop [90m(/workspace/book-library-nestjs/[39mnode_modules/[4mmongodb-memory-server-core[24m/src/MongoMemoryServer.ts:595:5[90m)[39m
+[2m[WebServer] [22m    at async Promise.all (index 0) {
+[2m[WebServer] [22m  errorLabelSet: Set(0) {},
+[2m[WebServer] [22m  reason: TopologyDescription {
+[2m[WebServer] [22m    type: [32m'Single'[39m,
+[2m[WebServer] [22m    servers: Map(1) { [32m'127.0.0.1:34479'[39m => [36m[ServerDescription][39m },
+[2m[WebServer] [22m    stale: [33mfalse[39m,
+[2m[WebServer] [22m    compatible: [33mtrue[39m,
+[2m[WebServer] [22m    heartbeatFrequencyMS: [33m10000[39m,
+[2m[WebServer] [22m    localThresholdMS: [33m15[39m,
+[2m[WebServer] [22m    setName: [1mnull[22m,
+[2m[WebServer] [22m    maxElectionId: [1mnull[22m,
+[2m[WebServer] [22m    maxSetVersion: [1mnull[22m,
+[2m[WebServer] [22m    commonWireVersion: [33m0[39m,
+[2m[WebServer] [22m    logicalSessionTimeoutMinutes: [1mnull[22m
+[2m[WebServer] [22m  },
+[2m[WebServer] [22m  code: [90mundefined[39m,
+[2m[WebServer] [22m  [cause]: MongoNetworkError: connect ECONNREFUSED 127.0.0.1:34479
+[2m[WebServer] [22m      at Socket.<anonymous> [90m(/workspace/book-library-nestjs/[39mnode_modules/[4mmongodb[24m/src/cmap/connect.ts:430:16[90m)[39m
+[2m[WebServer] [22m  [90m    at Object.onceWrapper (node:events:631:26)[39m
+[2m[WebServer] [22m  [90m    at Socket.emit (node:events:509:28)[39m
+[2m[WebServer] [22m  [90m    at Socket.emit (node:domain:489:12)[39m
+[2m[WebServer] [22m  [90m    at emitErrorNT (node:internal/streams/destroy:170:8)[39m
+[2m[WebServer] [22m  [90m    at emitErrorCloseNT (node:internal/streams/destroy:129:3)[39m
+[2m[WebServer] [22m  [90m    at processTicksAndRejections (node:internal/process/task_queues:90:21)[39m {
+[2m[WebServer] [22m    errorLabelSet: Set(3) { [32m'SystemOverloadedError'[39m, [32m'RetryableError'[39m, [32m'ResetPool'[39m },
+[2m[WebServer] [22m    beforeHandshake: [33mfalse[39m,
+[2m[WebServer] [22m    [cause]: Error: connect ECONNREFUSED 127.0.0.1:34479
+[2m[WebServer] [22m    [90m    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)[39m {
+[2m[WebServer] [22m      errno: [33m-111[39m,
+[2m[WebServer] [22m      code: [32m'ECONNREFUSED'[39m,
+[2m[WebServer] [22m      syscall: [32m'connect'[39m,
+[2m[WebServer] [22m      address: [32m'127.0.0.1'[39m,
+[2m[WebServer] [22m      port: [33m34479[39m
+[2m[WebServer] [22m    }
+[2m[WebServer] [22m  }
+[2m[WebServer] [22m}
+
+  3 passed (52.3s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

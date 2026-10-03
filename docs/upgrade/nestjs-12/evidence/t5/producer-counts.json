@@ -1,0 +1,42 @@
+{
+  "backend-e2e.json": {
+    "success": true,
+    "passed": 254,
+    "pending": 0,
+    "failed": 0
+  },
+  "backend-production.json": {
+    "success": true,
+    "passed": 54,
+    "pending": 0,
+    "failed": 0
+  },
+  "backend-unit.json": {
+    "success": true,
+    "passed": 566,
+    "pending": 0,
+    "failed": 0
+  },
+  "vitest-results.json": {
+    "success": true,
+    "passed": 186,
+    "pending": 0,
+    "failed": 0
+  },
+  "mockedPlaywright": {
+    "startTime": "2026-10-03T07:31:23.509Z",
+    "duration": 230011.411,
+    "expected": 87,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "livePlaywright": {
+    "startTime": "2026-10-03T07:28:17.714Z",
+    "duration": 24969.482,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

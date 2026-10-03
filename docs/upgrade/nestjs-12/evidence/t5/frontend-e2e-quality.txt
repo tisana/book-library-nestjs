@@ -1,0 +1,18 @@
+
+> book-library@0.0.1 quality:report:frontend-e2e
+> ts-node --transpile-only scripts/quality/report-quality.ts --stream frontend-e2e --e2e-tests frontend/test-results/playwright-results.json --baselines quality/coverage-baselines.json --markdown frontend/test-results/e2e-summary.md --json frontend/test-results/e2e-summary.json --producer-outcome frontend-playwright=success
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+
+> book-library@0.0.1 quality:report:frontend-e2e
+> ts-node --transpile-only scripts/quality/report-quality.ts --stream frontend-e2e --e2e-tests frontend/test-results/playwright-results.json --baselines quality/coverage-baselines.json --markdown frontend/test-results/e2e-summary.md --json frontend/test-results/e2e-summary.json --check-only --producer-outcome frontend-playwright=success
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

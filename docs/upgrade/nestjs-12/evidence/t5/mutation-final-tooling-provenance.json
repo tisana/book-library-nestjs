@@ -1,0 +1,36 @@
+{
+  "commit": "aa272b8b3fa6eeab09c07e745006d53caa322a92",
+  "node": "v24.19.0",
+  "inputs": [
+    {
+      "path": "stryker.config.mjs",
+      "sha256": "f014fd408a2e97733a5a0f40da490296d7d4e90f7316b42f286086865df5588e",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "tsconfig.mutation.json",
+      "sha256": "89f884c51a1e26fe422cf4cdf2f4cd49c3c2e58a0b038d2faa26d206153b4c3e",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "tsconfig.jest.json",
+      "sha256": "224afaecd2beb76b0b18066b9fd5da4eeba2de0487d10ca9159cc3e94fc4e133",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "9a62a0dc1ba86015484b592fc202901b3c0d294f028932db8dc7fefaea822c44",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "package.json",
+      "sha256": "f42c1a1b2e93b2dc5bbeaf27cdf7af54f3860f6ebc00dde36d941dd92db2bc83",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "b4fc498293073ee73c8007a9eeddd4aab5961f811f70b997c91f044d10d9b9ea",
+      "matchesCommittedBytes": true
+    }
+  ]
+}

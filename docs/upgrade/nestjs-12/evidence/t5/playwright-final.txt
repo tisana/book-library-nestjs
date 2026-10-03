@@ -1,0 +1,162 @@
+
+> book-library@0.0.1 frontend:test:e2e:report
+> npm run test:e2e:report --prefix frontend
+
+
+> book-library-frontend@0.0.1 test:e2e:report
+> playwright test
+
+[2m[WebServer] [22m(node:63267) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+[2m[WebServer] [22m(node:63280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 87 tests using 1 worker
+
+(node:63302) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:63302) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop-chromium] › tests/e2e/accessibility.spec.ts:9:1 › staff forms, route guards, dialogs, status badges, and sign-out controls are accessible (8.2s)
+  ✓   2 [desktop-chromium] › tests/e2e/accessibility.spec.ts:61:1 › member forms, route guards, navigation, status badges, and sign-out controls are accessible (4.4s)
+  ✓   3 [desktop-chromium] › tests/e2e/member-home.spec.ts:3:1 › member can sign in on mobile and see borrowing status (2.7s)
+  ✓   4 [desktop-chromium] › tests/e2e/member-privacy.spec.ts:3:1 › member routes only call member-scoped me endpoints (3.2s)
+  ✓   5 [desktop-chromium] › tests/e2e/member-privacy.spec.ts:25:1 › member browser direct staff route attempts do not load staff data (11.9s)
+  ✓   6 [desktop-chromium] › tests/e2e/member-reminders.spec.ts:3:1 › member sees due reminders and quota warning on mobile (2.7s)
+  ✓   7 [desktop-chromium] › tests/e2e/member-reminders.spec.ts:55:1 › member sees inactive account reminder with no current borrowings (3.3s)
+  ✓   8 [desktop-chromium] › tests/e2e/member-sign-out.spec.ts:3:1 › member can sign out and protected member data is cleared (2.8s)
+  ✓   9 [desktop-chromium] › tests/e2e/performance-smoke.spec.ts:44:1 › staff list and detail views render useful seeded-scale content within 2 seconds (2.4s)
+  ✓  10 [desktop-chromium] › tests/e2e/performance-smoke.spec.ts:82:1 › member home renders useful seeded-scale content within 2 seconds (1.8s)
+  ✓  11 [desktop-chromium] › tests/e2e/responsive-member.spec.ts:10:3 › member self-service remains usable at small phone 390x844 (1.5s)
+  ✓  12 [desktop-chromium] › tests/e2e/responsive-member.spec.ts:10:3 › member self-service remains usable at large phone 430x932 (2.5s)
+  ✓  13 [desktop-chromium] › tests/e2e/responsive-staff.spec.ts:11:3 › staff screens remain usable at desktop 1440x900 (5.1s)
+  ✓  14 [desktop-chromium] › tests/e2e/responsive-staff.spec.ts:11:3 › staff screens remain usable at tablet landscape 1024x768 (3.7s)
+  ✓  15 [desktop-chromium] › tests/e2e/responsive-staff.spec.ts:11:3 › staff screens remain usable at tablet portrait 768x1024 (3.7s)
+  ✓  16 [desktop-chromium] › tests/e2e/shared-sign-in.spec.ts:116:1 › staff, administrator, and member use the same keyboard-only sign-in page (7.9s)
+  ✓  17 [desktop-chromium] › tests/e2e/shared-sign-in.spec.ts:138:1 › legacy login URLs redirect to the shared sign-in page (4.1s)
+  ✓  18 [desktop-chromium] › tests/e2e/shared-sign-in.spec.ts:151:1 › generic authentication errors are announced and focused (11.6s)
+  ✓  19 [desktop-chromium] › tests/e2e/staff-auth-permissions.spec.ts:14:1 › staff role cannot navigate to administrator-only areas (3.6s)
+  ✓  20 [desktop-chromium] › tests/e2e/staff-auth-permissions.spec.ts:27:1 › administrator role can navigate to role and security administration (4.1s)
+  ✓  21 [desktop-chromium] › tests/e2e/staff-auth-permissions.spec.ts:38:1 › current-session sign-out revokes refresh before local navigation completes (6.3s)
+  ✓  22 [desktop-chromium] › tests/e2e/staff-blocked-borrowing.spec.ts:3:1 › staff sees blocked borrowing reasons before submit (5.8s)
+  ✓  23 [desktop-chromium] › tests/e2e/staff-books.spec.ts:3:1 › staff can create and update a book from the collection screen (5.8s)
+  ✓  24 [desktop-chromium] › tests/e2e/staff-borrowing-display.spec.ts:29:1 › staff borrowing screens show human-readable member and book labels (4.2s)
+  ✓  25 [desktop-chromium] › tests/e2e/staff-borrowing-history.spec.ts:3:1 › staff member detail preserves returned and inactive borrowing history (3.8s)
+  ✓  26 [desktop-chromium] › tests/e2e/staff-borrowing.spec.ts:3:1 › staff can create a borrowing and return it (4.4s)
+  ✓  27 [desktop-chromium] › tests/e2e/staff-dashboard.spec.ts:3:1 › staff can sign in and see dashboard summary (2.4s)
+  ✓  28 [desktop-chromium] › tests/e2e/staff-role-management.spec.ts:16:1 › an administrator creates a staff account, assigns admin, and the new account receives access immediately (3.4s)
+  ✓  29 [desktop-chromium] › tests/e2e/staff-sign-out.spec.ts:3:1 › staff can sign out and protected staff data is cleared (4.8s)
+(node:65445) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65445) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  30 [tablet-chromium] › tests/e2e/accessibility.spec.ts:9:1 › staff forms, route guards, dialogs, status badges, and sign-out controls are accessible (5.8s)
+  ✓  31 [tablet-chromium] › tests/e2e/accessibility.spec.ts:61:1 › member forms, route guards, navigation, status badges, and sign-out controls are accessible (3.7s)
+  ✓  32 [tablet-chromium] › tests/e2e/member-home.spec.ts:3:1 › member can sign in on mobile and see borrowing status (2.9s)
+  ✓  33 [tablet-chromium] › tests/e2e/member-privacy.spec.ts:3:1 › member routes only call member-scoped me endpoints (3.7s)
+  ✘  34 [tablet-chromium] › tests/e2e/member-privacy.spec.ts:25:1 › member browser direct staff route attempts do not load staff data (30.4s)
+(node:65827) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65827) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  35 [tablet-chromium] › tests/e2e/member-reminders.spec.ts:3:1 › member sees due reminders and quota warning on mobile (2.1s)
+  ✓  36 [tablet-chromium] › tests/e2e/member-reminders.spec.ts:55:1 › member sees inactive account reminder with no current borrowings (2.0s)
+  ✓  37 [tablet-chromium] › tests/e2e/member-sign-out.spec.ts:3:1 › member can sign out and protected member data is cleared (2.3s)
+  ✓  38 [tablet-chromium] › tests/e2e/performance-smoke.spec.ts:44:1 › staff list and detail views render useful seeded-scale content within 2 seconds (2.5s)
+  ✓  39 [tablet-chromium] › tests/e2e/performance-smoke.spec.ts:82:1 › member home renders useful seeded-scale content within 2 seconds (1.7s)
+  ✓  40 [tablet-chromium] › tests/e2e/responsive-member.spec.ts:10:3 › member self-service remains usable at small phone 390x844 (1.7s)
+  ✓  41 [tablet-chromium] › tests/e2e/responsive-member.spec.ts:10:3 › member self-service remains usable at large phone 430x932 (1.8s)
+  ✓  42 [tablet-chromium] › tests/e2e/responsive-staff.spec.ts:11:3 › staff screens remain usable at desktop 1440x900 (2.2s)
+  ✓  43 [tablet-chromium] › tests/e2e/responsive-staff.spec.ts:11:3 › staff screens remain usable at tablet landscape 1024x768 (1.8s)
+  ✓  44 [tablet-chromium] › tests/e2e/responsive-staff.spec.ts:11:3 › staff screens remain usable at tablet portrait 768x1024 (1.9s)
+  ✓  45 [tablet-chromium] › tests/e2e/shared-sign-in.spec.ts:116:1 › staff, administrator, and member use the same keyboard-only sign-in page (3.8s)
+  ✓  46 [tablet-chromium] › tests/e2e/shared-sign-in.spec.ts:138:1 › legacy login URLs redirect to the shared sign-in page (1.6s)
+  ✓  47 [tablet-chromium] › tests/e2e/shared-sign-in.spec.ts:151:1 › generic authentication errors are announced and focused (1.5s)
+  ✓  48 [tablet-chromium] › tests/e2e/staff-auth-permissions.spec.ts:14:1 › staff role cannot navigate to administrator-only areas (1.5s)
+  ✓  49 [tablet-chromium] › tests/e2e/staff-auth-permissions.spec.ts:27:1 › administrator role can navigate to role and security administration (1.7s)
+  ✓  50 [tablet-chromium] › tests/e2e/staff-auth-permissions.spec.ts:38:1 › current-session sign-out revokes refresh before local navigation completes (2.1s)
+  ✓  51 [tablet-chromium] › tests/e2e/staff-blocked-borrowing.spec.ts:3:1 › staff sees blocked borrowing reasons before submit (1.9s)
+  ✓  52 [tablet-chromium] › tests/e2e/staff-books.spec.ts:3:1 › staff can create and update a book from the collection screen (3.0s)
+  ✓  53 [tablet-chromium] › tests/e2e/staff-borrowing-display.spec.ts:29:1 › staff borrowing screens show human-readable member and book labels (2.0s)
+  ✓  54 [tablet-chromium] › tests/e2e/staff-borrowing-history.spec.ts:3:1 › staff member detail preserves returned and inactive borrowing history (2.1s)
+  ✓  55 [tablet-chromium] › tests/e2e/staff-borrowing.spec.ts:3:1 › staff can create a borrowing and return it (3.5s)
+  ✓  56 [tablet-chromium] › tests/e2e/staff-dashboard.spec.ts:3:1 › staff can sign in and see dashboard summary (2.6s)
+  ✓  57 [tablet-chromium] › tests/e2e/staff-role-management.spec.ts:16:1 › an administrator creates a staff account, assigns admin, and the new account receives access immediately (3.8s)
+  ✓  58 [tablet-chromium] › tests/e2e/staff-sign-out.spec.ts:3:1 › staff can sign out and protected staff data is cleared (2.9s)
+(node:67252) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:67252) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  59 [mobile-chromium] › tests/e2e/accessibility.spec.ts:9:1 › staff forms, route guards, dialogs, status badges, and sign-out controls are accessible (6.0s)
+  ✓  60 [mobile-chromium] › tests/e2e/accessibility.spec.ts:61:1 › member forms, route guards, navigation, status badges, and sign-out controls are accessible (4.0s)
+  ✓  61 [mobile-chromium] › tests/e2e/member-home.spec.ts:3:1 › member can sign in on mobile and see borrowing status (2.4s)
+  ✓  62 [mobile-chromium] › tests/e2e/member-privacy.spec.ts:3:1 › member routes only call member-scoped me endpoints (1.7s)
+  ✓  63 [mobile-chromium] › tests/e2e/member-privacy.spec.ts:25:1 › member browser direct staff route attempts do not load staff data (6.9s)
+  ✓  64 [mobile-chromium] › tests/e2e/member-reminders.spec.ts:3:1 › member sees due reminders and quota warning on mobile (1.7s)
+  ✓  65 [mobile-chromium] › tests/e2e/member-reminders.spec.ts:55:1 › member sees inactive account reminder with no current borrowings (1.6s)
+  ✓  66 [mobile-chromium] › tests/e2e/member-sign-out.spec.ts:3:1 › member can sign out and protected member data is cleared (3.1s)
+  ✓  67 [mobile-chromium] › tests/e2e/performance-smoke.spec.ts:44:1 › staff list and detail views render useful seeded-scale content within 2 seconds (3.2s)
+  ✓  68 [mobile-chromium] › tests/e2e/performance-smoke.spec.ts:82:1 › member home renders useful seeded-scale content within 2 seconds (2.2s)
+  ✓  69 [mobile-chromium] › tests/e2e/responsive-member.spec.ts:10:3 › member self-service remains usable at small phone 390x844 (2.5s)
+  ✓  70 [mobile-chromium] › tests/e2e/responsive-member.spec.ts:10:3 › member self-service remains usable at large phone 430x932 (3.1s)
+  ✓  71 [mobile-chromium] › tests/e2e/responsive-staff.spec.ts:11:3 › staff screens remain usable at desktop 1440x900 (3.3s)
+  ✓  72 [mobile-chromium] › tests/e2e/responsive-staff.spec.ts:11:3 › staff screens remain usable at tablet landscape 1024x768 (3.0s)
+  ✓  73 [mobile-chromium] › tests/e2e/responsive-staff.spec.ts:11:3 › staff screens remain usable at tablet portrait 768x1024 (3.6s)
+  ✓  74 [mobile-chromium] › tests/e2e/shared-sign-in.spec.ts:116:1 › staff, administrator, and member use the same keyboard-only sign-in page (4.8s)
+  ✓  75 [mobile-chromium] › tests/e2e/shared-sign-in.spec.ts:138:1 › legacy login URLs redirect to the shared sign-in page (2.3s)
+  ✓  76 [mobile-chromium] › tests/e2e/shared-sign-in.spec.ts:151:1 › generic authentication errors are announced and focused (2.4s)
+  ✓  77 [mobile-chromium] › tests/e2e/staff-auth-permissions.spec.ts:14:1 › staff role cannot navigate to administrator-only areas (2.5s)
+  ✓  78 [mobile-chromium] › tests/e2e/staff-auth-permissions.spec.ts:27:1 › administrator role can navigate to role and security administration (2.6s)
+  ✓  79 [mobile-chromium] › tests/e2e/staff-auth-permissions.spec.ts:38:1 › current-session sign-out revokes refresh before local navigation completes (2.5s)
+  ✓  80 [mobile-chromium] › tests/e2e/staff-blocked-borrowing.spec.ts:3:1 › staff sees blocked borrowing reasons before submit (1.7s)
+  ✓  81 [mobile-chromium] › tests/e2e/staff-books.spec.ts:3:1 › staff can create and update a book from the collection screen (2.5s)
+  ✓  82 [mobile-chromium] › tests/e2e/staff-borrowing-display.spec.ts:29:1 › staff borrowing screens show human-readable member and book labels (2.6s)
+  ✓  83 [mobile-chromium] › tests/e2e/staff-borrowing-history.spec.ts:3:1 › staff member detail preserves returned and inactive borrowing history (1.9s)
+  ✓  84 [mobile-chromium] › tests/e2e/staff-borrowing.spec.ts:3:1 › staff can create a borrowing and return it (2.1s)
+  ✓  85 [mobile-chromium] › tests/e2e/staff-dashboard.spec.ts:3:1 › staff can sign in and see dashboard summary (1.6s)
+  ✓  86 [mobile-chromium] › tests/e2e/staff-role-management.spec.ts:16:1 › an administrator creates a staff account, assigns admin, and the new account receives access immediately (2.3s)
+  ✓  87 [mobile-chromium] › tests/e2e/staff-sign-out.spec.ts:3:1 › staff can sign out and protected staff data is cleared (1.9s)
+
+
+  1) [tablet-chromium] › tests/e2e/member-privacy.spec.ts:25:1 › member browser direct staff route attempts do not load staff data 
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    Error: page.waitForURL: Test timeout of 30000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation to "**/member" until "load"
+    ============================================================
+
+      62 |   await page.getByLabel('Password').fill('DemoMember#2026');
+      63 |   await page.getByRole('button', { name: /sign in/i }).click();
+    > 64 |   await page.waitForURL('**/member');
+         |              ^
+      65 | }
+      66 |
+      67 | async function mockMemberSession(page: Page, requestedUrls: string[]) {
+        at signInAsMember (/workspace/book-library-nestjs/frontend/tests/e2e/member-privacy.spec.ts:64:14)
+        at /workspace/book-library-nestjs/frontend/tests/e2e/member-privacy.spec.ts:43:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/playwright-artifacts/member-privacy-member-brow-212f6-mpts-do-not-load-staff-data-tablet-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/playwright-artifacts/member-privacy-member-brow-212f6-mpts-do-not-load-staff-data-tablet-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/playwright-artifacts/member-privacy-member-brow-212f6-mpts-do-not-load-staff-data-tablet-chromium/error-context.md
+
+  1 failed
+    [tablet-chromium] › tests/e2e/member-privacy.spec.ts:25:1 › member browser direct staff route attempts do not load staff data 
+  86 passed (5.5m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

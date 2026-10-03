@@ -1,0 +1,21 @@
+{
+  "baselineMatchesCommittedHistoricalBytes": true,
+  "baselineSha256": "cb1932bfb4f06cdd9a59ae617048143d696fc3fc0dedf8b66e2193d3209ce51a",
+  "historicalRawScoreFloor": 95.2518818760857,
+  "historicalProducerCommit": "1b624f4c0b859d4fb2d8b8181ab1d3f6b9d8de99",
+  "manifestCheckActualOutcome": "PASS89rules",
+  "hashGaps": [
+    {
+      "source": "src/auth/token-session.service.ts",
+      "historicalSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051",
+      "currentSha256": "fd877bca5956b96846a5414e7cea4b1d14b1212700ce44051441958cedfb9658"
+    },
+    {
+      "source": "src/auth/auth-identifier-reconciliation.service.ts",
+      "historicalSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803",
+      "currentSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+    }
+  ],
+  "requiredRemediation": "Actual accepted current five-shard complete canonical report, preserve historical rawscore floor, record genuine producer provenance; then smoke five-shard acceptance",
+  "acceptance": false
+}

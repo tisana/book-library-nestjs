@@ -1,0 +1,61 @@
+{
+  "stream": "frontend-e2e",
+  "generatedAt": "2026-10-03T07:58:33.117Z",
+  "toolVersions": {
+    "node": "v24.19.0"
+  },
+  "sources": {
+    "e2eTests": {
+      "tool": "Playwright",
+      "version": "1.60.0",
+      "command": "npm run frontend:test:e2e:report"
+    }
+  },
+  "producerOutcomes": {
+    "frontend-playwright": "success"
+  },
+  "e2eTests": {
+    "passed": 87,
+    "failed": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "total": 87,
+    "cleanPassRate": 100,
+    "eventualPassRate": 100,
+    "globalErrors": [],
+    "projects": {
+      "desktop-chromium": {
+        "passed": 29,
+        "failed": 0,
+        "skipped": 0,
+        "flaky": 0,
+        "total": 29,
+        "cleanPassRate": 100,
+        "eventualPassRate": 100
+      },
+      "tablet-chromium": {
+        "passed": 29,
+        "failed": 0,
+        "skipped": 0,
+        "flaky": 0,
+        "total": 29,
+        "cleanPassRate": 100,
+        "eventualPassRate": 100
+      },
+      "mobile-chromium": {
+        "passed": 29,
+        "failed": 0,
+        "skipped": 0,
+        "flaky": 0,
+        "total": 29,
+        "cleanPassRate": 100,
+        "eventualPassRate": 100
+      }
+    }
+  },
+  "gate": {
+    "passed": true,
+    "reasons": [],
+    "warnings": []
+  }
+}
