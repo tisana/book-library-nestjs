@@ -151,5 +151,23 @@
   "observedAtUtc": "2026-10-03T13:35:46.811358+00:00",
   "finalRehearsalExitCode": 0,
   "rehearsalConfigurationCommittedAtExecution": false,
-  "note": "Rehearsal evidence script/init configuration saved on implementation branch before evidence commit; exact hashes above. Application runtime artifacts immutable and unchanged."
+  "note": "Rehearsal evidence script/init configuration saved on implementation branch before evidence commit; exact hashes above. Application runtime artifacts immutable and unchanged.",
+  "reviewFixInputHashes": {
+    "docs/upgrade/nestjs-12/evidence/t6/rollback-rehearsal.ts": "51703d8679c2da282827d6ab6cf815df459672c049f046329e9d37e20a4a796d",
+    "scripts/quality/disposable-artifact-fixture.ts": "b545529a2c554403768ec94fe43daf46d79dc6d38bb400b09545663ed56d120e",
+    "docs/upgrade/nestjs-12/release-runbook.md": "03c3efda8becc5ade1618d7a5fa84f5f6833f4baa4a6d07e86a471069d4bc936",
+    "docs/upgrade/nestjs-12/evidence/t6/runbook-commands.test.mjs": "d69ac5735b1749e20a86342ccb9bda98a75ea2a3c3356dfec97fff93f366d55a",
+    "docs/upgrade/nestjs-12/evidence/t6/rehearsal-cleanup.test.mjs": "18acd989631a605335e2bf7a51b543e61f59db996defc8880f756adc5ac41c92",
+    "docs/upgrade/nestjs-12/evidence/t6/review-fix-tsconfig.json": "51d340f416c4f011a1ae9f9642f832b94e0a75001961ae7da12ccd1a45a4e918"
+  },
+  "reviewFixVerification": {
+    "normalRehearsalRepeated": false,
+    "boundedTests": 10,
+    "failed": 0,
+    "skipped": 0,
+    "typecheckCommand": "node_modules/.bin/tsc -p docs/upgrade/nestjs-12/evidence/t6/review-fix-tsconfig.json",
+    "typecheckExitCode": 0,
+    "compilerVersion": "Version 6.0.2",
+    "note": "Original full-run hashes retained separately; fresh exact operator/error-path tests on final formatted files."
+  }
 }

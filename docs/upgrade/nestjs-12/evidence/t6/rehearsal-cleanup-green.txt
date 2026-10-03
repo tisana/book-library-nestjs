@@ -1,0 +1,12 @@
+✔ outer-initial: release resources and retain original error (552.243211ms)
+✔ outer-late: release resources and retain original error (572.811053ms)
+✔ helper-close-error: independently stop connection and Mongo (603.239019ms)
+✔ helper-normal: independently stop connection and Mongo (697.630394ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2505.718751

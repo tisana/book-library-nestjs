@@ -1,0 +1,79 @@
+✖ outer-initial: release resources and retain original error (848.240057ms)
+✖ outer-late: release resources and retain original error (952.267663ms)
+✖ helper-close-error: independently stop connection and Mongo (1061.196649ms)
+✔ helper-normal: independently stop connection and Mongo (792.752499ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 1
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3736.410847
+
+✖ failing tests:
+
+test at docs/upgrade/nestjs-12/evidence/t6/rehearsal-cleanup.test.mjs:46:3
+✖ outer-initial: release resources and retain original error (848.240057ms)
+  AssertionError [ERR_ASSERTION]: fixture cleanup required
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/t6/rehearsal-cleanup.test.mjs:51:14)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at docs/upgrade/nestjs-12/evidence/t6/rehearsal-cleanup.test.mjs:46:3
+✖ outer-late: release resources and retain original error (952.267663ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /ContainerLaunchFailure/. Input:
+
+  'CleanupFailure     at named (/tmp/rehearsal-fault-HYZpwT/hook.cjs:4:35)\n' +
+    '    at Object.stop (/tmp/rehearsal-fault-HYZpwT/hook.cjs:8:222)\n' +
+    '    at main (/workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/t6/rollback-rehearsal.ts:332:19)\n' +
+    'Rollback rehearsal failed; sensitive diagnostics suppressed\n'
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/t6/rehearsal-cleanup.test.mjs:50:14)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'CleanupFailure     at named (/tmp/rehearsal-fault-HYZpwT/hook.cjs:4:35)\n    at Object.stop (/tmp/rehearsal-fault-HYZpwT/hook.cjs:8:222)\n    at main (/workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/t6/rollback-rehearsal.ts:332:19)\nRollback rehearsal failed; sensitive diagnostics suppressed\n',
+    expected: /ContainerLaunchFailure/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at docs/upgrade/nestjs-12/evidence/t6/rehearsal-cleanup.test.mjs:59:3
+✖ helper-close-error: independently stop connection and Mongo (1061.196649ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    [
+      'connection-close',
+  -   'mongo-stop'
+    ]
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/t6/rehearsal-cleanup.test.mjs:63:14)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'connection-close' ],
+    expected: [ 'connection-close', 'mongo-stop' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

@@ -32,7 +32,7 @@ After maintenance, admit operator-only synthetic checks, then10%,50%,100% of nor
 
 ## Operator commands
 
-Commands are a template to be completed with the actual protected production Compose files, named owner, immutable registry references and ingress control. They are not deployment authorization. `DEPLOY_ENV_FILE` references a mode0600 file managed by the secret/configuration system; it must not be logged. Preserve its approved version for rollback. Set `COMPOSE_FILE` to the reviewed base plus image override; do not print expanded `docker compose config`, which can disclose secrets.
+Each shell block runs in a subshell with failure checking; a failed stop/pull/state query or surviving predecessor exits before replacement startup. State-query failure is distinct from a successful empty result. Commands are a template to be completed with the actual protected production Compose files, named owner, immutable registry references and ingress control. They are not deployment authorization. `DEPLOY_ENV_FILE` references a mode0600 file managed by the secret/configuration system; it must not be logged. Preserve its approved version for rollback. Set `COMPOSE_FILE` to the reviewed base plus image override; do not print expanded `docker compose config`, which can disclose secrets.
 
 Image override:
 
@@ -47,28 +47,48 @@ services:
 The measured new-image ordinary SIGTERM shutdown fits8s, leaving2s margin under this10s example. Confirm the actual deployed value with the owner; use a larger reviewed grace if expected slow work needs it. A timeout/SIGKILL is a failed drain, requiring inspection and durable worker recovery, not a successful shutdown check.
 
 ```sh
+(
+set -eu
 # Set approved OLD_IMAGE and NEW_IMAGE registry@sha256 references beforehand.
 export RELEASE_IMAGE="$OLD_IMAGE"
 docker compose --env-file "$DEPLOY_ENV_FILE" pull app
 # Owner closes ingress and drains outstanding HTTP work with their ingress tool.
 docker compose --env-file "$DEPLOY_ENV_FILE" stop app
 # Verify ALL app replicas have exited; nonzero means STOP, do not start replacement.
-test -z "$(docker compose --env-file "$DEPLOY_ENV_FILE" ps --status running -q app)"
+if ! remaining_app_ids="$(docker compose --env-file "$DEPLOY_ENV_FILE" ps --status running -q app)"; then
+  printf '%s\n' 'Cannot verify predecessor state; keep traffic closed.' >&2
+  exit 1
+fi
+if [ -n "$remaining_app_ids" ]; then
+  printf '%s\n' 'Predecessor still running; replacement refused.' >&2
+  exit 1
+fi
 export RELEASE_IMAGE="$NEW_IMAGE"
 docker compose --env-file "$DEPLOY_ENV_FILE" pull app
 docker compose --env-file "$DEPLOY_ENV_FILE" up -d --no-deps --no-build app
 curl --fail --silent --show-error "$API_BASE_URL/health/ready"
+)
 ```
 
 If rollback is triggered, close ingress, stop the new application, verify every replica exited, restore the prior protected configuration references while retaining required `init: true`, then:
 
 ```sh
+(
+set -eu
 export RELEASE_IMAGE="$NEW_IMAGE"
 docker compose --env-file "$DEPLOY_ENV_FILE" stop app
-test -z "$(docker compose --env-file "$DEPLOY_ENV_FILE" ps --status running -q app)"
+if ! remaining_app_ids="$(docker compose --env-file "$DEPLOY_ENV_FILE" ps --status running -q app)"; then
+  printf '%s\n' 'Cannot verify predecessor state; keep traffic closed.' >&2
+  exit 1
+fi
+if [ -n "$remaining_app_ids" ]; then
+  printf '%s\n' 'Predecessor still running; replacement refused.' >&2
+  exit 1
+fi
 export RELEASE_IMAGE="$OLD_IMAGE"
 docker compose --env-file "$DEPLOY_ENV_FILE" up -d --no-deps --no-build app
 curl --fail --silent --show-error "$API_BASE_URL/health/ready"
+)
 ```
 
 Do not downgrade MongoDB or restore the database merely to roll back the application. If data-integrity failure is suspected, keep traffic closed and involve the database recovery owner; blindly admitting traffic on the old binary can worsen corruption.

@@ -1,0 +1,18 @@
+✔ outer-initial: release resources and retain original error (553.80121ms)
+✔ outer-late: release resources and retain original error (598.088835ms)
+✔ helper-close-error: independently stop connection and Mongo (617.470076ms)
+✔ helper-normal: independently stop connection and Mongo (622.377464ms)
+✔ upgrade: running predecessor state (12.554646ms)
+✔ upgrade: ps-error predecessor state (8.255859ms)
+✔ upgrade: empty predecessor state (10.544892ms)
+✔ rollback: running predecessor state (6.183973ms)
+✔ rollback: ps-error predecessor state (6.688786ms)
+✔ rollback: empty predecessor state (7.693034ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2585.453751
