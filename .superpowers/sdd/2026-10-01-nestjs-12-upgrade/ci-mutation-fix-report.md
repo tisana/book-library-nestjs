@@ -1,6 +1,6 @@
 # PR119 token-session mutation runner fix
 
-Status: implementation verified; current strict token smoke producer pending. Parent authorized this narrow supported runner after controlled diagnosis. Cost if wrong: revert the custom runner and retain the mutation compatibility release blocker, preserving all deadlines and policy obligations. No subagents, push, merge, deployment, network or Docker changes were made.
+Status: implementation verified and actual token smoke artifact producer succeeds within the unchanged deadline. Independent review and coherent current all-five smoke/complete policy acceptance remain pending. Parent authorized this narrow supported runner after controlled diagnosis. Cost if wrong: revert the custom runner and retain the mutation compatibility release blocker, preserving all deadlines and policy obligations. No subagents, push, merge, deployment, network or Docker changes were made.
 
 The CI token shard failed its350000ms deadline after147/211 mutants. Its98 dry-run tests are49 token tests plus34 AuthService,11 AuthController and4 throttle tests. Stryker's per-mutant testNamePattern executes relevant test bodies but reloads all four import-related suites. Controlled runs show pending-only suites consuming most of the Jest/Nest ESM setup time.
 
@@ -14,9 +14,19 @@ Fresh verification before implementation commit:
 
 - Exact CI runner/policy/new public-runner gate:131/131 passed,zero failed/cancelled/skipped/todo,16879.596ms. New tests include two cold workers, real Jest selected/caller IDs, static initializer RuntimeError preservation, invalid metadata/path/hash/config cases, failed publication/original error preservation and runner provenance drift rejection. Saved RED assertions demonstrate the initially absent runner selection/provenance changes.
 - Quality reporting:68/68,4 canonical suites,zero pending,3.875s.
-- Manifest:89 rules passed. Prettier and git diff whitespace checks passed.
+- Manifest:89 rules passed. Implementation/test Prettier and whitespace checks passed. Byte-faithful diagnostic logs retain five original trailing-whitespace lines reported by the later staged diff check; the raw producer/RED output was preserved rather than edited.
 - Parent supplied fresh unchanged ordinary GitHub backend566-unit/254-e2e evidence and instructed avoiding unrelated reruns. Normal compiler/application tests were not altered.
 
 Bounded diagnosis evidence is saved under docs/upgrade/nestjs-12/evidence/ci-pr119, with byte hashes in bounded-proof-sha256.json. Original five BlockStatement controls249–291 took25s; conservative baseline-bound candidate11s. All five areKilled with identical identity/location/replacement/coveredBy/killedBy IDs,zeroTimeout/RuntimeError. Diagnostic exclusion of26 other mutations is recorded and does not apply to the actual configuration. Full98 baseline tests and both cold workers' dispatch are preserved. Actual sole static generic denial StringLiteral27 isKilled with all four suites retained. Actual synthetic initialization probes preserve the same twoRuntimeErrors in original/candidate runners. Caller-pattern tests retain exact executed IDs. These bounded results do not assert full211 smoke acceptance.
 
-Implementation/proof commit will precede the genuine `node scripts/quality/run-mutation.mjs smoke-shard token-session` run. A follow-up report records that producer's actual commit, configuration hash, elapsed time,211-mutant results, artifacts and exit status. No provisional baseline rebinding is permitted. Parent owns independent review and any later all-five/complete runs; this task stops after the one token result.
+Implementation/proof commit: `b02b9bb4bfbe1261fe573343fd9b2d46d2e1b568`, before the genuine `node scripts/quality/run-mutation.mjs smoke-shard token-session` run.
+
+## Actual committed token producer
+
+Started2026-10-03T16:20:55.314Z, finished16:24:10.889Z. Actual195575.7015ms against350000ms,not timed out,normal exit0,artifactExitCode0,211/211:210Killed,1Survived,zeroTimeout/RuntimeError/NoCoverage. Raw score99.52606635071089. Full98 dry-run tests remain49token/34AuthService/11AuthController/4throttle; body175ms/overhead5321ms. The actual report identifies Stryker9.6.1/Jest30.4.1/TypeScript6.0.2/ts-jest29.4.14.
+
+Producer commit remains `b02b9bb4bfbe1261fe573343fd9b2d46d2e1b568`; configurationSha256 `f767d9f4c350a7f4aab776f16a5710f33bf1cdefddab79ad8b610b2f5f475b04`. Raw JSON/HTML/log/duration/summary and successful baseline inventory are preserved under current-token-*; byte hashes and counts are in current-token-provenance.json. The wrapper's named-shard policyExitCode0 denotes artifact success; no all-five policy merge was performed.
+
+The sole survivor is id180,ArrowFunction at527:59–69,replacement`() => undefined`. Its exact canonical fingerprint `acb2e7754474bbff9585c981cd3e53270038e9b17efa24ccc29d8437ba536ebd` matches the existing unchanged token-interrupted-cas-finalization equivalent: the catch fulfillment null/undefined is ignored before the same awaited revocation. No new equivalent entry or source/test weakening was introduced.
+
+After this producer settled, parent approved adding inherited tsconfig.json to the exact mutation PR path filter, because that input is now bound by provenance. The exact workflow regression fails before the trigger change and passes1/1 afterward. This workflow/test-only follow-up does not change mutation runtime configuration, and no producer commit is rebound to it. The source-hash-bound historical baseline remains byte-for-byte unchanged. No provisional baseline rebinding is permitted. Parent owns independent review and any later all-five/complete runs; this task stops after the one token result.

@@ -1,0 +1,41 @@
+{
+  "classification": "Actual local named token-session smoke artifact producer; not five-shard merged policy or current complete baseline acceptance.",
+  "producerCommitSha": "b02b9bb4bfbe1261fe573343fd9b2d46d2e1b568",
+  "configurationSha256": "f767d9f4c350a7f4aab776f16a5710f33bf1cdefddab79ad8b610b2f5f475b04",
+  "startedAt": "2026-10-03T16:20:55.314Z",
+  "finishedAt": "2026-10-03T16:24:10.889Z",
+  "durationMs": 195575.7015,
+  "budgetMs": 350000,
+  "timedOut": false,
+  "strykerExitCode": 0,
+  "artifactExitCode": 0,
+  "mutantCount": 211,
+  "statuses": {
+    "Killed": 210,
+    "Survived": 1
+  },
+  "rawScore": 99.52606635071089,
+  "testCounts": {
+    "src/auth/token-session.service.spec.ts": 49,
+    "src/auth/auth.service.spec.ts": 34,
+    "src/auth/auth.controller.spec.ts": 11,
+    "src/auth/auth-endpoint-throttle.guard.spec.ts": 4
+  },
+  "survivorExistingEquivalent": {
+    "mutantId": "180",
+    "fingerprint": "acb2e7754474bbff9585c981cd3e53270038e9b17efa24ccc29d8437ba536ebd",
+    "ruleId": "token-interrupted-cas-finalization",
+    "entriesChanged": false
+  },
+  "artifactSha256": {
+    "current-token-mutation.json": "b25c5edf72ef0a61b2c328758de9b8d401c500019123d38f43a40e0b45204b3b",
+    "current-token-mutation.html": "5f36306361dd2dbab890c50bb61b137982725b0cb120377baea603c19b58d609",
+    "current-token-stryker.txt": "b7094317b69d35aa3d2b81709cb7e0356796956e6fdefca58090665584a0fe40",
+    "current-token-duration.json": "54d3a03baeb221378227b509333c73e31fe9dd82fcb9e42facf2ff1d277a76ca",
+    "current-token-summary.json": "331e98e6a8bca8955bda630178b70a2c7e25a769e564263a3959384a847e6a42",
+    "current-token-baseline-inventory.json": "5fe782861640e6d2b0cfd6adbea2219fb3cfd2eebf004e88f4b662279f42dd36",
+    "root-tsconfig-path-red.txt": "fb2bec87a9acbd556a1b9fa4bdabc39f9216c791f128b7a0d6027474b56c7c62",
+    "root-tsconfig-path-green.txt": "13badd3f4b0339bcb55ee7f0923374e6d5298a4c8431f8a75f9f546e927fdec8"
+  },
+  "historicalBaselineSha256": "cb1932bfb4f06cdd9a59ae617048143d696fc3fc0dedf8b66e2193d3209ce51a"
+}
