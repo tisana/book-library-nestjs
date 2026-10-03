@@ -1,0 +1,299 @@
+{
+  "purpose": "Canonical source249 BlockStatement (complete full id67) fixture ownership RED/GREEN; temporary BlockStatement-only bounded trial, no production config mutation",
+  "node": "v24.19.0",
+  "sourceUnchanged": true,
+  "trials": [
+    {
+      "mode": "gate-owner-red",
+      "activeMutants": [
+        {
+          "id": "5",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 0\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-owner-red-sandbox/sandbox-jFH5Ec/src/auth/token-session.service.spec.ts:860:60)",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 6,
+          "killedBy": [
+            "29"
+          ],
+          "coveredBy": [
+            "29",
+            "30",
+            "31",
+            "32",
+            "34",
+            "38"
+          ],
+          "location": {
+            "end": {
+              "column": 6,
+              "line": 288
+            },
+            "start": {
+              "column": 35,
+              "line": 260
+            }
+          }
+        },
+        {
+          "id": "0",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "Test runner crashed. Tried twice to restart it without any luck. Last time the error message was: Error: Child process [pid 80866] exited unexpectedly with exit code 1 (without signal). Last part of stdout and stderr was:\n\t\u25cf Validation Warning:\n\t\n\t  Option \"notify\" is not supported in an individual project configuration.\n\t  Move it to the root configuration.\n\t\n\t  Configuration Documentation:\n\t  https://jestjs.io/docs/configuration\n\t\n\t\u25cf Validation Warning:\n\t\n\t  Option \"bail\" is not supported in an individual project configuration.\n\t  Move it to the root configuration.\n\t\n\t  Configuration Documentation:\n\t  https://jestjs.io/docs/configuration\n\t\n\t(node:80866) ExperimentalWarning: VM Modules is an experimental feature and might change at any time\n\t(Use `node --trace-warnings ...` to show where the warning was created)\n\t/tmp/nestjs-t5-diagnostic-gate-owner-red-sandbox/sandbox-jFH5Ec/src/auth/token-session.service.spec.ts:754\n\t        gate.reject(new Error('database unavailable during drain'));\n\t                    ^\n\t\n\t[Error: database unavailable during drain]\n\t\n\tNode.js v24.19.0\n\t\nError: Child process [pid 80866] exited unexpectedly with exit code 1 (without signal). Last part of stdout and stderr was:\n\t\u25cf Validation Warning:\n\t\n\t  Option \"notify\" is not supported in an individual project configuration.\n\t  Move it to the root configuration.\n\t\n\t  Configuration Documentation:\n\t  https://jestjs.io/docs/configuration\n\t\n\t\u25cf Validation Warning:\n\t\n\t  Option \"bail\" is not supported in an individual project configuration.\n\t  Move it to the root configuration.\n\t\n\t  Configuration Documentation:\n\t  https://jestjs.io/docs/configuration\n\t\n\t(node:80866) ExperimentalWarning: VM Modules is an experimental feature and might change at any time\n\t(Use `node --trace-warnings ...` to show where the warning was created)\n\t/tmp/nestjs-t5-diagnostic-gate-owner-red-sandbox/sandbox-jFH5Ec/src/auth/token-session.service.spec.ts:754\n\t        gate.reject(new Error('database unavailable during drain'));\n\t                    ^\n\t\n\t[Error: database unavailable during drain]\n\t\n\tNode.js v24.19.0\n\t\n    at ChildProcess.handleUnexpectedExit (file:///workspace/book-library-nestjs/node_modules/@stryker-mutator/core/dist/src/child-proxy/child-process-proxy.js:180:31)\n    at ChildProcess.emit (node:events:509:28)\n    at maybeClose (node:internal/child_process:1141:16)\n    at Socket.<anonymous> (node:internal/child_process:498:11)\n    at Socket.emit (node:events:509:28)\n    at Pipe.<anonymous> (node:net:355:12)",
+          "status": "RuntimeError",
+          "static": false,
+          "coveredBy": [
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "38"
+          ],
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 291
+            },
+            "start": {
+              "column": 70,
+              "line": 249
+            }
+          }
+        },
+        {
+          "id": "6",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 0\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-owner-red-sandbox/sandbox-jFH5Ec/src/auth/token-session.service.spec.ts:860:60)",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 6,
+          "killedBy": [
+            "29"
+          ],
+          "coveredBy": [
+            "29",
+            "30",
+            "31",
+            "32",
+            "34",
+            "38"
+          ],
+          "location": {
+            "end": {
+              "column": 8,
+              "line": 285
+            },
+            "start": {
+              "column": 11,
+              "line": 261
+            }
+          }
+        },
+        {
+          "id": "29",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)\n\nExpected: \"Refresh rotation marker reconciliation failed\"\n\nNumber of calls: 0\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-owner-red-sandbox/sandbox-jFH5Ec/src/auth/token-session.service.spec.ts:1041:22)",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "killedBy": [
+            "38"
+          ],
+          "coveredBy": [
+            "38"
+          ],
+          "location": {
+            "end": {
+              "column": 8,
+              "line": 287
+            },
+            "start": {
+              "column": 15,
+              "line": 285
+            }
+          }
+        },
+        {
+          "id": "21",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 2\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-owner-red-sandbox/sandbox-jFH5Ec/src/auth/token-session.service.spec.ts:860:60)",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "killedBy": [
+            "29"
+          ],
+          "coveredBy": [
+            "29"
+          ],
+          "location": {
+            "end": {
+              "column": 10,
+              "line": 272
+            },
+            "start": {
+              "column": 11,
+              "line": 270
+            }
+          }
+        }
+      ],
+      "diagnosticExcludedMutations": true,
+      "acceptance": false
+    },
+    {
+      "mode": "gate-owner-green",
+      "activeMutants": [
+        {
+          "id": "5",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 0\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-owner-green-sandbox/sandbox-gIkVm3/src/auth/token-session.service.spec.ts:860:60)",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 6,
+          "killedBy": [
+            "29"
+          ],
+          "coveredBy": [
+            "29",
+            "30",
+            "31",
+            "32",
+            "34",
+            "38"
+          ],
+          "location": {
+            "end": {
+              "column": 6,
+              "line": 288
+            },
+            "start": {
+              "column": 35,
+              "line": 260
+            }
+          }
+        },
+        {
+          "id": "0",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: undefined\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-owner-green-sandbox/sandbox-gIkVm3/src/auth/token-session.service.spec.ts:860:60)",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 7,
+          "killedBy": [
+            "29"
+          ],
+          "coveredBy": [
+            "29",
+            "30",
+            "31",
+            "32",
+            "33",
+            "34",
+            "38"
+          ],
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 291
+            },
+            "start": {
+              "column": 70,
+              "line": 249
+            }
+          }
+        },
+        {
+          "id": "21",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 2\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-owner-green-sandbox/sandbox-gIkVm3/src/auth/token-session.service.spec.ts:860:60)",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "killedBy": [
+            "29"
+          ],
+          "coveredBy": [
+            "29"
+          ],
+          "location": {
+            "end": {
+              "column": 10,
+              "line": 272
+            },
+            "start": {
+              "column": 11,
+              "line": 270
+            }
+          }
+        },
+        {
+          "id": "6",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 0\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-owner-green-sandbox/sandbox-gIkVm3/src/auth/token-session.service.spec.ts:860:60)",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 6,
+          "killedBy": [
+            "29"
+          ],
+          "coveredBy": [
+            "29",
+            "30",
+            "31",
+            "32",
+            "34",
+            "38"
+          ],
+          "location": {
+            "end": {
+              "column": 8,
+              "line": 285
+            },
+            "start": {
+              "column": 11,
+              "line": 261
+            }
+          }
+        },
+        {
+          "id": "29",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)\n\nExpected: \"Refresh rotation marker reconciliation failed\"\n\nNumber of calls: 0\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-owner-green-sandbox/sandbox-gIkVm3/src/auth/token-session.service.spec.ts:1063:22)",
+          "status": "Killed",
+          "static": false,
+          "testsCompleted": 1,
+          "killedBy": [
+            "38"
+          ],
+          "coveredBy": [
+            "38"
+          ],
+          "location": {
+            "end": {
+              "column": 8,
+              "line": 287
+            },
+            "start": {
+              "column": 15,
+              "line": 285
+            }
+          }
+        }
+      ],
+      "diagnosticExcludedMutations": true,
+      "acceptance": false
+    }
+  ]
+}

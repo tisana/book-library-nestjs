@@ -935,15 +935,30 @@ describe('TokenSessionService', () => {
   it('still completes teardown when an active recovery query rejects', async () => {
     const query = markers.find({ status: 'pending' });
     const gate = deferred<Record<string, any>[]>();
-    jest.spyOn(query, 'exec').mockReturnValue(gate.promise);
+    // The fixture owns this promise even if a mutant removes its consumer.
+    void gate.promise.catch(() => undefined);
+    const exec = jest.spyOn(query, 'exec').mockReturnValue(gate.promise);
     jest.spyOn(markers, 'find').mockReturnValueOnce(query);
-    const recovery = service
-      .reconcileExpiredPendingMarkers()
-      .catch(() => undefined);
-    const closing = service.onModuleDestroy();
-    gate.reject(new Error('database unavailable during drain'));
-    await expect(closing).resolves.toBeUndefined();
-    await recovery;
+    const recovery = service.reconcileExpiredPendingMarkers();
+    void recovery.catch(() => undefined);
+    let closed = false;
+    const closing = service.onModuleDestroy().then(() => {
+      closed = true;
+    });
+    try {
+      expect(exec).toHaveBeenCalledTimes(1);
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(closed).toBe(false);
+      const failure = new Error('database unavailable during drain');
+      const rejected = expect(recovery).rejects.toThrow(failure);
+      gate.reject(failure);
+      await rejected;
+      await expect(closing).resolves.toBeUndefined();
+    } finally {
+      gate.resolve([]);
+      await Promise.allSettled([recovery, closing]);
+    }
   });
 
   it('shares overlapping recovery passes and waits for durable recovery on destroy', async () => {
@@ -962,23 +977,30 @@ describe('TokenSessionService', () => {
     });
     const gate = deferred<Record<string, any>[]>();
     const query = markers.find({ status: 'pending' });
-    jest.spyOn(query, 'exec').mockReturnValue(gate.promise);
+    const exec = jest.spyOn(query, 'exec').mockReturnValue(gate.promise);
     jest.spyOn(markers, 'find').mockReturnValueOnce(query);
     const first = service.reconcileExpiredPendingMarkers();
     const second = service.reconcileExpiredPendingMarkers();
-    expect(first).toBe(second);
     let closed = false;
     const closing = service.onModuleDestroy().then(() => {
       closed = true;
     });
-    await Promise.resolve();
-    expect(closed).toBe(false);
-    gate.resolve(markers.documents);
-    expect(await first).toBe(1);
-    await closing;
-    expect(markers.documents[0].status).toBe('committed');
-    expect(family.status).toBe('revoked');
-    expect(await service.reconcileExpiredPendingMarkers()).toBe(0);
+    try {
+      expect(exec).toHaveBeenCalledTimes(1);
+      expect(first).toBe(second);
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(closed).toBe(false);
+      gate.resolve(markers.documents);
+      expect(await first).toBe(1);
+      await closing;
+      expect(markers.documents[0].status).toBe('committed');
+      expect(family.status).toBe('revoked');
+      expect(await service.reconcileExpiredPendingMarkers()).toBe(0);
+    } finally {
+      gate.resolve([]);
+      await Promise.allSettled([first, second, closing]);
+    }
   });
 
   it('owns only one timer across repeated initialization and clears every timer', async () => {
