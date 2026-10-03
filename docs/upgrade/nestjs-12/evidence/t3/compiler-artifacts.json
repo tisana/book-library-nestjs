@@ -1,0 +1,16 @@
+{
+  "productionEntry": "dist/main.js",
+  "productionEntryExists": true,
+  "oldNestedEntryExists": false,
+  "commonJSOutput": true,
+  "applicationPackageType": "CommonJS default",
+  "buildRootDir": "/workspace/book-library-nestjs/src",
+  "buildFileCount": 88,
+  "buildOnlySource": true,
+  "performanceEntry": "dist-performance/scripts/verify-auth-performance.js",
+  "performanceEntryExists": true,
+  "performanceRootDir": ".",
+  "performanceOutDir": "./dist-performance",
+  "decoratorMetadata": true,
+  "experimentalDecorators": true
+}

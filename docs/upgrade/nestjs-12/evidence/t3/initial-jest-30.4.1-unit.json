@@ -1,0 +1,43 @@
+{
+  "numTotalTestSuites": 35,
+  "numPassedTestSuites": 34,
+  "numFailedTestSuites": 1,
+  "numTotalTests": 560,
+  "numPassedTests": 559,
+  "numFailedTests": 1,
+  "numPendingTests": 0,
+  "success": false,
+  "coverage": {
+    "lines": {
+      "total": 3513,
+      "covered": 2877,
+      "skipped": 0,
+      "pct": 81.89
+    },
+    "statements": {
+      "total": 3679,
+      "covered": 2999,
+      "skipped": 0,
+      "pct": 81.51
+    },
+    "functions": {
+      "total": 611,
+      "covered": 498,
+      "skipped": 0,
+      "pct": 81.5
+    },
+    "branches": {
+      "total": 3591,
+      "covered": 2629,
+      "skipped": 0,
+      "pct": 73.21
+    },
+    "branchesTrue": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "cause": "readonly crypto namespace prevents randomUUID spy; isolated transpile adds decorator metadata fallback branches"
+}

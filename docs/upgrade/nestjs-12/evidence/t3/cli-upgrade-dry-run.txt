@@ -1,0 +1,9 @@
+Node v24.19.0; npm 11.9.0. Exact CLI package @nestjs/cli@12.0.8.
+Version command: npm exec --yes --package=@nestjs/cli@12.0.8 -- nest --version → 12.0.8, exit 0.
+Requested command: npm exec --yes --package=@nestjs/cli@12.0.8 -- nest upgrade --dry-run --no-observe → exit 1.
+
+ Error  Invalid command: upgrade --dry-run --no-observe
+See --help for a list of available commands.
+
+
+The verified CLI does not expose upgrade. Applied the previously verified exact dependency matrix manually; no latest/force/legacy-peer-deps fallback.

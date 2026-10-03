@@ -1,0 +1,120 @@
+{
+  "versions": {
+    "@nestjs/common": "12.1.1",
+    "@nestjs/config": "12.0.1",
+    "@nestjs/core": "12.1.1",
+    "@nestjs/jwt": "12.0.2",
+    "@nestjs/mongoose": "12.0.0",
+    "@nestjs/passport": "12.0.0",
+    "@nestjs/platform-express": "12.1.1",
+    "@nestjs/schedule": "12.0.2",
+    "@nestjs/swagger": "12.0.2",
+    "@types/passport-jwt": "4.0.1",
+    "bcryptjs": "3.0.3",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.14.3",
+    "mongodb-memory-server": "11.2.0",
+    "mongoose": "9.8.1",
+    "passport": "0.7.0",
+    "passport-jwt": "4.0.1",
+    "proxy-addr": "2.0.7",
+    "reflect-metadata": "0.2.2",
+    "rimraf": "3.0.2",
+    "rxjs": "7.8.2",
+    "swagger-ui-express": "5.0.1",
+    "@nestjs/cli": "12.0.8",
+    "@nestjs/schematics": "12.0.6",
+    "@nestjs/testing": "12.1.1",
+    "@stryker-mutator/core": "9.6.1",
+    "@stryker-mutator/jest-runner": "9.6.1",
+    "@types/express": "5.0.6",
+    "@types/jest": "30.0.0",
+    "@types/node": "24.19.1",
+    "@types/proxy-addr": "2.0.3",
+    "@types/supertest": "6.0.3",
+    "@typescript-eslint/eslint-plugin": "8.58.1",
+    "@typescript-eslint/parser": "8.58.1",
+    "eslint": "10.2.0",
+    "eslint-config-prettier": "10.1.8",
+    "jest": "30.4.1",
+    "prettier": "3.8.1",
+    "supertest": "4.0.2",
+    "ts-jest": "29.4.14",
+    "ts-loader": "9.5.4",
+    "ts-node": "10.9.2",
+    "tsconfig-paths": "4.2.0",
+    "typescript": "6.0.2"
+  },
+  "changes": [
+    {
+      "package": "@nestjs/common",
+      "baseline": "11.1.17",
+      "upgraded": "12.1.1"
+    },
+    {
+      "package": "@nestjs/config",
+      "baseline": "4.0.4",
+      "upgraded": "12.0.1"
+    },
+    {
+      "package": "@nestjs/core",
+      "baseline": "11.1.18",
+      "upgraded": "12.1.1"
+    },
+    {
+      "package": "@nestjs/jwt",
+      "baseline": "11.0.2",
+      "upgraded": "12.0.2"
+    },
+    {
+      "package": "@nestjs/mongoose",
+      "baseline": "11.0.4",
+      "upgraded": "12.0.0"
+    },
+    {
+      "package": "@nestjs/passport",
+      "baseline": "11.0.5",
+      "upgraded": "12.0.0"
+    },
+    {
+      "package": "@nestjs/platform-express",
+      "baseline": "11.2.6",
+      "upgraded": "12.1.1"
+    },
+    {
+      "package": "@nestjs/schedule",
+      "baseline": "6.1.3",
+      "upgraded": "12.0.2"
+    },
+    {
+      "package": "@nestjs/swagger",
+      "baseline": "11.4.7",
+      "upgraded": "12.0.2"
+    },
+    {
+      "package": "@nestjs/cli",
+      "baseline": "11.0.19",
+      "upgraded": "12.0.8"
+    },
+    {
+      "package": "@nestjs/schematics",
+      "baseline": "11.0.10",
+      "upgraded": "12.0.6"
+    },
+    {
+      "package": "@nestjs/testing",
+      "baseline": "11.1.13",
+      "upgraded": "12.1.1"
+    },
+    {
+      "package": "jest",
+      "baseline": "30.2.0",
+      "upgraded": "30.4.1"
+    },
+    {
+      "package": "typescript",
+      "baseline": "5.9.3",
+      "upgraded": "6.0.2"
+    }
+  ]
+}
