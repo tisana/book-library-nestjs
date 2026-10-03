@@ -1,0 +1,107 @@
+  console.log
+    Applied 000 migration-record
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+  console.log
+    Applied 001 library-core
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+  console.log
+    Applied 002 member-auth
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+  console.log
+    Applied 003 auth-roles-permissions
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+FAIL test/production-shutdown.e2e-spec.ts (8.126 s)
+  ● Compiled HTTP application SIGTERM shutdown › exits within the deployment budget and makes shutdown idempotent
+
+    Compiled application did not become live (attempt 1):
+    [Nest] 31980  - 10/03/2026, 1:36:09 AM     LOG [NestFactory] Starting Nest application...
+    [Nest] 31980  - 10/03/2026, 1:36:09 AM   ERROR [ExceptionHandler] Error: Invalid authentication configuration: JWT_ISSUER is required in production
+
+      15 | exports.REFRESH_ROTATION_RECONCILIATION_BATCH_SIZE = 100;
+      16 | function configurationError(name, reason) {
+    > 17 |     return new Error(`Invalid authentication configuration: ${name} ${reason}`);
+         |            ^
+      18 | }
+      19 | function integerFromEnv(env, name, fallback, minimum = 1, maximum = Number.MAX_SAFE_INTEGER) {
+      20 |     const rawValue = env[name];
+
+      at configurationError (../dist/config/auth.config.js:17:12)
+      at requiredText (../dist/config/auth.config.js:34:15)
+      at InstanceWrapper.loadAuthConfig [as metatype] (../dist/config/auth.config.js:204:17)
+      at Injector.instantiateClass (../file:/workspace/book-library-nestjs/node_modules/@nestjs/core/injector/injector.js:477:55)
+      at callback (../file:/workspace/book-library-nestjs/node_modules/@nestjs/core/injector/injector.js:70:45)
+      at async Injector.resolveConstructorParams (../file:/workspace/book-library-nestjs/node_modules/@nestjs/core/injector/injector.js:183:24)
+      at async Injector.loadInstance (../file:/workspace/book-library-nestjs/node_modules/@nestjs/core/injector/injector.js:76:13)
+      at async Injector.loadProvider (../file:/workspace/book-library-nestjs/node_modules/@nestjs/core/injector/injector.js:110:9)
+      at ../async file:/workspace/book-library-nestjs/node_modules/@nestjs/core/injector/instance-loader.js:58:13
+          at async Promise.all (index 4)
+      at startProductionProcess (support/production-process.ts:208:13)
+      at Object.<anonymous> (production-shutdown.e2e-spec.ts:44:13)
+
+  ● Compiled HTTP application SIGTERM shutdown › finishes an accepted database-backed login before signal shutdown
+
+    Compiled application did not become live (attempt 1):
+    [Nest] 31988  - 10/03/2026, 1:36:10 AM     LOG [NestFactory] Starting Nest application...
+    [Nest] 31988  - 10/03/2026, 1:36:10 AM   ERROR [ExceptionHandler] Error: Invalid authentication configuration: JWT_ISSUER is required in production
+
+      15 | exports.REFRESH_ROTATION_RECONCILIATION_BATCH_SIZE = 100;
+      16 | function configurationError(name, reason) {
+    > 17 |     return new Error(`Invalid authentication configuration: ${name} ${reason}`);
+         |            ^
+      18 | }
+      19 | function integerFromEnv(env, name, fallback, minimum = 1, maximum = Number.MAX_SAFE_INTEGER) {
+      20 |     const rawValue = env[name];
+
+      at configurationError (../dist/config/auth.config.js:17:12)
+      at requiredText (../dist/config/auth.config.js:34:15)
+      at InstanceWrapper.loadAuthConfig [as metatype] (../dist/config/auth.config.js:204:17)
+      at Injector.instantiateClass (../file:/workspace/book-library-nestjs/node_modules/@nestjs/core/injector/injector.js:477:55)
+      at callback (../file:/workspace/book-library-nestjs/node_modules/@nestjs/core/injector/injector.js:70:45)
+      at async Injector.resolveConstructorParams (../file:/workspace/book-library-nestjs/node_modules/@nestjs/core/injector/injector.js:183:24)
+      at async Injector.loadInstance (../file:/workspace/book-library-nestjs/node_modules/@nestjs/core/injector/injector.js:76:13)
+      at async Injector.loadProvider (../file:/workspace/book-library-nestjs/node_modules/@nestjs/core/injector/injector.js:110:9)
+      at ../async file:/workspace/book-library-nestjs/node_modules/@nestjs/core/injector/instance-loader.js:58:13
+          at async Promise.all (index 4)
+      at startProductionProcess (support/production-process.ts:208:13)
+      at Object.<anonymous> (production-shutdown.e2e-spec.ts:44:13)
+
+  ● Compiled HTTP application SIGTERM shutdown › finishes a claimed reconciliation pass before closing its database
+
+    Compiled application did not become live (attempt 1):
+    [Nest] 31996  - 10/03/2026, 1:36:11 AM     LOG [NestFactory] Starting Nest application...
+    [Nest] 31996  - 10/03/2026, 1:36:11 AM   ERROR [ExceptionHandler] Error: Invalid authentication configuration: JWT_ISSUER is required in production
+
+      15 | exports.REFRESH_ROTATION_RECONCILIATION_BATCH_SIZE = 100;
+      16 | function configurationError(name, reason) {
+    > 17 |     return new Error(`Invalid authentication configuration: ${name} ${reason}`);
+         |            ^
+      18 | }
+      19 | function integerFromEnv(env, name, fallback, minimum = 1, maximum = Number.MAX_SAFE_INTEGER) {
+      20 |     const rawValue = env[name];
+
+      at configurationError (../dist/config/auth.config.js:17:12)
+      at requiredText (../dist/config/auth.config.js:34:15)
+      at InstanceWrapper.loadAuthConfig [as metatype] (../dist/config/auth.config.js:204:17)
+      at Injector.instantiateClass (../file:/workspace/book-library-nestjs/node_modules/@nestjs/core/injector/injector.js:477:55)
+      at callback (../file:/workspace/book-library-nestjs/node_modules/@nestjs/core/injector/injector.js:70:45)
+      at async Injector.resolveConstructorParams (../file:/workspace/book-library-nestjs/node_modules/@nestjs/core/injector/injector.js:183:24)
+      at async Injector.loadInstance (../file:/workspace/book-library-nestjs/node_modules/@nestjs/core/injector/injector.js:76:13)
+      at async Injector.loadProvider (../file:/workspace/book-library-nestjs/node_modules/@nestjs/core/injector/injector.js:110:9)
+      at ../async file:/workspace/book-library-nestjs/node_modules/@nestjs/core/injector/instance-loader.js:58:13
+          at async Promise.all (index 4)
+      at startProductionProcess (support/production-process.ts:208:13)
+      at Object.<anonymous> (production-shutdown.e2e-spec.ts:44:13)
+
+Test Suites: 1 failed, 1 total
+Tests:       3 failed, 3 total
+Snapshots:   0 total
+Time:        8.404 s
+Ran all test suites matching production-shutdown.

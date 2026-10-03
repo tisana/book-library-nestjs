@@ -1,0 +1,25 @@
+  console.log
+    Applied 000 migration-record
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+  console.log
+    Applied 001 library-core
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+  console.log
+    Applied 002 member-auth
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+  console.log
+    Applied 003 auth-roles-permissions
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+Test Suites: 1 passed, 1 total
+Tests:       6 passed, 6 total
+Snapshots:   0 total
+Time:        30.905 s
+Ran all test suites matching production-shutdown.

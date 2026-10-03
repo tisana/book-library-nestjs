@@ -3,6 +3,7 @@ import {
   Logger,
   OnApplicationBootstrap,
   OnApplicationShutdown,
+  OnModuleDestroy,
   Optional,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -69,7 +70,7 @@ export interface AuthIdentifierReconciliationResult {
 
 @Injectable()
 export class AuthIdentifierReconciliationService
-  implements OnApplicationBootstrap, OnApplicationShutdown
+  implements OnApplicationBootstrap, OnApplicationShutdown, OnModuleDestroy
 {
   private readonly logger = new Logger(
     AuthIdentifierReconciliationService.name,
@@ -149,6 +150,16 @@ export class AuthIdentifierReconciliationService
       this.logger.warn('Auth identifier reconciliation startup pass failed');
     }
     return true;
+  }
+
+  async onModuleDestroy(): Promise<void> {
+    // Stop producers and drain database work before Mongoose's shutdown hook.
+    this.onApplicationShutdown();
+    await this.activeRun?.catch(() => {
+      this.logger.warn(
+        'Auth identifier reconciliation interrupted during shutdown',
+      );
+    });
   }
 
   onApplicationShutdown(): void {
@@ -418,7 +429,7 @@ export class AuthIdentifierReconciliationService
   }
 
   private registerReadinessProbe(): void {
-    if (this.readinessProbe || this.scheduled) {
+    if (this.stopped || this.readinessProbe || this.scheduled) {
       return;
     }
     this.readinessProbe = setInterval(() => {

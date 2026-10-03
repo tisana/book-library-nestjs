@@ -1,0 +1,21 @@
+
+> book-library@0.0.1 test
+> node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand token-session.service.spec auth-identifier-reconciliation.service.spec
+
+(node:34044) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+[Nest] 34044  - 10/03/2026, 1:44:56 AM    WARN [AuthIdentifierReconciliationService] Scheduled auth identifier reconciliation pass failed
+[Nest] 34044  - 10/03/2026, 1:43:56 AM    WARN [AuthIdentifierReconciliationService] Auth identifier reconciliation startup pass failed
+[Nest] 34044  - 10/03/2026, 1:43:56 AM    WARN [AuthIdentifierReconciliationService] Auth identifier migration readiness check failed
+[Nest] 34044  - 10/03/2026, 1:43:56 AM    WARN [AuthIdentifierReconciliationService] Auth identifier reconciliation operation failed
+
+Test Suites: 2 passed, 2 total
+Tests:       130 passed, 130 total
+Snapshots:   0 total
+Time:        5.253 s, estimated 7 s
+Ran all test suites matching token-session.service.spec|auth-identifier-reconciliation.service.spec.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

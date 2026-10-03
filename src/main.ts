@@ -13,6 +13,7 @@ import proxyaddr = require('proxy-addr');
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.enableShutdownHooks();
   const configService = app.get(ConfigService);
   const trustedProxyCidrs =
     configService.get<string[]>('auth.trustedProxyCidrs') ?? [];

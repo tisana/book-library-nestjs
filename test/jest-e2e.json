@@ -16,6 +16,6 @@
     ]
   },
   "testPathIgnorePatterns": [
-    "/production-bootstrap.e2e-spec.ts$"
+    "/production-(?:bootstrap|shutdown).e2e-spec.ts$"
   ]
 }

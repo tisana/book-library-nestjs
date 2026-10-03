@@ -1,0 +1,81 @@
+{
+  "base": "e01d4e2fc81197ef6483596fc429f02f7ca59068",
+  "node": "v24.19.0",
+  "npm": "11.9.0",
+  "unit": {
+    "success": true,
+    "numPassedTestSuites": 35,
+    "numFailedTestSuites": 0,
+    "numPassedTests": 566,
+    "numFailedTests": 0,
+    "numPendingTests": 0
+  },
+  "focusedMongo": {
+    "exit": 0,
+    "suites": 6,
+    "passed": 33,
+    "failed": 0,
+    "pending": 0,
+    "log": "lifecycle-final-2.txt"
+  },
+  "production": {
+    "exit": 0,
+    "suites": 2,
+    "passed": 54,
+    "failed": 0,
+    "pending": 0,
+    "log": "production-final.txt"
+  },
+  "signalAndHarness": {
+    "exit": 0,
+    "passed": 6,
+    "ordinarySigtermCases": 4,
+    "expectedTimeoutRejectionsWithSigkillCleanup": 2,
+    "log": "process-final-focused.txt"
+  },
+  "typecheck": {
+    "exit": 0,
+    "log": "typecheck.txt"
+  },
+  "lint": {
+    "exit": 0,
+    "log": "lint.txt"
+  },
+  "shutdownBudgetMs": 8000,
+  "composeDefaultGraceMs": 10000,
+  "coverageFiles": 87,
+  "coverageTotals": {
+    "lines": {
+      "total": 3524,
+      "covered": 2888,
+      "skipped": 0,
+      "pct": 81.95
+    },
+    "statements": {
+      "total": 3691,
+      "covered": 3011,
+      "skipped": 0,
+      "pct": 81.57
+    },
+    "functions": {
+      "total": 616,
+      "covered": 503,
+      "skipped": 0,
+      "pct": 81.65
+    },
+    "branches": {
+      "total": 2844,
+      "covered": 2178,
+      "skipped": 0,
+      "pct": 76.58
+    },
+    "branchesTrue": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  },
+  "scope": "T4; no production deployment, no full e2e/mutation/frontend/container claim",
+  "sameCoverageFileSetAsT3": true
+}
