@@ -17,6 +17,7 @@ Initial Mongo integration tests failed because `/home/agent/.cache/mongodb-binar
 ```sh
 docker --host=unix:///var/run/docker.sock pull mongo:8.2
 docker --host=unix:///var/run/docker.sock create --name nestjs-t0-mongo-extract mongo:8.2
+mkdir -p /tmp/nestjs-t0-mongo
 docker --host=unix:///var/run/docker.sock cp nestjs-t0-mongo-extract:/usr/bin/mongod /tmp/nestjs-t0-mongo/mongod
 docker --host=unix:///var/run/docker.sock rm nestjs-t0-mongo-extract
 ```
@@ -104,3 +105,7 @@ Passport missing/invalid bearer errors also use `error: "UnauthorizedException"`
 The existing e2e configuration excludes `production-bootstrap.e2e-spec.ts`: matcher inspection returns **29 existing e2e files** and **one production file**, without overlap. Required regression counts remain **560 unit tests / 35 suites** and **243 e2e tests / 29 suites**, all passing with zero skips. Focused ESLint and `git diff --check` pass. Full mutation smoke and coverage producers were not rerun: T2 changes test harness/configuration/docs only, preserving application source, coverage floors, manifest and mutation policy; T0/T1 evidence remains the earlier source/runtime baseline. No dependency, lockfile, frontend architecture, application/security contract or schema changed.
 
 T1's actual devcontainer verification remains blocked on its MCR CDN prerequisite. The coordinator explicitly authorized T2 on the verified local Node 24.19.0/npm 11.9.0/Nest 11 interface; this passing production suite does not close T1, verify a final Docker image, or approve deployment.
+
+## T6 release disposition
+
+The original baseline above remains historical. The actual execution-base Nest11 image is separately built and exercised in the [release runbook](release-runbook.md), including disposable old/new/old persisted-session and worker recovery checks. T1 devcontainer access and T5 mutation acceptance remain release blockers; production objectives and deployment owner still require adoption. No production deployment or data migration occurred.

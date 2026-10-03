@@ -13,11 +13,11 @@ Verified 2026-10-02 against npm registry using `npm_config_cache=/tmp/nestjs-t0-
 | @nestjs/mongoose | 11.0.4 | 12.0.0 | not declared | rxjs: ^7.0.0; mongoose: ^7.0.0 \|\| ^8.0.0 \|\| ^9.0.0; @nestjs/core: ^11.0.0 \|\| ^12.0.0; @nestjs/common: ^11.0.0 \|\| ^12.0.0 |
 | @nestjs/passport | 11.0.5 | 12.0.0 | not declared | passport: ^0.5.0 \|\| ^0.6.0 \|\| ^0.7.0; @nestjs/common: ^11.0.0 \|\| ^12.0.0 |
 | @nestjs/schedule | 6.1.3 | 12.0.2 | >=20.19.0 | @nestjs/core: ^11.0.0 \|\| ^12.0.0; @nestjs/common: ^11.0.0 \|\| ^12.0.0 |
-| @nestjs/swagger | 11.4.7 | 12.0.2 | ^20.19.0 || >=22.12.0 | typescript: ^5.5.0 \|\| ^6.0.0; @nestjs/core: ^12.0.0; @nestjs/common: ^12.0.0; @fastify/static: ^8.0.0 \|\| ^9.0.0 \|\| ^10.0.0; class-validator: *; reflect-metadata: ^0.1.12 \|\| ^0.2.0; class-transformer: * |
+| @nestjs/swagger | 11.4.7 | 12.0.2 | ^20.19.0 \|\| >=22.12.0 | typescript: ^5.5.0 \|\| ^6.0.0; @nestjs/core: ^12.0.0; @nestjs/common: ^12.0.0; @fastify/static: ^8.0.0 \|\| ^9.0.0 \|\| ^10.0.0; class-validator: *; reflect-metadata: ^0.1.12 \|\| ^0.2.0; class-transformer: * |
 | @nestjs/cli | 11.0.19 | 12.0.8 | >= 20.11 | webpack: ^5.105.4; @swc/cli: ^0.8.0; @swc/core: ^1.15.18; ts-loader: ^9.5.4; @rspack/core: ^1.7.7 \|\| ^2.1.10; webpack-node-externals: ^3.0.0; tsconfig-paths-webpack-plugin: ^4.2.0; fork-ts-checker-webpack-plugin: ^9.1.0 |
-| @nestjs/schematics | 11.0.10 | 12.0.6 | ^22.22.3 || ^24.15.0 || >=26.0.0 | prettier: ^3.0.0; typescript: >=6.0.0 |
+| @nestjs/schematics | 11.0.10 | 12.0.6 | ^22.22.3 \|\| ^24.15.0 \|\| >=26.0.0 | prettier: ^3.0.0; typescript: >=6.0.0 |
 | typescript | 5.9.3 | 6.0.2 | >=14.17 |  |
-| ts-jest | 29.4.6 | 29.4.14 | ^14.15.0 || ^16.10.0 || ^18.0.0 || >=20.0.0 | jest: ^29.0.0 \|\| ^30.0.0; jest-util: ^29.0.0 \|\| ^30.0.0; babel-jest: ^29.0.0 \|\| ^30.0.0; typescript: >=4.3 <7; @babel/core: >=7.0.0-beta.0 <9; @jest/types: ^29.0.0 \|\| ^30.0.0; @jest/transform: ^29.0.0 \|\| ^30.0.0 |
+| ts-jest | 29.4.6 | 29.4.14 | ^14.15.0 \|\| ^16.10.0 \|\| ^18.0.0 \|\| >=20.0.0 | jest: ^29.0.0 \|\| ^30.0.0; jest-util: ^29.0.0 \|\| ^30.0.0; babel-jest: ^29.0.0 \|\| ^30.0.0; typescript: >=4.3 <7; @babel/core: >=7.0.0-beta.0 <9; @jest/types: ^29.0.0 \|\| ^30.0.0; @jest/transform: ^29.0.0 \|\| ^30.0.0 |
 
 Retain Jest 30.2.0 and Mongoose 9.8.1 initially. Node baseline is 24.19.0, npm 11.9.0. Schematics requires TypeScript >=6 and Node ^24.15.0 on the selected line; ts-jest target supports TypeScript >=4.3 <7 and Jest 29/30. Core package engine metadata (>=20) is less strict than release runtime requirements (20.19+/22.12+); use the maintained Node 24 line as planned. Optional peers in the raw matrix must not be mistaken for mandatory integrations (e.g. microservices, websockets, Fastify and alternate CLI builders). After upgrade recheck the entire resolved tree, including mapped-types.
 
@@ -41,3 +41,7 @@ All 11 unique exact-target release pages returned HTTP 200, with compact notes i
 ## T3 verified loader exception
 
 The exact Nest/TypeScript targets above were applied. Actual Jest 30.2.0 could not load Nest 12 ESM packages. Coordinator-approved **Jest 30.4.1** is the first supporting stable line plus the required CJS default-interop fix; Jest 30.4.0 failed on tslib and 30.3.0 lacks synchronous require(ESM). Keep the official `--experimental-vm-modules` launch flag. Existing ts-jest 29.4.14 peers accept this Jest minor; Mongoose 9.8.1 and all other unrelated direct dependency versions are retained. [Decision, release, peer and advisory evidence](evidence/t3/jest-loader-decision.md), [resolved versions](evidence/t3/resolved-direct.json). This replaces “retain Jest 30.2.0 initially” only after a demonstrated loader failure, not by selecting latest.
+
+## T6 artifact and release status
+
+The final new-image matrix remains Node24.19.0/npm11.9.0, Nest core/common/platform12.1.1, integrations listed above, TypeScript6.0.2, ts-jest29.4.14, Jest30.4.1 and Mongoose9.8.1. T5 applies compatible security fixes (including scoped typed-rest-client qs6.16.0 and ts-loader9.6.2); see its reviewed report for exposure/producer evidence. Actual old/new artifact versions and immutable local image IDs are recorded in the [release runbook](release-runbook.md). T1 development-image verification and T5 current mutation acceptance remain blocked; direct-target advisory evidence above is historical and does not assert every final transitive dependency is vulnerability-free.
