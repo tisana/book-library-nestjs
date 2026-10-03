@@ -274,7 +274,7 @@ jobs:
       - name: Validate quality reporting failures and mutation policy
         run: |
           npm run test:quality-reporting
-          node --test test/quality/mutation-runner.test.mjs test/quality/mutation-policy.test.mjs
+          node --test test/quality/mutation-runner.test.mjs test/quality/mutation-policy.test.mjs test/quality/mutation-jest-runner.test.mjs
           npm run mutation:check
       - name: Verify actual compiled production process
         run: npm run test:production:report

@@ -1,0 +1,45 @@
+{
+  "baseline": {
+    "label": "unmutated baseline",
+    "suites": [
+      {
+        "path": "/tmp/ci-static-initializer/src/alpha.spec.js"
+      },
+      {
+        "path": "/tmp/ci-static-initializer/src/beta.spec.js"
+      }
+    ],
+    "runtimeErrors": 0,
+    "passed": 2
+  },
+  "control": {
+    "label": "static initializer control",
+    "suites": [
+      {
+        "path": "/tmp/ci-static-initializer/src/alpha.spec.js",
+        "error": "initializer-control"
+      },
+      {
+        "path": "/tmp/ci-static-initializer/src/beta.spec.js",
+        "error": "initializer-control"
+      }
+    ],
+    "runtimeErrors": 2,
+    "passed": 0
+  },
+  "candidate": {
+    "label": "static initializer candidate",
+    "suites": [
+      {
+        "path": "/tmp/ci-static-initializer/src/alpha.spec.js",
+        "error": "initializer-control"
+      },
+      {
+        "path": "/tmp/ci-static-initializer/src/beta.spec.js",
+        "error": "initializer-control"
+      }
+    ],
+    "runtimeErrors": 2,
+    "passed": 0
+  }
+}

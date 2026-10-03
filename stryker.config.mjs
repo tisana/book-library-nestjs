@@ -142,7 +142,14 @@ export function buildStrykerConfig(
           }
         : {
             projectType: 'custom',
-            config: MUTATION_JEST_CONFIG,
+            config:
+              shard.id === 'token-session'
+                ? {
+                    ...MUTATION_JEST_CONFIG,
+                    runner:
+                      '<rootDir>/../scripts/quality/mutation-jest-runner.cjs',
+                  }
+                : MUTATION_JEST_CONFIG,
             enableFindRelatedTests: true,
           },
     mutate:

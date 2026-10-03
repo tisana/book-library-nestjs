@@ -170,6 +170,11 @@ function temporaryRepository() {
     'test/quality/critical-rule-manifest.json',
     'test/quality/mutation-equivalents.json',
     'stryker.config.mjs',
+    'scripts/quality/mutation-jest-runner.cjs',
+    'tsconfig.json',
+    'tsconfig.jest.json',
+    'tsconfig.mutation.json',
+    'package.json',
   ]) {
     const source = join(REPOSITORY_ROOT, ...trackedPath.split('/'));
     const target = join(root, ...trackedPath.split('/'));
@@ -258,7 +263,7 @@ function writeWholeSourceEvidence(
   shard,
   {
     commitSha = '0123456789abcdef0123456789abcdef01234567',
-    configurationSha256 = 'a'.repeat(64),
+    configurationSha256 = runnerModule.configurationSha256(root),
     nodeVersion = 'v22.18.0',
     mutants = canonicalMutantsForWholeSource(shard),
   } = {},
@@ -341,7 +346,7 @@ function writeCompleteShardEvidence(
   shard,
   {
     commitSha = '0123456789abcdef0123456789abcdef01234567',
-    configurationSha256 = 'a'.repeat(64),
+    configurationSha256 = runnerModule.configurationSha256(root),
     nodeVersion = 'v22.18.0',
     mutants = canonicalMutantsForWholeSource(shard),
   } = {},
@@ -993,7 +998,14 @@ test('all shards and complete use exact Jest, reporters, mutators, thresholds, a
           ? MEMBERS_SMOKE_JEST
           : {
               projectType: 'custom',
-              config: MUTATION_JEST_CONFIG,
+              config:
+                shard.id === 'token-session'
+                  ? {
+                      ...MUTATION_JEST_CONFIG,
+                      runner:
+                        '<rootDir>/../scripts/quality/mutation-jest-runner.cjs',
+                    }
+                  : MUTATION_JEST_CONFIG,
               enableFindRelatedTests: true,
             },
       config: buildStrykerConfig('smoke', MANIFEST, shard.id),
@@ -1002,7 +1014,13 @@ test('all shards and complete use exact Jest, reporters, mutators, thresholds, a
       concurrency: 4,
       jest: {
         projectType: 'custom',
-        config: MUTATION_JEST_CONFIG,
+        config:
+          shard.id === 'token-session'
+            ? {
+                ...MUTATION_JEST_CONFIG,
+                runner: '<rootDir>/../scripts/quality/mutation-jest-runner.cjs',
+              }
+            : MUTATION_JEST_CONFIG,
         enableFindRelatedTests: true,
       },
       config: buildStrykerConfig('complete', MANIFEST, shard.id),
@@ -2271,4 +2289,72 @@ test('mutation workflow distributes five shards and merges one exact profile', (
     workflow,
     /npm run mutation:(?:smoke|complete)|run-mutation\.mjs complete\s*$/m,
   );
+});
+
+// Would fail if a new runner/compiler/Jest transform drifts after shard capture.
+test('configuration provenance binds runner, compiler chain and inline Jest bytes', () => {
+  assert.equal(typeof runnerModule.configurationSha256, 'function');
+  const root = temporaryRepository();
+  const original = runnerModule.configurationSha256(root);
+  for (const filename of [
+    'scripts/quality/mutation-jest-runner.cjs',
+    'stryker.config.mjs',
+    'tsconfig.mutation.json',
+    'tsconfig.jest.json',
+    'tsconfig.json',
+  ]) {
+    const target = join(root, filename);
+    const bytes = readFileSync(target);
+    writeFileSync(target, Buffer.concat([bytes, Buffer.from('\n')]));
+    assert.notEqual(runnerModule.configurationSha256(root), original, filename);
+    writeFileSync(target, bytes);
+  }
+  const packagePath = join(root, 'package.json');
+  const metadata = JSON.parse(readFileSync(packagePath));
+  metadata.scripts = { ...metadata.scripts, unrelated: 'example' };
+  writeFileSync(packagePath, JSON.stringify(metadata));
+  assert.equal(
+    runnerModule.configurationSha256(root),
+    original,
+    'unrelated npm script does not change Jest provenance',
+  );
+  metadata.jest.transform['^.+\\.(t|j)s$'][1].tsconfig = 'changed.json';
+  writeFileSync(packagePath, JSON.stringify(metadata));
+  assert.notEqual(
+    runnerModule.configurationSha256(root),
+    original,
+    'inline Jest transform is bound',
+  );
+});
+
+test('merge rejects old shard evidence after custom runner bytes drift', () => {
+  const root = temporaryRepository();
+  for (const shard of SMOKE_SHARDS) writeWholeSourceEvidence(root, shard);
+  mergeShardReports(root);
+  const target = join(root, 'scripts/quality/mutation-jest-runner.cjs');
+  writeFileSync(target, `${readFileSync(target, 'utf8')}\n// changed runner\n`);
+  assert.throws(() => mergeShardReports(root), /configuration|provenance/i);
+});
+
+test('only token-session smoke and complete use the supported custom runner', () => {
+  for (const profile of ['smoke', 'complete'])
+    for (const shard of SMOKE_SHARDS) {
+      const config = buildStrykerConfig(profile, MANIFEST, shard.id);
+      assert.equal(
+        config.jest.config.runner,
+        shard.id === 'token-session'
+          ? '<rootDir>/../scripts/quality/mutation-jest-runner.cjs'
+          : undefined,
+      );
+    }
+});
+
+test('merge rejects a duration hash that differs from its shard summary', () => {
+  const root = temporaryRepository();
+  for (const shard of SMOKE_SHARDS) writeWholeSourceEvidence(root, shard);
+  const target = join(shardDirectory(root, 'token-session'), 'duration.json');
+  const duration = JSON.parse(readFileSync(target));
+  duration.configurationSha256 = 'b'.repeat(64);
+  writeFileSync(target, JSON.stringify(duration));
+  assert.throws(() => mergeShardReports(root), /configuration|provenance/i);
 });

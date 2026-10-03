@@ -1,0 +1,93 @@
+[
+  {
+    "pid": 94135,
+    "reason": "no-pattern-or-missing-binding",
+    "all": [
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/token-session.service.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth.service.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth.controller.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth-endpoint-throttle.guard.spec.ts"
+    ],
+    "selected": [
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/token-session.service.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth.service.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth.controller.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth-endpoint-throttle.guard.spec.ts"
+    ]
+  },
+  {
+    "pid": 94135,
+    "activeMutant": "5",
+    "pattern": "(TokenSessionService reconciles orphaned rotations and leaves expired pre\\-CAS work for takeover)|(TokenSessionService revokes an expired family with the invariant reason during marker reconciliation)|(TokenSessionService finalizes a pending marker for a family that is no longer active)|(TokenSessionService finalizes a reconciled pending marker whose family is missing)|(TokenSessionService shares overlapping recovery passes and waits for durable recovery on destroy)|(TokenSessionService contains individual reconciliation query failures)",
+    "reason": "verified-baseline",
+    "all": [
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/token-session.service.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth.service.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth.controller.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth-endpoint-throttle.guard.spec.ts"
+    ],
+    "selected": [
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/token-session.service.spec.ts"
+    ]
+  },
+  {
+    "pid": 94136,
+    "activeMutant": "0",
+    "pattern": "(TokenSessionService reconciles orphaned rotations and leaves expired pre\\-CAS work for takeover)|(TokenSessionService revokes an expired family with the invariant reason during marker reconciliation)|(TokenSessionService finalizes a pending marker for a family that is no longer active)|(TokenSessionService finalizes a reconciled pending marker whose family is missing)|(TokenSessionService still completes teardown when an active recovery query rejects)|(TokenSessionService shares overlapping recovery passes and waits for durable recovery on destroy)|(TokenSessionService contains individual reconciliation query failures)",
+    "reason": "verified-baseline",
+    "all": [
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/token-session.service.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth.service.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth.controller.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth-endpoint-throttle.guard.spec.ts"
+    ],
+    "selected": [
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/token-session.service.spec.ts"
+    ]
+  },
+  {
+    "pid": 94135,
+    "activeMutant": "6",
+    "pattern": "(TokenSessionService reconciles orphaned rotations and leaves expired pre\\-CAS work for takeover)|(TokenSessionService revokes an expired family with the invariant reason during marker reconciliation)|(TokenSessionService finalizes a pending marker for a family that is no longer active)|(TokenSessionService finalizes a reconciled pending marker whose family is missing)|(TokenSessionService shares overlapping recovery passes and waits for durable recovery on destroy)|(TokenSessionService contains individual reconciliation query failures)",
+    "reason": "verified-baseline",
+    "all": [
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/token-session.service.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth.service.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth.controller.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth-endpoint-throttle.guard.spec.ts"
+    ],
+    "selected": [
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/token-session.service.spec.ts"
+    ]
+  },
+  {
+    "pid": 94135,
+    "activeMutant": "21",
+    "pattern": "(TokenSessionService reconciles orphaned rotations and leaves expired pre\\-CAS work for takeover)",
+    "reason": "verified-baseline",
+    "all": [
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/token-session.service.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth.service.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth.controller.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth-endpoint-throttle.guard.spec.ts"
+    ],
+    "selected": [
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/token-session.service.spec.ts"
+    ]
+  },
+  {
+    "pid": 94136,
+    "activeMutant": "29",
+    "pattern": "(TokenSessionService contains individual reconciliation query failures)",
+    "reason": "verified-baseline",
+    "all": [
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/token-session.service.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth.service.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth.controller.spec.ts",
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/auth-endpoint-throttle.guard.spec.ts"
+    ],
+    "selected": [
+      "/tmp/ci-related-mutants-baseline-bound-blocks-sandbox/sandbox-gfFfG6/src/auth/token-session.service.spec.ts"
+    ]
+  }
+]

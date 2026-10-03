@@ -1,0 +1,108 @@
+✖ both cold runners dispatch exactly matching baseline test IDs (2.304883ms)
+✔ static, unknown and invalid patterns retain every original suite (3.839377ms)
+✖ missing inventory falls back to all original suites (0.75376ms)
+✔ corrupt inventory falls back to all original suites (0.577369ms)
+✖ incomplete inventory falls back to all original suites (0.58855ms)
+✖ invalid names inventory falls back to all original suites (2.783504ms)
+✖ extra path inventory falls back to all original suites (0.524553ms)
+✔ test content inventory falls back to all original suites (0.621064ms)
+✔ source content inventory falls back to all original suites (0.825399ms)
+✔ project config inventory falls back to all original suites (0.688807ms)
+✔ unknown suite inventory falls back to all original suites (0.564797ms)
+✔ active baseline cannot publish inventory (0.866574ms)
+✔ pending baseline cannot publish inventory (0.391138ms)
+✔ failed baseline cannot publish inventory (0.522214ms)
+✔ partial baseline cannot publish inventory (0.603222ms)
+✔ patterned baseline cannot publish inventory (0.268174ms)
+✔ unowned baseline cannot publish inventory (0.170787ms)
+✔ inventory publication errors preserve all-suite execution and original errors (0.956963ms)
+✔ escaping test paths cannot publish or prune original execution (0.436903ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 14
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 111.428492
+
+✖ failing tests:
+
+test at test/quality/mutation-jest-runner.test.mjs:65:1
+✖ both cold runners dispatch exactly matching baseline test IDs (2.304883ms)
+  AssertionError [ERR_ASSERTION]: supported mutation runner must be implemented
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-jest-runner.test.mjs:66:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-jest-runner.test.mjs:88:3
+✖ missing inventory falls back to all original suites (0.75376ms)
+  Error: ENOENT: no such file or directory, lstat '/tmp/mutation-jest-runner-KBvZ0J/reports/mutation/smoke/shards/token-session/.stryker-tmp/sandbox-proof/.token-session-test-inventory.json'
+      at rmSync (node:fs:1282:16)
+      at file:///workspace/book-library-nestjs/test/quality/mutation-jest-runner.test.mjs:91:33
+      at async harness (file:///workspace/book-library-nestjs/test/quality/mutation-jest-runner.test.mjs:51:5)
+      at async TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-jest-runner.test.mjs:89:5)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'lstat',
+    path: '/tmp/mutation-jest-runner-KBvZ0J/reports/mutation/smoke/shards/token-session/.stryker-tmp/sandbox-proof/.token-session-test-inventory.json'
+  }
+
+test at test/quality/mutation-jest-runner.test.mjs:88:3
+✖ incomplete inventory falls back to all original suites (0.58855ms)
+  Error: ENOENT: no such file or directory, open '/tmp/mutation-jest-runner-t0iieH/reports/mutation/smoke/shards/token-session/.stryker-tmp/sandbox-proof/.token-session-test-inventory.json'
+      at Object.openSync (node:fs:622:18)
+      at readFileSync (node:fs:488:35)
+      at file:///workspace/book-library-nestjs/test/quality/mutation-jest-runner.test.mjs:94:38
+      at async harness (file:///workspace/book-library-nestjs/test/quality/mutation-jest-runner.test.mjs:51:5)
+      at async TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-jest-runner.test.mjs:89:5)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/tmp/mutation-jest-runner-t0iieH/reports/mutation/smoke/shards/token-session/.stryker-tmp/sandbox-proof/.token-session-test-inventory.json'
+  }
+
+test at test/quality/mutation-jest-runner.test.mjs:88:3
+✖ invalid names inventory falls back to all original suites (2.783504ms)
+  Error: ENOENT: no such file or directory, open '/tmp/mutation-jest-runner-NY6fqB/reports/mutation/smoke/shards/token-session/.stryker-tmp/sandbox-proof/.token-session-test-inventory.json'
+      at Object.openSync (node:fs:622:18)
+      at readFileSync (node:fs:488:35)
+      at file:///workspace/book-library-nestjs/test/quality/mutation-jest-runner.test.mjs:94:38
+      at async harness (file:///workspace/book-library-nestjs/test/quality/mutation-jest-runner.test.mjs:51:5)
+      at async TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-jest-runner.test.mjs:89:5)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/tmp/mutation-jest-runner-NY6fqB/reports/mutation/smoke/shards/token-session/.stryker-tmp/sandbox-proof/.token-session-test-inventory.json'
+  }
+
+test at test/quality/mutation-jest-runner.test.mjs:88:3
+✖ extra path inventory falls back to all original suites (0.524553ms)
+  Error: ENOENT: no such file or directory, open '/tmp/mutation-jest-runner-vAfhIs/reports/mutation/smoke/shards/token-session/.stryker-tmp/sandbox-proof/.token-session-test-inventory.json'
+      at Object.openSync (node:fs:622:18)
+      at readFileSync (node:fs:488:35)
+      at file:///workspace/book-library-nestjs/test/quality/mutation-jest-runner.test.mjs:94:38
+      at async harness (file:///workspace/book-library-nestjs/test/quality/mutation-jest-runner.test.mjs:51:5)
+      at async TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-jest-runner.test.mjs:89:5)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/tmp/mutation-jest-runner-vAfhIs/reports/mutation/smoke/shards/token-session/.stryker-tmp/sandbox-proof/.token-session-test-inventory.json'
+  }

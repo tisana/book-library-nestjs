@@ -1,0 +1,11 @@
+import { buildStrykerConfig } from '/workspace/book-library-nestjs/stryker.config.mjs';
+const candidate=process.env.CI_SUITE_CANDIDATE==='1';
+const mode=candidate?'candidate':'control';
+const config=buildStrykerConfig('complete',{},'token-session');
+config.mutate=['src/auth/token-session.service.ts:249-291'];
+config.mutator={excludedMutations:['ArrayDeclaration','AssignmentOperator','ArithmeticOperator','BooleanLiteral','EqualityOperator','ArrowFunction','LogicalOperator','ConditionalExpression','OptionalChaining','MethodExpression','StringLiteral','UpdateOperator','ObjectLiteral','UnaryOperator','Regex']};
+config.reporters=['json','clear-text'];
+config.jsonReporter={fileName:`/tmp/ci-related-mutants-${mode}.json`};
+config.tempDirName=`/tmp/ci-related-mutants-${mode}-sandbox`;
+if(candidate)config.jest.config.runner='/tmp/ci-related-suite-runner.cjs';
+export default config;

@@ -1,0 +1,24 @@
+{
+  "classification": "Diagnostic only; five evaluated BlockStatement controls and one static control, not a current accepted smoke/complete producer. Raw reports/logs copied byte-for-byte. No retrospective commit attribution.",
+  "files": {
+    "bounded-baseline-runner-log.txt": "a9db7d576d82e9a724316d306d552d19df3754c04756071eac862bfacb39da81",
+    "bounded-baseline-runner-report.json": "594ab9a69d824e1d0ad43a071f27a87f265bdee69c436922df36e2a75d6bfc05",
+    "bounded-control-log.txt": "ffab624561fb4035f0a467c3967a922d30d65b5b858d8d3548a86c9e26e0b6fc",
+    "bounded-control-report.json": "39c2065afffd12958afd1dedc437082ed3ee61e218bba4a25853999bcd6ac7c8",
+    "bounded-static-log.txt": "47b91710c606d76a61cd5da58b7e2a023341d98f221677360feffe7ba7786ad1",
+    "bounded-static-report.json": "73ce5c1adcd0cd3168c7c2f58c19adee51b8d718b60f95526443ffe656f6016c",
+    "bounded-worker-dispatch.json": "868b8e1e2532b341cbd239c00f79a94a4ab5030991df5eb03ceab796c2b697d2",
+    "diagnosis.md": "f90aa34930fb6332c02a367c439cda6375c9a05d101d1cb34c7b27550fd70a17",
+    "diagnostic-baseline-config.mjs": "f868b4323f1104504e08c86899fc31f590eaeaf7893433b6b58de386791221f0",
+    "diagnostic-baseline-runner.cjs": "6ca10cc93044530b54bf532dd3c4d60c2173d6c7554554b3c815974f5e778adc",
+    "diagnostic-control-config.mjs": "345fe0911203578636b83e8f01083ed4140d067325d8faab2d5cc9992c97aca2",
+    "inventory-config-delta.json": "e6c940e56252ed3532d3b91d2dda59b4d99608a7170f0a25ddf94174ba74234a",
+    "mutation-gates-green.txt": "59e9742475318854051af75bc962a9cb7d47b830648f9f08dcab3a32af99510c",
+    "mutation-provenance-red.txt": "d4d4ba68c77cd3093a3e7ebcd0d5aa9e7facac87eb6b3d3f704c9211d3fba9e0",
+    "mutation-runner-red.txt": "2b0cb0e59a232f126b620ad1f0b58472c41a7d3c582ceb218dfef59376e0e6fa",
+    "quality-reporting-green.txt": "3274b3788303119acf596bfc197fc4c6c393e093bc66138c300d3e7b045b5a00",
+    "related-caller-id-proof.json": "2c7f2a47ad2c1c0ff41b7cd57d4764d701c8b8011bf2fe8202297a6e99f80cc6",
+    "related-suite-id-proof.json": "30cfb1cc955242cc745ecd24f67ce3e7e04d63ed48c234f58057c02536d47da4",
+    "static-initializer-proof.json": "a06d290c2f6d5e239e623e1de29f93cec4f85bb84f052872b94f96fdb5819cca"
+  }
+}
