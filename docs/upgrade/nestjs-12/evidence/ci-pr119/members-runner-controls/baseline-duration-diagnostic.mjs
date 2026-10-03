@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import { createRequire } from 'node:module';
+import { buildStrykerConfig } from '/workspace/book-library-nestjs/stryker.config.mjs';
+const require=createRequire('/workspace/book-library-nestjs/package.json');
+const jest=require('jest');
+const root='/workspace/book-library-nestjs';
+const config=buildStrykerConfig('complete',{},'members').jest.config;
+config.rootDir=root+'/src';config.collectCoverage=false;config.reporters=[];config.silent=true;
+const started=performance.now();
+const {results}=await jest.runCLI({$0:'members-duration-diagnostic',_:[root+'/src/members/members.service.ts'],findRelatedTests:true,runInBand:true,silent:true,testLocationInResults:true,config:JSON.stringify(config)},[root]);
+const elapsed=performance.now()-started;
+fs.writeFileSync('/tmp/members-baseline-duration-results.json',JSON.stringify(results,null,2));
+const suites=results.testResults.map(suite=>({file:suite.testFilePath,suiteMs:suite.perfStats.runtime,bodyMs:suite.testResults.reduce((sum,test)=>sum+(test.duration??0),0),counts:suite.testResults.reduce((sum,test)=>(sum[test.status]=(sum[test.status]||0)+1,sum),{}),tests:suite.testResults.map(test=>({name:test.fullName,duration:test.duration,status:test.status})).sort((a,b)=>(b.duration??0)-(a.duration??0))}));
+const summary={elapsedMs:elapsed,totalTests:results.numTotalTests,passed:results.numPassedTests,failed:results.numFailedTests,pending:results.numPendingTests,suites};
+fs.writeFileSync('/tmp/members-baseline-duration-summary.json',JSON.stringify(summary,null,2));
+process.stdout.write(JSON.stringify({elapsedMs:elapsed,totalTests:summary.totalTests,passed:summary.passed,failed:summary.failed,pending:summary.pending,suites:suites.map(({file,suiteMs,bodyMs,counts})=>({file:file.split('/').pop(),suiteMs,bodyMs,counts})),slowest:suites.flatMap(s=>s.tests.map(t=>({...t,file:s.file.split('/').pop()}))).sort((a,b)=>(b.duration??0)-(a.duration??0)).slice(0,14)},null,2));

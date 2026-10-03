@@ -1,0 +1,177 @@
+(node:97414) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "elapsedMs": 13111.133189,
+  "totalTests": 129,
+  "passed": 129,
+  "failed": 0,
+  "pending": 0,
+  "suites": [
+    {
+      "file": "members.service.spec.ts",
+      "suiteMs": 6372,
+      "bodyMs": 4686,
+      "counts": {
+        "passed": 54
+      }
+    },
+    {
+      "file": "books.controller.spec.ts",
+      "suiteMs": 837,
+      "bodyMs": 187,
+      "counts": {
+        "passed": 1
+      }
+    },
+    {
+      "file": "auth-endpoint-throttle.guard.spec.ts",
+      "suiteMs": 860,
+      "bodyMs": 5,
+      "counts": {
+        "passed": 4
+      }
+    },
+    {
+      "file": "auth.service.spec.ts",
+      "suiteMs": 1013,
+      "bodyMs": 27,
+      "counts": {
+        "passed": 34
+      }
+    },
+    {
+      "file": "auth.controller.spec.ts",
+      "suiteMs": 730,
+      "bodyMs": 19,
+      "counts": {
+        "passed": 11
+      }
+    },
+    {
+      "file": "book-categories.controller.spec.ts",
+      "suiteMs": 559,
+      "bodyMs": 4,
+      "counts": {
+        "passed": 3
+      }
+    },
+    {
+      "file": "permissions.guard.spec.ts",
+      "suiteMs": 416,
+      "bodyMs": 10,
+      "counts": {
+        "passed": 5
+      }
+    },
+    {
+      "file": "permissions.service.spec.ts",
+      "suiteMs": 472,
+      "bodyMs": 35,
+      "counts": {
+        "passed": 11
+      }
+    },
+    {
+      "file": "staff-users.controller.spec.ts",
+      "suiteMs": 640,
+      "bodyMs": 5,
+      "counts": {
+        "passed": 3
+      }
+    },
+    {
+      "file": "membership-types.controller.spec.ts",
+      "suiteMs": 514,
+      "bodyMs": 4,
+      "counts": {
+        "passed": 3
+      }
+    }
+  ],
+  "slowest": [
+    {
+      "name": "MembersService sets normalized credentials, increments auth version, and records the actor",
+      "duration": 848,
+      "status": "passed",
+      "file": "members.service.spec.ts"
+    },
+    {
+      "name": "MembersService saves hashed and versioned credentials without the optional identifier model",
+      "duration": 787,
+      "status": "passed",
+      "file": "members.service.spec.ts"
+    },
+    {
+      "name": "MembersService compensates a failed credential write with the public system actor contract",
+      "duration": 422,
+      "status": "passed",
+      "file": "members.service.spec.ts"
+    },
+    {
+      "name": "MembersService reactivates a released reservation with member ownership and no release timestamp",
+      "duration": 411,
+      "status": "passed",
+      "file": "members.service.spec.ts"
+    },
+    {
+      "name": "MembersService persists a system-owned credential replacement with exact lifecycle effects",
+      "duration": 391,
+      "status": "passed",
+      "file": "members.service.spec.ts"
+    },
+    {
+      "name": "MembersService releases a newly reserved credential identifier when saving credentials fails",
+      "duration": 357,
+      "status": "passed",
+      "file": "members.service.spec.ts"
+    },
+    {
+      "name": "MembersService keeps a same-owner active identifier idempotent without a prior member login",
+      "duration": 356,
+      "status": "passed",
+      "file": "members.service.spec.ts"
+    },
+    {
+      "name": "MembersService releases only the newly acquired reservation when credential persistence fails",
+      "duration": 353,
+      "status": "passed",
+      "file": "members.service.spec.ts"
+    },
+    {
+      "name": "MembersService does not release its active reservation when credentials keep the same normalized identifier",
+      "duration": 352,
+      "status": "passed",
+      "file": "members.service.spec.ts"
+    },
+    {
+      "name": "MembersService recovers a released credential identifier and revokes sessions after saving credentials",
+      "duration": 351,
+      "status": "passed",
+      "file": "members.service.spec.ts"
+    },
+    {
+      "name": "Books Controller findAll should return an array of Books",
+      "duration": 187,
+      "status": "passed",
+      "file": "books.controller.spec.ts"
+    },
+    {
+      "name": "PermissionsService filters unknown permissions from scopes and payload arrays",
+      "duration": 30,
+      "status": "passed",
+      "file": "permissions.service.spec.ts"
+    },
+    {
+      "name": "MembersService rejects an active identifier owned by another member",
+      "duration": 12,
+      "status": "passed",
+      "file": "members.service.spec.ts"
+    },
+    {
+      "name": "AuthService login contract when AuthService is implemented returns a JWT and redacted user for valid active staff credentials",
+      "duration": 6,
+      "status": "passed",
+      "file": "auth.service.spec.ts"
+    }
+  ]
+}

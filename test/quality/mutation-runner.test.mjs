@@ -1015,7 +1015,7 @@ test('all shards and complete use exact Jest, reporters, mutators, thresholds, a
       jest: {
         projectType: 'custom',
         config:
-          shard.id === 'token-session'
+          shard.id === 'token-session' || shard.id === 'members'
             ? {
                 ...MUTATION_JEST_CONFIG,
                 runner: '<rootDir>/../scripts/quality/mutation-jest-runner.cjs',
@@ -2337,13 +2337,14 @@ test('merge rejects old shard evidence after custom runner bytes drift', () => {
   assert.throws(() => mergeShardReports(root), /configuration|provenance/i);
 });
 
-test('only token-session smoke and complete use the supported custom runner', () => {
+test('only token-session profiles and members complete use the supported custom runner', () => {
   for (const profile of ['smoke', 'complete'])
     for (const shard of SMOKE_SHARDS) {
       const config = buildStrykerConfig(profile, MANIFEST, shard.id);
       assert.equal(
         config.jest.config.runner,
-        shard.id === 'token-session'
+        shard.id === 'token-session' ||
+          (shard.id === 'members' && profile === 'complete')
           ? '<rootDir>/../scripts/quality/mutation-jest-runner.cjs'
           : undefined,
       );

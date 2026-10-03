@@ -3,16 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const DefaultRunner = require('jest-runner').default;
 
-const supportedShards = new Map([
-  [
-    'token-session',
-    {
-      source: 'auth/token-session.service.ts',
-      profiles: ['smoke', 'complete'],
-    },
-  ],
-  ['members', { source: 'members/members.service.ts', profiles: ['complete'] }],
-]);
+const inventoryName = '.token-session-test-inventory.json';
 const activeMutantVariable = '__STRYKER_ACTIVE_MUTANT__';
 const sha256 = (value) =>
   crypto.createHash('sha256').update(value).digest('hex');
@@ -45,24 +36,26 @@ function snapshot(tests) {
   const rootDir = tests[0]?.context.config.rootDir;
   if (!rootDir || !path.isAbsolute(rootDir)) return null;
   const sandbox = path.dirname(rootDir);
-  // Only this immutable, runner-owned supported shard sandbox may hold inventory.
+  // Only this immutable, runner-owned token shard sandbox may hold inventory.
   const ancestors = [sandbox];
   for (let index = 0; index < 7; index++)
     ancestors.push(path.dirname(ancestors.at(-1)));
-  const shardId = path.basename(ancestors[2]);
-  const profile = path.basename(ancestors[4]);
-  const supported = supportedShards.get(shardId);
   if (
-    !supported ||
-    !supported.profiles.includes(profile) ||
     path.basename(rootDir) !== 'src' ||
     !/^sandbox-[A-Za-z0-9]+$/.test(path.basename(sandbox)) ||
-    ['.stryker-tmp', shardId, 'shards', profile, 'mutation', 'reports'].some(
-      (name, index) => {
-        const actual = path.basename(ancestors[index + 1]);
-        return actual !== name;
-      },
-    ) ||
+    [
+      '.stryker-tmp',
+      'token-session',
+      'shards',
+      'smoke',
+      'mutation',
+      'reports',
+    ].some((name, index) => {
+      const actual = path.basename(ancestors[index + 1]);
+      return index === 3
+        ? !['smoke', 'complete'].includes(actual)
+        : actual !== name;
+    }) ||
     fs.realpathSync(rootDir) !== rootDir ||
     fs.realpathSync(sandbox) !== sandbox
   )
@@ -83,14 +76,11 @@ function snapshot(tests) {
     .sort((left, right) => left.path.localeCompare(right.path));
   if (new Set(files.map((file) => file.path)).size !== files.length)
     return null;
-  const sourcePath = path.join(rootDir, supported.source);
+  const sourcePath = path.join(rootDir, 'auth/token-session.service.ts');
   if (fs.realpathSync(sourcePath) !== sourcePath) return null;
   return {
     schemaVersion: 1,
     rootDir,
-    shardId,
-    profile,
-    source: supported.source,
     configHash,
     sourceHash: sha256(fs.readFileSync(sourcePath)),
     files,
@@ -149,11 +139,7 @@ class MutationJestRunner extends DefaultRunner {
       /* Preserve original dispatch. */
     }
     const filename =
-      binding &&
-      path.join(
-        path.dirname(binding.rootDir),
-        `.${binding.shardId}-test-inventory.json`,
-      );
+      binding && path.join(path.dirname(binding.rootDir), inventoryName);
     let selected = tests;
     if (pattern && binding) {
       try {

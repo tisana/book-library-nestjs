@@ -1,0 +1,754 @@
+{
+  "elapsedMs": 13111.133189,
+  "totalTests": 129,
+  "passed": 129,
+  "failed": 0,
+  "pending": 0,
+  "suites": [
+    {
+      "file": "/workspace/book-library-nestjs/src/members/members.service.spec.ts",
+      "suiteMs": 6372,
+      "bodyMs": 4686,
+      "counts": {
+        "passed": 54
+      },
+      "tests": [
+        {
+          "name": "MembersService sets normalized credentials, increments auth version, and records the actor",
+          "duration": 848,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService saves hashed and versioned credentials without the optional identifier model",
+          "duration": 787,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService compensates a failed credential write with the public system actor contract",
+          "duration": 422,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService reactivates a released reservation with member ownership and no release timestamp",
+          "duration": 411,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService persists a system-owned credential replacement with exact lifecycle effects",
+          "duration": 391,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService releases a newly reserved credential identifier when saving credentials fails",
+          "duration": 357,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService keeps a same-owner active identifier idempotent without a prior member login",
+          "duration": 356,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService releases only the newly acquired reservation when credential persistence fails",
+          "duration": 353,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService does not release its active reservation when credentials keep the same normalized identifier",
+          "duration": 352,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService recovers a released credential identifier and revokes sessions after saving credentials",
+          "duration": 351,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService rejects an active identifier owned by another member",
+          "duration": 12,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService creates active members with normalized member number, active policy validation, and audit actor",
+          "duration": 5,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService rejects duplicate member numbers before persisting",
+          "duration": 3,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService updates status, loan count, membership type, and audit actor",
+          "duration": 3,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService reports limit reached and inactive status eligibility separately",
+          "duration": 3,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService lists members filtered by search, status, and membership type with pagination",
+          "duration": 2,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService propagates an identifier create nonduplicate object without a code rejection unchanged",
+          "duration": 2,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService reserves a changed email, revokes active sessions, and audits identifier and status changes",
+          "duration": 2,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService clears email without reserving an empty identifier and revokes sessions",
+          "duration": 2,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService builds literal case-insensitive search filters",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService returns not found for missing members",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService reports remaining allowance and eligibility for active members below limit",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService looks up credentials with normalized login identifiers and the password hash selected",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService rejects a non-active member status pair (suspended, active) as not found",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService rejects a non-active member status pair (active, locked) as not found",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService returns the active-member not-found contract when the member does not exist",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService rejects an active identifier owned by staff",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService maps an identifier create duplicate-key rejection to the fixed conflict",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService propagates an identifier create nonduplicate coded object rejection unchanged",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService propagates an identifier create null primitive rejection unchanged",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService leaves member credentials unchanged when the normalized login identifier conflicts",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService rejects a missing member when bumping its auth version",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService releases a newly reserved email when saving the member change fails",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService skips identifier and lifecycle effects for the same normalized email",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService initializes an absent auth version and revokes only active member families on status change",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService completes the owned member update when every optional integration is absent",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService updates a phone while an unchanged status leaves authorization lifecycle state untouched",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService does not compensate an unchanged email when a different profile write fails",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService compensates a failed email change with the public system actor contract",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService returns the member document only for the fully active public state pair",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService rejects pending member owner with the same subject id instead of treating it as the exact active owner",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService uses the same public active-member error for absent auth status",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService uses the same public active-member error for locked auth status",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService returns self-service profile with readable membership tier metadata",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService updates last login atomically without loading the member document",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService propagates an identifier create string primitive rejection unchanged",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService updates a member profile without validating membership policy when membership and status do not change",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService creates without an optional exists method and preserves activeLoanCount 0",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService creates without an optional exists method and preserves activeLoanCount 2",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService bumps an existing member authorization version without returning an error",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService rejects active staff owner with the same subject id instead of treating it as the exact active owner",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService rejects active member owner with a different subject id instead of treating it as the exact active owner",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService uses the same public active-member error for reset-required auth status",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "MembersService clamps remaining policy allowance at zero above the tier maximum",
+          "duration": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "/workspace/book-library-nestjs/src/books/books.controller.spec.ts",
+      "suiteMs": 837,
+      "bodyMs": 187,
+      "counts": {
+        "passed": 1
+      },
+      "tests": [
+        {
+          "name": "Books Controller findAll should return an array of Books",
+          "duration": 187,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "/workspace/book-library-nestjs/src/auth/auth-endpoint-throttle.guard.spec.ts",
+      "suiteMs": 860,
+      "bodyMs": 5,
+      "counts": {
+        "passed": 4
+      },
+      "tests": [
+        {
+          "name": "AuthEndpointThrottleGuard counts a valid login source before DTO handling and attaches safe context",
+          "duration": 3,
+          "status": "passed"
+        },
+        {
+          "name": "AuthEndpointThrottleGuard resolves a refresh family before consuming source and family boundaries",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthEndpointThrottleGuard fails closed with one generic 429 and optional Retry-After",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthEndpointThrottleGuard counts a normalizable missing-credential request against both boundaries",
+          "duration": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+      "suiteMs": 1013,
+      "bodyMs": 27,
+      "counts": {
+        "passed": 34
+      },
+      "tests": [
+        {
+          "name": "AuthService login contract when AuthService is implemented returns a JWT and redacted user for valid active staff credentials",
+          "duration": 6,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available accepts a completed activation gate and fails closed for missing or failed gates",
+          "duration": 3,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService login contract when AuthService is implemented rejects inactive staff/admin users before issuing a token",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService login contract when AuthService is implemented creates a staff refresh session with hashed-token family metadata",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService login contract when AuthService is implemented returns a member JWT and redacted member profile for valid member credentials",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available uses the normalized reserved staff identity and server role area",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available fails a inactive reservation generically with a redacted request",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available keeps unresolved identifier generic and records only a redacted category",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available keeps conflicting identifier generic and records only a redacted category",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available keeps mismatched staff reservation generic and records only a redacted category",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available keeps invalid member password generic and records only a redacted category",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available fails a non-string identifier generically without querying reservations",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available fails generically when identifier reservations are unavailable",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available keeps dedicated failed-sign-in recording behind the generic response",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available normalizes a non-string password into the same generic denial",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available fails a gated reservation when the operation model is unavailable",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available uses zero auth versions when reserved account versions are absent",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available keeps unresolved activity redacted with fallback-version string key material",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available fails a reserved member generically when member auth is unavailable",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available authenticates a staff identity with no roles but issues no permissions",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService login contract when AuthService is implemented rejects suspended member credentials before issuing a token",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService login contract when AuthService is implemented revokes a rotated member family when the member is no longer active",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService login contract when AuthService is implemented revokes a rotated member family when authVersion is stale",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService login contract when AuthService is implemented keeps the refresh denial generic when inactive-family revocation fails",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService login contract when AuthService is implemented revokes a rotated staff family when account authVersion is newer than the session",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available uses empty membership type fields when the member profile is absent",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available fails a active reservation without a subject type generically with a redacted request",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available fails a active reservation without a subject id generically with a redacted request",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available keeps inactive staff account generic and records only a redacted category",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available keeps invalid staff password generic and records only a redacted category",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available keeps mismatched member reservation generic and records only a redacted category",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available keeps inactive member account generic and records only a redacted category",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available keeps locked member authentication generic and records only a redacted category",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "AuthService shared login resolution when identifier reservations are available keeps member without a password credential generic and records only a redacted category",
+          "duration": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "/workspace/book-library-nestjs/src/auth/auth.controller.spec.ts",
+      "suiteMs": 730,
+      "bodyMs": 19,
+      "counts": {
+        "passed": 11
+      },
+      "tests": [
+        {
+          "name": "AuthController shared authentication adapters reports when security activity is unavailable",
+          "duration": 5,
+          "status": "passed"
+        },
+        {
+          "name": "AuthController shared authentication adapters maps login to shared auth and sets the absolute-expiry named cookie",
+          "duration": 4,
+          "status": "passed"
+        },
+        {
+          "name": "AuthController shared authentication adapters maps staffLogin to shared auth and sets the absolute-expiry named cookie",
+          "duration": 2,
+          "status": "passed"
+        },
+        {
+          "name": "AuthController shared authentication adapters maps memberLogin to shared auth and sets the absolute-expiry named cookie",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthController shared authentication adapters projects member and staff auth contexts without cross-area fields",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthController shared authentication adapters forwards the public security activity query result",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthController shared authentication adapters returns only the public conflict outcome and applies its HTTP status",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthController shared authentication adapters clears the named cookie without a service call when auth context is absent",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthController shared authentication adapters revokes all sessions for a present auth context before clearing the cookie",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthController shared authentication adapters preserves generic login failures while recording identifier throttle state",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "AuthController shared authentication adapters preserves generic compatibility-login failures without throttle identifier context",
+          "duration": 1,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "/workspace/book-library-nestjs/src/book-categories/book-categories.controller.spec.ts",
+      "suiteMs": 559,
+      "bodyMs": 4,
+      "counts": {
+        "passed": 3
+      },
+      "tests": [
+        {
+          "name": "BookCategoriesController forwards the original create DTO and actor and returns the service response",
+          "duration": 3,
+          "status": "passed"
+        },
+        {
+          "name": "BookCategoriesController forwards the id, original update DTO, and actor and returns the service response",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "BookCategoriesController forwards the exact list query and returns the service response",
+          "duration": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "/workspace/book-library-nestjs/src/auth/permissions.guard.spec.ts",
+      "suiteMs": 416,
+      "bodyMs": 10,
+      "counts": {
+        "passed": 5
+      },
+      "tests": [
+        {
+          "name": "PermissionsGuard and permission mapping denies by default when permission metadata is missing",
+          "duration": 4,
+          "status": "passed"
+        },
+        {
+          "name": "PermissionsGuard and permission mapping maps staff and admin roles to stable permissions",
+          "duration": 3,
+          "status": "passed"
+        },
+        {
+          "name": "PermissionsGuard and permission mapping rejects member tokens from staff permissions and records a safe denial event",
+          "duration": 2,
+          "status": "passed"
+        },
+        {
+          "name": "PermissionsGuard and permission mapping bypasses permission checks only for explicit public metadata",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "PermissionsGuard and permission mapping allows authenticated users with all required permissions",
+          "duration": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "/workspace/book-library-nestjs/src/auth/permissions.service.spec.ts",
+      "suiteMs": 472,
+      "bodyMs": 35,
+      "counts": {
+        "passed": 11
+      },
+      "tests": [
+        {
+          "name": "PermissionsService filters unknown permissions from scopes and payload arrays",
+          "duration": 30,
+          "status": "passed"
+        },
+        {
+          "name": "PermissionsService returns no permissions for empty scope undefined",
+          "duration": 2,
+          "status": "passed"
+        },
+        {
+          "name": "PermissionsService prefers embedded authContext and rejects incomplete request users",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "PermissionsService normalizes a complete request user and requires every requested permission",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "PermissionsService reviews every staff role with its effective permissions",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "PermissionsService returns no permissions for empty scope \"\"",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "PermissionsService returns no permissions for empty scope \"   \"",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "PermissionsService uses default staff roles and payload permissions before role permissions",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "PermissionsService builds member contexts with default member permissions and token metadata",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "PermissionsService uses scoped payload permissions and account auth versions when present",
+          "duration": 0,
+          "status": "passed"
+        },
+        {
+          "name": "PermissionsService preserves supplied staff context fields during request normalization",
+          "duration": 0,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "/workspace/book-library-nestjs/src/staff-users/staff-users.controller.spec.ts",
+      "suiteMs": 640,
+      "bodyMs": 5,
+      "counts": {
+        "passed": 3
+      },
+      "tests": [
+        {
+          "name": "StaffUsersController forwards the original create DTO and actor and returns the service response",
+          "duration": 3,
+          "status": "passed"
+        },
+        {
+          "name": "StaffUsersController forwards the exact list query and returns the service response",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "StaffUsersController forwards the id, original update DTO, and actor and returns the service response",
+          "duration": 1,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "/workspace/book-library-nestjs/src/membership-types/membership-types.controller.spec.ts",
+      "suiteMs": 514,
+      "bodyMs": 4,
+      "counts": {
+        "passed": 3
+      },
+      "tests": [
+        {
+          "name": "MembershipTypesController forwards the original create DTO and actor and returns the service response",
+          "duration": 3,
+          "status": "passed"
+        },
+        {
+          "name": "MembershipTypesController forwards the exact list query and returns the service response",
+          "duration": 1,
+          "status": "passed"
+        },
+        {
+          "name": "MembershipTypesController forwards the id, original update DTO, and actor and returns the service response",
+          "duration": 0,
+          "status": "passed"
+        }
+      ]
+    }
+  ]
+}

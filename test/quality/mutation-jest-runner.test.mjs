@@ -26,27 +26,31 @@ after(() =>
   roots.forEach((root) => rmSync(root, { recursive: true, force: true })),
 );
 
-function fixture(owned = true) {
+function fixture(owned = true, shard = 'token-session', profile = 'smoke') {
   const root = mkdtempSync(join(tmpdir(), 'mutation-jest-runner-'));
   roots.push(root);
   const sandbox = owned
     ? join(
         root,
-        'reports/mutation/smoke/shards/token-session/.stryker-tmp/sandbox-proof',
+        `reports/mutation/${profile}/shards/${shard}/.stryker-tmp/sandbox-proof`,
       )
     : root;
   const rootDir = join(sandbox, 'src');
   mkdirSync(join(rootDir, 'auth'), { recursive: true });
-  writeFileSync(
-    join(rootDir, 'auth/token-session.service.ts'),
-    'export class TokenSessionService {}',
+  const sourcePath = join(
+    rootDir,
+    shard === 'members'
+      ? 'members/members.service.ts'
+      : 'auth/token-session.service.ts',
   );
+  mkdirSync(dirname(sourcePath), { recursive: true });
+  writeFileSync(sourcePath, 'export class Service {}');
   const config = {
     rootDir,
     testRegex: '.spec.ts$',
     testLocationInResults: true,
   };
-  const tests = ['token-session', 'caller'].map((name) => {
+  const tests = [shard, 'caller'].map((name) => {
     const path = join(rootDir, 'auth', `${name}.spec.ts`);
     writeFileSync(path, `// ${name} test declaration`);
     return { path, context: { config } };
@@ -56,7 +60,7 @@ function fixture(owned = true) {
     rootDir,
     sandbox,
     tests,
-    inventory: join(sandbox, '.token-session-test-inventory.json'),
+    inventory: join(sandbox, `.${shard}-test-inventory.json`),
   };
 }
 
@@ -82,7 +86,9 @@ async function harness(work) {
             {
               fullName: entry.path.includes('caller')
                 ? 'Caller shared behavior'
-                : 'TokenSessionService behavior',
+                : entry.path.endsWith('/members.spec.ts')
+                  ? 'MembersService behavior'
+                  : 'TokenSessionService behavior',
               status: this.status ?? 'passed',
             },
           ],
@@ -261,21 +267,29 @@ test('escaping test paths cannot publish or prune original execution', async () 
 
 // Executes the real public Jest API: matching IDs stay equal and static import
 // failures are reported in both suites even after successful inventory reuse.
-test('real Jest preserves selected IDs, caller coverage and static initializer errors', () => {
-  const f = fixture();
-  writeFileSync(
-    join(f.rootDir, 'auth/token-session.service.ts'),
-    "if(process.env.__STRYKER_ACTIVE_MUTANT__!==undefined)throw new Error('static-initializer-control');exports.value=1;",
-  );
-  for (const [index, entry] of f.tests.entries())
+for (const [shard, profile, ownName] of [
+  ['token-session', 'smoke', 'TokenSessionService behavior'],
+  ['members', 'complete', 'MembersService behavior'],
+])
+  test(`real Jest ${shard} preserves selected IDs, caller coverage and static initializer errors`, () => {
+    const f = fixture(true, shard, profile);
+    const source =
+      shard === 'members'
+        ? 'members/members.service.ts'
+        : 'auth/token-session.service.ts';
     writeFileSync(
-      entry.path,
-      `const source=require('./token-session.service.ts');test('${index ? 'Caller shared behavior' : 'TokenSessionService behavior'}',()=>expect(source.value).toBe(1));`,
+      join(f.rootDir, source),
+      "if(process.env.__STRYKER_ACTIVE_MUTANT__!==undefined)throw new Error('static-initializer-control');exports.value=1;",
     );
-  const script = join(f.root, 'real-jest-proof.cjs');
-  writeFileSync(
-    script,
-    `
+    for (const [index, entry] of f.tests.entries())
+      writeFileSync(
+        entry.path,
+        `const source=require(${JSON.stringify(join(f.rootDir, source))});test('${index ? 'Caller shared behavior' : ownName}',()=>expect(source.value).toBe(1));`,
+      );
+    const script = join(f.root, 'real-jest-proof.cjs');
+    writeFileSync(
+      script,
+      `
 const assert=require('node:assert/strict');
 const jest=require(${JSON.stringify(require.resolve('jest'))});
 const config={rootDir:${JSON.stringify(f.rootDir)},moduleFileExtensions:['js','json','ts'],testRegex:'.spec.ts$',transform:{},testEnvironment:'node',silent:true,reporters:[]};
@@ -283,21 +297,21 @@ async function run(runner,pattern){const {results}=await jest.runCLI({$0:'runner
 (async()=>{
 const runner=${JSON.stringify(RUNNER_PATH)};
 const baseline=await run(runner);assert.equal(baseline.executed.length,2);
-for(const pattern of ['TokenSessionService behavior','Caller shared behavior']){const control=await run(null,pattern),candidate=await run(runner,pattern);assert.deepEqual(candidate.executed,control.executed);assert.equal(candidate.executed.length,1);assert.equal(candidate.suites.length,1);assert.equal(control.suites.length,2);}
+for(const pattern of [${JSON.stringify(ownName)},'Caller shared behavior']){const control=await run(null,pattern),candidate=await run(runner,pattern);assert.deepEqual(candidate.executed,control.executed);assert.equal(candidate.executed.length,1);assert.equal(candidate.suites.length,1);assert.equal(control.suites.length,2);}
 const unknown=await run(runner,'unknown test');assert.equal(unknown.suites.length,2);
 process.env.__STRYKER_ACTIVE_MUTANT__='1';const control=await run(null),candidate=await run(runner);assert.equal(control.errors,2);assert.equal(candidate.errors,2);assert.deepEqual(candidate.suites,control.suites);
 process.stdout.write(JSON.stringify({baseline:2,matchingPatterns:2,staticErrors:2}));
 })().catch(error=>{console.error(error);process.exitCode=1});
 `,
-  );
-  const proof = spawnSync(
-    process.execPath,
-    ['--experimental-vm-modules', script],
-    { encoding: 'utf8', timeout: 20000 },
-  );
-  assert.equal(proof.status, 0, proof.stderr);
-  assert.match(proof.stdout, /"staticErrors":2/);
-});
+    );
+    const proof = spawnSync(
+      process.execPath,
+      ['--experimental-vm-modules', script],
+      { encoding: 'utf8', timeout: 20000 },
+    );
+    assert.equal(proof.status, 0, proof.stderr);
+    assert.match(proof.stdout, /"staticErrors":2/);
+  });
 
 test('symlinked inventory cannot import test names from outside the owned sandbox', async () => {
   await harness(async ({ run }) => {
@@ -313,5 +327,48 @@ test('symlinked inventory cannot import test names from outside the owned sandbo
       f.tests.map((test) => test.path),
     );
     assert.deepEqual(readFileSync(outside), readFileSync(f.inventory));
+  });
+});
+
+// Would fail if the supported runner refuses members complete, or trusts a
+// different source or profile instead of the exact two-shard allow map.
+test('trusted members complete reuses baseline and binds its exact source', async () => {
+  await harness(async ({ run }) => {
+    const f = fixture(true, 'members', 'complete');
+    await run(f);
+    assert.ok(
+      existsSync(f.inventory),
+      'members complete baseline must publish',
+    );
+    process.env.__STRYKER_ACTIVE_MUTANT__ = '1';
+    assert.deepEqual(await run(f, 'MembersService behavior'), [
+      f.tests[0].path,
+    ]);
+    assert.deepEqual(await run(f, 'Caller shared behavior'), [f.tests[1].path]);
+    writeFileSync(
+      join(f.rootDir, 'members/members.service.ts'),
+      '// source drift',
+    );
+    assert.deepEqual(
+      await run(f, 'MembersService behavior'),
+      f.tests.map((t) => t.path),
+    );
+  });
+});
+
+test('members smoke and unknown shards cannot publish or prune inventory', async () => {
+  await harness(async ({ run }) => {
+    for (const [shard, profile] of [
+      ['members', 'smoke'],
+      ['borrowings', 'complete'],
+    ]) {
+      const f = fixture(true, shard, profile);
+      await run(f);
+      assert.equal(existsSync(f.inventory), false);
+      assert.deepEqual(
+        await run(f, 'Caller shared behavior'),
+        f.tests.map((t) => t.path),
+      );
+    }
   });
 });

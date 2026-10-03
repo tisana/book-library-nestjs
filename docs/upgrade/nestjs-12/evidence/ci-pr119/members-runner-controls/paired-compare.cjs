@@ -1,0 +1,23 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const read=mode=>JSON.parse(fs.readFileSync(`/tmp/members-paired-${mode}-report.json`));
+const reportIdentity=r=>Object.fromEntries(Object.entries(r.testFiles).map(([file,data])=>[file,data.tests.map(t=>({id:t.id,name:t.name,location:t.location}))]));
+const mutants=r=>r.files['src/members/members.service.ts'].mutants.filter(m=>m.status!=='Ignored').map(m=>({id:m.id,mutatorName:m.mutatorName,replacement:m.replacement,location:m.location,status:m.status,static:m.static,coveredBy:m.coveredBy,killedBy:m.killedBy}));
+const events=mode=>fs.readFileSync(`/tmp/members-paired-${mode}-events.jsonl`,'utf8').trim().split('\n').map(JSON.parse).map(r=>({...r,file:r.file.split('/src/')[1]}));
+const executed=(rows,id)=>rows.filter(r=>r.activeMutant===id).flatMap(r=>r.tests.filter(t=>['passed','failed'].includes(t.status)).map(t=>({file:r.file,name:t.name,status:t.status}))).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)));
+const original=read('original'),candidate=read('candidate'),o=events('original'),c=events('candidate');
+assert.deepEqual(reportIdentity(candidate),reportIdentity(original));
+assert.deepEqual(mutants(candidate),mutants(original));
+assert.deepEqual(executed(c,undefined),executed(o,undefined));
+assert.equal(executed(c,undefined).length,129);
+const controls=mutants(original).map(m=>{
+ const before=executed(o,m.id),after=executed(c,m.id);
+ assert.deepEqual(after,before);
+ const originalSuites=o.filter(r=>r.activeMutant===m.id).map(r=>r.file).sort();
+ const candidateSuites=c.filter(r=>r.activeMutant===m.id).map(r=>r.file).sort();
+ assert.equal(originalSuites.length,10);
+ return {...m,executed:after,originalSuites,candidateSuites};
+});
+assert.deepEqual(controls.find(m=>m.location.start.line===546).candidateSuites,['auth/auth.service.spec.ts','auth/permissions.service.spec.ts','members/members.service.spec.ts']);
+assert.ok(controls.every(m=>m.status==='Killed'));
+fs.writeFileSync('/tmp/members-paired-proof.json',JSON.stringify({baselineTests:129,baselineSuites:10,testIdentityIdsEqual:true,mutantCoverageAndKillerIdsEqual:true,executedIdentitiesAndStatusesEqual:true,controls},null,2));
+console.log(JSON.stringify({baselineTests:129,controls:controls.map(m=>({id:m.id,line:m.location.start.line,status:m.status,executed:m.executed.length,originalSuites:m.originalSuites.length,candidateSuites:m.candidateSuites}))},null,2));
