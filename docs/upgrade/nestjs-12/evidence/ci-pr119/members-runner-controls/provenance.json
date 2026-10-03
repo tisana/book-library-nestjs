@@ -48,6 +48,26 @@
     "paired-control-config.mjs": "45625bd745faff9d465d7736e84a163dcf7d2d9c4da03a2d44112b206d878a9a",
     "paired-observer.cjs": "0f04ed28691a81ea21edc667485826aed5ec9dedb86cd0504201bfddce65e2cc",
     "paired-proof.json": "63bd0066344cf335ed28a46e7679b88b327e399c7aaf88dc930f8d59600cac8b",
-    "reporting-green.txt": "61d4e1c766135e2de114b9021c4fbc9f8aaa9aa2dcbf43982eb7f6b3a56752e8"
+    "reporting-green.txt": "7a84755df8ad311dbc4eb55c570f56f8d71aedb30883665aab19cbfc7dd93881",
+    "reporting-with-sandbox-duplicates.txt": "61d4e1c766135e2de114b9021c4fbc9f8aaa9aa2dcbf43982eb7f6b3a56752e8"
+  },
+  "reportingVerification": {
+    "command": "npm run test:quality-reporting",
+    "referenceCommit": "0659c2cf72cb2f08be86b41518d9a0ec62496a7b",
+    "initialDiagnostic": {
+      "file": "reporting-with-sandbox-duplicates.txt",
+      "tests": 136,
+      "suites": 8,
+      "classification": "duplicate test discovery inside failed members owned Stryker sandbox; not canonical reporting gate evidence"
+    },
+    "cleanup": "removed only reports/mutation/complete/shards/members/.stryker-tmp after failed producer evidence was preserved in 2bad03a2c4da9759aefae04737be592220ca9af3",
+    "canonical": {
+      "file": "reporting-green.txt",
+      "tests": 68,
+      "suites": 4,
+      "seconds": 2.879,
+      "exitCode": 0
+    },
+    "runtimeConfigurationChanged": false
   }
 }
