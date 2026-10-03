@@ -6,6 +6,7 @@ import {
   mkdirSync,
   openSync,
   readFileSync,
+  readdirSync,
   renameSync,
   writeFileSync,
 } from 'node:fs';
@@ -61,7 +62,7 @@ const COMPLETE_SHARDS = SMOKE_SHARDS.map(({ id, source }) => ({
   concurrency: 4,
 }));
 const SMOKE_MUTANT_COUNT = 1366;
-const COMPLETE_MUTANT_COUNT = 1727;
+const COMPLETE_MUTANT_COUNT = 1744;
 const BUDGETS = { smoke: 350000, complete: 900000 };
 const CLEANUP_GRACE_MS = 10000;
 const FORCE_CLEANUP_VERIFY_MS = 10000;
@@ -189,13 +190,38 @@ export function launchLocalNpx(args, options) {
 function processIsAlive(pid) {
   try {
     process.kill(pid, 0);
+    if (process.platform === 'linux') {
+      const stat = readFileSync(`/proc/${pid}/stat`, 'utf8');
+      const state = stat.slice(stat.lastIndexOf(')') + 2).split(' ')[0];
+      if (state === 'Z' || state === 'X') return false;
+    }
     return true;
   } catch (error) {
-    if (error?.code === 'ESRCH') {
+    if (error?.code === 'ESRCH' || error?.code === 'ENOENT') {
       return false;
     }
     throw error;
   }
+}
+
+/** Linux retains zombie pids/groups until PID1 reaps them; they cannot run work. */
+export function linuxProcessGroupHasLiveMembers(groupPid) {
+  if (!Number.isInteger(groupPid) || groupPid <= 0) {
+    throw new TypeError('An owned positive process group id is required.');
+  }
+  for (const pid of readdirSync('/proc').filter((entry) =>
+    /^\d+$/.test(entry),
+  )) {
+    try {
+      const stat = readFileSync(`/proc/${pid}/stat`, 'utf8');
+      const [state, , group] = stat.slice(stat.lastIndexOf(')') + 2).split(' ');
+      if (Number(group) === groupPid && state !== 'Z' && state !== 'X')
+        return true;
+    } catch (error) {
+      if (error?.code !== 'ENOENT' && error?.code !== 'ESRCH') throw error;
+    }
+  }
+  return false;
 }
 
 function windowsProcessRows() {
@@ -308,6 +334,9 @@ function processTreeIsAlive(tree) {
   if (tree.platform === 'win32') {
     refreshWindowsTree(tree);
     return [...tree.trackedPids].some(processIsAlive);
+  }
+  if (tree.platform === 'linux') {
+    return linuxProcessGroupHasLiveMembers(tree.rootPid);
   }
   try {
     process.kill(-tree.rootPid, 0);
@@ -452,6 +481,13 @@ function launchStryker(profile, shard, dependencies, timing) {
   const environment = {
     ...dependencies.environment,
     MUTATION_PROFILE: profile,
+    // Jest 30.4 native require(ESM) runs inside Stryker child workers.
+    NODE_OPTIONS: [
+      dependencies.environment.NODE_OPTIONS,
+      '--experimental-vm-modules',
+    ]
+      .filter(Boolean)
+      .join(' '),
   };
   if (shard) {
     environment.MUTATION_SHARD = shard.id;

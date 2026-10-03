@@ -1,0 +1,127 @@
+{
+  "node": "v24.19.0",
+  "hashUpdate": [
+    {
+      "line": 145,
+      "text": "Hash.prototype.update = function update(data, encoding) {"
+    },
+    {
+      "line": 191,
+      "text": "Hmac.prototype.update = Hash.prototype.update;"
+    }
+  ],
+  "bufferFromString": [
+    {
+      "line": 496,
+      "text": "function fromStringFast(string, ops) {"
+    },
+    {
+      "line": 529,
+      "text": "function fromString(string, encoding) {"
+    },
+    {
+      "line": 531,
+      "text": "if (!encoding || encoding === 'utf8' || typeof encoding !== 'string') {"
+    },
+    {
+      "line": 623,
+      "text": "return typeof encoding === 'string' && encoding.length !== 0 &&"
+    },
+    {
+      "line": 800,
+      "text": "if (encoding === 'utf8') return encodingOps.utf8;"
+    },
+    {
+      "line": 801,
+      "text": "if (encoding === 'ucs2') return encodingOps.ucs2;"
+    },
+    {
+      "line": 803,
+      "text": "if (encoding === 'utf8') return encodingOps.utf8;"
+    },
+    {
+      "line": 804,
+      "text": "if (encoding === 'ucs2') return encodingOps.ucs2;"
+    },
+    {
+      "line": 807,
+      "text": "if (encoding === 'utf-8') return encodingOps.utf8;"
+    },
+    {
+      "line": 808,
+      "text": "if (encoding === 'ascii') return encodingOps.ascii;"
+    },
+    {
+      "line": 809,
+      "text": "if (encoding === 'ucs-2') return encodingOps.ucs2;"
+    },
+    {
+      "line": 811,
+      "text": "if (encoding === 'utf-8') return encodingOps.utf8;"
+    },
+    {
+      "line": 812,
+      "text": "if (encoding === 'ascii') return encodingOps.ascii;"
+    },
+    {
+      "line": 813,
+      "text": "if (encoding === 'ucs-2') return encodingOps.ucs2;"
+    },
+    {
+      "line": 816,
+      "text": "if (encoding === 'utf16le' ||"
+    },
+    {
+      "line": 821,
+      "text": "if (encoding === 'utf-16le' ||"
+    },
+    {
+      "line": 826,
+      "text": "if (encoding === 'latin1' || encoding === 'binary')"
+    },
+    {
+      "line": 828,
+      "text": "if (encoding === 'base64') return encodingOps.base64;"
+    },
+    {
+      "line": 830,
+      "text": "if (encoding === 'latin1' || encoding === 'binary')"
+    },
+    {
+      "line": 832,
+      "text": "if (encoding === 'base64') return encodingOps.base64;"
+    },
+    {
+      "line": 835,
+      "text": "if (encoding === 'hex' || StringPrototypeToLowerCase(encoding) === 'hex')"
+    },
+    {
+      "line": 839,
+      "text": "if (encoding === 'base64url' ||"
+    },
+    {
+      "line": 861,
+      "text": "if (!encoding || encoding === 'utf8') {"
+    },
+    {
+      "line": 865,
+      "text": "if (encoding === 'ascii') {"
+    },
+    {
+      "line": 932,
+      "text": "if (encoding === undefined)"
+    },
+    {
+      "line": 1072,
+      "text": "if (encoding === undefined)"
+    },
+    {
+      "line": 1217,
+      "text": "if (!encoding || encoding === 'utf8')"
+    },
+    {
+      "line": 1219,
+      "text": "if (encoding === 'ascii')"
+    }
+  ]
+}

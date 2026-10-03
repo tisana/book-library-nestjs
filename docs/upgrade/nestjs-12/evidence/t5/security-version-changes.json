@@ -1,0 +1,92 @@
+[
+  {
+    "path": "node_modules/@eslint/config-array/node_modules/brace-expansion",
+    "before": "5.0.9",
+    "after": "5.0.12"
+  },
+  {
+    "path": "node_modules/@stryker-mutator/core/node_modules/brace-expansion",
+    "before": "5.0.9",
+    "after": "5.0.12"
+  },
+  {
+    "path": "node_modules/@typescript-eslint/typescript-estree/node_modules/brace-expansion",
+    "before": "5.0.9",
+    "after": "5.0.12"
+  },
+  {
+    "path": "node_modules/brace-expansion",
+    "before": "1.1.18",
+    "after": "1.1.21"
+  },
+  {
+    "path": "node_modules/browserslist",
+    "before": "4.28.1",
+    "after": "4.28.7"
+  },
+  {
+    "path": "node_modules/caniuse-lite",
+    "before": "1.0.30001769",
+    "after": "1.0.30001814"
+  },
+  {
+    "path": "node_modules/electron-to-chromium",
+    "before": "1.5.286",
+    "after": "1.5.444"
+  },
+  {
+    "path": "node_modules/eslint/node_modules/brace-expansion",
+    "before": "5.0.9",
+    "after": "5.0.12"
+  },
+  {
+    "path": "node_modules/fast-uri",
+    "before": "3.1.7",
+    "after": "3.1.8"
+  },
+  {
+    "path": "node_modules/node-releases",
+    "before": "2.0.27",
+    "after": "2.0.57"
+  },
+  {
+    "path": "node_modules/ts-loader",
+    "before": "9.5.4",
+    "after": "9.6.2"
+  },
+  {
+    "path": "node_modules/typed-rest-client/node_modules/qs",
+    "before": "6.15.1",
+    "after": "6.16.0"
+  },
+  {
+    "path": "node_modules/braces",
+    "before": "3.0.3",
+    "after": null
+  },
+  {
+    "path": "node_modules/fill-range",
+    "before": "7.1.1",
+    "after": null
+  },
+  {
+    "path": "node_modules/is-number",
+    "before": "7.0.0",
+    "after": null
+  },
+  {
+    "path": "node_modules/micromatch",
+    "before": "4.0.8",
+    "after": null
+  },
+  {
+    "path": "node_modules/micromatch/node_modules/picomatch",
+    "before": "2.3.2",
+    "after": null
+  },
+  {
+    "path": "node_modules/to-regex-range",
+    "before": "5.0.1",
+    "after": null
+  }
+]

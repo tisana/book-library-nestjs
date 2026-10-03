@@ -251,6 +251,82 @@ jobs:
         if: always()
         run: npm run quality:report:frontend-e2e -- --check-only --producer-outcome frontend-playwright=${{ steps.frontend-playwright.outcome }}
 
+  production-artifact:
+    name: Production process, image and performance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.node-version'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+      - name: Verify runtime and npm
+        run: |
+          test "$(node --version)" = "v$(cat .node-version)"
+          npm install --global npm@11.9.0
+          test "$(npm --version)" = "11.9.0"
+      - run: npm ci
+      - run: npm ci --prefix frontend
+      - name: Validate quality reporting failures and mutation policy
+        run: |
+          npm run test:quality-reporting
+          node --test test/quality/mutation-runner.test.mjs test/quality/mutation-policy.test.mjs
+          npm run mutation:check
+      - name: Verify actual compiled production process
+        run: npm run test:production:report
+      - name: Verify auth overhead
+        run: npm run verify:auth-performance
+      - name: Build production image
+        run: docker build -t book-library-upgrade:verification .
+      - name: Verify production image, unsafe configuration and dependency loss
+        run: npm run verify:production-image
+      - name: Save secret-safe process evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-process-results
+          path: test-results/backend-production.json
+          if-no-files-found: error
+
+  live-browser:
+    name: Live built application browser checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.node-version'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+      - name: Verify runtime and npm
+        run: |
+          test "$(node --version)" = "v$(cat .node-version)"
+          npm install --global npm@11.9.0
+          test "$(npm --version)" = "11.9.0"
+      - run: npm ci
+      - run: npm ci --prefix frontend
+      - run: npm run build
+      - run: npm run frontend:build
+      - name: Install Chromium
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+      - name: Exercise real app and disposable database without API mocks
+        run: npm run frontend:test:live
+      - name: Save browser result without credential-bearing traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-browser-results
+          path: frontend/test-results/playwright-live-results.json
+          if-no-files-found: error
+
   build:
     name: Build & Upload Artifact
     runs-on: ubuntu-24.04
@@ -258,6 +334,8 @@ jobs:
       - backend-quality
       - frontend-unit-quality
       - frontend-e2e-quality
+      - production-artifact
+      - live-browser
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

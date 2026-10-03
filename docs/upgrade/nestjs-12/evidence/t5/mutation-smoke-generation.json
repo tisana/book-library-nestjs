@@ -1,0 +1,25 @@
+{
+  "count": 1366,
+  "sources": [
+    {
+      "source": "src/auth/token-session.service.ts",
+      "mutants": 211
+    },
+    {
+      "source": "src/auth/auth-identifier-repair.service.ts",
+      "mutants": 401
+    },
+    {
+      "source": "src/auth/auth-identifier-reconciliation.service.ts",
+      "mutants": 415
+    },
+    {
+      "source": "src/members/members.service.ts",
+      "mutants": 204
+    },
+    {
+      "source": "src/borrowings/borrowings.service.ts",
+      "mutants": 135
+    }
+  ]
+}

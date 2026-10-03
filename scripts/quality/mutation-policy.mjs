@@ -762,8 +762,8 @@ function validateCompleteProvenance({
     (count, source) => count + report.files[source].mutants.length,
     0,
   );
-  if (summary.canonicalMutantCount !== 1727 || actualMutantCount !== 1727) {
-    fail('complete report must contain exactly 1727 canonical mutants.');
+  if (summary.canonicalMutantCount !== 1744 || actualMutantCount !== 1744) {
+    fail('complete report must contain exactly 1744 canonical mutants.');
   }
   if (
     !Number.isFinite(summary.maxShardDurationMs) ||
