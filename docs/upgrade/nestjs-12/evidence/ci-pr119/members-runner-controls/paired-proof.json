@@ -1,0 +1,410 @@
+{
+  "baselineTests": 129,
+  "baselineSuites": 10,
+  "testIdentityIdsEqual": true,
+  "mutantCoverageAndKillerIdsEqual": true,
+  "executedIdentitiesAndStatusesEqual": true,
+  "controls": [
+    {
+      "id": "0",
+      "mutatorName": "BlockStatement",
+      "replacement": "{}",
+      "location": {
+        "end": {
+          "column": 6,
+          "line": 86
+        },
+        "start": {
+          "column": 7,
+          "line": 84
+        }
+      },
+      "status": "Killed",
+      "static": false,
+      "coveredBy": [
+        "1"
+      ],
+      "killedBy": [
+        "1"
+      ],
+      "executed": [
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService rejects duplicate member numbers before persisting",
+          "status": "failed"
+        }
+      ],
+      "originalSuites": [
+        "auth/auth-endpoint-throttle.guard.spec.ts",
+        "auth/auth.controller.spec.ts",
+        "auth/auth.service.spec.ts",
+        "auth/permissions.guard.spec.ts",
+        "auth/permissions.service.spec.ts",
+        "book-categories/book-categories.controller.spec.ts",
+        "books/books.controller.spec.ts",
+        "members/members.service.spec.ts",
+        "membership-types/membership-types.controller.spec.ts",
+        "staff-users/staff-users.controller.spec.ts"
+      ],
+      "candidateSuites": [
+        "members/members.service.spec.ts"
+      ]
+    },
+    {
+      "id": "2",
+      "mutatorName": "BlockStatement",
+      "replacement": "{}",
+      "location": {
+        "end": {
+          "column": 8,
+          "line": 356
+        },
+        "start": {
+          "column": 9,
+          "line": 350
+        }
+      },
+      "status": "Killed",
+      "static": false,
+      "coveredBy": [
+        "14",
+        "18",
+        "26",
+        "32",
+        "48"
+      ],
+      "killedBy": [
+        "48"
+      ],
+      "executed": [
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService persists a system-owned credential replacement with exact lifecycle effects",
+          "status": "failed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService reactivates a released reservation with member ownership and no release timestamp",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService recovers a released credential identifier and revokes sessions after saving credentials",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService saves hashed and versioned credentials without the optional identifier model",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService sets normalized credentials, increments auth version, and records the actor",
+          "status": "passed"
+        }
+      ],
+      "originalSuites": [
+        "auth/auth-endpoint-throttle.guard.spec.ts",
+        "auth/auth.controller.spec.ts",
+        "auth/auth.service.spec.ts",
+        "auth/permissions.guard.spec.ts",
+        "auth/permissions.service.spec.ts",
+        "book-categories/book-categories.controller.spec.ts",
+        "books/books.controller.spec.ts",
+        "members/members.service.spec.ts",
+        "membership-types/membership-types.controller.spec.ts",
+        "staff-users/staff-users.controller.spec.ts"
+      ],
+      "candidateSuites": [
+        "members/members.service.spec.ts"
+      ]
+    },
+    {
+      "id": "4",
+      "mutatorName": "BlockStatement",
+      "replacement": "{}",
+      "location": {
+        "end": {
+          "column": 2,
+          "line": 549
+        },
+        "start": {
+          "column": 70,
+          "line": 546
+        }
+      },
+      "status": "Killed",
+      "static": false,
+      "coveredBy": [
+        "5",
+        "6",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24",
+        "25",
+        "26",
+        "30",
+        "31",
+        "32",
+        "33",
+        "36",
+        "37",
+        "38",
+        "39",
+        "40",
+        "42",
+        "45",
+        "46",
+        "47",
+        "48",
+        "49",
+        "57",
+        "58",
+        "64",
+        "74",
+        "75",
+        "76",
+        "77",
+        "78",
+        "84",
+        "104",
+        "105"
+      ],
+      "killedBy": [
+        "5"
+      ],
+      "executed": [
+        {
+          "file": "auth/auth.service.spec.ts",
+          "name": "AuthService login contract when AuthService is implemented rejects suspended member credentials before issuing a token",
+          "status": "passed"
+        },
+        {
+          "file": "auth/auth.service.spec.ts",
+          "name": "AuthService login contract when AuthService is implemented returns a member JWT and redacted member profile for valid member credentials",
+          "status": "failed"
+        },
+        {
+          "file": "auth/auth.service.spec.ts",
+          "name": "AuthService shared login resolution when identifier reservations are available keeps inactive member account generic and records only a redacted category",
+          "status": "passed"
+        },
+        {
+          "file": "auth/auth.service.spec.ts",
+          "name": "AuthService shared login resolution when identifier reservations are available keeps invalid member password generic and records only a redacted category",
+          "status": "passed"
+        },
+        {
+          "file": "auth/auth.service.spec.ts",
+          "name": "AuthService shared login resolution when identifier reservations are available keeps locked member authentication generic and records only a redacted category",
+          "status": "passed"
+        },
+        {
+          "file": "auth/auth.service.spec.ts",
+          "name": "AuthService shared login resolution when identifier reservations are available keeps member without a password credential generic and records only a redacted category",
+          "status": "passed"
+        },
+        {
+          "file": "auth/auth.service.spec.ts",
+          "name": "AuthService shared login resolution when identifier reservations are available keeps mismatched member reservation generic and records only a redacted category",
+          "status": "passed"
+        },
+        {
+          "file": "auth/auth.service.spec.ts",
+          "name": "AuthService shared login resolution when identifier reservations are available uses empty membership type fields when the member profile is absent",
+          "status": "failed"
+        },
+        {
+          "file": "auth/auth.service.spec.ts",
+          "name": "AuthService shared login resolution when identifier reservations are available uses zero auth versions when reserved account versions are absent",
+          "status": "failed"
+        },
+        {
+          "file": "auth/permissions.service.spec.ts",
+          "name": "PermissionsService builds member contexts with default member permissions and token metadata",
+          "status": "failed"
+        },
+        {
+          "file": "auth/permissions.service.spec.ts",
+          "name": "PermissionsService uses scoped payload permissions and account auth versions when present",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService clears email without reserving an empty identifier and revokes sessions",
+          "status": "failed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService compensates a failed credential write with the public system actor contract",
+          "status": "failed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService compensates a failed email change with the public system actor contract",
+          "status": "failed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService completes the owned member update when every optional integration is absent",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService does not release its active reservation when credentials keep the same normalized identifier",
+          "status": "failed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService initializes an absent auth version and revokes only active member families on status change",
+          "status": "failed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService keeps a same-owner active identifier idempotent without a prior member login",
+          "status": "failed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService maps an identifier create duplicate-key rejection to the fixed conflict",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService persists a system-owned credential replacement with exact lifecycle effects",
+          "status": "failed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService propagates an identifier create nonduplicate coded object rejection unchanged",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService propagates an identifier create nonduplicate object without a code rejection unchanged",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService propagates an identifier create null primitive rejection unchanged",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService propagates an identifier create string primitive rejection unchanged",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService reactivates a released reservation with member ownership and no release timestamp",
+          "status": "failed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService recovers a released credential identifier and revokes sessions after saving credentials",
+          "status": "failed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService rejects active member owner with a different subject id instead of treating it as the exact active owner",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService rejects active staff owner with the same subject id instead of treating it as the exact active owner",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService rejects an active identifier owned by another member",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService rejects an active identifier owned by staff",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService rejects pending member owner with the same subject id instead of treating it as the exact active owner",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService releases a newly reserved credential identifier when saving credentials fails",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService releases a newly reserved email when saving the member change fails",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService releases only the newly acquired reservation when credential persistence fails",
+          "status": "failed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService reserves a changed email, revokes active sessions, and audits identifier and status changes",
+          "status": "failed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService returns self-service profile with readable membership tier metadata",
+          "status": "failed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService saves hashed and versioned credentials without the optional identifier model",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService sets normalized credentials, increments auth version, and records the actor",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService skips identifier and lifecycle effects for the same normalized email",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService updates a phone while an unchanged status leaves authorization lifecycle state untouched",
+          "status": "passed"
+        },
+        {
+          "file": "members/members.service.spec.ts",
+          "name": "MembersService updates status, loan count, membership type, and audit actor",
+          "status": "passed"
+        }
+      ],
+      "originalSuites": [
+        "auth/auth-endpoint-throttle.guard.spec.ts",
+        "auth/auth.controller.spec.ts",
+        "auth/auth.service.spec.ts",
+        "auth/permissions.guard.spec.ts",
+        "auth/permissions.service.spec.ts",
+        "book-categories/book-categories.controller.spec.ts",
+        "books/books.controller.spec.ts",
+        "members/members.service.spec.ts",
+        "membership-types/membership-types.controller.spec.ts",
+        "staff-users/staff-users.controller.spec.ts"
+      ],
+      "candidateSuites": [
+        "auth/auth.service.spec.ts",
+        "auth/permissions.service.spec.ts",
+        "members/members.service.spec.ts"
+      ]
+    }
+  ]
+}

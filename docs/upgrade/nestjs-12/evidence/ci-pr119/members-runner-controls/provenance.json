@@ -1,0 +1,53 @@
+{
+  "referenceCommit": "2bad03a2c4da9759aefae04737be592220ca9af3",
+  "kind": "bounded diagnostic controls; not acceptance producer or mutation baseline",
+  "configurationSha256": "17196a829ccf2cecdd793ab64fca18029d5b3392c89af5bd7e784cdc8bfd8d12",
+  "configurationState": "candidate working-tree bytes, frozen in candidate-runner.cjs/candidate-stryker.config.mjs before implementation commit",
+  "commands": [
+    "MEMBERS_CONTROL_MODE=original MUTATION_PROFILE=complete MUTATION_SHARD=members NODE_OPTIONS=--experimental-vm-modules timeout --signal=TERM --kill-after=5s 90s node node_modules/@stryker-mutator/core/bin/stryker.js run /tmp/members-paired-control-config.mjs",
+    "MEMBERS_CONTROL_MODE=candidate MUTATION_PROFILE=complete MUTATION_SHARD=members NODE_OPTIONS=--experimental-vm-modules timeout --signal=TERM --kill-after=5s 90s node node_modules/@stryker-mutator/core/bin/stryker.js run /tmp/members-paired-control-config.mjs",
+    "node /tmp/members-paired-compare.cjs",
+    "node --test test/quality/mutation-jest-runner.test.mjs test/quality/mutation-runner.test.mjs test/quality/mutation-policy.test.mjs",
+    "npm run test:quality-reporting",
+    "npm run mutation:check"
+  ],
+  "controls": {
+    "mutate": [
+      "src/members/members.service.ts:84-86",
+      "src/members/members.service.ts:350-356",
+      "src/members/members.service.ts:546-549"
+    ],
+    "testedMutants": 3,
+    "diagnosticIgnoredMutants": 7,
+    "originalSeconds": 43,
+    "candidateSeconds": 29,
+    "baselineTests": 129,
+    "baselineSuites": 10,
+    "originalExitCode": 0,
+    "candidateExitCode": 0
+  },
+  "hashes": {
+    "baseline-duration-diagnostic.mjs": "4662ce867f3ec990a0c30ffe2ed524da244ae96003a07de36f0f4d111e290fc7",
+    "baseline-duration-log.txt": "e0e9c7946a6e3931aa9f6b038f95b0abc226853bea7fe99fe58ac049a6ecb808",
+    "baseline-duration-results.json": "9aaae55b501ab5b656f205471dfce6ed1ae73d83a5d5d6d561eb1781d90f5a60",
+    "baseline-duration-summary.json": "1583fd776e22b35c3575831fa80e056559481041a6e05238692b4a04f7a6ad1e",
+    "candidate-baseline-inventory.json": "87d8d2526403f4d1dc8cfc9f7003e407a353b3229e17824c991862c50573da73",
+    "candidate-events.jsonl": "de3fcc4c0135dce90b07ab912833a465230353c79b16e475444dd51baeaf0178",
+    "candidate-log.txt": "fca2771728bc665c609220f7c57b3d8de3ebfd5f7b9888d273166c256bc1e152",
+    "candidate-report.json": "4eb716102e27c52c983f53e5c504e6449bb236d7b01e87688f826388b32d9857",
+    "candidate-runner.cjs": "2ecd2e7d863b586bc22a8d04b01504f3b3a80b485f42f982f9dccc318f33ce37",
+    "candidate-stryker.config.mjs": "00ca7492ecec6a9abdd70830b2714de7c5c7177b7b88a020dab3403940687e12",
+    "focused-green.txt": "146c982f6d5e27800c39f64ac7d8f23bd0e1cac980525574126a3a1aebc08eec",
+    "manifest-green.txt": "1ffa06f574285689d4f2d6ea75f1fdc1abea776c7d0a5a4bea198be963301f5c",
+    "map-red.txt": "48b16060692303c9a8d6f029592e9141c6c812976ef85497c45aa1b73f0fffd8",
+    "original-events.jsonl": "c9b5908a067e71feeb9795d5761b7b94d0bdac918da2cfe53365cd995ee078f9",
+    "original-log.txt": "e7579b810829116ac49eddd1b1c719d782e70a496dd700518a6b2ebf72852345",
+    "original-report.json": "c39a395815e5127d74e8e791cb96d1f7fbd5ac1bbf2449201ac73d89391d7435",
+    "original-runner.cjs": "750002d6cf370e0f7e7aecd3e6d3de8d7237970c7d076407f0f7ce4233119a52",
+    "paired-compare.cjs": "41272c3fe118c14f29f4a44d489c972c252682f6850e68c9dd8ff225a37f2004",
+    "paired-control-config.mjs": "45625bd745faff9d465d7736e84a163dcf7d2d9c4da03a2d44112b206d878a9a",
+    "paired-observer.cjs": "0f04ed28691a81ea21edc667485826aed5ec9dedb86cd0504201bfddce65e2cc",
+    "paired-proof.json": "63bd0066344cf335ed28a46e7679b88b327e399c7aaf88dc930f8d59600cac8b",
+    "reporting-green.txt": "61d4e1c766135e2de114b9021c4fbc9f8aaa9aa2dcbf43982eb7f6b3a56752e8"
+  }
+}

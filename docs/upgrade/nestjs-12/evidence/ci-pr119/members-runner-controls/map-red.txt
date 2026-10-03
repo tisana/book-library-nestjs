@@ -1,0 +1,49 @@
+✖ trusted members complete reuses baseline and binds its exact source (4.830445ms)
+✔ members smoke and unknown shards cannot publish or prune inventory (2.540558ms)
+✖ only token-session profiles and members complete use the supported custom runner (3.505924ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 1
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 232.845914
+
+✖ failing tests:
+
+test at test/quality/mutation-jest-runner.test.mjs:320:1
+✖ trusted members complete reuses baseline and binds its exact source (4.830445ms)
+  AssertionError [ERR_ASSERTION]: members complete baseline must publish
+      at file:///workspace/book-library-nestjs/test/quality/mutation-jest-runner.test.mjs:323:12
+      at async harness (file:///workspace/book-library-nestjs/test/quality/mutation-jest-runner.test.mjs:94:5)
+      at async TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-jest-runner.test.mjs:321:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-runner.test.mjs:2340:1
+✖ only token-session profiles and members complete use the supported custom runner (3.505924ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - '<rootDir>/../scripts/quality/mutation-jest-runner.cjs'
+  
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:2344:14)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: '<rootDir>/../scripts/quality/mutation-jest-runner.cjs',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

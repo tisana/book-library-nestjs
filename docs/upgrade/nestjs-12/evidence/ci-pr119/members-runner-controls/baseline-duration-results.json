@@ -1,0 +1,2989 @@
+{
+  "numFailedTestSuites": 0,
+  "numFailedTests": 0,
+  "numPassedTestSuites": 10,
+  "numPassedTests": 129,
+  "numPendingTestSuites": 0,
+  "numPendingTests": 0,
+  "numRuntimeErrorTestSuites": 0,
+  "numTodoTests": 0,
+  "numTotalTestSuites": 10,
+  "numTotalTests": 129,
+  "openHandles": [],
+  "snapshot": {
+    "added": 0,
+    "didUpdate": false,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0
+  },
+  "startTime": 1791048123203,
+  "success": true,
+  "testResults": [
+    {
+      "leaks": false,
+      "numFailingTests": 0,
+      "numPassingTests": 54,
+      "numPendingTests": 0,
+      "numTodoTests": 0,
+      "openHandles": [],
+      "perfStats": {
+        "end": 1791048129638,
+        "loadTestEnvironmentEnd": 1791048123265,
+        "loadTestEnvironmentStart": 1791048123209,
+        "runtime": 6372,
+        "setupAfterEnvEnd": 1791048123384,
+        "setupAfterEnvStart": 1791048123384,
+        "setupFilesEnd": 1791048123266,
+        "setupFilesStart": 1791048123266,
+        "slow": true,
+        "start": 1791048123266
+      },
+      "skipped": false,
+      "snapshot": {
+        "added": 0,
+        "fileDeleted": false,
+        "matched": 0,
+        "unchecked": 0,
+        "uncheckedKeys": [],
+        "unmatched": 0,
+        "updated": 0
+      },
+      "testFilePath": "/workspace/book-library-nestjs/src/members/members.service.spec.ts",
+      "testResults": [
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 5,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService creates active members with normalized member number, active policy validation, and audit actor",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 115
+          },
+          "numPassingAsserts": 4,
+          "retryReasons": [],
+          "startAt": 1791048124876,
+          "status": "passed",
+          "title": "creates active members with normalized member number, active policy validation, and audit actor"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 3,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService rejects duplicate member numbers before persisting",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 162
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048124916,
+          "status": "passed",
+          "title": "rejects duplicate member numbers before persisting"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 2,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService lists members filtered by search, status, and membership type with pagination",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 183
+          },
+          "numPassingAsserts": 5,
+          "retryReasons": [],
+          "startAt": 1791048124920,
+          "status": "passed",
+          "title": "lists members filtered by search, status, and membership type with pagination"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService builds literal case-insensitive search filters",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 220
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048124923,
+          "status": "passed",
+          "title": "builds literal case-insensitive search filters"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService returns not found for missing members",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 245
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048124925,
+          "status": "passed",
+          "title": "returns not found for missing members"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService returns self-service profile with readable membership tier metadata",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 259
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048124927,
+          "status": "passed",
+          "title": "returns self-service profile with readable membership tier metadata"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 3,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService updates status, loan count, membership type, and audit actor",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 285
+          },
+          "numPassingAsserts": 6,
+          "retryReasons": [],
+          "startAt": 1791048124928,
+          "status": "passed",
+          "title": "updates status, loan count, membership type, and audit actor"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService reports remaining allowance and eligibility for active members below limit",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 317
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048124931,
+          "status": "passed",
+          "title": "reports remaining allowance and eligibility for active members below limit"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 3,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService reports limit reached and inactive status eligibility separately",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 344
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048124934,
+          "status": "passed",
+          "title": "reports limit reached and inactive status eligibility separately"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService looks up credentials with normalized login identifiers and the password hash selected",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 370
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048124938,
+          "status": "passed",
+          "title": "looks up credentials with normalized login identifiers and the password hash selected"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService rejects a non-active member status pair (suspended, active) as not found",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 402
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048124941,
+          "status": "passed",
+          "title": "rejects a non-active member status pair (suspended, active) as not found"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService rejects a non-active member status pair (active, locked) as not found",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 402
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048124942,
+          "status": "passed",
+          "title": "rejects a non-active member status pair (active, locked) as not found"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService returns the active-member not-found contract when the member does not exist",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 421
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048124943,
+          "status": "passed",
+          "title": "returns the active-member not-found contract when the member does not exist"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService updates last login atomically without loading the member document",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 439
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048124945,
+          "status": "passed",
+          "title": "updates last login atomically without loading the member document"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 848,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService sets normalized credentials, increments auth version, and records the actor",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 455
+          },
+          "numPassingAsserts": 7,
+          "retryReasons": [],
+          "startAt": 1791048124946,
+          "status": "passed",
+          "title": "sets normalized credentials, increments auth version, and records the actor"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 356,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService keeps a same-owner active identifier idempotent without a prior member login",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 488
+          },
+          "numPassingAsserts": 5,
+          "retryReasons": [],
+          "startAt": 1791048125802,
+          "status": "passed",
+          "title": "keeps a same-owner active identifier idempotent without a prior member login"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 12,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService rejects an active identifier owned by another member",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 522
+          },
+          "numPassingAsserts": 5,
+          "retryReasons": [],
+          "startAt": 1791048126159,
+          "status": "passed",
+          "title": "rejects an active identifier owned by another member"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService rejects an active identifier owned by staff",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 522
+          },
+          "numPassingAsserts": 5,
+          "retryReasons": [],
+          "startAt": 1791048126172,
+          "status": "passed",
+          "title": "rejects an active identifier owned by staff"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 411,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService reactivates a released reservation with member ownership and no release timestamp",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 552
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048126173,
+          "status": "passed",
+          "title": "reactivates a released reservation with member ownership and no release timestamp"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService maps an identifier create duplicate-key rejection to the fixed conflict",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 592
+          },
+          "numPassingAsserts": 4,
+          "retryReasons": [],
+          "startAt": 1791048126585,
+          "status": "passed",
+          "title": "maps an identifier create duplicate-key rejection to the fixed conflict"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService propagates an identifier create nonduplicate coded object rejection unchanged",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 619
+          },
+          "numPassingAsserts": 4,
+          "retryReasons": [],
+          "startAt": 1791048126588,
+          "status": "passed",
+          "title": "propagates an identifier create nonduplicate coded object rejection unchanged"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 2,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService propagates an identifier create nonduplicate object without a code rejection unchanged",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 619
+          },
+          "numPassingAsserts": 4,
+          "retryReasons": [],
+          "startAt": 1791048126590,
+          "status": "passed",
+          "title": "propagates an identifier create nonduplicate object without a code rejection unchanged"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService propagates an identifier create string primitive rejection unchanged",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 619
+          },
+          "numPassingAsserts": 4,
+          "retryReasons": [],
+          "startAt": 1791048126593,
+          "status": "passed",
+          "title": "propagates an identifier create string primitive rejection unchanged"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService propagates an identifier create null primitive rejection unchanged",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 619
+          },
+          "numPassingAsserts": 4,
+          "retryReasons": [],
+          "startAt": 1791048126594,
+          "status": "passed",
+          "title": "propagates an identifier create null primitive rejection unchanged"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 352,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService does not release its active reservation when credentials keep the same normalized identifier",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 644
+          },
+          "numPassingAsserts": 6,
+          "retryReasons": [],
+          "startAt": 1791048126595,
+          "status": "passed",
+          "title": "does not release its active reservation when credentials keep the same normalized identifier"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 353,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService releases only the newly acquired reservation when credential persistence fails",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 675
+          },
+          "numPassingAsserts": 4,
+          "retryReasons": [],
+          "startAt": 1791048126947,
+          "status": "passed",
+          "title": "releases only the newly acquired reservation when credential persistence fails"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 787,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService saves hashed and versioned credentials without the optional identifier model",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 712
+          },
+          "numPassingAsserts": 4,
+          "retryReasons": [],
+          "startAt": 1791048127300,
+          "status": "passed",
+          "title": "saves hashed and versioned credentials without the optional identifier model"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService leaves member credentials unchanged when the normalized login identifier conflicts",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 735
+          },
+          "numPassingAsserts": 4,
+          "retryReasons": [],
+          "startAt": 1791048128088,
+          "status": "passed",
+          "title": "leaves member credentials unchanged when the normalized login identifier conflicts"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService rejects a missing member when bumping its auth version",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 773
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048128089,
+          "status": "passed",
+          "title": "rejects a missing member when bumping its auth version"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService updates a member profile without validating membership policy when membership and status do not change",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 791
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048128091,
+          "status": "passed",
+          "title": "updates a member profile without validating membership policy when membership and status do not change"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 2,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService reserves a changed email, revokes active sessions, and audits identifier and status changes",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 806
+          },
+          "numPassingAsserts": 6,
+          "retryReasons": [],
+          "startAt": 1791048128091,
+          "status": "passed",
+          "title": "reserves a changed email, revokes active sessions, and audits identifier and status changes"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService releases a newly reserved email when saving the member change fails",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 889
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048128093,
+          "status": "passed",
+          "title": "releases a newly reserved email when saving the member change fails"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 351,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService recovers a released credential identifier and revokes sessions after saving credentials",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 915
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048128094,
+          "status": "passed",
+          "title": "recovers a released credential identifier and revokes sessions after saving credentials"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 357,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService releases a newly reserved credential identifier when saving credentials fails",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 972
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048128446,
+          "status": "passed",
+          "title": "releases a newly reserved credential identifier when saving credentials fails"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService creates without an optional exists method and preserves activeLoanCount 0",
+          "invocations": 1,
+          "location": {
+            "column": 18,
+            "line": 1004
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048128804,
+          "status": "passed",
+          "title": "creates without an optional exists method and preserves activeLoanCount 0"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService creates without an optional exists method and preserves activeLoanCount 2",
+          "invocations": 1,
+          "location": {
+            "column": 18,
+            "line": 1004
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048128805,
+          "status": "passed",
+          "title": "creates without an optional exists method and preserves activeLoanCount 2"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 2,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService clears email without reserving an empty identifier and revokes sessions",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 1056
+          },
+          "numPassingAsserts": 11,
+          "retryReasons": [],
+          "startAt": 1791048128805,
+          "status": "passed",
+          "title": "clears email without reserving an empty identifier and revokes sessions"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService skips identifier and lifecycle effects for the same normalized email",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 1139
+          },
+          "numPassingAsserts": 7,
+          "retryReasons": [],
+          "startAt": 1791048128807,
+          "status": "passed",
+          "title": "skips identifier and lifecycle effects for the same normalized email"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService initializes an absent auth version and revokes only active member families on status change",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 1180
+          },
+          "numPassingAsserts": 9,
+          "retryReasons": [],
+          "startAt": 1791048128808,
+          "status": "passed",
+          "title": "initializes an absent auth version and revokes only active member families on status change"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService completes the owned member update when every optional integration is absent",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 1249
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048128809,
+          "status": "passed",
+          "title": "completes the owned member update when every optional integration is absent"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService updates a phone while an unchanged status leaves authorization lifecycle state untouched",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 1281
+          },
+          "numPassingAsserts": 6,
+          "retryReasons": [],
+          "startAt": 1791048128810,
+          "status": "passed",
+          "title": "updates a phone while an unchanged status leaves authorization lifecycle state untouched"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService does not compensate an unchanged email when a different profile write fails",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 1312
+          },
+          "numPassingAsserts": 4,
+          "retryReasons": [],
+          "startAt": 1791048128811,
+          "status": "passed",
+          "title": "does not compensate an unchanged email when a different profile write fails"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService compensates a failed email change with the public system actor contract",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 1334
+          },
+          "numPassingAsserts": 4,
+          "retryReasons": [],
+          "startAt": 1791048128812,
+          "status": "passed",
+          "title": "compensates a failed email change with the public system actor contract"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService returns the member document only for the fully active public state pair",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 1375
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048128813,
+          "status": "passed",
+          "title": "returns the member document only for the fully active public state pair"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService bumps an existing member authorization version without returning an error",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 1385
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048128814,
+          "status": "passed",
+          "title": "bumps an existing member authorization version without returning an error"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService rejects active staff owner with the same subject id instead of treating it as the exact active owner",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 1421
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048128815,
+          "status": "passed",
+          "title": "rejects active staff owner with the same subject id instead of treating it as the exact active owner"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService rejects active member owner with a different subject id instead of treating it as the exact active owner",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 1421
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048128816,
+          "status": "passed",
+          "title": "rejects active member owner with a different subject id instead of treating it as the exact active owner"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService rejects pending member owner with the same subject id instead of treating it as the exact active owner",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 1421
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048128816,
+          "status": "passed",
+          "title": "rejects pending member owner with the same subject id instead of treating it as the exact active owner"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 391,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService persists a system-owned credential replacement with exact lifecycle effects",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 1449
+          },
+          "numPassingAsserts": 8,
+          "retryReasons": [],
+          "startAt": 1791048128817,
+          "status": "passed",
+          "title": "persists a system-owned credential replacement with exact lifecycle effects"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 422,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService compensates a failed credential write with the public system actor contract",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 1530
+          },
+          "numPassingAsserts": 4,
+          "retryReasons": [],
+          "startAt": 1791048129209,
+          "status": "passed",
+          "title": "compensates a failed credential write with the public system actor contract"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService uses the same public active-member error for absent auth status",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 1579
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048129632,
+          "status": "passed",
+          "title": "uses the same public active-member error for absent auth status"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService uses the same public active-member error for locked auth status",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 1579
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048129633,
+          "status": "passed",
+          "title": "uses the same public active-member error for locked auth status"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService uses the same public active-member error for reset-required auth status",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 1579
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048129634,
+          "status": "passed",
+          "title": "uses the same public active-member error for reset-required auth status"
+        },
+        {
+          "ancestorTitles": [
+            "MembersService"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembersService clamps remaining policy allowance at zero above the tier maximum",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 1594
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048129635,
+          "status": "passed",
+          "title": "clamps remaining policy allowance at zero above the tier maximum"
+        }
+      ],
+      "failureMessage": null
+    },
+    {
+      "leaks": false,
+      "numFailingTests": 0,
+      "numPassingTests": 1,
+      "numPendingTests": 0,
+      "numTodoTests": 0,
+      "openHandles": [],
+      "perfStats": {
+        "end": 1791048130484,
+        "loadTestEnvironmentEnd": 1791048129647,
+        "loadTestEnvironmentStart": 1791048129640,
+        "runtime": 837,
+        "setupAfterEnvEnd": 1791048129715,
+        "setupAfterEnvStart": 1791048129715,
+        "setupFilesEnd": 1791048129647,
+        "setupFilesStart": 1791048129647,
+        "slow": false,
+        "start": 1791048129647
+      },
+      "skipped": false,
+      "snapshot": {
+        "added": 0,
+        "fileDeleted": false,
+        "matched": 0,
+        "unchecked": 0,
+        "uncheckedKeys": [],
+        "unmatched": 0,
+        "updated": 0
+      },
+      "testFilePath": "/workspace/book-library-nestjs/src/books/books.controller.spec.ts",
+      "testResults": [
+        {
+          "ancestorTitles": [
+            "Books Controller",
+            "findAll"
+          ],
+          "duration": 187,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "Books Controller findAll should return an array of Books",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 33
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048130290,
+          "status": "passed",
+          "title": "should return an array of Books"
+        }
+      ],
+      "failureMessage": null
+    },
+    {
+      "leaks": false,
+      "numFailingTests": 0,
+      "numPassingTests": 4,
+      "numPendingTests": 0,
+      "numTodoTests": 0,
+      "openHandles": [],
+      "perfStats": {
+        "end": 1791048131349,
+        "loadTestEnvironmentEnd": 1791048130489,
+        "loadTestEnvironmentStart": 1791048130486,
+        "runtime": 860,
+        "setupAfterEnvEnd": 1791048130568,
+        "setupAfterEnvStart": 1791048130568,
+        "setupFilesEnd": 1791048130489,
+        "setupFilesStart": 1791048130489,
+        "slow": false,
+        "start": 1791048130489
+      },
+      "skipped": false,
+      "snapshot": {
+        "added": 0,
+        "fileDeleted": false,
+        "matched": 0,
+        "unchecked": 0,
+        "uncheckedKeys": [],
+        "unmatched": 0,
+        "updated": 0
+      },
+      "testFilePath": "/workspace/book-library-nestjs/src/auth/auth-endpoint-throttle.guard.spec.ts",
+      "testResults": [
+        {
+          "ancestorTitles": [
+            "AuthEndpointThrottleGuard"
+          ],
+          "duration": 3,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthEndpointThrottleGuard counts a valid login source before DTO handling and attaches safe context",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 38
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048131336,
+          "status": "passed",
+          "title": "counts a valid login source before DTO handling and attaches safe context"
+        },
+        {
+          "ancestorTitles": [
+            "AuthEndpointThrottleGuard"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthEndpointThrottleGuard counts a normalizable missing-credential request against both boundaries",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 61
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048131345,
+          "status": "passed",
+          "title": "counts a normalizable missing-credential request against both boundaries"
+        },
+        {
+          "ancestorTitles": [
+            "AuthEndpointThrottleGuard"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthEndpointThrottleGuard resolves a refresh family before consuming source and family boundaries",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 77
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048131346,
+          "status": "passed",
+          "title": "resolves a refresh family before consuming source and family boundaries"
+        },
+        {
+          "ancestorTitles": [
+            "AuthEndpointThrottleGuard"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthEndpointThrottleGuard fails closed with one generic 429 and optional Retry-After",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 96
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048131347,
+          "status": "passed",
+          "title": "fails closed with one generic 429 and optional Retry-After"
+        }
+      ],
+      "failureMessage": null
+    },
+    {
+      "leaks": false,
+      "numFailingTests": 0,
+      "numPassingTests": 34,
+      "numPendingTests": 0,
+      "numTodoTests": 0,
+      "openHandles": [],
+      "perfStats": {
+        "end": 1791048132369,
+        "loadTestEnvironmentEnd": 1791048131356,
+        "loadTestEnvironmentStart": 1791048131352,
+        "runtime": 1013,
+        "setupAfterEnvEnd": 1791048131488,
+        "setupAfterEnvStart": 1791048131488,
+        "setupFilesEnd": 1791048131356,
+        "setupFilesStart": 1791048131356,
+        "slow": false,
+        "start": 1791048131356
+      },
+      "skipped": false,
+      "snapshot": {
+        "added": 0,
+        "fileDeleted": false,
+        "matched": 0,
+        "unchecked": 0,
+        "uncheckedKeys": [],
+        "unmatched": 0,
+        "updated": 0
+      },
+      "testFilePath": "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+      "testResults": [
+        {
+          "ancestorTitles": [
+            "AuthService login contract",
+            "when AuthService is implemented"
+          ],
+          "duration": 6,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService login contract when AuthService is implemented returns a JWT and redacted user for valid active staff credentials",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 35
+          },
+          "numPassingAsserts": 4,
+          "retryReasons": [],
+          "startAt": 1791048132306,
+          "status": "passed",
+          "title": "returns a JWT and redacted user for valid active staff credentials"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService login contract",
+            "when AuthService is implemented"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService login contract when AuthService is implemented rejects inactive staff/admin users before issuing a token",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 100
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048132327,
+          "status": "passed",
+          "title": "rejects inactive staff/admin users before issuing a token"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService login contract",
+            "when AuthService is implemented"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService login contract when AuthService is implemented creates a staff refresh session with hashed-token family metadata",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 133
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048132329,
+          "status": "passed",
+          "title": "creates a staff refresh session with hashed-token family metadata"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService login contract",
+            "when AuthService is implemented"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService login contract when AuthService is implemented returns a member JWT and redacted member profile for valid member credentials",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 184
+          },
+          "numPassingAsserts": 6,
+          "retryReasons": [],
+          "startAt": 1791048132331,
+          "status": "passed",
+          "title": "returns a member JWT and redacted member profile for valid member credentials"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService login contract",
+            "when AuthService is implemented"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService login contract when AuthService is implemented rejects suspended member credentials before issuing a token",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 263
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048132333,
+          "status": "passed",
+          "title": "rejects suspended member credentials before issuing a token"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService login contract",
+            "when AuthService is implemented"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService login contract when AuthService is implemented revokes a rotated member family when the member is no longer active",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 297
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048132334,
+          "status": "passed",
+          "title": "revokes a rotated member family when the member is no longer active"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService login contract",
+            "when AuthService is implemented"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService login contract when AuthService is implemented revokes a rotated member family when authVersion is stale",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 332
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048132335,
+          "status": "passed",
+          "title": "revokes a rotated member family when authVersion is stale"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService login contract",
+            "when AuthService is implemented"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService login contract when AuthService is implemented keeps the refresh denial generic when inactive-family revocation fails",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 366
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048132336,
+          "status": "passed",
+          "title": "keeps the refresh denial generic when inactive-family revocation fails"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService login contract",
+            "when AuthService is implemented"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService login contract when AuthService is implemented revokes a rotated staff family when account authVersion is newer than the session",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 403
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048132337,
+          "status": "passed",
+          "title": "revokes a rotated staff family when account authVersion is newer than the session"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available uses the normalized reserved staff identity and server role area",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 603
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048132338,
+          "status": "passed",
+          "title": "uses the normalized reserved staff identity and server role area"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available uses empty membership type fields when the member profile is absent",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 626
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048132340,
+          "status": "passed",
+          "title": "uses empty membership type fields when the member profile is absent"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 3,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available accepts a completed activation gate and fails closed for missing or failed gates",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 652
+          },
+          "numPassingAsserts": 10,
+          "retryReasons": [],
+          "startAt": 1791048132341,
+          "status": "passed",
+          "title": "accepts a completed activation gate and fails closed for missing or failed gates"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available fails a inactive reservation generically with a redacted request",
+          "invocations": 1,
+          "location": {
+            "column": 7,
+            "line": 718
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048132344,
+          "status": "passed",
+          "title": "fails a inactive reservation generically with a redacted request"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available fails a active reservation without a subject type generically with a redacted request",
+          "invocations": 1,
+          "location": {
+            "column": 7,
+            "line": 718
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048132346,
+          "status": "passed",
+          "title": "fails a active reservation without a subject type generically with a redacted request"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available fails a active reservation without a subject id generically with a redacted request",
+          "invocations": 1,
+          "location": {
+            "column": 7,
+            "line": 718
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048132347,
+          "status": "passed",
+          "title": "fails a active reservation without a subject id generically with a redacted request"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available keeps unresolved identifier generic and records only a redacted category",
+          "invocations": 1,
+          "location": {
+            "column": 7,
+            "line": 842
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048132348,
+          "status": "passed",
+          "title": "keeps unresolved identifier generic and records only a redacted category"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available keeps conflicting identifier generic and records only a redacted category",
+          "invocations": 1,
+          "location": {
+            "column": 7,
+            "line": 842
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048132349,
+          "status": "passed",
+          "title": "keeps conflicting identifier generic and records only a redacted category"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available keeps mismatched staff reservation generic and records only a redacted category",
+          "invocations": 1,
+          "location": {
+            "column": 7,
+            "line": 842
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048132350,
+          "status": "passed",
+          "title": "keeps mismatched staff reservation generic and records only a redacted category"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available keeps inactive staff account generic and records only a redacted category",
+          "invocations": 1,
+          "location": {
+            "column": 7,
+            "line": 842
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048132351,
+          "status": "passed",
+          "title": "keeps inactive staff account generic and records only a redacted category"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available keeps invalid staff password generic and records only a redacted category",
+          "invocations": 1,
+          "location": {
+            "column": 7,
+            "line": 842
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048132352,
+          "status": "passed",
+          "title": "keeps invalid staff password generic and records only a redacted category"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available keeps mismatched member reservation generic and records only a redacted category",
+          "invocations": 1,
+          "location": {
+            "column": 7,
+            "line": 842
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048132353,
+          "status": "passed",
+          "title": "keeps mismatched member reservation generic and records only a redacted category"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available keeps inactive member account generic and records only a redacted category",
+          "invocations": 1,
+          "location": {
+            "column": 7,
+            "line": 842
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048132354,
+          "status": "passed",
+          "title": "keeps inactive member account generic and records only a redacted category"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available keeps locked member authentication generic and records only a redacted category",
+          "invocations": 1,
+          "location": {
+            "column": 7,
+            "line": 842
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048132355,
+          "status": "passed",
+          "title": "keeps locked member authentication generic and records only a redacted category"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available keeps member without a password credential generic and records only a redacted category",
+          "invocations": 1,
+          "location": {
+            "column": 7,
+            "line": 842
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048132356,
+          "status": "passed",
+          "title": "keeps member without a password credential generic and records only a redacted category"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available keeps invalid member password generic and records only a redacted category",
+          "invocations": 1,
+          "location": {
+            "column": 7,
+            "line": 842
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048132356,
+          "status": "passed",
+          "title": "keeps invalid member password generic and records only a redacted category"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available fails a non-string identifier generically without querying reservations",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 860
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048132357,
+          "status": "passed",
+          "title": "fails a non-string identifier generically without querying reservations"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available fails generically when identifier reservations are unavailable",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 875
+          },
+          "numPassingAsserts": 4,
+          "retryReasons": [],
+          "startAt": 1791048132358,
+          "status": "passed",
+          "title": "fails generically when identifier reservations are unavailable"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available keeps dedicated failed-sign-in recording behind the generic response",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 890
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048132359,
+          "status": "passed",
+          "title": "keeps dedicated failed-sign-in recording behind the generic response"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available normalizes a non-string password into the same generic denial",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 905
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048132360,
+          "status": "passed",
+          "title": "normalizes a non-string password into the same generic denial"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available fails a gated reservation when the operation model is unavailable",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 916
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048132361,
+          "status": "passed",
+          "title": "fails a gated reservation when the operation model is unavailable"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available uses zero auth versions when reserved account versions are absent",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 937
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048132362,
+          "status": "passed",
+          "title": "uses zero auth versions when reserved account versions are absent"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available keeps unresolved activity redacted with fallback-version string key material",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 965
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048132364,
+          "status": "passed",
+          "title": "keeps unresolved activity redacted with fallback-version string key material"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available fails a reserved member generically when member auth is unavailable",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 987
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048132365,
+          "status": "passed",
+          "title": "fails a reserved member generically when member auth is unavailable"
+        },
+        {
+          "ancestorTitles": [
+            "AuthService shared login resolution",
+            "when identifier reservations are available"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthService shared login resolution when identifier reservations are available authenticates a staff identity with no roles but issues no permissions",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 1006
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048132366,
+          "status": "passed",
+          "title": "authenticates a staff identity with no roles but issues no permissions"
+        }
+      ],
+      "failureMessage": null
+    },
+    {
+      "leaks": false,
+      "numFailingTests": 0,
+      "numPassingTests": 11,
+      "numPendingTests": 0,
+      "numTodoTests": 0,
+      "openHandles": [],
+      "perfStats": {
+        "end": 1791048133117,
+        "loadTestEnvironmentEnd": 1791048132387,
+        "loadTestEnvironmentStart": 1791048132383,
+        "runtime": 730,
+        "setupAfterEnvEnd": 1791048132479,
+        "setupAfterEnvStart": 1791048132479,
+        "setupFilesEnd": 1791048132387,
+        "setupFilesStart": 1791048132387,
+        "slow": false,
+        "start": 1791048132387
+      },
+      "skipped": false,
+      "snapshot": {
+        "added": 0,
+        "fileDeleted": false,
+        "matched": 0,
+        "unchecked": 0,
+        "uncheckedKeys": [],
+        "unmatched": 0,
+        "updated": 0
+      },
+      "testFilePath": "/workspace/book-library-nestjs/src/auth/auth.controller.spec.ts",
+      "testResults": [
+        {
+          "ancestorTitles": [
+            "AuthController shared authentication adapters"
+          ],
+          "duration": 4,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthController shared authentication adapters maps login to shared auth and sets the absolute-expiry named cookie",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 135
+          },
+          "numPassingAsserts": 5,
+          "retryReasons": [],
+          "startAt": 1791048133088,
+          "status": "passed",
+          "title": "maps login to shared auth and sets the absolute-expiry named cookie"
+        },
+        {
+          "ancestorTitles": [
+            "AuthController shared authentication adapters"
+          ],
+          "duration": 2,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthController shared authentication adapters maps staffLogin to shared auth and sets the absolute-expiry named cookie",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 135
+          },
+          "numPassingAsserts": 5,
+          "retryReasons": [],
+          "startAt": 1791048133100,
+          "status": "passed",
+          "title": "maps staffLogin to shared auth and sets the absolute-expiry named cookie"
+        },
+        {
+          "ancestorTitles": [
+            "AuthController shared authentication adapters"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthController shared authentication adapters maps memberLogin to shared auth and sets the absolute-expiry named cookie",
+          "invocations": 1,
+          "location": {
+            "column": 5,
+            "line": 135
+          },
+          "numPassingAsserts": 5,
+          "retryReasons": [],
+          "startAt": 1791048133102,
+          "status": "passed",
+          "title": "maps memberLogin to shared auth and sets the absolute-expiry named cookie"
+        },
+        {
+          "ancestorTitles": [
+            "AuthController shared authentication adapters"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthController shared authentication adapters projects member and staff auth contexts without cross-area fields",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 162
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048133103,
+          "status": "passed",
+          "title": "projects member and staff auth contexts without cross-area fields"
+        },
+        {
+          "ancestorTitles": [
+            "AuthController shared authentication adapters"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthController shared authentication adapters forwards the public security activity query result",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 200
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048133104,
+          "status": "passed",
+          "title": "forwards the public security activity query result"
+        },
+        {
+          "ancestorTitles": [
+            "AuthController shared authentication adapters"
+          ],
+          "duration": 5,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthController shared authentication adapters reports when security activity is unavailable",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 215
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048133105,
+          "status": "passed",
+          "title": "reports when security activity is unavailable"
+        },
+        {
+          "ancestorTitles": [
+            "AuthController shared authentication adapters"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthController shared authentication adapters returns only the public conflict outcome and applies its HTTP status",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 223
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048133110,
+          "status": "passed",
+          "title": "returns only the public conflict outcome and applies its HTTP status"
+        },
+        {
+          "ancestorTitles": [
+            "AuthController shared authentication adapters"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthController shared authentication adapters clears the named cookie without a service call when auth context is absent",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 245
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048133111,
+          "status": "passed",
+          "title": "clears the named cookie without a service call when auth context is absent"
+        },
+        {
+          "ancestorTitles": [
+            "AuthController shared authentication adapters"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthController shared authentication adapters revokes all sessions for a present auth context before clearing the cookie",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 259
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048133112,
+          "status": "passed",
+          "title": "revokes all sessions for a present auth context before clearing the cookie"
+        },
+        {
+          "ancestorTitles": [
+            "AuthController shared authentication adapters"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthController shared authentication adapters preserves generic login failures while recording identifier throttle state",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 291
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048133114,
+          "status": "passed",
+          "title": "preserves generic login failures while recording identifier throttle state"
+        },
+        {
+          "ancestorTitles": [
+            "AuthController shared authentication adapters"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "AuthController shared authentication adapters preserves generic compatibility-login failures without throttle identifier context",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 315
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048133115,
+          "status": "passed",
+          "title": "preserves generic compatibility-login failures without throttle identifier context"
+        }
+      ],
+      "failureMessage": null
+    },
+    {
+      "leaks": false,
+      "numFailingTests": 0,
+      "numPassingTests": 3,
+      "numPendingTests": 0,
+      "numTodoTests": 0,
+      "openHandles": [],
+      "perfStats": {
+        "end": 1791048133700,
+        "loadTestEnvironmentEnd": 1791048133141,
+        "loadTestEnvironmentStart": 1791048133138,
+        "runtime": 559,
+        "setupAfterEnvEnd": 1791048133190,
+        "setupAfterEnvStart": 1791048133190,
+        "setupFilesEnd": 1791048133141,
+        "setupFilesStart": 1791048133141,
+        "slow": false,
+        "start": 1791048133141
+      },
+      "skipped": false,
+      "snapshot": {
+        "added": 0,
+        "fileDeleted": false,
+        "matched": 0,
+        "unchecked": 0,
+        "uncheckedKeys": [],
+        "unmatched": 0,
+        "updated": 0
+      },
+      "testFilePath": "/workspace/book-library-nestjs/src/book-categories/book-categories.controller.spec.ts",
+      "testResults": [
+        {
+          "ancestorTitles": [
+            "BookCategoriesController"
+          ],
+          "duration": 3,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "BookCategoriesController forwards the original create DTO and actor and returns the service response",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 35
+          },
+          "numPassingAsserts": 4,
+          "retryReasons": [],
+          "startAt": 1791048133688,
+          "status": "passed",
+          "title": "forwards the original create DTO and actor and returns the service response"
+        },
+        {
+          "ancestorTitles": [
+            "BookCategoriesController"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "BookCategoriesController forwards the exact list query and returns the service response",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 61
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048133697,
+          "status": "passed",
+          "title": "forwards the exact list query and returns the service response"
+        },
+        {
+          "ancestorTitles": [
+            "BookCategoriesController"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "BookCategoriesController forwards the id, original update DTO, and actor and returns the service response",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 84
+          },
+          "numPassingAsserts": 5,
+          "retryReasons": [],
+          "startAt": 1791048133698,
+          "status": "passed",
+          "title": "forwards the id, original update DTO, and actor and returns the service response"
+        }
+      ],
+      "failureMessage": null
+    },
+    {
+      "leaks": false,
+      "numFailingTests": 0,
+      "numPassingTests": 5,
+      "numPendingTests": 0,
+      "numTodoTests": 0,
+      "openHandles": [],
+      "perfStats": {
+        "end": 1791048134121,
+        "loadTestEnvironmentEnd": 1791048133705,
+        "loadTestEnvironmentStart": 1791048133701,
+        "runtime": 416,
+        "setupAfterEnvEnd": 1791048133759,
+        "setupAfterEnvStart": 1791048133759,
+        "setupFilesEnd": 1791048133705,
+        "setupFilesStart": 1791048133705,
+        "slow": false,
+        "start": 1791048133705
+      },
+      "skipped": false,
+      "snapshot": {
+        "added": 0,
+        "fileDeleted": false,
+        "matched": 0,
+        "unchecked": 0,
+        "uncheckedKeys": [],
+        "unmatched": 0,
+        "updated": 0
+      },
+      "testFilePath": "/workspace/book-library-nestjs/src/auth/permissions.guard.spec.ts",
+      "testResults": [
+        {
+          "ancestorTitles": [
+            "PermissionsGuard and permission mapping"
+          ],
+          "duration": 3,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "PermissionsGuard and permission mapping maps staff and admin roles to stable permissions",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 27
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048134103,
+          "status": "passed",
+          "title": "maps staff and admin roles to stable permissions"
+        },
+        {
+          "ancestorTitles": [
+            "PermissionsGuard and permission mapping"
+          ],
+          "duration": 4,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "PermissionsGuard and permission mapping denies by default when permission metadata is missing",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 49
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048134112,
+          "status": "passed",
+          "title": "denies by default when permission metadata is missing"
+        },
+        {
+          "ancestorTitles": [
+            "PermissionsGuard and permission mapping"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "PermissionsGuard and permission mapping bypasses permission checks only for explicit public metadata",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 64
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048134116,
+          "status": "passed",
+          "title": "bypasses permission checks only for explicit public metadata"
+        },
+        {
+          "ancestorTitles": [
+            "PermissionsGuard and permission mapping"
+          ],
+          "duration": 2,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "PermissionsGuard and permission mapping rejects member tokens from staff permissions and records a safe denial event",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 78
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048134117,
+          "status": "passed",
+          "title": "rejects member tokens from staff permissions and records a safe denial event"
+        },
+        {
+          "ancestorTitles": [
+            "PermissionsGuard and permission mapping"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "PermissionsGuard and permission mapping allows authenticated users with all required permissions",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 107
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048134119,
+          "status": "passed",
+          "title": "allows authenticated users with all required permissions"
+        }
+      ],
+      "failureMessage": null
+    },
+    {
+      "leaks": false,
+      "numFailingTests": 0,
+      "numPassingTests": 11,
+      "numPendingTests": 0,
+      "numTodoTests": 0,
+      "openHandles": [],
+      "perfStats": {
+        "end": 1791048134612,
+        "loadTestEnvironmentEnd": 1791048134140,
+        "loadTestEnvironmentStart": 1791048134137,
+        "runtime": 472,
+        "setupAfterEnvEnd": 1791048134190,
+        "setupAfterEnvStart": 1791048134190,
+        "setupFilesEnd": 1791048134140,
+        "setupFilesStart": 1791048134140,
+        "slow": false,
+        "start": 1791048134140
+      },
+      "skipped": false,
+      "snapshot": {
+        "added": 0,
+        "fileDeleted": false,
+        "matched": 0,
+        "unchecked": 0,
+        "uncheckedKeys": [],
+        "unmatched": 0,
+        "updated": 0
+      },
+      "testFilePath": "/workspace/book-library-nestjs/src/auth/permissions.service.spec.ts",
+      "testResults": [
+        {
+          "ancestorTitles": [
+            "PermissionsService"
+          ],
+          "duration": 2,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "PermissionsService returns no permissions for empty scope undefined",
+          "invocations": 1,
+          "location": {
+            "column": 34,
+            "line": 21
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048134559,
+          "status": "passed",
+          "title": "returns no permissions for empty scope undefined"
+        },
+        {
+          "ancestorTitles": [
+            "PermissionsService"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "PermissionsService returns no permissions for empty scope \"\"",
+          "invocations": 1,
+          "location": {
+            "column": 34,
+            "line": 21
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048134571,
+          "status": "passed",
+          "title": "returns no permissions for empty scope \"\""
+        },
+        {
+          "ancestorTitles": [
+            "PermissionsService"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "PermissionsService returns no permissions for empty scope \"   \"",
+          "invocations": 1,
+          "location": {
+            "column": 34,
+            "line": 21
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048134572,
+          "status": "passed",
+          "title": "returns no permissions for empty scope \"   \""
+        },
+        {
+          "ancestorTitles": [
+            "PermissionsService"
+          ],
+          "duration": 30,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "PermissionsService filters unknown permissions from scopes and payload arrays",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 28
+          },
+          "numPassingAsserts": 2,
+          "retryReasons": [],
+          "startAt": 1791048134573,
+          "status": "passed",
+          "title": "filters unknown permissions from scopes and payload arrays"
+        },
+        {
+          "ancestorTitles": [
+            "PermissionsService"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "PermissionsService uses default staff roles and payload permissions before role permissions",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 44
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048134604,
+          "status": "passed",
+          "title": "uses default staff roles and payload permissions before role permissions"
+        },
+        {
+          "ancestorTitles": [
+            "PermissionsService"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "PermissionsService builds member contexts with default member permissions and token metadata",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 56
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048134605,
+          "status": "passed",
+          "title": "builds member contexts with default member permissions and token metadata"
+        },
+        {
+          "ancestorTitles": [
+            "PermissionsService"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "PermissionsService uses scoped payload permissions and account auth versions when present",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 81
+          },
+          "numPassingAsserts": 5,
+          "retryReasons": [],
+          "startAt": 1791048134606,
+          "status": "passed",
+          "title": "uses scoped payload permissions and account auth versions when present"
+        },
+        {
+          "ancestorTitles": [
+            "PermissionsService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "PermissionsService prefers embedded authContext and rejects incomplete request users",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 98
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048134607,
+          "status": "passed",
+          "title": "prefers embedded authContext and rejects incomplete request users"
+        },
+        {
+          "ancestorTitles": [
+            "PermissionsService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "PermissionsService normalizes a complete request user and requires every requested permission",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 104
+          },
+          "numPassingAsserts": 5,
+          "retryReasons": [],
+          "startAt": 1791048134608,
+          "status": "passed",
+          "title": "normalizes a complete request user and requires every requested permission"
+        },
+        {
+          "ancestorTitles": [
+            "PermissionsService"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "PermissionsService preserves supplied staff context fields during request normalization",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 135
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048134609,
+          "status": "passed",
+          "title": "preserves supplied staff context fields during request normalization"
+        },
+        {
+          "ancestorTitles": [
+            "PermissionsService"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "PermissionsService reviews every staff role with its effective permissions",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 162
+          },
+          "numPassingAsserts": 1,
+          "retryReasons": [],
+          "startAt": 1791048134609,
+          "status": "passed",
+          "title": "reviews every staff role with its effective permissions"
+        }
+      ],
+      "failureMessage": null
+    },
+    {
+      "leaks": false,
+      "numFailingTests": 0,
+      "numPassingTests": 3,
+      "numPendingTests": 0,
+      "numTodoTests": 0,
+      "openHandles": [],
+      "perfStats": {
+        "end": 1791048135257,
+        "loadTestEnvironmentEnd": 1791048134616,
+        "loadTestEnvironmentStart": 1791048134613,
+        "runtime": 640,
+        "setupAfterEnvEnd": 1791048134671,
+        "setupAfterEnvStart": 1791048134671,
+        "setupFilesEnd": 1791048134617,
+        "setupFilesStart": 1791048134617,
+        "slow": false,
+        "start": 1791048134617
+      },
+      "skipped": false,
+      "snapshot": {
+        "added": 0,
+        "fileDeleted": false,
+        "matched": 0,
+        "unchecked": 0,
+        "uncheckedKeys": [],
+        "unmatched": 0,
+        "updated": 0
+      },
+      "testFilePath": "/workspace/book-library-nestjs/src/staff-users/staff-users.controller.spec.ts",
+      "testResults": [
+        {
+          "ancestorTitles": [
+            "StaffUsersController"
+          ],
+          "duration": 3,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "StaffUsersController forwards the original create DTO and actor and returns the service response",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 36
+          },
+          "numPassingAsserts": 4,
+          "retryReasons": [],
+          "startAt": 1791048135244,
+          "status": "passed",
+          "title": "forwards the original create DTO and actor and returns the service response"
+        },
+        {
+          "ancestorTitles": [
+            "StaffUsersController"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "StaffUsersController forwards the exact list query and returns the service response",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 64
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048135254,
+          "status": "passed",
+          "title": "forwards the exact list query and returns the service response"
+        },
+        {
+          "ancestorTitles": [
+            "StaffUsersController"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "StaffUsersController forwards the id, original update DTO, and actor and returns the service response",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 89
+          },
+          "numPassingAsserts": 5,
+          "retryReasons": [],
+          "startAt": 1791048135255,
+          "status": "passed",
+          "title": "forwards the id, original update DTO, and actor and returns the service response"
+        }
+      ],
+      "failureMessage": null
+    },
+    {
+      "leaks": false,
+      "numFailingTests": 0,
+      "numPassingTests": 3,
+      "numPendingTests": 0,
+      "numTodoTests": 0,
+      "openHandles": [],
+      "perfStats": {
+        "end": 1791048135777,
+        "loadTestEnvironmentEnd": 1791048135263,
+        "loadTestEnvironmentStart": 1791048135258,
+        "runtime": 514,
+        "setupAfterEnvEnd": 1791048135340,
+        "setupAfterEnvStart": 1791048135340,
+        "setupFilesEnd": 1791048135263,
+        "setupFilesStart": 1791048135263,
+        "slow": false,
+        "start": 1791048135263
+      },
+      "skipped": false,
+      "snapshot": {
+        "added": 0,
+        "fileDeleted": false,
+        "matched": 0,
+        "unchecked": 0,
+        "uncheckedKeys": [],
+        "unmatched": 0,
+        "updated": 0
+      },
+      "testFilePath": "/workspace/book-library-nestjs/src/membership-types/membership-types.controller.spec.ts",
+      "testResults": [
+        {
+          "ancestorTitles": [
+            "MembershipTypesController"
+          ],
+          "duration": 3,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembershipTypesController forwards the original create DTO and actor and returns the service response",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 35
+          },
+          "numPassingAsserts": 4,
+          "retryReasons": [],
+          "startAt": 1791048135765,
+          "status": "passed",
+          "title": "forwards the original create DTO and actor and returns the service response"
+        },
+        {
+          "ancestorTitles": [
+            "MembershipTypesController"
+          ],
+          "duration": 1,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembershipTypesController forwards the exact list query and returns the service response",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 61
+          },
+          "numPassingAsserts": 3,
+          "retryReasons": [],
+          "startAt": 1791048135774,
+          "status": "passed",
+          "title": "forwards the exact list query and returns the service response"
+        },
+        {
+          "ancestorTitles": [
+            "MembershipTypesController"
+          ],
+          "duration": 0,
+          "failing": false,
+          "failureDetails": [],
+          "failureMessages": [],
+          "fullName": "MembershipTypesController forwards the id, original update DTO, and actor and returns the service response",
+          "invocations": 1,
+          "location": {
+            "column": 3,
+            "line": 84
+          },
+          "numPassingAsserts": 5,
+          "retryReasons": [],
+          "startAt": 1791048135776,
+          "status": "passed",
+          "title": "forwards the id, original update DTO, and actor and returns the service response"
+        }
+      ],
+      "failureMessage": null
+    }
+  ],
+  "wasInterrupted": false
+}
