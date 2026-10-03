@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { METHOD_METADATA, PATH_METADATA } from '@nestjs/common/constants';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
+import request from 'supertest';
 
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
 import { MemberAuthGuard } from '../src/auth/member-auth.guard';

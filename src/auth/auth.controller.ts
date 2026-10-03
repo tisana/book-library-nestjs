@@ -20,7 +20,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { LoginDto, LoginResponseDto } from '../staff-users/dto/staff-user.dto';
 import { MemberLoginDto, MemberLoginResponseDto } from './dto/member-auth.dto';
 import { AuthService, refreshCookieName } from './auth.service';
@@ -30,7 +30,7 @@ import { AuthBrowserOriginGuard } from './auth-browser-origin.guard';
 import {
   assertAuthThrottleAllowed,
   AuthEndpointThrottleGuard,
-  RequestWithAuthThrottle,
+  type RequestWithAuthThrottle,
 } from './auth-endpoint-throttle.guard';
 import { AuthThrottleService } from './auth-throttle.service';
 import { PermissionsGuard } from './permissions.guard';

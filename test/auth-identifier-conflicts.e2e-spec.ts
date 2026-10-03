@@ -7,7 +7,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AuthBrowserOriginGuard } from '../src/auth/auth-browser-origin.guard';
 import { AuthController } from '../src/auth/auth.controller';
 import { AuthEndpointThrottleGuard } from '../src/auth/auth-endpoint-throttle.guard';

@@ -5,7 +5,7 @@ import { join, resolve } from 'node:path';
 import * as bcrypt from 'bcryptjs';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { Types } from 'mongoose';
-import * as request from 'supertest';
+import request from 'supertest';
 import {
   loadMigrations,
   MigrationConnection,
@@ -20,8 +20,8 @@ import {
   startProductionProcess,
 } from './support/production-process';
 
-// T0 verified the full-checkout Nest 11 artifact. T3 changes this explicit path.
-const entryPath = resolve(__dirname, '../dist/src/main.js');
+// Explicit source-only CommonJS artifact verified by the Nest 12 build.
+const entryPath = resolve(__dirname, '../dist/main.js');
 const origins = ['https://library.example.test', 'https://staff.example.test'];
 const password = randomBytes(32).toString('base64url');
 const staffIdentifier = 'production-staff@example.test';
@@ -88,7 +88,7 @@ function refreshCookie(response: request.Response): string {
   return cookie.split(';')[0];
 }
 
-describe('Compiled production bootstrap (Nest 11 characterization)', () => {
+describe('Compiled production bootstrap (Nest 12 compatibility)', () => {
   let mongo: MongoMemoryReplSet | undefined;
   let context: MongoTestContext | undefined;
   let staticDirectory: string | undefined;
