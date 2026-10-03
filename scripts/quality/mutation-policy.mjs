@@ -748,8 +748,8 @@ function validateCompleteProvenance({
   if (summary.commitSha !== currentCommit) {
     fail('complete summary commitSha must equal the current committed state.');
   }
-  if (summary.nodeMajor !== 22) {
-    fail('complete summary nodeMajor must equal 22.');
+  if (summary.nodeMajor !== 24) {
+    fail('complete summary nodeMajor must equal 24.');
   }
   requireSha256(
     summary.configurationSha256,
