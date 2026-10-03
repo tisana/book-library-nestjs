@@ -1,0 +1,25 @@
+Bounded diagnostic only; not complete/smoke acceptance. Original debug output condensed to producer stages; exact mutants/statuses retained in mutation-startup-diagnostics.json.
+07:42:57 (75038) INFO Instrumenter Instrumented 1 source file(s) with 9 mutant(s)
+07:43:07 (75038) INFO ConcurrencyTokenProvider Creating 4 test runner process(es).
+07:43:07 (75038) DEBUG Sandbox Creating a sandbox for files in /tmp/nestjs-t5-diagnostic-original-sandbox/sandbox-UMscSp
+07:43:09 (75038) DEBUG TimeoutDecorator Starting timeout timer (300000 ms) for a test run
+07:43:19 (75038) INFO DryRunExecutor Initial test run succeeded. Ran 98 tests in 10 seconds (net 218 ms, overhead 10439 ms).
+07:43:19 (75038) DEBUG TimeoutDecorator Starting timeout timer (15508 ms) for a test run
+07:43:19 (75038) DEBUG TimeoutDecorator Starting timeout timer (15508 ms) for a test run
+07:43:19 (75038) DEBUG TimeoutDecorator Starting timeout timer (15508 ms) for a test run
+07:43:19 (75038) DEBUG TimeoutDecorator Starting timeout timer (15503.5 ms) for a test run
+07:43:35 (75038) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout
+07:43:35 (75038) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout
+07:43:35 (75038) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout
+07:43:35 (75038) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout
+07:43:41 (75038) DEBUG TimeoutDecorator Starting timeout timer (15440.5 ms) for a test run
+07:43:41 (75038) DEBUG TimeoutDecorator Starting timeout timer (15440.5 ms) for a test run
+07:43:41 (75038) DEBUG TimeoutDecorator Starting timeout timer (15508 ms) for a test run
+07:43:41 (75038) DEBUG TimeoutDecorator Starting timeout timer (15640 ms) for a test run
+07:43:56 (75038) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout
+07:43:56 (75038) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout
+07:43:56 (75038) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout
+07:43:57 (75038) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout
+07:44:00 (75038) DEBUG TimeoutDecorator Starting timeout timer (15640 ms) for a test run
+07:44:09 (75038) INFO MutationTestReportHelper Final mutation score of 100.00 is greater than or equal to break threshold 70
+07:44:09 (75038) INFO MutationTestExecutor Done in 1 minute and 12 seconds.

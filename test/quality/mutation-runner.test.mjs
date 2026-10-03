@@ -10,7 +10,7 @@ import {
   statSync,
   writeFileSync,
 } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { availableParallelism, tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { after, before, test } from 'node:test';
@@ -767,7 +767,7 @@ test('complete profile has five disjoint full-source shards', () => {
     const config = buildStrykerConfig('complete', MANIFEST, shard.id);
     owned.push(...config.mutate);
     assert.deepEqual(config.mutate, [shard.source]);
-    assert.equal(config.concurrency, 4);
+    assert.equal(config.concurrency, Math.min(4, availableParallelism()));
     const root = `reports/mutation/complete/shards/${shard.id}`;
     assert.equal(config.jsonReporter.fileName, `${root}/mutation.json`);
     assert.equal(config.htmlReporter.fileName, `${root}/mutation.html`);
@@ -804,7 +804,28 @@ test('smoke shards own every reviewed rule exactly once with isolated config', (
 
 // Production break caught: members loses the approved idle-runner four-worker
 // setting, or any other whole-source shard changes from two workers.
-test('smoke uses the exact five-shard concurrency map', () => {
+test('mutation worker caps preserve maximums on small and large runners', () => {
+  for (const cpus of [1, 2, 4, 8]) {
+    for (const shard of SMOKE_SHARDS) {
+      assert.equal(
+        buildStrykerConfig('smoke', MANIFEST, shard.id, cpus).concurrency,
+        Math.min(shard.concurrency, cpus),
+      );
+      assert.equal(
+        buildStrykerConfig('complete', MANIFEST, shard.id, cpus).concurrency,
+        Math.min(4, cpus),
+      );
+    }
+  }
+  for (const cpus of [0, -1, 1.5, NaN]) {
+    assert.throws(
+      () => buildStrykerConfig('complete', MANIFEST, 'token-session', cpus),
+      /positive integer/,
+    );
+  }
+});
+
+test('smoke preserves five-shard concurrency maximums within available CPUs', () => {
   const actual = Object.fromEntries(
     SMOKE_SHARDS.map((shard) => [
       shard.id,
@@ -813,11 +834,11 @@ test('smoke uses the exact five-shard concurrency map', () => {
   );
 
   assert.deepEqual(actual, {
-    'token-session': 2,
-    'identifier-repair': 2,
-    'identifier-reconciliation': 2,
-    members: 4,
-    borrowings: 2,
+    'token-session': Math.min(2, availableParallelism()),
+    'identifier-repair': Math.min(2, availableParallelism()),
+    'identifier-reconciliation': Math.min(2, availableParallelism()),
+    members: Math.min(4, availableParallelism()),
+    borrowings: Math.min(2, availableParallelism()),
   });
 });
 
@@ -828,7 +849,7 @@ test('smoke members selects only its direct service specification', () => {
   const config = buildStrykerConfig('smoke', MANIFEST, 'members');
 
   assert.deepEqual(config.jest, MEMBERS_SMOKE_JEST);
-  assert.equal(config.concurrency, 4);
+  assert.equal(config.concurrency, Math.min(4, availableParallelism()));
   assert.ok(
     config.mutate.every((range) =>
       range.startsWith('src/members/members.service.ts:'),
@@ -868,7 +889,7 @@ test('smoke members Jest config discovers exactly the intended specification', (
 });
 
 // Production break caught: a profile weakens the agreed runner, reporters, or score gate.
-test('all shards and complete use exact Jest, reporters, mutators, thresholds, and fixed concurrency', () => {
+test('all shards and complete use exact Jest, reporters, mutators, thresholds, and capped concurrency maximums', () => {
   const configs = [
     ...SMOKE_SHARDS.map((shard) => ({
       concurrency: shard.concurrency,
@@ -907,7 +928,7 @@ test('all shards and complete use exact Jest, reporters, mutators, thresholds, a
         coverageAnalysis: 'perTest',
         reporters: ['clear-text', 'progress', 'json', 'html'],
         thresholds: { high: 80, low: 70, break: 70 },
-        concurrency,
+        concurrency: Math.min(concurrency, availableParallelism()),
         jest,
       },
     );
@@ -1454,7 +1475,11 @@ test('merged policy cannot be bypassed by zero shard exits', async () => {
 test('distributed smoke config uses the approved whole-source worker map', () => {
   for (const shard of WHOLE_SOURCE_SHARDS) {
     const config = buildStrykerConfig('smoke', MANIFEST, shard.id);
-    assert.equal(config.concurrency, shard.concurrency, shard.id);
+    assert.equal(
+      config.concurrency,
+      Math.min(shard.concurrency, availableParallelism()),
+      shard.id,
+    );
     assert.deepEqual(
       config.mutate,
       MANIFEST.rules

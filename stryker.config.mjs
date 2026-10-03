@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { availableParallelism } from 'node:os';
 
 const SELECTED_SOURCES = [
   'src/auth/token-session.service.ts',
@@ -93,7 +94,15 @@ function smokeRanges(manifest, shard) {
   return ranges;
 }
 
-export function buildStrykerConfig(profile, manifest, shardId) {
+export function buildStrykerConfig(
+  profile,
+  manifest,
+  shardId,
+  availableCpus = availableParallelism(),
+) {
+  if (!Number.isInteger(availableCpus) || availableCpus < 1) {
+    throw new TypeError('Available mutation CPUs must be a positive integer.');
+  }
   const validatedProfile = requireProfile(profile);
   const shard = requireShard(validatedProfile, shardId);
   const reportRoot = `reports/mutation/${validatedProfile}/shards/${shard.id}`;
@@ -102,7 +111,10 @@ export function buildStrykerConfig(profile, manifest, shardId) {
     coverageAnalysis: 'perTest',
     reporters: ['clear-text', 'progress', 'json', 'html'],
     thresholds: { high: 80, low: 70, break: 70 },
-    concurrency: validatedProfile === 'complete' ? 4 : shard.concurrency,
+    concurrency: Math.min(
+      validatedProfile === 'complete' ? 4 : shard.concurrency,
+      availableCpus,
+    ),
     jest:
       validatedProfile === 'smoke' && shard.id === 'members'
         ? {

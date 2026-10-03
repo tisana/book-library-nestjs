@@ -1,0 +1,790 @@
+{
+  "purpose": "Diagnose false startup Timeouts; no partial diagnostic used as a mutation gate",
+  "node": "v24.19.0",
+  "availableParallelism": 2,
+  "logicalCpus": 3,
+  "cpuQuota": "200000 / 100000 (2 CPU)",
+  "memoryLimitBytes": 8589934592,
+  "oomKills": 0,
+  "historicalConfiguredMaximums": {
+    "complete": 4,
+    "smoke": [
+      2,
+      2,
+      2,
+      4,
+      2
+    ]
+  },
+  "newRule": "actual concurrency is min(existing maximum, os.availableParallelism())",
+  "timeoutAndBudgetsUnchanged": true,
+  "compilerOptionsUnchanged": {
+    "diagnostics": true,
+    "isolatedModules": false,
+    "module": "CommonJS",
+    "moduleResolution": "Bundler",
+    "cache": true
+  },
+  "trials": [
+    {
+      "mode": "original",
+      "concurrency": 4,
+      "range": "78-91",
+      "statuses": {
+        "Timeout": 8,
+        "Killed": 1
+      },
+      "mutants": [
+        {
+          "id": "2",
+          "status": "Timeout",
+          "mutator": "ConditionalExpression",
+          "location": {
+            "end": {
+              "column": 33,
+              "line": 79
+            },
+            "start": {
+              "column": 9,
+              "line": 79
+            }
+          },
+          "replacement": "false"
+        },
+        {
+          "id": "3",
+          "status": "Timeout",
+          "mutator": "BlockStatement",
+          "location": {
+            "end": {
+              "column": 6,
+              "line": 84
+            },
+            "start": {
+              "column": 50,
+              "line": 80
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "id": "0",
+          "status": "Timeout",
+          "mutator": "BlockStatement",
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 86
+            },
+            "start": {
+              "column": 24,
+              "line": 78
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "id": "1",
+          "status": "Timeout",
+          "mutator": "ConditionalExpression",
+          "location": {
+            "end": {
+              "column": 33,
+              "line": 79
+            },
+            "start": {
+              "column": 9,
+              "line": 79
+            }
+          },
+          "replacement": "true"
+        },
+        {
+          "id": "5",
+          "status": "Timeout",
+          "mutator": "StringLiteral",
+          "location": {
+            "end": {
+              "column": 67,
+              "line": 82
+            },
+            "start": {
+              "column": 27,
+              "line": 82
+            }
+          },
+          "replacement": "\"\""
+        },
+        {
+          "id": "4",
+          "status": "Timeout",
+          "mutator": "BlockStatement",
+          "location": {
+            "end": {
+              "column": 8,
+              "line": 83
+            },
+            "start": {
+              "column": 62,
+              "line": 81
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "id": "6",
+          "status": "Timeout",
+          "mutator": "OptionalChaining",
+          "location": {
+            "end": {
+              "column": 39,
+              "line": 85
+            },
+            "start": {
+              "column": 5,
+              "line": 85
+            }
+          },
+          "replacement": "this.reconciliationTimer.unref()"
+        },
+        {
+          "id": "7",
+          "status": "Timeout",
+          "mutator": "ConditionalExpression",
+          "location": {
+            "end": {
+              "column": 33,
+              "line": 89
+            },
+            "start": {
+              "column": 9,
+              "line": 89
+            }
+          },
+          "replacement": "true"
+        },
+        {
+          "id": "8",
+          "status": "Killed",
+          "mutator": "ConditionalExpression",
+          "location": {
+            "end": {
+              "column": 33,
+              "line": 89
+            },
+            "start": {
+              "column": 9,
+              "line": 89
+            }
+          },
+          "replacement": "false"
+        }
+      ],
+      "stages": [
+        "07:42:57 (75038) INFO Instrumenter Instrumented 1 source file(s) with 9 mutant(s)",
+        "07:43:07 (75038) INFO ConcurrencyTokenProvider Creating 4 test runner process(es).",
+        "07:43:07 (75038) DEBUG Sandbox Creating a sandbox for files in /tmp/nestjs-t5-diagnostic-original-sandbox/sandbox-UMscSp",
+        "07:43:09 (75038) DEBUG TimeoutDecorator Starting timeout timer (300000 ms) for a test run",
+        "07:43:19 (75038) INFO DryRunExecutor Initial test run succeeded. Ran 98 tests in 10 seconds (net 218 ms, overhead 10439 ms).",
+        "07:43:19 (75038) DEBUG TimeoutDecorator Starting timeout timer (15508 ms) for a test run",
+        "07:43:19 (75038) DEBUG TimeoutDecorator Starting timeout timer (15508 ms) for a test run",
+        "07:43:19 (75038) DEBUG TimeoutDecorator Starting timeout timer (15508 ms) for a test run",
+        "07:43:19 (75038) DEBUG TimeoutDecorator Starting timeout timer (15503.5 ms) for a test run",
+        "07:43:35 (75038) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:43:35 (75038) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:43:35 (75038) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:43:35 (75038) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:43:41 (75038) DEBUG TimeoutDecorator Starting timeout timer (15440.5 ms) for a test run",
+        "07:43:41 (75038) DEBUG TimeoutDecorator Starting timeout timer (15440.5 ms) for a test run",
+        "07:43:41 (75038) DEBUG TimeoutDecorator Starting timeout timer (15508 ms) for a test run",
+        "07:43:41 (75038) DEBUG TimeoutDecorator Starting timeout timer (15640 ms) for a test run",
+        "07:43:56 (75038) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:43:56 (75038) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:43:56 (75038) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:43:57 (75038) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:44:00 (75038) DEBUG TimeoutDecorator Starting timeout timer (15640 ms) for a test run",
+        "07:44:09 (75038) INFO MutationTestReportHelper Final mutation score of 100.00 is greater than or equal to break threshold 70",
+        "07:44:09 (75038) INFO MutationTestExecutor Done in 1 minute and 12 seconds."
+      ]
+    },
+    {
+      "mode": "no-diagnostics",
+      "concurrency": 4,
+      "range": "78-91",
+      "statuses": {
+        "Timeout": 8,
+        "Killed": 1
+      },
+      "mutants": [
+        {
+          "id": "1",
+          "status": "Timeout",
+          "mutator": "ConditionalExpression",
+          "location": {
+            "end": {
+              "column": 33,
+              "line": 79
+            },
+            "start": {
+              "column": 9,
+              "line": 79
+            }
+          },
+          "replacement": "true"
+        },
+        {
+          "id": "3",
+          "status": "Timeout",
+          "mutator": "BlockStatement",
+          "location": {
+            "end": {
+              "column": 6,
+              "line": 84
+            },
+            "start": {
+              "column": 50,
+              "line": 80
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "id": "2",
+          "status": "Timeout",
+          "mutator": "ConditionalExpression",
+          "location": {
+            "end": {
+              "column": 33,
+              "line": 79
+            },
+            "start": {
+              "column": 9,
+              "line": 79
+            }
+          },
+          "replacement": "false"
+        },
+        {
+          "id": "0",
+          "status": "Timeout",
+          "mutator": "BlockStatement",
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 86
+            },
+            "start": {
+              "column": 24,
+              "line": 78
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "id": "4",
+          "status": "Timeout",
+          "mutator": "BlockStatement",
+          "location": {
+            "end": {
+              "column": 8,
+              "line": 83
+            },
+            "start": {
+              "column": 62,
+              "line": 81
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "id": "6",
+          "status": "Timeout",
+          "mutator": "OptionalChaining",
+          "location": {
+            "end": {
+              "column": 39,
+              "line": 85
+            },
+            "start": {
+              "column": 5,
+              "line": 85
+            }
+          },
+          "replacement": "this.reconciliationTimer.unref()"
+        },
+        {
+          "id": "5",
+          "status": "Timeout",
+          "mutator": "StringLiteral",
+          "location": {
+            "end": {
+              "column": 67,
+              "line": 82
+            },
+            "start": {
+              "column": 27,
+              "line": 82
+            }
+          },
+          "replacement": "\"\""
+        },
+        {
+          "id": "7",
+          "status": "Timeout",
+          "mutator": "ConditionalExpression",
+          "location": {
+            "end": {
+              "column": 33,
+              "line": 89
+            },
+            "start": {
+              "column": 9,
+              "line": 89
+            }
+          },
+          "replacement": "true"
+        },
+        {
+          "id": "8",
+          "status": "Killed",
+          "mutator": "ConditionalExpression",
+          "location": {
+            "end": {
+              "column": 33,
+              "line": 89
+            },
+            "start": {
+              "column": 9,
+              "line": 89
+            }
+          },
+          "replacement": "false"
+        }
+      ],
+      "stages": [
+        "07:44:42 (75311) INFO Instrumenter Instrumented 1 source file(s) with 9 mutant(s)",
+        "07:44:54 (75311) INFO ConcurrencyTokenProvider Creating 4 test runner process(es).",
+        "07:44:54 (75311) DEBUG Sandbox Creating a sandbox for files in /tmp/nestjs-t5-diagnostic-no-diagnostics-sandbox/sandbox-0Ci592",
+        "07:44:55 (75311) DEBUG TimeoutDecorator Starting timeout timer (300000 ms) for a test run",
+        "07:45:05 (75311) INFO DryRunExecutor Initial test run succeeded. Ran 98 tests in 9 seconds (net 135 ms, overhead 9024 ms).",
+        "07:45:05 (75311) DEBUG TimeoutDecorator Starting timeout timer (14037.5 ms) for a test run",
+        "07:45:05 (75311) DEBUG TimeoutDecorator Starting timeout timer (14037.5 ms) for a test run",
+        "07:45:05 (75311) DEBUG TimeoutDecorator Starting timeout timer (14037.5 ms) for a test run",
+        "07:45:05 (75311) DEBUG TimeoutDecorator Starting timeout timer (14034.5 ms) for a test run",
+        "07:45:19 (75311) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:45:19 (75311) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:45:19 (75311) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:45:19 (75311) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:45:24 (75311) DEBUG TimeoutDecorator Starting timeout timer (14025.5 ms) for a test run",
+        "07:45:24 (75311) DEBUG TimeoutDecorator Starting timeout timer (14025.5 ms) for a test run",
+        "07:45:25 (75311) DEBUG TimeoutDecorator Starting timeout timer (14037.5 ms) for a test run",
+        "07:45:25 (75311) DEBUG TimeoutDecorator Starting timeout timer (14123 ms) for a test run",
+        "07:45:38 (75311) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:45:39 (75311) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:45:39 (75311) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:45:39 (75311) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:45:44 (75311) DEBUG TimeoutDecorator Starting timeout timer (14123 ms) for a test run",
+        "07:45:51 (75311) INFO MutationTestReportHelper Final mutation score of 100.00 is greater than or equal to break threshold 70",
+        "07:45:51 (75311) INFO MutationTestExecutor Done in 1 minute and 9 seconds."
+      ]
+    },
+    {
+      "mode": "single-worker",
+      "concurrency": 1,
+      "range": "78-91",
+      "statuses": {
+        "Killed": 5,
+        "Survived": 4
+      },
+      "mutants": [
+        {
+          "id": "0",
+          "status": "Killed",
+          "mutator": "BlockStatement",
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 86
+            },
+            "start": {
+              "column": 24,
+              "line": 78
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "id": "1",
+          "status": "Killed",
+          "mutator": "ConditionalExpression",
+          "location": {
+            "end": {
+              "column": 33,
+              "line": 79
+            },
+            "start": {
+              "column": 9,
+              "line": 79
+            }
+          },
+          "replacement": "true"
+        },
+        {
+          "id": "2",
+          "status": "Killed",
+          "mutator": "ConditionalExpression",
+          "location": {
+            "end": {
+              "column": 33,
+              "line": 79
+            },
+            "start": {
+              "column": 9,
+              "line": 79
+            }
+          },
+          "replacement": "false"
+        },
+        {
+          "id": "3",
+          "status": "Killed",
+          "mutator": "BlockStatement",
+          "location": {
+            "end": {
+              "column": 6,
+              "line": 84
+            },
+            "start": {
+              "column": 50,
+              "line": 80
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "id": "4",
+          "status": "Survived",
+          "mutator": "BlockStatement",
+          "location": {
+            "end": {
+              "column": 8,
+              "line": 83
+            },
+            "start": {
+              "column": 62,
+              "line": 81
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "id": "5",
+          "status": "Survived",
+          "mutator": "StringLiteral",
+          "location": {
+            "end": {
+              "column": 67,
+              "line": 82
+            },
+            "start": {
+              "column": 27,
+              "line": 82
+            }
+          },
+          "replacement": "\"\""
+        },
+        {
+          "id": "6",
+          "status": "Survived",
+          "mutator": "OptionalChaining",
+          "location": {
+            "end": {
+              "column": 39,
+              "line": 85
+            },
+            "start": {
+              "column": 5,
+              "line": 85
+            }
+          },
+          "replacement": "this.reconciliationTimer.unref()"
+        },
+        {
+          "id": "7",
+          "status": "Survived",
+          "mutator": "ConditionalExpression",
+          "location": {
+            "end": {
+              "column": 33,
+              "line": 89
+            },
+            "start": {
+              "column": 9,
+              "line": 89
+            }
+          },
+          "replacement": "true"
+        },
+        {
+          "id": "8",
+          "status": "Killed",
+          "mutator": "ConditionalExpression",
+          "location": {
+            "end": {
+              "column": 33,
+              "line": 89
+            },
+            "start": {
+              "column": 9,
+              "line": 89
+            }
+          },
+          "replacement": "false"
+        }
+      ],
+      "stages": [
+        "07:46:52 (75577) INFO Instrumenter Instrumented 1 source file(s) with 9 mutant(s)",
+        "07:47:01 (75577) INFO ConcurrencyTokenProvider Creating 1 test runner process(es).",
+        "07:47:02 (75577) DEBUG Sandbox Creating a sandbox for files in /tmp/nestjs-t5-diagnostic-single-worker-sandbox/sandbox-jF1UTW",
+        "07:47:03 (75577) DEBUG TimeoutDecorator Starting timeout timer (300000 ms) for a test run",
+        "07:47:12 (75577) INFO DryRunExecutor Initial test run succeeded. Ran 98 tests in 9 seconds (net 133 ms, overhead 9545 ms).",
+        "07:47:12 (75577) DEBUG TimeoutDecorator Starting timeout timer (14566 ms) for a test run",
+        "07:47:21 (75577) DEBUG TimeoutDecorator Starting timeout timer (14566 ms) for a test run",
+        "07:47:25 (75577) DEBUG TimeoutDecorator Starting timeout timer (14566 ms) for a test run",
+        "07:47:29 (75577) DEBUG TimeoutDecorator Starting timeout timer (14563 ms) for a test run",
+        "07:47:33 (75577) DEBUG TimeoutDecorator Starting timeout timer (14546.5 ms) for a test run",
+        "07:47:38 (75577) DEBUG TimeoutDecorator Starting timeout timer (14546.5 ms) for a test run",
+        "07:47:42 (75577) DEBUG TimeoutDecorator Starting timeout timer (14566 ms) for a test run",
+        "07:47:45 (75577) DEBUG TimeoutDecorator Starting timeout timer (14644 ms) for a test run",
+        "07:47:50 (75577) DEBUG TimeoutDecorator Starting timeout timer (14644 ms) for a test run",
+        "07:47:54 (75577) ERROR MutationTestReportHelper Final mutation score 55.56 under breaking threshold 70, setting exit code to 1 (failure).",
+        "07:47:54 (75577) INFO MutationTestExecutor Done in 1 minute and 2 seconds."
+      ]
+    },
+    {
+      "mode": "business-control",
+      "concurrency": 4,
+      "range": "328-332",
+      "statuses": {
+        "Timeout": 3
+      },
+      "mutants": [
+        {
+          "id": "2",
+          "status": "Timeout",
+          "mutator": "StringLiteral",
+          "location": {
+            "end": {
+              "column": 66,
+              "line": 329
+            },
+            "start": {
+              "column": 61,
+              "line": 329
+            }
+          },
+          "replacement": "\"\""
+        },
+        {
+          "id": "1",
+          "status": "Timeout",
+          "mutator": "StringLiteral",
+          "location": {
+            "end": {
+              "column": 31,
+              "line": 329
+            },
+            "start": {
+              "column": 23,
+              "line": 329
+            }
+          },
+          "replacement": "\"\""
+        },
+        {
+          "id": "0",
+          "status": "Timeout",
+          "mutator": "BlockStatement",
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 330
+            },
+            "start": {
+              "column": 50,
+              "line": 328
+            }
+          },
+          "replacement": "{}"
+        }
+      ],
+      "stages": [
+        "07:49:33 (75788) INFO Instrumenter Instrumented 1 source file(s) with 3 mutant(s)",
+        "07:49:47 (75788) INFO ConcurrencyTokenProvider Creating 4 test runner process(es).",
+        "07:49:47 (75788) DEBUG Sandbox Creating a sandbox for files in /tmp/nestjs-t5-diagnostic-business-control-sandbox/sandbox-8YnxGv",
+        "07:49:48 (75788) DEBUG TimeoutDecorator Starting timeout timer (300000 ms) for a test run",
+        "07:50:03 (75788) INFO DryRunExecutor Initial test run succeeded. Ran 98 tests in 14 seconds (net 250 ms, overhead 14111 ms).",
+        "07:50:03 (75788) DEBUG TimeoutDecorator Starting timeout timer (19259.5 ms) for a test run",
+        "07:50:03 (75788) DEBUG TimeoutDecorator Starting timeout timer (19259.5 ms) for a test run",
+        "07:50:03 (75788) DEBUG TimeoutDecorator Starting timeout timer (19259.5 ms) for a test run",
+        "07:50:22 (75788) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:50:22 (75788) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:50:22 (75788) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:50:27 (75788) INFO MutationTestReportHelper Final mutation score of 100.00 is greater than or equal to break threshold 70",
+        "07:50:27 (75788) INFO MutationTestExecutor Done in 54 seconds."
+      ]
+    },
+    {
+      "mode": "business-two-workers",
+      "concurrency": 2,
+      "range": "328-332",
+      "statuses": {
+        "Killed": 3
+      },
+      "mutants": [
+        {
+          "id": "1",
+          "status": "Killed",
+          "mutator": "StringLiteral",
+          "location": {
+            "end": {
+              "column": 31,
+              "line": 329
+            },
+            "start": {
+              "column": 23,
+              "line": 329
+            }
+          },
+          "replacement": "\"\""
+        },
+        {
+          "id": "0",
+          "status": "Killed",
+          "mutator": "BlockStatement",
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 330
+            },
+            "start": {
+              "column": 50,
+              "line": 328
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "id": "2",
+          "status": "Killed",
+          "mutator": "StringLiteral",
+          "location": {
+            "end": {
+              "column": 66,
+              "line": 329
+            },
+            "start": {
+              "column": 61,
+              "line": 329
+            }
+          },
+          "replacement": "\"\""
+        }
+      ],
+      "stages": [
+        "07:51:12 (75941) INFO Instrumenter Instrumented 1 source file(s) with 3 mutant(s)",
+        "07:51:22 (75941) INFO ConcurrencyTokenProvider Creating 2 test runner process(es).",
+        "07:51:22 (75941) DEBUG Sandbox Creating a sandbox for files in /tmp/nestjs-t5-diagnostic-business-two-workers-sandbox/sandbox-fX1YrD",
+        "07:51:23 (75941) DEBUG TimeoutDecorator Starting timeout timer (300000 ms) for a test run",
+        "07:51:31 (75941) INFO DryRunExecutor Initial test run succeeded. Ran 98 tests in 7 seconds (net 119 ms, overhead 7626 ms).",
+        "07:51:31 (75941) DEBUG TimeoutDecorator Starting timeout timer (12702.5 ms) for a test run",
+        "07:51:31 (75941) DEBUG TimeoutDecorator Starting timeout timer (12702.5 ms) for a test run",
+        "07:51:41 (75941) DEBUG TimeoutDecorator Starting timeout timer (12702.5 ms) for a test run",
+        "07:51:45 (75941) INFO MutationTestReportHelper Final mutation score of 100.00 is greater than or equal to break threshold 70",
+        "07:51:45 (75941) INFO MutationTestExecutor Done in 33 seconds."
+      ]
+    },
+    {
+      "mode": "no-jest-cache",
+      "concurrency": 4,
+      "range": "328-332",
+      "statuses": {
+        "Timeout": 3
+      },
+      "mutants": [
+        {
+          "id": "0",
+          "status": "Timeout",
+          "mutator": "BlockStatement",
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 330
+            },
+            "start": {
+              "column": 50,
+              "line": 328
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "id": "1",
+          "status": "Timeout",
+          "mutator": "StringLiteral",
+          "location": {
+            "end": {
+              "column": 31,
+              "line": 329
+            },
+            "start": {
+              "column": 23,
+              "line": 329
+            }
+          },
+          "replacement": "\"\""
+        },
+        {
+          "id": "2",
+          "status": "Timeout",
+          "mutator": "StringLiteral",
+          "location": {
+            "end": {
+              "column": 66,
+              "line": 329
+            },
+            "start": {
+              "column": 61,
+              "line": 329
+            }
+          },
+          "replacement": "\"\""
+        }
+      ],
+      "stages": [
+        "07:52:15 (76065) INFO Instrumenter Instrumented 1 source file(s) with 3 mutant(s)",
+        "07:52:25 (76065) INFO ConcurrencyTokenProvider Creating 4 test runner process(es).",
+        "07:52:25 (76065) DEBUG Sandbox Creating a sandbox for files in /tmp/nestjs-t5-diagnostic-no-jest-cache-sandbox/sandbox-s3t5ca",
+        "07:52:26 (76065) DEBUG TimeoutDecorator Starting timeout timer (300000 ms) for a test run",
+        "07:52:37 (76065) INFO DryRunExecutor Initial test run succeeded. Ran 98 tests in 10 seconds (net 147 ms, overhead 10133 ms).",
+        "07:52:37 (76065) DEBUG TimeoutDecorator Starting timeout timer (15229 ms) for a test run",
+        "07:52:37 (76065) DEBUG TimeoutDecorator Starting timeout timer (15229 ms) for a test run",
+        "07:52:37 (76065) DEBUG TimeoutDecorator Starting timeout timer (15229 ms) for a test run",
+        "07:52:52 (76065) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:52:52 (76065) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:52:52 (76065) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout",
+        "07:52:57 (76065) INFO MutationTestReportHelper Final mutation score of 100.00 is greater than or equal to break threshold 70",
+        "07:52:57 (76065) INFO MutationTestExecutor Done in 42 seconds."
+      ]
+    }
+  ],
+  "compilerTrace": {
+    "mode": "single-worker",
+    "languageServiceConfigSets": 2,
+    "compiledOutputs": 94,
+    "semanticDiagnosticCalls": 94
+  },
+  "businessControlSourceSha256": "d6108c3f28c04db637e8ff6961012e6f2f770781f76ddb411fbd300bf2067e9b",
+  "originalCompleteInterruptedAfterMs": 154833.55508,
+  "costIfWrong": "Revert concurrency cap and retain mutation tool compatibility blocker. Never accept artificial timeout score."
+}

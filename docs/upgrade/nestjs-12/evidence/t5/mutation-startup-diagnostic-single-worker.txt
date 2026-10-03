@@ -1,0 +1,17 @@
+Bounded diagnostic only; not complete/smoke acceptance. Original debug output condensed to producer stages; exact mutants/statuses retained in mutation-startup-diagnostics.json.
+07:46:52 (75577) INFO Instrumenter Instrumented 1 source file(s) with 9 mutant(s)
+07:47:01 (75577) INFO ConcurrencyTokenProvider Creating 1 test runner process(es).
+07:47:02 (75577) DEBUG Sandbox Creating a sandbox for files in /tmp/nestjs-t5-diagnostic-single-worker-sandbox/sandbox-jF1UTW
+07:47:03 (75577) DEBUG TimeoutDecorator Starting timeout timer (300000 ms) for a test run
+07:47:12 (75577) INFO DryRunExecutor Initial test run succeeded. Ran 98 tests in 9 seconds (net 133 ms, overhead 9545 ms).
+07:47:12 (75577) DEBUG TimeoutDecorator Starting timeout timer (14566 ms) for a test run
+07:47:21 (75577) DEBUG TimeoutDecorator Starting timeout timer (14566 ms) for a test run
+07:47:25 (75577) DEBUG TimeoutDecorator Starting timeout timer (14566 ms) for a test run
+07:47:29 (75577) DEBUG TimeoutDecorator Starting timeout timer (14563 ms) for a test run
+07:47:33 (75577) DEBUG TimeoutDecorator Starting timeout timer (14546.5 ms) for a test run
+07:47:38 (75577) DEBUG TimeoutDecorator Starting timeout timer (14546.5 ms) for a test run
+07:47:42 (75577) DEBUG TimeoutDecorator Starting timeout timer (14566 ms) for a test run
+07:47:45 (75577) DEBUG TimeoutDecorator Starting timeout timer (14644 ms) for a test run
+07:47:50 (75577) DEBUG TimeoutDecorator Starting timeout timer (14644 ms) for a test run
+07:47:54 (75577) ERROR MutationTestReportHelper Final mutation score 55.56 under breaking threshold 70, setting exit code to 1 (failure).
+07:47:54 (75577) INFO MutationTestExecutor Done in 1 minute and 2 seconds.
