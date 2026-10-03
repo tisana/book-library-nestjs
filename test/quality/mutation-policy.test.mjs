@@ -169,7 +169,7 @@ function makeCompleteSummary(overrides = {}) {
   return {
     profile: 'complete',
     commitSha: '0123456789abcdef0123456789abcdef01234567',
-    nodeMajor: 22,
+    nodeMajor: 24,
     sourceSha256: Object.fromEntries(
       SELECTED_SOURCES.map((source) => [source, SOURCE_SHA256]),
     ),
@@ -344,7 +344,7 @@ test('accepts a null baseline for smoke and complete profiles', () => {
 
 // Production break caught: the tracked baseline is not tied to the exact
 // policy-green canonical complete producer and its committed test state.
-test('records a schema-v1 baseline from exact complete provenance', () => {
+test('records a schema-v1 baseline from exact Node 24 complete provenance', () => {
   const baseline = recordBaseline({
     report: makeCanonicalCompleteReport(),
     summary: makeCompleteSummary(),
@@ -380,11 +380,11 @@ test('refuses a baseline when complete provenance is not exact', () => {
       /profile must equal complete/,
     ],
     [
-      'wrong Node major',
+      'previous Node 22 major',
       (summary) => {
-        summary.nodeMajor = 20;
+        summary.nodeMajor = 22;
       },
-      /nodeMajor must equal 22/,
+      /nodeMajor must equal 24/,
     ],
     [
       'wrong canonical count',
