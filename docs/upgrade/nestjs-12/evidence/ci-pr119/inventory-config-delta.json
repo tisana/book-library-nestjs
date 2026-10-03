@@ -1,0 +1,60 @@
+{
+  "description": "Actual normalized project configuration deltas in baseline-only controlled diagnostic; only reporting-only testLocationInResults differs. No other field excluded.",
+  "comparisons": [
+    {
+      "workerPid": 94050,
+      "differences": {
+        "testLocationInResults": {
+          "baseline": true,
+          "mutant": false
+        }
+      },
+      "sameSourceSha256": true,
+      "sameTestPathsAndSha256": true
+    },
+    {
+      "workerPid": 94049,
+      "differences": {
+        "testLocationInResults": {
+          "baseline": true,
+          "mutant": false
+        }
+      },
+      "sameSourceSha256": true,
+      "sameTestPathsAndSha256": true
+    },
+    {
+      "workerPid": 94050,
+      "differences": {
+        "testLocationInResults": {
+          "baseline": true,
+          "mutant": false
+        }
+      },
+      "sameSourceSha256": true,
+      "sameTestPathsAndSha256": true
+    },
+    {
+      "workerPid": 94049,
+      "differences": {
+        "testLocationInResults": {
+          "baseline": true,
+          "mutant": false
+        }
+      },
+      "sameSourceSha256": true,
+      "sameTestPathsAndSha256": true
+    },
+    {
+      "workerPid": 94050,
+      "differences": {
+        "testLocationInResults": {
+          "baseline": true,
+          "mutant": false
+        }
+      },
+      "sameSourceSha256": true,
+      "sameTestPathsAndSha256": true
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+import { buildStrykerConfig } from '/workspace/book-library-nestjs/stryker.config.mjs';
+const candidate=true;
+const mode='baseline-bound-' +(process.env.CI_STATIC_CONTROL==='1'?'static':'blocks');
+const config=buildStrykerConfig('complete',{},'token-session');
+config.mutate=[process.env.CI_STATIC_CONTROL==='1'?'src/auth/token-session.service.ts:27-27':'src/auth/token-session.service.ts:249-291'];
+config.mutator={excludedMutations:['ArrayDeclaration','AssignmentOperator','ArithmeticOperator','BooleanLiteral','EqualityOperator','ArrowFunction','LogicalOperator','ConditionalExpression','OptionalChaining','MethodExpression','StringLiteral','UpdateOperator','ObjectLiteral','UnaryOperator','Regex']};
+config.reporters=['json','clear-text'];
+config.jsonReporter={fileName:`/tmp/ci-related-mutants-${mode}.json`};
+config.tempDirName=`/tmp/ci-related-mutants-${mode}-sandbox`;
+if(process.env.CI_STATIC_CONTROL==='1')delete config.mutator;
+config.jest.config.runner='/tmp/ci-baseline-suite-runner.cjs';
+export default config;

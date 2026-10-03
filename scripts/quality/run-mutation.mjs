@@ -163,10 +163,32 @@ function sourceHashes(manifest) {
   return hashes;
 }
 
-function configurationSha256(root) {
-  return createHash('sha256')
-    .update(readFileSync(repositoryPath(root, 'stryker.config.mjs')))
-    .digest('hex');
+export function configurationSha256(root) {
+  const paths = [
+    'scripts/quality/mutation-jest-runner.cjs',
+    'stryker.config.mjs',
+    'tsconfig.json',
+    'tsconfig.jest.json',
+    'tsconfig.mutation.json',
+  ];
+  const inputs = paths.map((path) => ({
+    path,
+    sha256: createHash('sha256')
+      .update(readFileSync(repositoryPath(root, path)))
+      .digest('hex'),
+  }));
+  // Only inline Jest configuration affects mutation execution; unrelated npm
+  // reporting scripts do not invalidate otherwise identical compiler inputs.
+  inputs.push({
+    path: 'package.json#jest',
+    sha256: createHash('sha256')
+      .update(
+        JSON.stringify(readJson(repositoryPath(root, 'package.json')).jest),
+      )
+      .digest('hex'),
+  });
+  inputs.sort((left, right) => left.path.localeCompare(right.path, 'en'));
+  return createHash('sha256').update(JSON.stringify(inputs)).digest('hex');
 }
 
 function nodeMajor(version) {
@@ -713,6 +735,7 @@ function mergeShardReports({
   let thresholds;
   let provenance;
   const expectedSourceSha256 = sourceHashes(manifest);
+  const expectedConfigurationSha256 = configurationSha256(repositoryRoot);
   for (const shard of shards) {
     const directory = reportDirectory(repositoryRoot, profile, shard.id);
     const jsonPath = join(directory, 'mutation.json');
@@ -780,10 +803,12 @@ function mergeShardReports({
       summary.timedOut !== false ||
       !COMMIT_PATTERN.test(candidateProvenance.commitSha) ||
       !/^[0-9a-f]{64}$/.test(candidateProvenance.configurationSha256) ||
+      candidateProvenance.configurationSha256 !== expectedConfigurationSha256 ||
       candidateProvenance.reportSchemaVersion !== report.schemaVersion ||
       JSON.stringify(candidateProvenance.sourceSha256) !==
         JSON.stringify(expectedSourceSha256) ||
       duration.commitSha !== summary.commitSha ||
+      duration.configurationSha256 !== summary.configurationSha256 ||
       nodeMajor(duration.nodeVersion) !== candidateProvenance.nodeMajor
     ) {
       throw new TypeError(`Shard provenance is invalid for ${shard.id}.`);

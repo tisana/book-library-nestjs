@@ -1,0 +1,726 @@
+{
+  "rows": [
+    {
+      "label": "candidate baseline98",
+      "ms": 4607,
+      "heapMB": 164,
+      "suites": [
+        {
+          "path": "auth.service.spec.ts",
+          "ms": 1859,
+          "counts": {
+            "passed": 34
+          }
+        },
+        {
+          "path": "auth.controller.spec.ts",
+          "ms": 888,
+          "counts": {
+            "passed": 11
+          }
+        },
+        {
+          "path": "auth-endpoint-throttle.guard.spec.ts",
+          "ms": 574,
+          "counts": {
+            "passed": 4
+          }
+        },
+        {
+          "path": "token-session.service.spec.ts",
+          "ms": 518,
+          "counts": {
+            "passed": 49
+          }
+        }
+      ],
+      "executed": [
+        [
+          "/workspace/book-library-nestjs/src/auth/auth-endpoint-throttle.guard.spec.ts",
+          "AuthEndpointThrottleGuard counts a normalizable missing-credential request against both boundaries",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth-endpoint-throttle.guard.spec.ts",
+          "AuthEndpointThrottleGuard counts a valid login source before DTO handling and attaches safe context",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth-endpoint-throttle.guard.spec.ts",
+          "AuthEndpointThrottleGuard fails closed with one generic 429 and optional Retry-After",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth-endpoint-throttle.guard.spec.ts",
+          "AuthEndpointThrottleGuard resolves a refresh family before consuming source and family boundaries",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.controller.spec.ts",
+          "AuthController shared authentication adapters clears the named cookie without a service call when auth context is absent",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.controller.spec.ts",
+          "AuthController shared authentication adapters forwards the public security activity query result",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.controller.spec.ts",
+          "AuthController shared authentication adapters maps login to shared auth and sets the absolute-expiry named cookie",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.controller.spec.ts",
+          "AuthController shared authentication adapters maps memberLogin to shared auth and sets the absolute-expiry named cookie",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.controller.spec.ts",
+          "AuthController shared authentication adapters maps staffLogin to shared auth and sets the absolute-expiry named cookie",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.controller.spec.ts",
+          "AuthController shared authentication adapters preserves generic compatibility-login failures without throttle identifier context",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.controller.spec.ts",
+          "AuthController shared authentication adapters preserves generic login failures while recording identifier throttle state",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.controller.spec.ts",
+          "AuthController shared authentication adapters projects member and staff auth contexts without cross-area fields",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.controller.spec.ts",
+          "AuthController shared authentication adapters reports when security activity is unavailable",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.controller.spec.ts",
+          "AuthController shared authentication adapters returns only the public conflict outcome and applies its HTTP status",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.controller.spec.ts",
+          "AuthController shared authentication adapters revokes all sessions for a present auth context before clearing the cookie",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService login contract when AuthService is implemented creates a staff refresh session with hashed-token family metadata",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService login contract when AuthService is implemented keeps the refresh denial generic when inactive-family revocation fails",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService login contract when AuthService is implemented rejects inactive staff/admin users before issuing a token",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService login contract when AuthService is implemented rejects suspended member credentials before issuing a token",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService login contract when AuthService is implemented returns a JWT and redacted user for valid active staff credentials",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService login contract when AuthService is implemented returns a member JWT and redacted member profile for valid member credentials",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService login contract when AuthService is implemented revokes a rotated member family when authVersion is stale",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService login contract when AuthService is implemented revokes a rotated member family when the member is no longer active",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService login contract when AuthService is implemented revokes a rotated staff family when account authVersion is newer than the session",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available accepts a completed activation gate and fails closed for missing or failed gates",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available authenticates a staff identity with no roles but issues no permissions",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available fails a active reservation without a subject id generically with a redacted request",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available fails a active reservation without a subject type generically with a redacted request",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available fails a gated reservation when the operation model is unavailable",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available fails a inactive reservation generically with a redacted request",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available fails a non-string identifier generically without querying reservations",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available fails a reserved member generically when member auth is unavailable",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available fails generically when identifier reservations are unavailable",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available keeps conflicting identifier generic and records only a redacted category",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available keeps dedicated failed-sign-in recording behind the generic response",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available keeps inactive member account generic and records only a redacted category",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available keeps inactive staff account generic and records only a redacted category",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available keeps invalid member password generic and records only a redacted category",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available keeps invalid staff password generic and records only a redacted category",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available keeps locked member authentication generic and records only a redacted category",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available keeps member without a password credential generic and records only a redacted category",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available keeps mismatched member reservation generic and records only a redacted category",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available keeps mismatched staff reservation generic and records only a redacted category",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available keeps unresolved activity redacted with fallback-version string key material",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available keeps unresolved identifier generic and records only a redacted category",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available normalizes a non-string password into the same generic denial",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available uses empty membership type fields when the member profile is absent",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available uses the normalized reserved staff identity and server role area",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService shared login resolution when identifier reservations are available uses zero auth versions when reserved account versions are absent",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService allows at most one successor under concurrent exchange",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService clamps expired cookies at zero and changes only Secure outside production",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService commits a hash-only marker after operation-correlated family CAS",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService contains individual reconciliation query failures",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService contains scheduled reconciliation failures and leaves the next interval available",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService denies a lost duplicate-marker race without mutating the family",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService denies a lost expired-marker takeover without creating a successor",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService denies a missing family before consuming a rotation operation id",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService denies an active pending lease without mutating the family",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService denies rotation when no active unexpired family exists",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService does not classify a nonduplicate code as a duplicate-key race",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService does not classify a primitive as a duplicate-key race",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService does not classify an empty object as a duplicate-key race",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService does not classify null as a duplicate-key race",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService does not resolve an unknown refresh credential through an unrelated replay marker",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService does not take over a pending marker when the family expires exactly now",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService fails closed when a completed rotation marker cannot be found",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService fails closed when marker commitment is interrupted after family CAS",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService fails closed when the family compare-and-swap returns no successor",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService finalizes a pending marker for a family that is no longer active",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService finalizes a pending marker whose family hash no longer matches",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService finalizes a pending marker whose family no longer exists",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService finalizes a reconciled pending marker whose family is missing",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService finalizes an interrupted CAS when the recovered family is expired",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService finalizes an interrupted CAS when the recovered family is hash-mismatched",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService finalizes an interrupted CAS when the recovered family is missing",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService finalizes an interrupted CAS when the recovered family is revoked",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService finalizes an operation-correlated pending marker against its exact family",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService finalizes an uncertain family CAS that installed a successor",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService finalizes and revokes a pending marker whose lease is missing",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService handles a duplicate-marker race through the persisted committed marker",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService leaves an uncertain family CAS pending and takeover-eligible",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService leaves the family unchanged when pending marker insertion fails",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService owns only one timer across repeated initialization and clears every timer",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService rejects an unknown refresh credential with the public denial contract",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService rejects malformed, missing, expired, and revoked credentials without mutation",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService resolves only a family id for active and replayed refresh credentials",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService revokes an expired family with the invariant reason during marker reconciliation",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService revokes current and all subject sessions without exposing token hashes",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService revokes families and subjects idempotently",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService revokes on replay from any committed generation",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService runs bounded reconciliation every 60 seconds and stops on destroy",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService shares overlapping recovery passes and waits for durable recovery on destroy",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService still completes teardown when an active recovery query rejects",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService stores only hashes and caps immutable family expiry at 30 days",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService takes over a pending marker whose lease expires exactly now",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService takes over an expired pre-CAS lease and rotates once",
+          "passed"
+        ],
+        [
+          "/workspace/book-library-nestjs/src/auth/token-session.service.spec.ts",
+          "TokenSessionService uses remaining lifetime and strict host-only cookie parity",
+          "passed"
+        ]
+      ]
+    },
+    {
+      "label": "control auth.service.spec.ts",
+      "ms": 2942,
+      "heapMB": 302,
+      "suites": [
+        {
+          "path": "auth.service.spec.ts",
+          "ms": 1314,
+          "counts": {
+            "pending": 33,
+            "passed": 1
+          }
+        },
+        {
+          "path": "auth.controller.spec.ts",
+          "ms": 725,
+          "counts": {
+            "pending": 11
+          }
+        },
+        {
+          "path": "auth-endpoint-throttle.guard.spec.ts",
+          "ms": 403,
+          "counts": {
+            "pending": 4
+          }
+        },
+        {
+          "path": "token-session.service.spec.ts",
+          "ms": 383,
+          "counts": {
+            "pending": 49
+          }
+        }
+      ],
+      "executed": [
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService login contract when AuthService is implemented creates a staff refresh session with hashed-token family metadata",
+          "passed"
+        ]
+      ]
+    },
+    {
+      "label": "candidate auth.service.spec.ts",
+      "ms": 850,
+      "heapMB": 256,
+      "suites": [
+        {
+          "path": "auth.service.spec.ts",
+          "ms": 803,
+          "counts": {
+            "pending": 33,
+            "passed": 1
+          }
+        }
+      ],
+      "executed": [
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.service.spec.ts",
+          "AuthService login contract when AuthService is implemented creates a staff refresh session with hashed-token family metadata",
+          "passed"
+        ]
+      ]
+    },
+    {
+      "label": "control auth.controller.spec.ts",
+      "ms": 2205,
+      "heapMB": 343,
+      "suites": [
+        {
+          "path": "auth.controller.spec.ts",
+          "ms": 727,
+          "counts": {
+            "pending": 10,
+            "passed": 1
+          }
+        },
+        {
+          "path": "auth.service.spec.ts",
+          "ms": 698,
+          "counts": {
+            "pending": 34
+          }
+        },
+        {
+          "path": "auth-endpoint-throttle.guard.spec.ts",
+          "ms": 441,
+          "counts": {
+            "pending": 4
+          }
+        },
+        {
+          "path": "token-session.service.spec.ts",
+          "ms": 284,
+          "counts": {
+            "pending": 49
+          }
+        }
+      ],
+      "executed": [
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.controller.spec.ts",
+          "AuthController shared authentication adapters clears the named cookie without a service call when auth context is absent",
+          "passed"
+        ]
+      ]
+    },
+    {
+      "label": "candidate auth.controller.spec.ts",
+      "ms": 801,
+      "heapMB": 350,
+      "suites": [
+        {
+          "path": "auth.controller.spec.ts",
+          "ms": 752,
+          "counts": {
+            "pending": 10,
+            "passed": 1
+          }
+        }
+      ],
+      "executed": [
+        [
+          "/workspace/book-library-nestjs/src/auth/auth.controller.spec.ts",
+          "AuthController shared authentication adapters clears the named cookie without a service call when auth context is absent",
+          "passed"
+        ]
+      ]
+    },
+    {
+      "label": "control auth-endpoint-throttle.guard.spec.ts",
+      "ms": 2653,
+      "heapMB": 456,
+      "suites": [
+        {
+          "path": "auth.service.spec.ts",
+          "ms": 1066,
+          "counts": {
+            "pending": 34
+          }
+        },
+        {
+          "path": "auth.controller.spec.ts",
+          "ms": 517,
+          "counts": {
+            "pending": 11
+          }
+        },
+        {
+          "path": "auth-endpoint-throttle.guard.spec.ts",
+          "ms": 504,
+          "counts": {
+            "pending": 3,
+            "passed": 1
+          }
+        },
+        {
+          "path": "token-session.service.spec.ts",
+          "ms": 522,
+          "counts": {
+            "pending": 49
+          }
+        }
+      ],
+      "executed": [
+        [
+          "/workspace/book-library-nestjs/src/auth/auth-endpoint-throttle.guard.spec.ts",
+          "AuthEndpointThrottleGuard counts a normalizable missing-credential request against both boundaries",
+          "passed"
+        ]
+      ]
+    },
+    {
+      "label": "candidate auth-endpoint-throttle.guard.spec.ts",
+      "ms": 910,
+      "heapMB": 428,
+      "suites": [
+        {
+          "path": "auth-endpoint-throttle.guard.spec.ts",
+          "ms": 856,
+          "counts": {
+            "pending": 3,
+            "passed": 1
+          }
+        }
+      ],
+      "executed": [
+        [
+          "/workspace/book-library-nestjs/src/auth/auth-endpoint-throttle.guard.spec.ts",
+          "AuthEndpointThrottleGuard counts a normalizable missing-credential request against both boundaries",
+          "passed"
+        ]
+      ]
+    }
+  ]
+}
