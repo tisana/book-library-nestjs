@@ -17,6 +17,7 @@ on:
       - 'test/quality/**'
       - 'scripts/quality/**'
       - 'stryker.config.mjs'
+      - 'tsconfig.json'
       - 'tsconfig.mutation.json'
       - 'tsconfig.jest.json'
       - 'package.json'

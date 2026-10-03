@@ -2190,6 +2190,7 @@ test('mutation workflow distributes five shards and merges one exact profile', (
     'test/quality/**',
     'scripts/quality/**',
     'stryker.config.mjs',
+    'tsconfig.json',
     'tsconfig.mutation.json',
     'tsconfig.jest.json',
     'package.json',
