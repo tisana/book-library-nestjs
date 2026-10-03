@@ -1,0 +1,26 @@
+{
+  "producerCommit": "348698d78fc83d00f2a5df17db4564773bbabce5",
+  "acceptedComplete": false,
+  "baselineChanged": false,
+  "baselineSha256": "cb1932bfb4f06cdd9a59ae617048143d696fc3fc0dedf8b66e2193d3209ce51a",
+  "files": {
+    "token-session/summary.json": "12d34360e2b54d213bcdced346f418fc0f1df183cd6723dbf8a89ceb8bceb3d1",
+    "token-session/duration.json": "c0f657378350dae9ad5cc832b4d29b17fcbc6dee9cfd664d9e951dc530e23348",
+    "token-session/stryker.txt": "1d193656555994357252ee6f09588c150477d81209c25aa2d9f19a732508f0bf",
+    "token-session/mutation.json": "41b99b63591f0f0669ec04f3ca2513392cf3cbab57d23a236d02c1b35c1925f3",
+    "token-session/mutation.html": "6d3aeffbfcb4bc5ab5ecbb7e18b4b5f509b1cac481f55aa051c42b007f0434f1",
+    "identifier-repair/summary.json": "e4dbbaa6e7a58bda4f72e7030b573effca85b7373931b1c354cad7c7755f66ea",
+    "identifier-repair/duration.json": "dbd28b98ab222ec45a8f30a03f793e23c64b6d3ceb3fa96af627d443f03793b2",
+    "identifier-repair/stryker.txt": "ca1fa63b7dcd9996fa7bdeba5f17e4b05ac3e93df74bb6232d8127946117cfe3",
+    "identifier-repair/mutation.json": "7d3ddf81906cf2bfe18d5078fa9f3be1934d1c63893bda111bb5d5685fd247fc",
+    "identifier-repair/mutation.html": "df7e50b614ceedaae2327d3d61f754bd40c6f16e36e35c5ad16d7454b81a3eb4",
+    "identifier-reconciliation/summary.json": "5e64c883ae2710c84ec94901768b5fed89e6d09db4764219dc07931c3ffb389f",
+    "identifier-reconciliation/duration.json": "5eae2293818681b451ca93de622c87c732dd99060fa0ee16b23daefc280193d6",
+    "identifier-reconciliation/stryker.txt": "20092f0d2a921d9c5d1990a19b9bcda1149006645abee2d79f3c782a9f871936",
+    "identifier-reconciliation/mutation.json": "c78945f1581044b617a27e91a9569cc755ba7e1f3431a7e397b56cd51a203c9e",
+    "identifier-reconciliation/mutation.html": "fddf919a00b40bc983a641ac1eebea7a560e44e161f06ce83820685c7710ea47",
+    "members/summary.json": "a28b6848b7ab1f944c4546bcc7b05745cb4a17a34afa51a1c84f6f9e38d84b6b",
+    "members/duration.json": "dcbbe555ac5d208e4ea8228ac58709cf1e407293c8cf11106b956a5f36486966",
+    "members/stryker.txt": "445b40b0c94cce4ae54d5d31f022e09535e82b911725ba68125fa81862c12627"
+  }
+}
