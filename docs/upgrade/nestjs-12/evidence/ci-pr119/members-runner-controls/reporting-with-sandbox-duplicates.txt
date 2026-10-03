@@ -1,0 +1,25 @@
+
+> book-library@0.0.1 test:quality-reporting
+> node --experimental-vm-modules node_modules/jest/bin/jest.js --config ./test/jest-quality.json --runInBand
+
+jest-haste-map: Haste module naming collision: book-library
+  The following files share their name; please adjust your hasteImpl:
+    * <rootDir>/package.json
+    * <rootDir>/reports/mutation/complete/shards/members/.stryker-tmp/sandbox-xmdszq/package.json
+
+jest-haste-map: Haste module naming collision: book-library-frontend
+  The following files share their name; please adjust your hasteImpl:
+    * <rootDir>/frontend/package.json
+    * <rootDir>/reports/mutation/complete/shards/members/.stryker-tmp/sandbox-xmdszq/frontend/package.json
+
+
+Test Suites: 8 passed, 8 total
+Tests:       136 passed, 136 total
+Snapshots:   0 total
+Time:        4.613 s
+Ran all test suites.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
