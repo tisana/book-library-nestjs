@@ -1,0 +1,117 @@
+Condensed all-mutator diagnostic log; rawSHA256 96058c413ab7e44d0940d9f5ee6050472ae425bf734c2624588669d4b0c7d52d; diagnostic only, not acceptance.
+12:57:06 (81074) INFO Instrumenter Instrumented 1 source file(s) with 37 mutant(s)
+12:57:11 (81074) DEBUG TimeoutDecorator Starting timeout timer (300000 ms) for a test run
+12:57:15 (81074) INFO DryRunExecutor Initial test run succeeded. Ran 98 tests in 4 seconds (net 146 ms, overhead 3991 ms).
+12:57:15 (81074) DEBUG TimeoutDecorator Starting timeout timer (9006 ms) for a test run
+12:57:15 (81074) DEBUG TimeoutDecorator Starting timeout timer (9006 ms) for a test run
+12:57:21 (81074) DEBUG TimeoutDecorator Starting timeout timer (9006 ms) for a test run
+12:57:21 (81074) DEBUG TimeoutDecorator Starting timeout timer (9006 ms) for a test run
+12:57:26 (81074) DEBUG TimeoutDecorator Starting timeout timer (9006 ms) for a test run
+12:57:26 (81074) DEBUG TimeoutDecorator Starting timeout timer (9006 ms) for a test run
+12:57:32 (81074) DEBUG TimeoutDecorator Starting timeout timer (9006 ms) for a test run
+12:57:33 (81074) DEBUG TimeoutDecorator Starting timeout timer (9006 ms) for a test run
+12:57:36 (81074) DEBUG TimeoutDecorator Starting timeout timer (9006 ms) for a test run
+12:57:36 (81074) DEBUG TimeoutDecorator Starting timeout timer (9006 ms) for a test run
+12:57:40 (81074) DEBUG TimeoutDecorator Starting timeout timer (9006 ms) for a test run
+12:57:40 (81074) DEBUG TimeoutDecorator Starting timeout timer (9001.5 ms) for a test run
+12:57:45 (81074) DEBUG TimeoutDecorator Starting timeout timer (9001.5 ms) for a test run
+12:57:46 (81074) DEBUG TimeoutDecorator Starting timeout timer (9001.5 ms) for a test run
+12:57:49 (81074) DEBUG TimeoutDecorator Starting timeout timer (9000 ms) for a test run
+12:57:53 (81074) DEBUG TimeoutDecorator Starting timeout timer (9000 ms) for a test run
+12:57:55 (81074) DEBUG TimeoutDecorator Starting timeout timer (9000 ms) for a test run
+12:57:59 (81074) DEBUG TimeoutDecorator Starting timeout timer (9000 ms) for a test run
+12:58:03 (81074) DEBUG TimeoutDecorator Starting timeout timer (9000 ms) for a test run
+12:58:04 (81074) DEBUG TimeoutDecorator Starting timeout timer (9000 ms) for a test run
+12:58:08 (81074) DEBUG TimeoutDecorator Starting timeout timer (9000 ms) for a test run
+12:58:12 (81074) DEBUG TimeoutDecorator Starting timeout timer (9000 ms) for a test run
+12:58:14 (81074) DEBUG TimeoutDecorator Starting timeout timer (8997 ms) for a test run
+12:58:17 (81074) DEBUG TimeoutDecorator Starting timeout timer (8997 ms) for a test run
+12:58:22 (81074) DEBUG TimeoutDecorator Starting timeout timer (8995.5 ms) for a test run
+12:58:25 (81074) DEBUG TimeoutDecorator Starting timeout timer (8995.5 ms) for a test run
+12:58:29 (81074) DEBUG TimeoutDecorator Starting timeout timer (8995.5 ms) for a test run
+12:58:33 (81074) DEBUG TimeoutDecorator Starting timeout timer (8994 ms) for a test run
+12:58:35 (81074) DEBUG TimeoutDecorator Starting timeout timer (9000 ms) for a test run
+12:58:40 (81074) DEBUG TimeoutDecorator Starting timeout timer (9000 ms) for a test run
+12:58:44 (81074) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout
+12:58:46 (81074) DEBUG TimeoutDecorator Starting timeout timer (9000 ms) for a test run
+12:58:47 (81074) DEBUG TimeoutDecorator Starting timeout timer (9000 ms) for a test run
+12:58:53 (81074) DEBUG TimeoutDecorator Starting timeout timer (8995.5 ms) for a test run
+12:58:56 (81074) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout
+12:58:58 (81074) DEBUG TimeoutDecorator Starting timeout timer (8995.5 ms) for a test run
+12:58:58 (81074) DEBUG TimeoutDecorator Starting timeout timer (9000 ms) for a test run
+12:59:03 (81074) DEBUG TimeoutDecorator Starting timeout timer (8992.5 ms) for a test run
+12:59:05 (81074) DEBUG TimeoutDecorator Starting timeout timer (8992.5 ms) for a test run
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] BooleanLiteral
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] BlockStatement
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] ConditionalExpression
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService shares overlapping recovery passes and waits for durable recovery on destroy
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] ConditionalExpression
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] BlockStatement
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] BlockStatement
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService shares overlapping recovery passes and waits for durable recovery on destroy
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] BlockStatement
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] MethodExpression
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] ObjectLiteral
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] ObjectLiteral
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] ObjectLiteral
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] BlockStatement
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] BlockStatement
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] ObjectLiteral
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] ConditionalExpression
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] ConditionalExpression
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] LogicalOperator
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] ConditionalExpression
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] LogicalOperator
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] ConditionalExpression
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService finalizes a pending marker for a family that is no longer active
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] EqualityOperator
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] OptionalChaining
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService finalizes a reconciled pending marker whose family is missing
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] ConditionalExpression
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] EqualityOperator
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] ConditionalExpression
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService revokes an expired family with the invariant reason during marker reconciliation
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] EqualityOperator
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService revokes an expired family with the invariant reason during marker reconciliation
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] EqualityOperator
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] BlockStatement
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Timeout] ConditionalExpression
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] ConditionalExpression
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] EqualityOperator
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] StringLiteral
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Timeout] OptionalChaining
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] StringLiteral
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService revokes an expired family with the invariant reason during marker reconciliation
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] AssignmentOperator
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] BlockStatement
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService contains individual reconciliation query failures
+12:59:08 (81074) DEBUG ClearTextReporter [Killed] StringLiteral
+12:59:08 (81074) DEBUG ClearTextReporter Killed by: TokenSessionService contains individual reconciliation query failures
+Ran 4.59 tests per mutant on average.
+12:59:08 (81074) INFO MutationTestExecutor Done in 2 minutes and 3 seconds.

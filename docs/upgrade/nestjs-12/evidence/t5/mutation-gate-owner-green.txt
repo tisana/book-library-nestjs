@@ -1,0 +1,20 @@
+Condensed diagnostic log; rawSHA256 b90ca392485bc9740492cb21729838f9b09a6b6a6b1476d19fbc064e9705efad; diagnostic only, not acceptance.
+12:56:22 (80990) INFO Instrumenter Instrumented 1 source file(s) with 31 mutant(s)
+12:56:27 (80990) DEBUG TimeoutDecorator Starting timeout timer (300000 ms) for a test run
+12:56:31 (80990) INFO DryRunExecutor Initial test run succeeded. Ran 98 tests in 4 seconds (net 144 ms, overhead 4000 ms).
+12:56:31 (80990) DEBUG TimeoutDecorator Starting timeout timer (9012 ms) for a test run
+12:56:31 (80990) DEBUG TimeoutDecorator Starting timeout timer (9007.5 ms) for a test run
+12:56:37 (80990) DEBUG TimeoutDecorator Starting timeout timer (9007.5 ms) for a test run
+12:56:37 (80990) DEBUG TimeoutDecorator Starting timeout timer (9003 ms) for a test run
+12:56:40 (80990) DEBUG TimeoutDecorator Starting timeout timer (9001.5 ms) for a test run
+12:56:43 (80990) DEBUG ClearTextReporter [Killed] BlockStatement
+12:56:43 (80990) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:56:43 (80990) DEBUG ClearTextReporter [Killed] BlockStatement
+12:56:43 (80990) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:56:43 (80990) DEBUG ClearTextReporter [Killed] BlockStatement
+12:56:43 (80990) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:56:43 (80990) DEBUG ClearTextReporter [Killed] BlockStatement
+12:56:43 (80990) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:56:43 (80990) DEBUG ClearTextReporter [Killed] BlockStatement
+12:56:43 (80990) DEBUG ClearTextReporter Killed by: TokenSessionService contains individual reconciliation query failures
+12:56:43 (80990) INFO MutationTestExecutor Done in 21 seconds.

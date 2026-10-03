@@ -1,0 +1,1229 @@
+{
+  "purpose": "Approved narrow testfixture repair bounded throughput proof; all mutators retained in diagnostic range238-291",
+  "acceptance": false,
+  "node": "v24.19.0",
+  "sourceUnchanged": true,
+  "concurrency": 2,
+  "durationSecondsReported": 123,
+  "mutants": 37,
+  "statuses": {
+    "Killed": 35,
+    "Timeout": 2
+  },
+  "dryRun": {
+    "tests": 98,
+    "netMs": 146,
+    "overheadMs": 3991
+  },
+  "firstMutantStart": "12:57:15 UTC",
+  "finishedAt": "12:59:08 UTC",
+  "mutantPhaseSeconds": 113,
+  "mutantsPerSecond": 0.3274336283185841,
+  "linearProjectionSmoke211Seconds": 654.4054054054054,
+  "projectionLimitation": "Local range need not represent all211smoke mutants; observed600+s projection and earlier actual350s deadline failure fail to establish budget sufficiency, so no new longrun starts",
+  "canonicalRecoveryConsumer": {
+    "completeReportId": "67",
+    "diagnosticId": "6",
+    "sourceStartLine": 249,
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "status": "Killed"
+  },
+  "formerlyHangingSharedRecoveryAssertions": [
+    {
+      "id": "1",
+      "status": "Killed",
+      "location": {
+        "end": {
+          "column": 35,
+          "line": 239
+        },
+        "start": {
+          "column": 9,
+          "line": 239
+        }
+      },
+      "mutatorName": "BooleanLiteral",
+      "replacement": "this.activeReconciliation",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: undefined\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)"
+    },
+    {
+      "id": "0",
+      "status": "Killed",
+      "location": {
+        "end": {
+          "column": 4,
+          "line": 247
+        },
+        "start": {
+          "column": 69,
+          "line": 238
+        }
+      },
+      "mutatorName": "BlockStatement",
+      "replacement": "{}",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: undefined\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)"
+    },
+    {
+      "id": "2",
+      "status": "Killed",
+      "location": {
+        "end": {
+          "column": 35,
+          "line": 239
+        },
+        "start": {
+          "column": 9,
+          "line": 239
+        }
+      },
+      "mutatorName": "ConditionalExpression",
+      "replacement": "true",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nIf it should pass with deep equality, replace \"toBe\" with \"toStrictEqual\"\n\nExpected: Promise {}\nReceived: serializes to the same string\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:991:21)"
+    },
+    {
+      "id": "3",
+      "status": "Killed",
+      "location": {
+        "end": {
+          "column": 35,
+          "line": 239
+        },
+        "start": {
+          "column": 9,
+          "line": 239
+        }
+      },
+      "mutatorName": "ConditionalExpression",
+      "replacement": "false",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: undefined\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)"
+    },
+    {
+      "id": "4",
+      "status": "Killed",
+      "location": {
+        "end": {
+          "column": 6,
+          "line": 245
+        },
+        "start": {
+          "column": 37,
+          "line": 239
+        }
+      },
+      "mutatorName": "BlockStatement",
+      "replacement": "{}",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: undefined\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)"
+    }
+  ],
+  "remainingTimeouts": [
+    {
+      "id": "28",
+      "mutatorName": "ConditionalExpression",
+      "replacement": "true",
+      "status": "Timeout",
+      "static": false,
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "34"
+      ],
+      "location": {
+        "end": {
+          "column": 73,
+          "line": 275
+        },
+        "start": {
+          "column": 11,
+          "line": 275
+        }
+      }
+    },
+    {
+      "id": "31",
+      "mutatorName": "OptionalChaining",
+      "replacement": "family.lastRotationOperationId",
+      "status": "Timeout",
+      "static": false,
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "34"
+      ],
+      "location": {
+        "end": {
+          "column": 42,
+          "line": 275
+        },
+        "start": {
+          "column": 11,
+          "line": 275
+        }
+      }
+    }
+  ],
+  "allMutants": [
+    {
+      "id": "1",
+      "mutatorName": "BooleanLiteral",
+      "replacement": "this.activeReconciliation",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: undefined\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 7,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "33",
+        "34",
+        "38"
+      ],
+      "location": {
+        "end": {
+          "column": 35,
+          "line": 239
+        },
+        "start": {
+          "column": 9,
+          "line": 239
+        }
+      }
+    },
+    {
+      "id": "0",
+      "mutatorName": "BlockStatement",
+      "replacement": "{}",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: undefined\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 7,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "33",
+        "34",
+        "38"
+      ],
+      "location": {
+        "end": {
+          "column": 4,
+          "line": 247
+        },
+        "start": {
+          "column": 69,
+          "line": 238
+        }
+      }
+    },
+    {
+      "id": "2",
+      "mutatorName": "ConditionalExpression",
+      "replacement": "true",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nIf it should pass with deep equality, replace \"toBe\" with \"toStrictEqual\"\n\nExpected: Promise {}\nReceived: serializes to the same string\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:991:21)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 7,
+      "killedBy": [
+        "34"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "33",
+        "34",
+        "38"
+      ],
+      "location": {
+        "end": {
+          "column": 35,
+          "line": 239
+        },
+        "start": {
+          "column": 9,
+          "line": 239
+        }
+      }
+    },
+    {
+      "id": "3",
+      "mutatorName": "ConditionalExpression",
+      "replacement": "false",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: undefined\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 7,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "33",
+        "34",
+        "38"
+      ],
+      "location": {
+        "end": {
+          "column": 35,
+          "line": 239
+        },
+        "start": {
+          "column": 9,
+          "line": 239
+        }
+      }
+    },
+    {
+      "id": "4",
+      "mutatorName": "BlockStatement",
+      "replacement": "{}",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: undefined\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 7,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "33",
+        "34",
+        "38"
+      ],
+      "location": {
+        "end": {
+          "column": 6,
+          "line": 245
+        },
+        "start": {
+          "column": 37,
+          "line": 239
+        }
+      }
+    },
+    {
+      "id": "5",
+      "mutatorName": "BlockStatement",
+      "replacement": "{}",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 0\nReceived: 1\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:1000:62)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 7,
+      "killedBy": [
+        "34"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "33",
+        "34",
+        "38"
+      ],
+      "location": {
+        "end": {
+          "column": 10,
+          "line": 243
+        },
+        "start": {
+          "column": 15,
+          "line": 241
+        }
+      }
+    },
+    {
+      "id": "6",
+      "mutatorName": "BlockStatement",
+      "replacement": "{}",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: undefined\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 7,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "33",
+        "34",
+        "38"
+      ],
+      "location": {
+        "end": {
+          "column": 4,
+          "line": 291
+        },
+        "start": {
+          "column": 70,
+          "line": 249
+        }
+      }
+    },
+    {
+      "id": "7",
+      "mutatorName": "MethodExpression",
+      "replacement": "this.replayMarkerModel.find({\n  status: RefreshTokenReplayMarkerStatus.Pending,\n  leaseExpiresAt: {\n    $lte: now\n  }\n})",
+      "statusReason": "Error: expect(received).toEqual(expected) // deep equality\n\nExpected: {\"leaseExpiresAt\": 1}\nReceived: undefined\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:865:30)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 7,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "33",
+        "34",
+        "38"
+      ],
+      "location": {
+        "end": {
+          "column": 35,
+          "line": 255
+        },
+        "start": {
+          "column": 27,
+          "line": 250
+        }
+      }
+    },
+    {
+      "id": "9",
+      "mutatorName": "ObjectLiteral",
+      "replacement": "{}",
+      "statusReason": "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 3\n+ Received  + 1\n\n  Object {\n-   \"leaseExpiresAt\": Object {\n-     \"$lte\": Any<Date>,\n-   },\n+   \"leaseExpiresAt\": Object {},\n    \"status\": \"pending\",\n  }\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:861:36)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 7,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "33",
+        "34",
+        "38"
+      ],
+      "location": {
+        "end": {
+          "column": 38,
+          "line": 253
+        },
+        "start": {
+          "column": 25,
+          "line": 253
+        }
+      }
+    },
+    {
+      "id": "8",
+      "mutatorName": "ObjectLiteral",
+      "replacement": "{}",
+      "statusReason": "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 6\n+ Received  + 1\n\n- Object {\n-   \"leaseExpiresAt\": Object {\n-     \"$lte\": Any<Date>,\n-   },\n-   \"status\": \"pending\",\n- }\n+ Object {}\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:861:36)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 7,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "33",
+        "34",
+        "38"
+      ],
+      "location": {
+        "end": {
+          "column": 8,
+          "line": 254
+        },
+        "start": {
+          "column": 13,
+          "line": 251
+        }
+      }
+    },
+    {
+      "id": "10",
+      "mutatorName": "ObjectLiteral",
+      "replacement": "{}",
+      "statusReason": "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 3\n+ Received  + 1\n\n- Object {\n-   \"leaseExpiresAt\": 1,\n- }\n+ Object {}\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:865:30)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 7,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "33",
+        "34",
+        "38"
+      ],
+      "location": {
+        "end": {
+          "column": 34,
+          "line": 255
+        },
+        "start": {
+          "column": 13,
+          "line": 255
+        }
+      }
+    },
+    {
+      "id": "11",
+      "mutatorName": "BlockStatement",
+      "replacement": "{}",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 0\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 6,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "34",
+        "38"
+      ],
+      "location": {
+        "end": {
+          "column": 6,
+          "line": 288
+        },
+        "start": {
+          "column": 35,
+          "line": 260
+        }
+      }
+    },
+    {
+      "id": "12",
+      "mutatorName": "BlockStatement",
+      "replacement": "{}",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 0\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 6,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "34",
+        "38"
+      ],
+      "location": {
+        "end": {
+          "column": 8,
+          "line": 285
+        },
+        "start": {
+          "column": 11,
+          "line": 261
+        }
+      }
+    },
+    {
+      "id": "13",
+      "mutatorName": "ObjectLiteral",
+      "replacement": "{}",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 2\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 6,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "34",
+        "38"
+      ],
+      "location": {
+        "end": {
+          "column": 49,
+          "line": 263
+        },
+        "start": {
+          "column": 20,
+          "line": 263
+        }
+      }
+    },
+    {
+      "id": "14",
+      "mutatorName": "ConditionalExpression",
+      "replacement": "true",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 0\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 5,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "34"
+      ],
+      "location": {
+        "end": {
+          "column": 33,
+          "line": 269
+        },
+        "start": {
+          "column": 11,
+          "line": 267
+        }
+      }
+    },
+    {
+      "id": "15",
+      "mutatorName": "ConditionalExpression",
+      "replacement": "false",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 2\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 5,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "34"
+      ],
+      "location": {
+        "end": {
+          "column": 33,
+          "line": 269
+        },
+        "start": {
+          "column": 11,
+          "line": 267
+        }
+      }
+    },
+    {
+      "id": "16",
+      "mutatorName": "LogicalOperator",
+      "replacement": "family?.status === RefreshTokenFamilyStatus.Active && family.currentTokenHash === marker.tokenHash || family.expiresAt > now",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 0\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 5,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "34"
+      ],
+      "location": {
+        "end": {
+          "column": 33,
+          "line": 269
+        },
+        "start": {
+          "column": 11,
+          "line": 267
+        }
+      }
+    },
+    {
+      "id": "17",
+      "mutatorName": "ConditionalExpression",
+      "replacement": "true",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 0\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 5,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "34"
+      ],
+      "location": {
+        "end": {
+          "column": 55,
+          "line": 268
+        },
+        "start": {
+          "column": 11,
+          "line": 267
+        }
+      }
+    },
+    {
+      "id": "18",
+      "mutatorName": "LogicalOperator",
+      "replacement": "family?.status === RefreshTokenFamilyStatus.Active || family.currentTokenHash === marker.tokenHash",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 0\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 5,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "34"
+      ],
+      "location": {
+        "end": {
+          "column": 55,
+          "line": 268
+        },
+        "start": {
+          "column": 11,
+          "line": 267
+        }
+      }
+    },
+    {
+      "id": "19",
+      "mutatorName": "ConditionalExpression",
+      "replacement": "true",
+      "statusReason": "Error: expect(received).resolves.toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 0\n    at Object.toBe (/workspace/book-library-nestjs/node_modules/expect/build/index.js:2140:20)\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:914:72)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 5,
+      "killedBy": [
+        "31"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "34"
+      ],
+      "location": {
+        "end": {
+          "column": 61,
+          "line": 267
+        },
+        "start": {
+          "column": 11,
+          "line": 267
+        }
+      }
+    },
+    {
+      "id": "20",
+      "mutatorName": "EqualityOperator",
+      "replacement": "family?.status !== RefreshTokenFamilyStatus.Active",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 2\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 5,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "34"
+      ],
+      "location": {
+        "end": {
+          "column": 61,
+          "line": 267
+        },
+        "start": {
+          "column": 11,
+          "line": 267
+        }
+      }
+    },
+    {
+      "id": "21",
+      "mutatorName": "OptionalChaining",
+      "replacement": "family.status",
+      "statusReason": "Error: expect(received).resolves.toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 0\n    at Object.toBe (/workspace/book-library-nestjs/node_modules/expect/build/index.js:2140:20)\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:930:72)\n    at Promise.finally.completed (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1561:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1501:10)\n    at _callCircusTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1011:40)\n    at _runTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:951:3)\n    at /workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:853:7\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:866:11)\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:861:11)\n    at run (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:765:3)\n    at runAndTransformResultsToJestFormat (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1993:21)\n    at jestAdapter (/workspace/book-library-nestjs/node_modules/jest-circus/build/runner.js:111:19)\n    at runTestInternal (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:276:16)\n    at runTest (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:344:7)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 5,
+      "killedBy": [
+        "32"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "34"
+      ],
+      "location": {
+        "end": {
+          "column": 25,
+          "line": 267
+        },
+        "start": {
+          "column": 11,
+          "line": 267
+        }
+      }
+    },
+    {
+      "id": "22",
+      "mutatorName": "ConditionalExpression",
+      "replacement": "true",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 0\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 3,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "34"
+      ],
+      "location": {
+        "end": {
+          "column": 55,
+          "line": 268
+        },
+        "start": {
+          "column": 11,
+          "line": 268
+        }
+      }
+    },
+    {
+      "id": "23",
+      "mutatorName": "EqualityOperator",
+      "replacement": "family.currentTokenHash !== marker.tokenHash",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: \"committed\"\nReceived: \"pending\"\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:867:41)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 3,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "34"
+      ],
+      "location": {
+        "end": {
+          "column": 55,
+          "line": 268
+        },
+        "start": {
+          "column": 11,
+          "line": 268
+        }
+      }
+    },
+    {
+      "id": "24",
+      "mutatorName": "ConditionalExpression",
+      "replacement": "true",
+      "statusReason": "Error: expect(received).resolves.toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 0\n    at Object.toBe (/workspace/book-library-nestjs/node_modules/expect/build/index.js:2140:20)\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:888:72)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 2,
+      "killedBy": [
+        "30"
+      ],
+      "coveredBy": [
+        "29",
+        "30"
+      ],
+      "location": {
+        "end": {
+          "column": 33,
+          "line": 269
+        },
+        "start": {
+          "column": 11,
+          "line": 269
+        }
+      }
+    },
+    {
+      "id": "25",
+      "mutatorName": "EqualityOperator",
+      "replacement": "family.expiresAt >= now",
+      "statusReason": "Error: expect(received).resolves.toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 0\n    at Object.toBe (/workspace/book-library-nestjs/node_modules/expect/build/index.js:2140:20)\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:888:72)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 2,
+      "killedBy": [
+        "30"
+      ],
+      "coveredBy": [
+        "29",
+        "30"
+      ],
+      "location": {
+        "end": {
+          "column": 33,
+          "line": 269
+        },
+        "start": {
+          "column": 11,
+          "line": 269
+        }
+      }
+    },
+    {
+      "id": "26",
+      "mutatorName": "EqualityOperator",
+      "replacement": "family.expiresAt <= now",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 2\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 2,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30"
+      ],
+      "location": {
+        "end": {
+          "column": 33,
+          "line": 269
+        },
+        "start": {
+          "column": 11,
+          "line": 269
+        }
+      }
+    },
+    {
+      "id": "27",
+      "mutatorName": "BlockStatement",
+      "replacement": "{}",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: 2\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 1,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29"
+      ],
+      "location": {
+        "end": {
+          "column": 10,
+          "line": 272
+        },
+        "start": {
+          "column": 11,
+          "line": 270
+        }
+      }
+    },
+    {
+      "id": "28",
+      "mutatorName": "ConditionalExpression",
+      "replacement": "true",
+      "status": "Timeout",
+      "static": false,
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "34"
+      ],
+      "location": {
+        "end": {
+          "column": 73,
+          "line": 275
+        },
+        "start": {
+          "column": 11,
+          "line": 275
+        }
+      }
+    },
+    {
+      "id": "29",
+      "mutatorName": "ConditionalExpression",
+      "replacement": "false",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: \"refresh-rotation-orphaned\"\nReceived: \"refresh-rotation-invariant\"\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:869:42)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 5,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "34"
+      ],
+      "location": {
+        "end": {
+          "column": 73,
+          "line": 275
+        },
+        "start": {
+          "column": 11,
+          "line": 275
+        }
+      }
+    },
+    {
+      "id": "30",
+      "mutatorName": "EqualityOperator",
+      "replacement": "family?.lastRotationOperationId !== marker.rotationOperationId",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: \"refresh-rotation-orphaned\"\nReceived: \"refresh-rotation-invariant\"\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:869:42)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 5,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "34"
+      ],
+      "location": {
+        "end": {
+          "column": 73,
+          "line": 275
+        },
+        "start": {
+          "column": 11,
+          "line": 275
+        }
+      }
+    },
+    {
+      "id": "32",
+      "mutatorName": "StringLiteral",
+      "replacement": "\"\"",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: \"refresh-rotation-orphaned\"\nReceived: \"\"\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:869:42)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 2,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "34"
+      ],
+      "location": {
+        "end": {
+          "column": 42,
+          "line": 276
+        },
+        "start": {
+          "column": 15,
+          "line": 276
+        }
+      }
+    },
+    {
+      "id": "31",
+      "mutatorName": "OptionalChaining",
+      "replacement": "family.lastRotationOperationId",
+      "status": "Timeout",
+      "static": false,
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "34"
+      ],
+      "location": {
+        "end": {
+          "column": 42,
+          "line": 275
+        },
+        "start": {
+          "column": 11,
+          "line": 275
+        }
+      }
+    },
+    {
+      "id": "33",
+      "mutatorName": "StringLiteral",
+      "replacement": "\"\"",
+      "statusReason": "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  -  2\n+ Received  + 14\n\n- ObjectContaining {\n-   \"revokedReason\": \"refresh-rotation-invariant\",\n+ Object {\n+   \"authVersion\": 0,\n+   \"clientId\": \"web\",\n+   \"expiresAt\": 2026-07-15T00:00:00.000Z,\n+   \"familyId\": \"8e82122c-7767-4600-9d38-4cfce2b24faf\",\n+   \"issuedAt\": 2026-10-03T12:58:59.642Z,\n+   \"lastRotatedAt\": 2026-10-03T12:58:59.642Z,\n+   \"revokedAt\": 2026-10-03T12:58:59.644Z,\n+   \"revokedReason\": \"\",\n+   \"scopes\": Array [\n+     \"catalog:read\",\n+   ],\n    \"status\": \"revoked\",\n+   \"subjectId\": \"expired-reconciliation\",\n+   \"subjectType\": \"staff\",\n  }\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:892:20)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 3,
+      "killedBy": [
+        "30"
+      ],
+      "coveredBy": [
+        "30",
+        "31",
+        "32"
+      ],
+      "location": {
+        "end": {
+          "column": 43,
+          "line": 277
+        },
+        "start": {
+          "column": 15,
+          "line": 277
+        }
+      }
+    },
+    {
+      "id": "34",
+      "mutatorName": "AssignmentOperator",
+      "replacement": "reconciled -= 1",
+      "statusReason": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: 1\nReceived: -1\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:860:60)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 5,
+      "killedBy": [
+        "29"
+      ],
+      "coveredBy": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "34"
+      ],
+      "location": {
+        "end": {
+          "column": 24,
+          "line": 284
+        },
+        "start": {
+          "column": 9,
+          "line": 284
+        }
+      }
+    },
+    {
+      "id": "35",
+      "mutatorName": "BlockStatement",
+      "replacement": "{}",
+      "statusReason": "Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)\n\nExpected: \"Refresh rotation marker reconciliation failed\"\n\nNumber of calls: 0\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:1063:22)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 1,
+      "killedBy": [
+        "38"
+      ],
+      "coveredBy": [
+        "38"
+      ],
+      "location": {
+        "end": {
+          "column": 8,
+          "line": 287
+        },
+        "start": {
+          "column": 15,
+          "line": 285
+        }
+      }
+    },
+    {
+      "id": "36",
+      "mutatorName": "StringLiteral",
+      "replacement": "\"\"",
+      "statusReason": "Error: expect(jest.fn()).toHaveBeenCalledWith(...expected)\n\nExpected: \"Refresh rotation marker reconciliation failed\"\nReceived: \"\"\n\nNumber of calls: 1\n    at Object.<anonymous> (/tmp/nestjs-t5-diagnostic-gate-throughput-green-sandbox/sandbox-EcOhER/src/auth/token-session.service.spec.ts:1063:22)",
+      "status": "Killed",
+      "static": false,
+      "testsCompleted": 1,
+      "killedBy": [
+        "38"
+      ],
+      "coveredBy": [
+        "38"
+      ],
+      "location": {
+        "end": {
+          "column": 74,
+          "line": 286
+        },
+        "start": {
+          "column": 27,
+          "line": 286
+        }
+      }
+    }
+  ]
+}
