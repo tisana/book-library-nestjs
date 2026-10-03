@@ -34,12 +34,13 @@ function docker(args: string[]): string {
     ).trim();
   } catch (error) {
     const failure = error as { stderr?: Buffer; code?: string };
-    let detail = failure.stderr?.toString().slice(-2000) ?? '';
+    let detail = failure.stderr?.toString() ?? '';
     for (const secret of diagnosticSecrets)
       detail = detail.split(secret).join('[redacted]');
     detail = detail
       .replace(/mongodb(?:\+srv)?:\/\/\S+/gi, '[redacted-database]')
-      .replace(/\b[A-Za-z0-9_-]{32,}\b/g, '[redacted-id]');
+      .replace(/\b[A-Za-z0-9_-]{32,}\b/g, '[redacted-id]')
+      .slice(-2000);
     console.error(
       JSON.stringify({ dockerCommand: args[0], code: failure.code, detail }),
     );
@@ -47,19 +48,26 @@ function docker(args: string[]): string {
   }
 }
 async function main() {
-  phase = 'disposable-fixture';
-  const fixture = await createArtifactFixture(true);
-  diagnosticSecrets = [
-    fixture.uri,
-    fixture.password,
-    ...Object.entries(fixture.environment)
-      .filter(([name]) => /SECRET|KEYS/.test(name))
-      .map(([, value]) => value)
-      .filter((value): value is string => Boolean(value)),
-  ];
-  const directory = await mkdtemp(join(tmpdir(), 'library-image-check-'));
+  let fixtureToClean:
+    | Awaited<ReturnType<typeof createArtifactFixture>>
+    | undefined;
+  let directoryToClean: string | undefined;
   const children = new Set<string>();
+  let originalFailed = false;
   try {
+    phase = 'disposable-fixture';
+    const fixture = await createArtifactFixture(true);
+    fixtureToClean = fixture;
+    diagnosticSecrets = [
+      fixture.uri,
+      fixture.password,
+      ...Object.entries(fixture.environment)
+        .filter(([name]) => /SECRET|KEYS/.test(name))
+        .map(([, value]) => value)
+        .filter((value): value is string => Boolean(value)),
+    ];
+    const directory = await mkdtemp(join(tmpdir(), 'library-image-check-'));
+    directoryToClean = directory;
     phase = 'bridge-inspection';
     const bridge = JSON.parse(docker(['network', 'inspect', 'bridge'])) as {
       IPAM: { Config: { Gateway: string }[] };
@@ -238,10 +246,36 @@ async function main() {
         shutdownMs,
       }),
     );
+  } catch (error) {
+    originalFailed = true;
+    throw error;
   } finally {
-    for (const id of children) docker(['rm', '-f', id]);
-    await fixture.stop();
-    await rm(directory, { recursive: true, force: true });
+    const cleanupErrors: unknown[] = [];
+    for (const id of children) {
+      try {
+        docker(['rm', '-f', id]);
+      } catch (error) {
+        cleanupErrors.push(error);
+      }
+    }
+    try {
+      await fixtureToClean?.stop();
+    } catch (error) {
+      cleanupErrors.push(error);
+    }
+    try {
+      if (directoryToClean)
+        await rm(directoryToClean, { recursive: true, force: true });
+    } catch (error) {
+      cleanupErrors.push(error);
+    }
+    if (cleanupErrors.length) {
+      if (originalFailed)
+        console.error(
+          'Additional production verification cleanup failure; original failure retained',
+        );
+      else throw cleanupErrors[0];
+    }
   }
 }
 void main().catch((error: unknown) => {
