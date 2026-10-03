@@ -1,0 +1,51 @@
+{
+  "purpose": "confirmed RED review findings; not acceptance evidence",
+  "results": [
+    {
+      "kind": "redaction",
+      "fixtureCreated": true,
+      "fixtureStopped": true,
+      "directoryCreated": true,
+      "directoryRemoved": true,
+      "envWritten": false,
+      "containerCreated": false,
+      "containerRemoveAttempted": false,
+      "exitCode": 1,
+      "configuredFullSecretPrinted": false,
+      "configuredTenCharacterSuffixPrinted": true
+    },
+    {
+      "kind": "mkdtemp",
+      "fixtureCreated": true,
+      "fixtureStopped": false,
+      "directoryCreated": false,
+      "directoryRemoved": false,
+      "envWritten": false,
+      "containerCreated": false,
+      "containerRemoveAttempted": false,
+      "exitCode": 1
+    },
+    {
+      "kind": "docker-remove",
+      "fixtureCreated": true,
+      "fixtureStopped": false,
+      "directoryCreated": true,
+      "directoryRemoved": false,
+      "envWritten": true,
+      "containerCreated": true,
+      "containerRemoveAttempted": true,
+      "exitCode": 1
+    },
+    {
+      "kind": "fixture-stop",
+      "fixtureCreated": true,
+      "fixtureStopped": true,
+      "directoryCreated": true,
+      "directoryRemoved": false,
+      "envWritten": true,
+      "containerCreated": true,
+      "containerRemoveAttempted": true,
+      "exitCode": 1
+    }
+  ]
+}

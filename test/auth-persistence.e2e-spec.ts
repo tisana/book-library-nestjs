@@ -1,9 +1,18 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { getConnectionToken, getModelToken } from '@nestjs/mongoose';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { setTimeout as delay } from 'node:timers/promises';
+import { TokenSessionService } from '../src/auth/token-session.service';
+import {
+  AuthSubjectType,
+  RefreshTokenFamilyModelName,
+} from '../src/auth/schemas/refresh-token-family.schema';
+import { deferred } from './support/backend-coverage-fixtures';
 import { Test } from '@nestjs/testing';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import mongoose, { Connection, Types } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import {
   MigrationConnection,
@@ -71,6 +80,207 @@ describe('Authentication persistence across application restarts (e2e)', () => {
     }
   });
 
+  it('closes Mongo and removes both workers timers when the application closes', async () => {
+    const connection = app.get<Connection>(getConnectionToken());
+    const registry = app.get(SchedulerRegistry);
+    const sessions = app.get(TokenSessionService) as unknown as {
+      reconciliationTimer?: NodeJS.Timeout;
+    };
+    const refreshTimer = sessions.reconciliationTimer;
+    const identifierTimer = registry.getInterval(
+      'auth-identifier-reconciliation',
+    ) as NodeJS.Timeout;
+    expect(connection.readyState).toBe(1);
+    await app.close();
+    expect(connection.readyState).toBe(0);
+    expect(registry.getIntervals()).toEqual([]);
+    expect(sessions.reconciliationTimer).toBeUndefined();
+    expect(
+      (refreshTimer as unknown as { _destroyed: boolean })._destroyed,
+    ).toBe(true);
+    expect(
+      (identifierTimer as unknown as { _destroyed: boolean })._destroyed,
+    ).toBe(true);
+    app = await createApp();
+  });
+
+  it('drains an active refresh-marker recovery before closing Mongo', async () => {
+    const service = app.get(TokenSessionService);
+    const connection = app.get<Connection>(getConnectionToken());
+    const created = await service.createFamily({
+      clientId: 'web',
+      subjectType: AuthSubjectType.Staff,
+      subjectId: 'drain-fixture',
+      scopes: ['catalog:read'],
+      authVersion: 0,
+      ttlSeconds: 600,
+    });
+    const operationId = 'drain-marker-operation';
+    await connection.collection('refresh_token_replay_markers').insertOne({
+      familyId: created.familyId,
+      tokenHash: service.hashRefreshToken(created.refreshToken),
+      rotationOperationId: operationId,
+      status: 'pending',
+      leaseExpiresAt: new Date(Date.now() - 1_000),
+      expiresAt: created.expiresAt,
+    });
+    await connection.collection('refresh_token_families').updateOne(
+      { familyId: created.familyId },
+      {
+        $set: {
+          currentTokenHash: service.hashRefreshToken('unreturned-successor'),
+          lastRotationOperationId: operationId,
+        },
+      },
+    );
+    const familyModel = app.get(getModelToken(RefreshTokenFamilyModelName));
+    const originalFind = familyModel.findOne.bind(familyModel);
+    const entered = deferred<void>();
+    const release = deferred<void>();
+    const gate = jest
+      .spyOn(familyModel, 'findOne')
+      .mockImplementationOnce((...args) => {
+        const query = originalFind(...args);
+        const execute = query.exec.bind(query);
+        query.exec = async () => {
+          entered.resolve();
+          await release.promise;
+          return execute();
+        };
+        return query;
+      });
+    const recovery = service.reconcileExpiredPendingMarkers();
+    await entered.promise;
+    const closing = app.close();
+    try {
+      expect(
+        await Promise.race([
+          closing.then(() => 'closed'),
+          delay(100, 'draining'),
+        ]),
+      ).toBe('draining');
+      expect(connection.readyState).toBe(1);
+    } finally {
+      release.resolve();
+      await Promise.all([recovery, closing]);
+      gate.mockRestore();
+      app = await createApp();
+    }
+    const reopened = app.get<Connection>(getConnectionToken());
+    expect(
+      (
+        await reopened
+          .collection('refresh_token_families')
+          .findOne({ familyId: created.familyId })
+      ).status,
+    ).toBe('revoked');
+    const marker = await reopened
+      .collection('refresh_token_replay_markers')
+      .findOne({ familyId: created.familyId });
+    expect(marker.status).toBe('committed');
+    expect(marker.leaseExpiresAt).toBeUndefined();
+  });
+
+  it('recovers pre-CAS and orphaned markers across restarts and concurrent instances', async () => {
+    let service = app.get(TokenSessionService);
+    let connection = app.get<Connection>(getConnectionToken());
+    const created = await service.createFamily({
+      clientId: 'web',
+      subjectType: AuthSubjectType.Staff,
+      subjectId: 'lease-fixture',
+      scopes: ['catalog:read'],
+      authVersion: 0,
+      ttlSeconds: 600,
+    });
+    const tokenHash = service.hashRefreshToken(created.refreshToken);
+    await connection.collection('refresh_token_replay_markers').insertOne({
+      familyId: created.familyId,
+      tokenHash,
+      rotationOperationId: 'interrupted-before-cas',
+      status: 'pending',
+      leaseExpiresAt: new Date(Date.now() + 30_000),
+      expiresAt: created.expiresAt,
+    });
+    await app.close();
+    app = await createApp();
+    service = app.get(TokenSessionService);
+    connection = app.get<Connection>(getConnectionToken());
+    await expect(service.rotate(created.refreshToken)).rejects.toThrow(
+      'Invalid refresh session',
+    );
+    expect(
+      (
+        await connection
+          .collection('refresh_token_families')
+          .findOne({ familyId: created.familyId })
+      ).status,
+    ).toBe('active');
+    await connection
+      .collection('refresh_token_replay_markers')
+      .updateOne(
+        { tokenHash },
+        { $set: { leaseExpiresAt: new Date(Date.now() - 1_000) } },
+      );
+    const rotated = await service.rotate(created.refreshToken);
+    expect(rotated.familyId).toBe(created.familyId);
+    expect(
+      await connection
+        .collection('refresh_token_replay_markers')
+        .countDocuments({ tokenHash }),
+    ).toBe(1);
+    const marker = await connection
+      .collection('refresh_token_replay_markers')
+      .findOne({ tokenHash });
+    expect(marker.status).toBe('committed');
+    expect(marker.rotationOperationId === 'interrupted-before-cas').toBe(false);
+
+    // Simulate process loss after family CAS but before marker commit/response.
+    await connection.collection('refresh_token_replay_markers').updateOne(
+      { tokenHash },
+      {
+        $set: {
+          status: 'pending',
+          leaseExpiresAt: new Date(Date.now() - 1_000),
+        },
+        $unset: { committedAt: '' },
+      },
+    );
+    await app.close();
+    app = await createApp();
+    const second = await createApp();
+    try {
+      await Promise.all([
+        app.get(TokenSessionService).reconcileExpiredPendingMarkers(),
+        second.get(TokenSessionService).reconcileExpiredPendingMarkers(),
+      ]);
+      connection = app.get<Connection>(getConnectionToken());
+      expect(
+        await connection
+          .collection('refresh_token_replay_markers')
+          .countDocuments({ tokenHash, status: 'committed' }),
+      ).toBe(1);
+      expect(
+        (
+          await connection
+            .collection('refresh_token_families')
+            .findOne({ familyId: created.familyId })
+        ).status,
+      ).toBe('revoked');
+      await expect(
+        app.get(TokenSessionService).rotate(rotated.refreshToken),
+      ).rejects.toThrow('Invalid refresh session');
+      await expect(
+        second.get(TokenSessionService).rotate(created.refreshToken),
+      ).rejects.toThrow('Invalid refresh session');
+    } finally {
+      await second.close();
+      // Passport's process-global strategy points to the most recently created
+      // TestingModule. Reopen the surviving HTTP fixture after closing its peer.
+      await app.close();
+      app = await createApp();
+    }
+  });
+
   it('preserves staff/member identity, scope, ownership, and refresh continuity', async () => {
     const staffLogin = await request(app.getHttpServer())
       .post('/auth/login')
@@ -128,6 +338,34 @@ describe('Authentication persistence across application restarts (e2e)', () => {
           user: { roles: ['admin'] },
         });
       });
+
+    await app.close();
+    app = await createApp();
+    await request(app.getHttpServer())
+      .post('/auth/refresh')
+      .set('Origin', origin)
+      .set('Cookie', staffRefreshCookie)
+      .expect(401);
+    await request(app.getHttpServer())
+      .post('/auth/refresh')
+      .set('Origin', origin)
+      .set('Cookie', cookieHeader(refreshed.headers))
+      .expect(401);
+    const connection = app.get<Connection>(getConnectionToken());
+    await connection
+      .collection('members')
+      .updateOne({ memberNumber: 'M-1001' }, { $inc: { authVersion: 1 } });
+    await app.close();
+    app = await createApp();
+    await request(app.getHttpServer())
+      .get('/members/me')
+      .set('Authorization', `Bearer ${memberLogin.body.accessToken}`)
+      .expect(401);
+    await request(app.getHttpServer())
+      .post('/auth/refresh')
+      .set('Origin', origin)
+      .set('Cookie', cookieHeader(memberLogin.headers))
+      .expect(401);
   }, 90_000);
 });
 

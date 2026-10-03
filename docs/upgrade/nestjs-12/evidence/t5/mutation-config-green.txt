@@ -1,0 +1,10 @@
+✔ smoke members selects only its direct service specification (2.601901ms)
+✔ all shards and complete use exact Jest, reporters, mutators, thresholds, and fixed concurrency (0.753102ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 387.376468

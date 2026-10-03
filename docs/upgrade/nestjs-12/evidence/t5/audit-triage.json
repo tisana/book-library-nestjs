@@ -1,0 +1,263 @@
+{
+  "checkedAt": "2026-10-03T07:11:49.705Z",
+  "beforeAggregated": {
+    "info": 0,
+    "low": 0,
+    "moderate": 11,
+    "high": 70,
+    "critical": 0,
+    "total": 81
+  },
+  "afterAggregated": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "leafAdvisoryPackages": [
+    {
+      "name": "brace-expansion",
+      "severity": "high",
+      "paths": [
+        "node_modules/@eslint/config-array/node_modules/brace-expansion",
+        "node_modules/@stryker-mutator/core/node_modules/brace-expansion",
+        "node_modules/@typescript-eslint/typescript-estree/node_modules/brace-expansion",
+        "node_modules/brace-expansion",
+        "node_modules/eslint/node_modules/brace-expansion"
+      ]
+    },
+    {
+      "name": "braces",
+      "severity": "high",
+      "paths": [
+        "node_modules/braces"
+      ]
+    },
+    {
+      "name": "browserslist",
+      "severity": "high",
+      "paths": [
+        "node_modules/browserslist"
+      ]
+    },
+    {
+      "name": "fast-uri",
+      "severity": "moderate",
+      "paths": [
+        "node_modules/fast-uri"
+      ]
+    },
+    {
+      "name": "qs",
+      "severity": "moderate",
+      "paths": [
+        "node_modules/typed-rest-client/node_modules/qs"
+      ]
+    }
+  ],
+  "originalAffected": [
+    {
+      "name": "brace-expansion",
+      "severity": "high",
+      "paths": [
+        {
+          "path": "node_modules/@eslint/config-array/node_modules/brace-expansion",
+          "priorVersion": "5.0.9",
+          "currentVersion": "5.0.12",
+          "dev": true
+        },
+        {
+          "path": "node_modules/@stryker-mutator/core/node_modules/brace-expansion",
+          "priorVersion": "5.0.9",
+          "currentVersion": "5.0.12",
+          "dev": true
+        },
+        {
+          "path": "node_modules/@typescript-eslint/typescript-estree/node_modules/brace-expansion",
+          "priorVersion": "5.0.9",
+          "currentVersion": "5.0.12",
+          "dev": true
+        },
+        {
+          "path": "node_modules/brace-expansion",
+          "priorVersion": "1.1.18",
+          "currentVersion": "1.1.21",
+          "dev": true
+        },
+        {
+          "path": "node_modules/eslint/node_modules/brace-expansion",
+          "priorVersion": "5.0.9",
+          "currentVersion": "5.0.12",
+          "dev": true
+        }
+      ],
+      "advisories": [
+        {
+          "url": "https://github.com/advisories/GHSA-q2hr-2g5m-vwhr",
+          "title": "brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service",
+          "range": "<1.1.21"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-q2hr-2g5m-vwhr",
+          "title": "brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service",
+          "range": ">=4.0.0 <5.0.12"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-qhr7-859c-m2p7",
+          "title": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion",
+          "range": "<1.1.20"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-qhr7-859c-m2p7",
+          "title": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion",
+          "range": ">=4.0.0 <5.0.11"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-6j4f-fj2g-mc7p",
+          "title": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion",
+          "range": "<1.1.19"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-6j4f-fj2g-mc7p",
+          "title": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion",
+          "range": ">=4.0.0 <5.0.10"
+        }
+      ]
+    },
+    {
+      "name": "braces",
+      "severity": "high",
+      "paths": [
+        {
+          "path": "node_modules/braces",
+          "priorVersion": "3.0.3",
+          "currentVersion": null,
+          "dev": true
+        }
+      ],
+      "advisories": [
+        {
+          "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+          "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+          "range": "<=3.0.3"
+        }
+      ]
+    },
+    {
+      "name": "browserslist",
+      "severity": "high",
+      "paths": [
+        {
+          "path": "node_modules/browserslist",
+          "priorVersion": "4.28.1",
+          "currentVersion": "4.28.7",
+          "dev": true
+        }
+      ],
+      "advisories": [
+        {
+          "url": "https://github.com/advisories/GHSA-c83g-rgw3-j3cx",
+          "title": "Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM",
+          "range": "<=4.28.6"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-73wf-gq98-2v4g",
+          "title": "Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats)",
+          "range": "<=4.28.6"
+        }
+      ]
+    },
+    {
+      "name": "fast-uri",
+      "severity": "moderate",
+      "paths": [
+        {
+          "path": "node_modules/fast-uri",
+          "priorVersion": "3.1.7",
+          "currentVersion": "3.1.8",
+          "dev": true
+        }
+      ],
+      "advisories": [
+        {
+          "url": "https://github.com/advisories/GHSA-hrr3-gc8f-f4qj",
+          "title": "fast-uri vulnerable to inconsistent host case normalization via percent-encoded octets",
+          "range": ">=3.0.0 <3.1.8"
+        }
+      ]
+    },
+    {
+      "name": "micromatch",
+      "severity": "high",
+      "paths": [
+        {
+          "path": "node_modules/micromatch",
+          "priorVersion": "4.0.8",
+          "currentVersion": null,
+          "dev": true
+        }
+      ],
+      "advisories": []
+    },
+    {
+      "name": "qs",
+      "severity": "moderate",
+      "paths": [
+        {
+          "path": "node_modules/typed-rest-client/node_modules/qs",
+          "priorVersion": "6.15.1",
+          "currentVersion": "6.16.0",
+          "dev": true
+        }
+      ],
+      "advisories": [
+        {
+          "url": "https://github.com/advisories/GHSA-q8mj-m7cp-5q26",
+          "title": "qs has a remotely triggerable DoS: qs.stringify crashes with TypeError on null/undefined entries in comma-format arrays when encodeValuesOnly is set",
+          "range": ">=6.11.1 <=6.15.1"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-x5fp-wj9c-mxmx",
+          "title": "qs array-limit bypass via bracket-key comma parsing",
+          "range": ">=6.14.2 <=6.15.3"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-4mjr-xmp4-gh2g",
+          "title": "qs: Denial of Service via Attacker Controlled isBuffer",
+          "range": ">=2.2.5 <6.16.0"
+        }
+      ]
+    },
+    {
+      "name": "ts-loader",
+      "severity": "high",
+      "paths": [
+        {
+          "path": "node_modules/ts-loader",
+          "priorVersion": "9.5.4",
+          "currentVersion": "9.6.2",
+          "dev": true
+        }
+      ],
+      "advisories": []
+    },
+    {
+      "name": "typed-rest-client",
+      "severity": "moderate",
+      "paths": [
+        {
+          "path": "node_modules/typed-rest-client",
+          "priorVersion": "2.3.1",
+          "currentVersion": "2.3.1",
+          "dev": true
+        }
+      ],
+      "advisories": []
+    }
+  ],
+  "exposure": "Original shipped advisory was brace-expansion1.1.18 via runtime rimraf3->glob7->minimatch3. Patched1.1.21. Remaining original affected paths were dev-only; ts-loader9.6.2 removes micromatch/braces subtree entirely. No unresolved npm-audit advisory remains.",
+  "override": "typed-rest-client2.3.1 exact-pins qs6.15.1; approved scoped same-major qs6.16.0 override. No typed-rest-client major change.",
+  "lockResolution": "npm11 initially retained stale nested entry; corrected exact qs metadata in v2 packages/dependencies and verified clean npmci and npm ls."
+}

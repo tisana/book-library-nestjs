@@ -1,0 +1,32 @@
+[
+  {
+    "url": "https://github.com/nestjs/nest/releases/tag/v12.1.1",
+    "status": 200,
+    "bytes": 215017,
+    "evidence": "nest-v12.1.1.txt"
+  },
+  {
+    "url": "https://github.com/nestjs/nest/releases/tag/v12.0.0",
+    "status": 200,
+    "bytes": 238575,
+    "evidence": "nest-v12.0.0.txt"
+  },
+  {
+    "url": "https://github.com/nestjs/passport/releases/tag/12.0.0",
+    "status": 200,
+    "bytes": 213833,
+    "evidence": "passport-v12.0.0.txt"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/nestjs/schematics/12.0.6/package.json",
+    "status": 200,
+    "bytes": 2651,
+    "evidence": "schematics-v12.0.6.txt"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/kulshekhar/ts-jest/v29.4.14/package.json",
+    "status": 200,
+    "bytes": 4237,
+    "evidence": "ts-jest-v29.4.14.txt"
+  }
+]

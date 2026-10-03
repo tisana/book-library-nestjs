@@ -1,0 +1,27 @@
+
+> book-library@0.0.1 verify:auth-performance
+> npm run build && rimraf dist-performance && tsc -p tsconfig.performance.json && node dist-performance/scripts/verify-auth-performance.js
+
+
+> book-library@0.0.1 prebuild
+> rimraf dist
+
+
+> book-library@0.0.1 build
+> nest build
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+Applied 000 migration-record
+Applied 001 library-core
+Applied 002 member-auth
+Applied 003 auth-roles-permissions
+auth-boundary-p95-ms=13.00 security-activity-first-50-ms=12.07 evidence=/workspace/book-library-nestjs/specs/003-auth-roles-permissions/evidence/auth-performance.md
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

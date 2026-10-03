@@ -1,0 +1,87 @@
+{
+  "recordedAt": "2026-10-03T13:14:49.513563+00:00",
+  "verifiedInputsCommittedAs": "97ec26d612d04993f5b9896913a7de6ebed42db9",
+  "testRunBaseCommit": "e5cc50c0af9bc0b8cf1323b298021cd75c124f4a",
+  "note": "Tests ran after the three-file fix in working tree; the identical verified input bytes are now committed. No accepted complete or smoke producer is attributed to this commit.",
+  "node": "v24.19.0",
+  "outcomes": {
+    "strictNodeCommand": {
+      "command": "node --test test/quality/mutation-runner.test.mjs test/quality/mutation-policy.test.mjs",
+      "exitCode": 0,
+      "tests": 106,
+      "pass": 106,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "durationMs": 16102.049123
+    },
+    "qualityReporting": {
+      "command": "npm run test:quality-reporting",
+      "exitCode": 0,
+      "suites": 4,
+      "tests": 68,
+      "pass": 68,
+      "fail": 0
+    },
+    "mutationManifest": {
+      "command": "npm run mutation:check",
+      "exitCode": 0,
+      "rules": 89
+    }
+  },
+  "inputs": [
+    {
+      "path": "scripts/quality/mutation-policy.mjs",
+      "sha256": "8874851bd7f20d59188f8a05abb824f9d3f709a15cb9a92b9262ff434eeef09c",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": ".github/workflows/mutation.yml",
+      "sha256": "e0050bb1d4112b417afe1c5102ac6f8871d999e9bbc4dfbd1c5be41a0a1b56b5",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "test/quality/mutation-runner.test.mjs",
+      "sha256": "1ea6b52383429f201147c5d42829f5f34c87d8d9a70214875b73dfbe8617008a",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "test/quality/mutation-policy.test.mjs",
+      "sha256": "ff1f8a45bc6218b3b1b190bab818e9d2f2aaf2a4049df8314d26724e74e2faff",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "stryker.config.mjs",
+      "sha256": "f014fd408a2e97733a5a0f40da490296d7d4e90f7316b42f286086865df5588e",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "tsconfig.mutation.json",
+      "sha256": "89f884c51a1e26fe422cf4cdf2f4cd49c3c2e58a0b038d2faa26d206153b4c3e",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "tsconfig.jest.json",
+      "sha256": "224afaecd2beb76b0b18066b9fd5da4eeba2de0487d10ca9159cc3e94fc4e133",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "package.json",
+      "sha256": "f42c1a1b2e93b2dc5bbeaf27cdf7af54f3860f6ebc00dde36d941dd92db2bc83",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "b4fc498293073ee73c8007a9eeddd4aab5961f811f70b997c91f044d10d9b9ea",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "test/quality/mutation-baseline.json",
+      "sha256": "cb1932bfb4f06cdd9a59ae617048143d696fc3fc0dedf8b66e2193d3209ce51a",
+      "matchesCommittedBytes": true
+    }
+  ],
+  "historicalBaselineUnchanged": true,
+  "mutationAcceptance": "BLOCKED"
+}

@@ -1,0 +1,198 @@
+✖ redact full configured credentials before bounding Docker diagnostics (5.624119ms)
+✔ fixtureFailure: release only acquired resources (2.283309ms)
+✖ directoryFailure: release only acquired resources (1.949657ms)
+✔ networkFailure: release only acquired resources (1.832118ms)
+✔ writeFailure: release only acquired resources (8.994098ms)
+✖ dockerRemoveFailure: preserve original verification failure and attempt all cleanup (1.978726ms)
+✖ dockerRemoveFailure: fail successful verification if cleanup fails; continue all four containers (2.188452ms)
+✖ stopFailure: preserve original verification failure and attempt all cleanup (1.168761ms)
+✖ stopFailure: fail successful verification if cleanup fails; continue all four containers (1.571712ms)
+✖ removeDirectoryFailure: preserve original verification failure and attempt all cleanup (1.49598ms)
+✔ removeDirectoryFailure: fail successful verification if cleanup fails; continue all four containers (1.431461ms)
+✖ combined cleanup failures retain the original HTTP failure (1.308187ms)
+✔ normal verifier contract, thresholds and cleanup remain unchanged (1.482104ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 5
+ℹ fail 8
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 433.138091
+
+✖ failing tests:
+
+test at docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:207:1
+✖ redact full configured credentials before bounding Docker diagnostics (5.624119ms)
+  AssertionError [ERR_ASSERTION]: synthetic credential suffix must be absent
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:216:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:252:3
+✖ directoryFailure: release only acquired resources (1.949657ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+      'fixture-create',
+      'mkdtemp',
+  -   'fixture-stop'
+    ]
+  
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:255:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'fixture-create', 'mkdtemp' ],
+    expected: [ 'fixture-create', 'mkdtemp', 'fixture-stop' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:263:3
+✖ dockerRemoveFailure: preserve original verification failure and attempt all cleanup (1.978726ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'Error'
+  - 'OriginalHttpFailure'
+  
+      at failure (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:204:10)
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:265:5)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Error',
+    expected: 'OriginalHttpFailure',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:277:3
+✖ dockerRemoveFailure: fail successful verification if cleanup fails; continue all four containers (2.188452ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   'run-3',
+  +   'env-write',
+  +   'run-4',
+  +   'mongo-stop',
+  +   'container-stop',
+      'rm-container-1',
+  -   'rm-container-2',
+  -   'rm-container-3',
+  -   'rm-container-4',
+  -   'fixture-stop',
+  -   'directory-remove'
+    ]
+  
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:287:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'run-3', 'env-write', 'run-4', 'mongo-stop', 'container-stop', 'rm-container-1' ],
+    expected: [ 'rm-container-1', 'rm-container-2', 'rm-container-3', 'rm-container-4', 'fixture-stop', 'directory-remove' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:263:3
+✖ stopFailure: preserve original verification failure and attempt all cleanup (1.168761ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'FixtureCleanupFailure'
+  - 'OriginalHttpFailure'
+  
+      at failure (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:204:10)
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:265:5)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'FixtureCleanupFailure',
+    expected: 'OriginalHttpFailure',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:277:3
+✖ stopFailure: fail successful verification if cleanup fails; continue all four containers (1.571712ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   'container-stop',
+      'rm-container-1',
+      'rm-container-2',
+      'rm-container-3',
+      'rm-container-4',
+      'fixture-stop',
+  -   'directory-remove'
+    ]
+  
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:287:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'container-stop', 'rm-container-1', 'rm-container-2', 'rm-container-3', 'rm-container-4', 'fixture-stop' ],
+    expected: [ 'rm-container-1', 'rm-container-2', 'rm-container-3', 'rm-container-4', 'fixture-stop', 'directory-remove' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:263:3
+✖ removeDirectoryFailure: preserve original verification failure and attempt all cleanup (1.49598ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'DirectoryCleanupFailure'
+  - 'OriginalHttpFailure'
+  
+      at failure (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:204:10)
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:265:5)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'DirectoryCleanupFailure',
+    expected: 'OriginalHttpFailure',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:297:1
+✖ combined cleanup failures retain the original HTTP failure (1.308187ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'Error'
+  - 'OriginalHttpFailure'
+  
+      at failure (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:204:10)
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs:304:3)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Error',
+    expected: 'OriginalHttpFailure',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

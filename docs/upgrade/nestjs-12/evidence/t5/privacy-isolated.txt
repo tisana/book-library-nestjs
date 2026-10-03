@@ -1,0 +1,31 @@
+
+> book-library@0.0.1 frontend:test:e2e
+> npm run test:e2e --prefix frontend --project=tablet-chromium --grep member browser direct staff route
+
+npm warn "member browser direct staff route" is being parsed as a normal command line argument.
+npm warn Unknown cli config "--project". This will stop working in the next major version of npm.
+npm warn Unknown cli config "--grep". This will stop working in the next major version of npm.
+
+> book-library-frontend@0.0.1 test:e2e
+> playwright test member browser direct staff route
+
+[2m[WebServer] [22mnpm warn Unknown env config "project". This will stop working in the next major version of npm.
+[2m[WebServer] [22mnpm warn Unknown env config "grep". This will stop working in the next major version of npm.
+[2m[WebServer] [22m(node:69729) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+[2m[WebServer] [22m(node:69761) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+Error: No tests found.
+Make sure that arguments are regular expressions matching test files.
+You may need to escape symbols like "$" or "*" and quote the arguments.
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

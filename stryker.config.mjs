@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { availableParallelism } from 'node:os';
 
 const SELECTED_SOURCES = [
   'src/auth/token-session.service.ts',
@@ -10,8 +11,20 @@ const SELECTED_SOURCES = [
 const PACKAGE_JEST_CONFIG = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf8'),
 ).jest;
+// Mutation instrumentation already suppresses type checking in its sandbox.
+// Keep mandatory unit coverage on the typed compiler; use the production-like
+// isolated emitter only for mutation workers, with identical business/DI emit.
+const MUTATION_JEST_CONFIG = {
+  ...PACKAGE_JEST_CONFIG,
+  transform: {
+    '^.+\\.(t|j)s$': [
+      'ts-jest',
+      { tsconfig: '<rootDir>/../tsconfig.mutation.json' },
+    ],
+  },
+};
 const PACKAGE_JEST_CONFIG_WITHOUT_TEST_REGEX = Object.fromEntries(
-  Object.entries(PACKAGE_JEST_CONFIG).filter(([key]) => key !== 'testRegex'),
+  Object.entries(MUTATION_JEST_CONFIG).filter(([key]) => key !== 'testRegex'),
 );
 const SMOKE_SHARDS = [
   {
@@ -93,7 +106,15 @@ function smokeRanges(manifest, shard) {
   return ranges;
 }
 
-export function buildStrykerConfig(profile, manifest, shardId) {
+export function buildStrykerConfig(
+  profile,
+  manifest,
+  shardId,
+  availableCpus = availableParallelism(),
+) {
+  if (!Number.isInteger(availableCpus) || availableCpus < 1) {
+    throw new TypeError('Available mutation CPUs must be a positive integer.');
+  }
   const validatedProfile = requireProfile(profile);
   const shard = requireShard(validatedProfile, shardId);
   const reportRoot = `reports/mutation/${validatedProfile}/shards/${shard.id}`;
@@ -101,8 +122,13 @@ export function buildStrykerConfig(profile, manifest, shardId) {
     testRunner: 'jest',
     coverageAnalysis: 'perTest',
     reporters: ['clear-text', 'progress', 'json', 'html'],
+    // Generated snapshots must not become input to later mutation runs.
+    ignorePatterns: ['reports/mutation/**'],
     thresholds: { high: 80, low: 70, break: 70 },
-    concurrency: validatedProfile === 'complete' ? 4 : shard.concurrency,
+    concurrency: Math.min(
+      validatedProfile === 'complete' ? 4 : shard.concurrency,
+      availableCpus,
+    ),
     jest:
       validatedProfile === 'smoke' && shard.id === 'members'
         ? {
@@ -116,7 +142,7 @@ export function buildStrykerConfig(profile, manifest, shardId) {
           }
         : {
             projectType: 'custom',
-            configFile: 'package.json',
+            config: MUTATION_JEST_CONFIG,
             enableFindRelatedTests: true,
           },
     mutate:

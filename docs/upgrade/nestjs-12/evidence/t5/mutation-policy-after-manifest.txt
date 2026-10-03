@@ -1,0 +1,153 @@
+✔ hashes text and canonical mutant identity with hand-derived literals (5.335437ms)
+✔ rejects a raw combined score below 70 (7.361903ms)
+✔ rejects a score below the tracked upward-only baseline (4.511959ms)
+✔ validates but does not compare smoke score with the complete baseline (0.480889ms)
+✔ accepts a null baseline for smoke and complete profiles (2.319632ms)
+✔ records a schema-v1 baseline from exact complete provenance (53.498587ms)
+✔ refuses a baseline when complete provenance is not exact (343.018212ms)
+✔ record-baseline CLI validates before writing the tracked baseline (816.648537ms)
+✔ rejects a surviving mutant overlapping a critical rule (39.619161ms)
+✔ rejects a no-coverage mutant overlapping a critical rule (0.570167ms)
+✔ rejects a report location beyond its source lines (0.359441ms)
+✔ rejects a report location beyond its source columns (9.19583ms)
+✔ accepts only an exact equivalent fingerprint tied to source SHA and rule id (1.023367ms)
+▶ rejects stale source SHA, expired equivalent entries, and wildcard entries
+  ✔ stale manifest hash (0.213655ms)
+  ✔ stale allowlist hash (0.158107ms)
+  ✔ expired entry (0.122188ms)
+  ✔ wildcard entry (0.102814ms)
+✔ rejects stale source SHA, expired equivalent entries, and wildcard entries (1.11985ms)
+✔ validates source hashes canonically across LF and CRLF without accepting drift (0.384945ms)
+▶ rejects reports whose mutated file set is not exactly the five selected files
+  ✔ missing file (0.223412ms)
+  ✔ extra file (0.244073ms)
+  ✔ backslash path (0.373901ms)
+✔ rejects reports whose mutated file set is not exactly the five selected files (8.735444ms)
+✔ writes module scores and critical findings without changing the raw score (5.704579ms)
+✔ uses Stryker raw status semantics and excludes ignored mutants (3.277537ms)
+▶ returns raw score 100 for empty and ignored-only reports
+  ✔ empty mutants (1.007838ms)
+  ✔ ignored-only mutants (11.687795ms)
+✔ returns raw score 100 for empty and ignored-only reports (13.013572ms)
+▶ fails closed on malformed schema, status, profile, paths, hashes, ranges, allowlist, and baseline
+  ✔ manifest schema (0.163238ms)
+  ✔ unknown and pending statuses (0.20427ms)
+  ✔ profile (0.146102ms)
+  ✔ manifest path (0.092236ms)
+  ✔ hash (1.108878ms)
+  ✔ range (0.171094ms)
+  ✔ allowlist cardinality (1.98893ms)
+  ✔ baseline (9.431475ms)
+  ✔ report location (0.190414ms)
+  ✔ ordered report location (0.15973ms)
+✔ fails closed on malformed schema, status, profile, paths, hashes, ranges, allowlist, and baseline (14.536727ms)
+✔ validates manifest against temporary source files (0.466048ms)
+✔ keeps Task 5 mutation assertions on public service paths (1.783778ms)
+✖ checks the tracked critical-rule manifest and reviewed allowlist (558.680331ms)
+✔ evaluates an exact tracked pre-baseline smoke artifact (95.717856ms)
+▶ check mode rejects stale SHA and missing or ambiguous anchors
+  ✔ stale source SHA (292.547391ms)
+  ✔ missing anchor (709.826462ms)
+  ✔ ambiguous anchor (1205.766194ms)
+✔ check mode rejects stale SHA and missing or ambiguous anchors (2209.785735ms)
+✔ candidate mode writes only a refreshed review candidate below reports (197.412573ms)
+✔ candidate mode emits the same source hash for LF and CRLF checkouts (318.775661ms)
+✔ requires complete ordered rule identity and invalidates a source edit (0.645686ms)
+✖ keeps the Fix Round 1 point inventory as a lower-bound overlap smoke (8.056139ms)
+✖ protects every named Plan 3 executable line with same-category manifest rules (6.051594ms)
+ℹ tests 52
+ℹ suites 0
+ℹ pass 49
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5458.350093
+
+✖ failing tests:
+
+test at test/quality/mutation-policy.test.mjs:1030:1
+✖ checks the tracked critical-rule manifest and reviewed allowlist (558.680331ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    [
+  +   'acb2e7754474bbff9585c981cd3e53270038e9b17efa24ccc29d8437ba536ebd',
+  -   '0108d029ef22842e4c8a00d900136b2dbc483f0013d796483b852f024a550cc5',
+      'c010a2ec5f4bb9177df61f0bc8326b2d04d2463a59bf5dd2337b840dedc2f36e',
+  +   'aacb161042f6806a7975df97942a802eda877d311c32c32bd54df465b818c4b4'
+  -   'b4a9385a539d4b16ca74d4f3f5c70adb2775a73e50a66a80aa1acf17e30bd51a'
+    ]
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-policy.test.mjs:1055:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'acb2e7754474bbff9585c981cd3e53270038e9b17efa24ccc29d8437ba536ebd', 'c010a2ec5f4bb9177df61f0bc8326b2d04d2463a59bf5dd2337b840dedc2f36e', 'aacb161042f6806a7975df97942a802eda877d311c32c32bd54df465b818c4b4' ],
+    expected: [ '0108d029ef22842e4c8a00d900136b2dbc483f0013d796483b852f024a550cc5', 'c010a2ec5f4bb9177df61f0bc8326b2d04d2463a59bf5dd2337b840dedc2f36e', 'b4a9385a539d4b16ca74d4f3f5c70adb2775a73e50a66a80aa1acf17e30bd51a' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-policy.test.mjs:1280:1
+✖ keeps the Fix Round 1 point inventory as a lower-bound overlap smoke (8.056139ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   [
+  +     'src/auth/token-session.service.ts',
+  +     132,
+  +     'revoked/expired token rejection'
+  +   ],
+  +   [
+  +     'src/auth/token-session.service.ts',
+  +     356,
+  +     'replay/revocation'
+  +   ],
+  +   [
+  +     'src/auth/auth-identifier-reconciliation.service.ts',
+  +     179,
+  +     'member/staff ownership'
+  +   ],
+  +   [
+  +     'src/auth/auth-identifier-reconciliation.service.ts',
+  +     222,
+  +     'member/staff ownership'
+  +   ],
+  +   [
+  +     'src/auth/auth-identifier-reconciliation.service.ts',
+  +     444,
+  +     'terminal event/cleanup/TTL ordering'
+  +   ]
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-policy.test.mjs:1653:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ [ 'src/auth/token-session.service.ts', 132, 'revoked/expired token rejection' ], [ 'src/auth/token-session.service.ts', 356, 'replay/revocation' ], [ 'src/auth/auth-identifier-reconciliation.service.ts', 179, 'member/staff ownership' ], [ 'src/auth/auth-identifier-reconciliation.service.ts', 222, 'member/staff ownership' ], [ 'src/auth/auth-identifier-reconciliation.service.ts', 444, 'terminal event/cleanup/TTL ordering' ] ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-policy.test.mjs:1658:1
+✖ protects every named Plan 3 executable line with same-category manifest rules (6.051594ms)
+  AssertionError [ERR_ASSERTION]: token-family-resolution:207
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-policy.test.mjs:2659:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: '',
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }

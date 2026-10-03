@@ -1,0 +1,57 @@
+
+> book-library@0.0.1 test:e2e
+> node --experimental-vm-modules node_modules/jest/bin/jest.js --config ./test/jest-e2e.json --runInBand --detectOpenHandles auth-persistence auth-identifier-recovery auth-browser-session-security auth-identifier-migration auth-identifier-offline-repair
+
+FAIL test/auth-identifier-recovery.e2e-spec.ts
+  ● Test suite failed to run
+
+    test/auth-identifier-recovery.e2e-spec.ts:224:20 - error TS2769: No overload matches this call.
+      The last overload gave the following error.
+        Object literal may only specify known properties, and 'subjectType' does not exist in type 'RegExp'.
+          Object literal may only specify known properties, and 'subjectType' does not exist in type 'RegExp'.
+
+    224       createdBy: { subjectType: AuthIdentifierSubjectType.Staff, subjectId: 'admin-1' },
+                           ~~~~~~~~~~~
+
+      src/auth/schemas/auth-identifier.schema.ts:68:3
+        68   createdBy: string;
+             ~~~~~~~~~
+        The expected type comes from property 'createdBy' which is declared here on type '{ _id?: ObjectIdQueryTypeCasting; normalizedIdentifier?: string | RegExp; identifierType?: RegExp | AuthIdentifierType; ... 71 more ...; validateSync?: { ...; }; }'
+      node_modules/mongoose/types/models.d.ts:329:5
+        329     create(...docs: Array<DeepPartial<ApplyBasicCreateCasting<Require_id<TRawDocType>>>>): Promise<THydratedDocumentType[]>;
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        The last overload is declared here.
+    test/auth-identifier-recovery.e2e-spec.ts:225:20 - error TS2769: No overload matches this call.
+      The last overload gave the following error.
+        Object literal may only specify known properties, and 'subjectType' does not exist in type 'RegExp'.
+          Object literal may only specify known properties, and 'subjectType' does not exist in type 'RegExp'.
+
+    225       updatedBy: { subjectType: AuthIdentifierSubjectType.Staff, subjectId: 'admin-1' },
+                           ~~~~~~~~~~~
+
+      src/auth/schemas/auth-identifier.schema.ts:69:3
+        69   updatedBy: string;
+             ~~~~~~~~~
+        The expected type comes from property 'updatedBy' which is declared here on type '{ _id?: ObjectIdQueryTypeCasting; normalizedIdentifier?: string | RegExp; identifierType?: RegExp | AuthIdentifierType; ... 71 more ...; validateSync?: { ...; }; }'
+      node_modules/mongoose/types/models.d.ts:329:5
+        329     create(...docs: Array<DeepPartial<ApplyBasicCreateCasting<Require_id<TRawDocType>>>>): Promise<THydratedDocumentType[]>;
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        The last overload is declared here.
+    test/auth-identifier-recovery.e2e-spec.ts:239:34 - error TS18047: 'reservation' is possibly 'null'.
+
+    239             targetReservationId: reservation._id,
+                                         ~~~~~~~~~~~
+
+(node:34103) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+Test Suites: 1 failed, 5 passed, 6 total
+Tests:       26 passed, 26 total
+Snapshots:   0 total
+Time:        17.943 s, estimated 18 s
+Ran all test suites matching auth-persistence|auth-identifier-recovery|auth-browser-session-security|auth-identifier-migration|auth-identifier-offline-repair.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

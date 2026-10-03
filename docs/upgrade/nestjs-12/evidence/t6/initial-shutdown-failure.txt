@@ -1,0 +1,5 @@
+{"check":"signal exit observation","elapsedMs":10210,"exitCode":137,"oomKilled":false}
+AssertionError     at stop (/workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/t6/rollback-rehearsal.ts:103:12)
+    at main (/workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/t6/rollback-rehearsal.ts:301:13)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+Rollback rehearsal failed; sensitive diagnostics suppressed

@@ -14,14 +14,14 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose, { Connection, Model } from 'mongoose';
-import * as request from 'supertest';
+import request from 'supertest';
 
 import { AuthController } from '../src/auth/auth.controller';
 import { AuthBrowserOriginGuard } from '../src/auth/auth-browser-origin.guard';
 import { AuthEndpointThrottleGuard } from '../src/auth/auth-endpoint-throttle.guard';
 import {
   AuthSourceIdentityService,
-  AuthSourceRequest,
+  type AuthSourceRequest,
 } from '../src/auth/auth-source-identity.service';
 import { AuthService } from '../src/auth/auth.service';
 import {

@@ -1,0 +1,32 @@
+Condensed diagnostic log; rawSHA256 7eb754972951f904d7728fe2c55962e964fe027c19704f96cc77a74a6c2ababc; diagnostic only, not acceptance.
+12:55:15 (80808) INFO Instrumenter Instrumented 1 source file(s) with 31 mutant(s)
+12:55:20 (80808) DEBUG TimeoutDecorator Starting timeout timer (300000 ms) for a test run
+12:55:25 (80808) INFO DryRunExecutor Initial test run succeeded. Ran 98 tests in 4 seconds (net 155 ms, overhead 4371 ms).
+12:55:25 (80808) DEBUG TimeoutDecorator Starting timeout timer (9381.5 ms) for a test run
+12:55:25 (80808) DEBUG TimeoutDecorator Starting timeout timer (9378.5 ms) for a test run
+	        gate.reject(new Error('database unavailable during drain'));
+	[Error: database unavailable during drain]
+	        gate.reject(new Error('database unavailable during drain'));
+	[Error: database unavailable during drain]
+12:55:29 (80808) DEBUG TimeoutDecorator Starting timeout timer (9381.5 ms) for a test run
+12:55:31 (80808) DEBUG TimeoutDecorator Starting timeout timer (9378.5 ms) for a test run
+	        gate.reject(new Error('database unavailable during drain'));
+	[Error: database unavailable during drain]
+	        gate.reject(new Error('database unavailable during drain'));
+	[Error: database unavailable during drain]
+12:55:33 (80808) DEBUG TimeoutDecorator Starting timeout timer (9374 ms) for a test run
+12:55:35 (80808) DEBUG TimeoutDecorator Starting timeout timer (9372.5 ms) for a test run
+12:55:39 (80808) DEBUG ClearTextReporter [Killed] BlockStatement
+12:55:39 (80808) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:55:39 (80808) DEBUG ClearTextReporter [RuntimeError] BlockStatement
+	        gate.reject(new Error('database unavailable during drain'));
+	[Error: database unavailable during drain]
+	        gate.reject(new Error('database unavailable during drain'));
+	[Error: database unavailable during drain]
+12:55:39 (80808) DEBUG ClearTextReporter [Killed] BlockStatement
+12:55:39 (80808) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:55:39 (80808) DEBUG ClearTextReporter [Killed] BlockStatement
+12:55:39 (80808) DEBUG ClearTextReporter Killed by: TokenSessionService contains individual reconciliation query failures
+12:55:39 (80808) DEBUG ClearTextReporter [Killed] BlockStatement
+12:55:39 (80808) DEBUG ClearTextReporter Killed by: TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover
+12:55:39 (80808) INFO MutationTestExecutor Done in 24 seconds.

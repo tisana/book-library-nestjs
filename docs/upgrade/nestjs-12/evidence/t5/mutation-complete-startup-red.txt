@@ -1,0 +1,19 @@
+[32m07:39:34 (74379) INFO ProjectReader[39m Found 1 of 1629 file(s) to be mutated.
+[32m07:39:34 (74379) INFO Instrumenter[39m Instrumented 1 source file(s) with 272 mutant(s)
+[32m07:39:40 (74379) INFO ConcurrencyTokenProvider[39m Creating 4 test runner process(es).
+[32m07:39:41 (74379) INFO BroadcastReporter[39m Detected that current console does not support the "progress" reporter, downgrading to "progress-append-only" reporter
+[32m07:39:42 (74379) INFO DryRunExecutor[39m Starting initial test run (jest test runner with "perTest" coverage analysis). This may take a while.
+[32m07:39:53 (74379) INFO DryRunExecutor[39m Initial test run succeeded. Ran 98 tests in 10 seconds (net 156 ms, overhead 10780 ms).
+Mutation testing 0% (elapsed: <1m, remaining: n/a) 8/272 tested (0 survived, 0 timed out)
+Mutation testing 0% (elapsed: <1m, remaining: n/a) 8/272 tested (0 survived, 0 timed out)
+Mutation testing 0% (elapsed: <1m, remaining: ~1h 19m) 12/272 tested (0 survived, 4 timed out)
+Mutation testing 0% (elapsed: <1m, remaining: ~1h 21m) 14/272 tested (0 survived, 6 timed out)
+Mutation testing 2% (elapsed: <1m, remaining: ~30m) 16/272 tested (0 survived, 8 timed out)
+Mutation testing 2% (elapsed: ~1m, remaining: ~36m) 16/272 tested (0 survived, 8 timed out)
+Mutation testing 8% (elapsed: ~1m, remaining: ~12m) 20/272 tested (0 survived, 12 timed out)
+Mutation testing 8% (elapsed: ~1m, remaining: ~14m) 20/272 tested (0 survived, 12 timed out)
+Mutation testing 11% (elapsed: ~1m, remaining: ~11m) 24/272 tested (0 survived, 16 timed out)
+Mutation testing 11% (elapsed: ~1m, remaining: ~12m) 24/272 tested (0 survived, 16 timed out)
+Mutation testing 17% (elapsed: ~1m, remaining: ~8m) 28/272 tested (0 survived, 20 timed out)
+Mutation testing 17% (elapsed: ~2m, remaining: ~9m) 28/272 tested (0 survived, 20 timed out)
+Mutation testing 22% (elapsed: ~2m, remaining: ~7m) 32/272 tested (0 survived, 24 timed out)

@@ -1,0 +1,46 @@
+
+> book-library@0.0.1 test:e2e
+> node --experimental-vm-modules node_modules/jest/bin/jest.js --config ./test/jest-e2e.json --runInBand --detectOpenHandles auth-persistence
+
+(node:32962) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+  console.log
+    Applied 000 migration-record
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+  console.log
+    Applied 001 library-core
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+  console.log
+    Applied 002 member-auth
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+  console.log
+    Applied 003 auth-roles-permissions
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+FAIL test/auth-persistence.e2e-spec.ts (10.287 s)
+  ● Authentication persistence across application restarts (e2e) › preserves staff/member identity, scope, ownership, and refresh continuity
+
+    expected 200 "OK", got 500 "Internal Server Error"
+
+      at Test._assertStatus (../node_modules/supertest/lib/test.js:268:12)
+      at Test._assertFunction (../node_modules/supertest/lib/test.js:283:11)
+      at Test.assert (../node_modules/supertest/lib/test.js:173:18)
+      at Server.localAssert (../node_modules/supertest/lib/test.js:131:12)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 3 passed, 4 total
+Snapshots:   0 total
+Time:        10.551 s, estimated 14 s
+Ran all test suites matching auth-persistence.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

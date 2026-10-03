@@ -1,0 +1,41 @@
+[
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exitCode": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "docker",
+      "--host=unix:///var/run/docker.sock",
+      "compose",
+      "config",
+      "--quiet"
+    ],
+    "exitCode": 0,
+    "output": ""
+  },
+  {
+    "command": [
+      "node_modules/.bin/prettier",
+      "--check",
+      "docs/upgrade/nestjs-12/evidence/t6/rollback-rehearsal.ts"
+    ],
+    "exitCode": 0,
+    "output": "Checking formatting...\nAll matched files use Prettier code style!"
+  },
+  {
+    "check": "no remaining rehearsal artifact containers",
+    "image": "book-library-upgrade:rollback-old",
+    "remaining": 0
+  },
+  {
+    "check": "no remaining rehearsal artifact containers",
+    "image": "book-library-upgrade:verification",
+    "remaining": 0
+  }
+]

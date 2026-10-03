@@ -1,0 +1,35 @@
+
+> book-library@0.0.1 test:e2e
+> node --experimental-vm-modules node_modules/jest/bin/jest.js --config ./test/jest-e2e.json --runInBand --detectOpenHandles auth-persistence auth-identifier-recovery
+
+(node:33688) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+FAIL test/auth-identifier-recovery.e2e-spec.ts
+  ● auth identifier reconciliation recovery (e2e) › recovers an expired interrupted lease with one terminal audit across competing instances
+
+    ValidationError: AuthIdentifier validation failed: updatedBy: Path `updatedBy` is required., createdBy: Path `createdBy` is required.
+
+      197 |
+      198 |   it('recovers an expired interrupted lease with one terminal audit across competing instances', async () => {
+    > 199 |     const reservation = await identifiers.create({
+          |                         ^
+      200 |       normalizedIdentifier: 'recovered@example.test', identifierType: AuthIdentifierType.Email,
+      201 |       subjectType: AuthIdentifierSubjectType.Staff, subjectId: 'recovered-staff',
+      202 |       status: AuthIdentifierStatus.Active, lastOperationId: 'interrupted-lease',
+
+      at model.validate (../node_modules/mongoose/lib/document.js:2880:36)
+      at model.$__save (../node_modules/mongoose/lib/model.js:399:7)
+      at maybeTracedSave (../node_modules/mongoose/lib/model.js:675:7)
+      at model.create (../node_modules/mongoose/lib/model.js:2763:5)
+      at Object.<anonymous> (auth-identifier-recovery.e2e-spec.ts:199:25)
+
+Test Suites: 1 failed, 1 passed, 2 total
+Tests:       1 failed, 10 passed, 11 total
+Snapshots:   0 total
+Time:        13.542 s
+Ran all test suites matching auth-persistence|auth-identifier-recovery.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

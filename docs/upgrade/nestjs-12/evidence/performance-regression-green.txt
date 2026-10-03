@@ -1,0 +1,18 @@
+PASS test/performance/verify-auth-performance.spec.ts (13.064 s)
+  compiled authentication performance runner
+    ✓ completes concurrent requests against its own disposable HTTP listener (9044 ms)
+  authentication performance evidence helpers
+    ✓ uses nearest-rank percentiles without interpolation (1 ms)
+    ✓ summarizes p50, p95, and maximum from one sample set (1 ms)
+    ✓ renders fixed benchmark parameters, runtime metadata, and pass gates (4 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       4 passed, 4 total
+Snapshots:   0 total
+Time:        13.311 s, estimated 15 s
+Ran all test suites matching test/performance/verify-auth-performance.spec.ts.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

@@ -1,0 +1,4 @@
+./migrations/migrate source load: ok
+./scripts/bootstrap-admin source load: ok
+./scripts/preflight-auth-audit-key-rotation source load: ok
+./scripts/resolve-auth-identifier-conflict source load: ok

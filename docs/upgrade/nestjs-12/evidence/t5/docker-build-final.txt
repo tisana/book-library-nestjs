@@ -1,0 +1,219 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.77kB done
+#1 DONE 0.0s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#2 DONE 0.6s
+
+#3 docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+#3 CACHED
+
+#4 [internal] load metadata for docker.io/library/node:24.19.0-alpine
+#4 DONE 0.0s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 346B done
+#5 DONE 0.0s
+
+#6 [base 1/2] FROM docker.io/library/node:24.19.0-alpine
+#6 CACHED
+
+#7 [internal] load build context
+#7 transferring context: 765.09kB 0.1s done
+#7 DONE 0.1s
+
+#8 [base 2/2] RUN --mount=type=secret,id=proxy_ca     if [ -f /run/secrets/proxy_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca; fi; npm install --global npm@11.9.0 --strict-ssl=true
+#8 7.887 
+#8 7.887 removed 5 packages, and changed 55 packages in 6s
+#8 7.887 
+#8 7.887 15 packages are looking for funding
+#8 7.887   run `npm fund` for details
+#8 DONE 8.0s
+
+#9 [frontend-deps 1/3] WORKDIR /app
+#9 DONE 1.2s
+
+#10 [frontend-deps 2/3] COPY frontend/package*.json ./frontend/
+#10 DONE 0.8s
+
+#11 [deps 2/3] COPY package*.json ./
+#11 DONE 1.2s
+
+#12 [frontend-deps 3/3] RUN --mount=type=secret,id=proxy_ca     if [ -f /run/secrets/proxy_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca; fi; npm ci --prefix frontend --strict-ssl=true
+#12 ...
+
+#13 [deps 3/3] RUN --mount=type=secret,id=proxy_ca     if [ -f /run/secrets/proxy_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca; fi; npm ci --strict-ssl=true
+#13 ...
+
+#14 [runtime 3/5] RUN --mount=type=secret,id=proxy_ca     if [ -f /run/secrets/proxy_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca; fi; npm ci --omit=dev --strict-ssl=true && npm cache clean --force
+#14 ...
+
+#12 [frontend-deps 3/3] RUN --mount=type=secret,id=proxy_ca     if [ -f /run/secrets/proxy_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca; fi; npm ci --prefix frontend --strict-ssl=true
+#12 19.46 npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+#12 ...
+
+#14 [runtime 3/5] RUN --mount=type=secret,id=proxy_ca     if [ -f /run/secrets/proxy_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca; fi; npm ci --omit=dev --strict-ssl=true && npm cache clean --force
+#14 40.58 npm notice
+#14 40.58 npm notice New major version of npm available! 11.9.0 -> 12.2.0
+#14 40.58 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+#14 40.58 npm notice To update run: npm install -g npm@12.2.0
+#14 40.58 npm notice
+#14 40.58 
+#14 40.58 added 235 packages, and audited 236 packages in 37s
+#14 40.58 
+#14 40.58 49 packages are looking for funding
+#14 40.58   run `npm fund` for details
+#14 40.58 
+#14 40.58 found 0 vulnerabilities
+#14 43.99 npm warn using --force Recommended protections disabled.
+#14 DONE 45.7s
+
+#13 [deps 3/3] RUN --mount=type=secret,id=proxy_ca     if [ -f /run/secrets/proxy_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca; fi; npm ci --strict-ssl=true
+#13 41.68 npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+#13 41.75 npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+#13 41.93 npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+#13 ...
+
+#12 [frontend-deps 3/3] RUN --mount=type=secret,id=proxy_ca     if [ -f /run/secrets/proxy_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca; fi; npm ci --prefix frontend --strict-ssl=true
+#12 47.45 npm notice
+#12 47.45 npm notice New major version of npm available! 11.9.0 -> 12.2.0
+#12 47.45 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+#12 47.45 npm notice To update run: npm install -g npm@12.2.0
+#12 47.45 npm notice
+#12 47.45 
+#12 47.45 added 575 packages, and audited 576 packages in 44s
+#12 47.45 
+#12 47.45 180 packages are looking for funding
+#12 47.45   run `npm fund` for details
+#12 47.45 
+#12 47.45 11 vulnerabilities (1 low, 2 moderate, 8 high)
+#12 47.45 
+#12 47.45 To address issues that do not require attention, run:
+#12 47.45   npm audit fix
+#12 47.45 
+#12 47.45 To address all issues (including breaking changes), run:
+#12 47.45   npm audit fix --force
+#12 47.45 
+#12 47.45 Run `npm audit` for details.
+#12 DONE 47.8s
+
+#13 [deps 3/3] RUN --mount=type=secret,id=proxy_ca     if [ -f /run/secrets/proxy_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca; fi; npm ci --strict-ssl=true
+#13 ...
+
+#15 [frontend-build 1/2] COPY frontend ./frontend
+#15 ...
+
+#13 [deps 3/3] RUN --mount=type=secret,id=proxy_ca     if [ -f /run/secrets/proxy_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca; fi; npm ci --strict-ssl=true
+#13 55.19 
+#13 55.19 added 841 packages, and audited 842 packages in 53s
+#13 55.19 
+#13 55.23 160 packages are looking for funding
+#13 55.23   run `npm fund` for details
+#13 55.23 
+#13 55.23 found 0 vulnerabilities
+#13 55.24 npm notice
+#13 55.24 npm notice New major version of npm available! 11.9.0 -> 12.2.0
+#13 55.24 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+#13 55.24 npm notice To update run: npm install -g npm@12.2.0
+#13 55.24 npm notice
+#13 DONE 55.4s
+
+#15 [frontend-build 1/2] COPY frontend ./frontend
+#15 ...
+
+#16 [build 1/3] COPY tsconfig*.json nest-cli.json ./
+#16 ...
+
+#15 [frontend-build 1/2] COPY frontend ./frontend
+#15 DONE 17.0s
+
+#17 [frontend-build 2/2] RUN npm run build --prefix frontend
+#17 ...
+
+#16 [build 1/3] COPY tsconfig*.json nest-cli.json ./
+#16 DONE 11.6s
+
+#18 [build 2/3] COPY src ./src
+#18 ...
+
+#17 [frontend-build 2/2] RUN npm run build --prefix frontend
+#17 8.301 
+#17 8.301 > book-library-frontend@0.0.1 build
+#17 8.301 > tsc -p tsconfig.json && tsc -p tsconfig.node.json && vite build
+#17 8.301 
+#17 ...
+
+#18 [build 2/3] COPY src ./src
+#18 DONE 9.8s
+
+#19 [build 3/3] RUN npm run build
+#19 25.70 
+#19 25.70 > book-library@0.0.1 prebuild
+#19 25.70 > rimraf dist
+#19 25.70 
+#19 26.08 
+#19 26.08 > book-library@0.0.1 build
+#19 26.08 > nest build
+#19 26.08 
+#19 ...
+
+#17 [frontend-build 2/2] RUN npm run build --prefix frontend
+#17 40.45 vite v8.0.16 building client environment for production...
+#17 40.53 [2Ktransforming...✓ 2317 modules transformed.
+#17 43.29 rendering chunks...
+#17 44.02 computing gzip size...
+#17 44.04 dist/index.html                                    0.63 kB │ gzip:  0.34 kB
+#17 44.04 dist/assets/index-hVAmaMUb.css                    23.16 kB │ gzip:  5.51 kB
+#17 44.04 dist/assets/search-Dg6cNVSx.js                     0.16 kB │ gzip:  0.16 kB
+#17 44.04 dist/assets/borrowing-display-WU2Vrc3V.js          0.37 kB │ gzip:  0.24 kB
+#17 44.04 dist/assets/catalog-wCk7yMEM.js                    0.52 kB │ gzip:  0.34 kB
+#17 44.04 dist/assets/status-badge-Cco6Kbdp.js               0.53 kB │ gzip:  0.32 kB
+#17 44.04 dist/assets/books-BWFwUsQf.js                      0.81 kB │ gzip:  0.43 kB
+#17 44.04 dist/assets/members-DIJ3ssKN.js                    0.88 kB │ gzip:  0.39 kB
+#17 44.04 dist/assets/member-self-service-DZ2qS1bH.js        0.95 kB │ gzip:  0.45 kB
+#17 44.04 dist/assets/borrowings-ZL3J_isy.js                 0.98 kB │ gzip:  0.57 kB
+#17 44.04 dist/assets/borrowings-CcLHaUFy.js                 1.47 kB │ gzip:  0.55 kB
+#17 44.04 dist/assets/borrowings.overdue-Qwo26r2D.js         1.52 kB │ gzip:  0.69 kB
+#17 44.04 dist/assets/members-CGvTbzXq.js                    1.73 kB │ gzip:  0.89 kB
+#17 44.04 dist/assets/borrowings-BX7QtQqB.js                 1.82 kB │ gzip:  0.80 kB
+#17 44.04 dist/assets/borrowings._borrowingId-k3-goZDS.js    1.92 kB │ gzip:  0.91 kB
+#17 44.04 dist/assets/catalog-Cym8BKRT.js                    2.00 kB │ gzip:  0.90 kB
+#17 44.04 dist/assets/membership-types-9ZsLcSSW.js           2.36 kB │ gzip:  1.09 kB
+#17 44.04 dist/assets/members._memberId-D7pU6ox3.js          2.86 kB │ gzip:  1.16 kB
+#17 44.04 dist/assets/books._bookId-DkvuHaqZ.js              2.90 kB │ gzip:  1.12 kB
+#17 44.04 dist/assets/books-CVGvebYP.js                      3.18 kB │ gzip:  1.52 kB
+#17 44.04 dist/assets/member-empty-states-Ynyl4Qxl.js        3.51 kB │ gzip:  1.31 kB
+#17 44.04 dist/assets/staff-dashboard-B8zhT0WT.js            3.62 kB │ gzip:  1.41 kB
+#17 44.04 dist/assets/security-activity-PWbujftt.js          3.76 kB │ gzip:  1.54 kB
+#17 44.04 dist/assets/borrowings.new-CWyPnqg4.js             3.87 kB │ gzip:  1.48 kB
+#17 44.04 dist/assets/borrowings._borrowingId-C_qf1bm1.js    3.95 kB │ gzip:  1.26 kB
+#17 44.04 dist/assets/identifier-conflicts-faAay5Sp.js       4.73 kB │ gzip:  1.93 kB
+#17 44.04 dist/assets/member-_eY-USf0.js                     6.32 kB │ gzip:  2.33 kB
+#17 44.04 dist/assets/staff-users-D64j4IDZ.js                7.50 kB │ gzip:  2.48 kB
+#17 44.04 dist/assets/due-status-kptIFuAU.js                22.14 kB │ gzip:  6.67 kB
+#17 44.04 dist/assets/client-AoYQHbmO.js                    31.88 kB │ gzip: 10.48 kB
+#17 44.04 dist/assets/utils-wIxH_xSh.js                     35.69 kB │ gzip: 11.83 kB
+#17 44.04 dist/assets/data-table-DjWlQDID.js                47.19 kB │ gzip: 12.46 kB
+#17 44.04 dist/assets/book-form-DLzCDQCZ.js                 92.78 kB │ gzip: 27.46 kB
+#17 44.04 dist/assets/index-Dwdu1lx5.js                    300.37 kB │ gzip: 94.39 kB
+#17 44.04 
+#17 44.05 ✓ built in 3.61s
+#17 DONE 44.3s
+
+#19 [build 3/3] RUN npm run build
+#19 DONE 50.8s
+
+#20 [runtime 4/5] COPY --from=build /app/dist ./dist
+#20 DONE 20.3s
+
+#21 [runtime 5/5] COPY --from=frontend-build /app/frontend/dist ./public
+#21 DONE 2.1s
+
+#22 exporting to image
+#22 exporting layers
+#22 exporting layers 5.4s done
+#22 writing image sha256:a872334e275dc405302381a7d839950ba0ddf238be20e909352788176823a622 done
+#22 naming to docker.io/library/book-library-upgrade:verification done
+#22 DONE 5.5s

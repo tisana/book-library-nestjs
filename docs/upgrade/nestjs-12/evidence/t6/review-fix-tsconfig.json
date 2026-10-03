@@ -1,0 +1,10 @@
+{
+  "extends": "../../../../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "incremental": false,
+    "rootDir": "../../../../../",
+    "typeRoots": ["../../../../../node_modules/@types"]
+  },
+  "include": ["rollback-rehearsal.ts", "../../../../../scripts/quality/disposable-artifact-fixture.ts"]
+}

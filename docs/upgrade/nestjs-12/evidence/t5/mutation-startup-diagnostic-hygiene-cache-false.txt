@@ -1,0 +1,117 @@
+Condensed stage/status log; complete diagnostic raw SHA256 7cdddee090616377e98a501ba764801941c03c8aa233619c212d4f48ff411610; exact per-mutant results in mutation-isolated-control-comparison.json.
+08:24:48 (78134) INFO ProjectReader Found 1 of 1605 file(s) to be mutated.
+08:24:48 (78134) INFO Instrumenter Instrumented 1 source file(s) with 15 mutant(s)
+08:24:51 (78134) INFO ConcurrencyTokenProvider Creating 2 test runner process(es).
+08:24:51 (78134) DEBUG Sandbox Creating a sandbox for files in /tmp/nestjs-t5-diagnostic-hygiene-cache-false-sandbox/sandbox-dJ7zzc
+08:24:51 (78134) DEBUG Sandbox Start symlink node_modules
+08:24:51 (78134) DEBUG Sandbox Create symlink from /workspace/book-library-nestjs/node_modules to /tmp/nestjs-t5-diagnostic-hygiene-cache-false-sandbox/sandbox-dJ7zzc/node_modules
+08:24:51 (78134) DEBUG Sandbox Create symlink from /workspace/book-library-nestjs/frontend/node_modules to /tmp/nestjs-t5-diagnostic-hygiene-cache-false-sandbox/sandbox-dJ7zzc/frontend/node_modules
+08:24:52 (78175) DEBUG JestTestRunner Running jest with --findRelatedTests flag. Set jest.enableFindRelatedTests to false to run all tests on every mutant.
+08:24:52 (78175) DEBUG JestTestRunner Merging file-based config {
+08:24:52 (78134) INFO DryRunExecutor Starting initial test run (jest test runner with "perTest" coverage analysis). This may take a while.
+08:24:52 (78134) DEBUG DryRunExecutor Using timeout of 300000 ms.
+08:24:52 (78134) DEBUG TimeoutDecorator Starting timeout timer (300000 ms) for a test run
+08:24:52 (78176) DEBUG JestTestRunner Running jest with --findRelatedTests flag. Set jest.enableFindRelatedTests to false to run all tests on every mutant.
+08:24:52 (78176) DEBUG JestTestRunner Merging file-based config {
+08:25:01 (78134) INFO DryRunExecutor Initial test run succeeded. Ran 98 tests in 9 seconds (net 156 ms, overhead 9312 ms).
+08:25:01 (78134) DEBUG TimeoutDecorator Starting timeout timer (14384 ms) for a test run
+08:25:01 (78134) DEBUG TimeoutDecorator Starting timeout timer (14384 ms) for a test run
+08:25:15 (78134) DEBUG TimeoutDecorator Starting timeout timer (14384 ms) for a test run
+08:25:16 (78134) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout
+08:25:18 (78203) DEBUG JestTestRunner Running jest with --findRelatedTests flag. Set jest.enableFindRelatedTests to false to run all tests on every mutant.
+08:25:18 (78203) DEBUG JestTestRunner Merging file-based config {
+08:25:18 (78134) DEBUG TimeoutDecorator Starting timeout timer (14315 ms) for a test run
+08:25:21 (78134) DEBUG TimeoutDecorator Starting timeout timer (14313.5 ms) for a test run
+08:25:28 (78134) DEBUG TimeoutDecorator Starting timeout timer (14313.5 ms) for a test run
+08:25:32 (78134) DEBUG TimeoutDecorator Starting timeout timer (14313.5 ms) for a test run
+08:25:32 (78134) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout
+08:25:33 (78217) DEBUG JestTestRunner Running jest with --findRelatedTests flag. Set jest.enableFindRelatedTests to false to run all tests on every mutant.
+08:25:33 (78217) DEBUG JestTestRunner Merging file-based config {
+08:25:33 (78134) DEBUG TimeoutDecorator Starting timeout timer (14315 ms) for a test run
+08:25:38 (78134) DEBUG TimeoutDecorator Starting timeout timer (14315 ms) for a test run
+08:25:43 (78134) DEBUG TimeoutDecorator Starting timeout timer (14315 ms) for a test run
+08:25:47 (78134) DEBUG TimeoutDecorator Starting timeout timer (14315 ms) for a test run
+08:25:48 (78134) DEBUG TimeoutDecorator Timeout expired, restarting the process and reporting timeout
+08:25:51 (78241) DEBUG JestTestRunner Running jest with --findRelatedTests flag. Set jest.enableFindRelatedTests to false to run all tests on every mutant.
+08:25:51 (78241) DEBUG JestTestRunner Merging file-based config {
+08:25:53 (78134) DEBUG ClearTextReporter [Killed] StringLiteral
+08:25:53 (78134) DEBUG ClearTextReporter src/auth/token-session.service.ts:329:23
+08:25:53 (78134) DEBUG ClearTextReporter -       return createHash('sha256').update(refreshToken).digest('hex');
+08:25:53 (78134) DEBUG ClearTextReporter +       return createHash("").update(refreshToken).digest('hex');
+08:25:53 (78134) DEBUG ClearTextReporter Killed by: TokenSessionService stores only hashes and caps immutable family expiry at 30 days
+08:25:53 (78134) DEBUG ClearTextReporter
+08:25:53 (78134) DEBUG ClearTextReporter [Timeout] BlockStatement
+08:25:53 (78134) DEBUG ClearTextReporter src/auth/token-session.service.ts:328:50
+08:25:53 (78134) DEBUG ClearTextReporter -     hashRefreshToken(refreshToken: string): string {
+08:25:53 (78134) DEBUG ClearTextReporter -       return createHash('sha256').update(refreshToken).digest('hex');
+08:25:53 (78134) DEBUG ClearTextReporter -     }
+08:25:53 (78134) DEBUG ClearTextReporter +     hashRefreshToken(refreshToken: string): string {}
+08:25:53 (78134) DEBUG ClearTextReporter
+08:25:53 (78134) DEBUG ClearTextReporter [Killed] StringLiteral
+08:25:53 (78134) DEBUG ClearTextReporter src/auth/token-session.service.ts:329:61
+08:25:53 (78134) DEBUG ClearTextReporter -       return createHash('sha256').update(refreshToken).digest('hex');
+08:25:53 (78134) DEBUG ClearTextReporter +       return createHash('sha256').update(refreshToken).digest("");
+08:25:53 (78134) DEBUG ClearTextReporter Killed by: TokenSessionService stores only hashes and caps immutable family expiry at 30 days
+08:25:53 (78134) DEBUG ClearTextReporter
+08:25:53 (78134) DEBUG ClearTextReporter [Killed] ArithmeticOperator
+08:25:53 (78134) DEBUG ClearTextReporter src/auth/token-session.service.ts:340:11
+08:25:53 (78134) DEBUG ClearTextReporter -           : Math.min(
+08:25:53 (78134) DEBUG ClearTextReporter -               Math.max(0, expiresAtOrTtlSeconds),
+08:25:53 (78134) DEBUG ClearTextReporter -               maximumRefreshLifetimeSeconds,
+08:25:53 (78134) DEBUG ClearTextReporter -             ) * 1000;
+08:25:53 (78134) DEBUG ClearTextReporter +           : Math.min(Math.max(0, expiresAtOrTtlSeconds), maximumRefreshLifetimeSeconds) / 1000;
+08:25:53 (78134) DEBUG ClearTextReporter Killed by: TokenSessionService clamps expired cookies at zero and changes only Secure outside production
+08:25:53 (78134) DEBUG ClearTextReporter
+08:25:53 (78134) DEBUG ClearTextReporter [Killed] MethodExpression
+08:25:53 (78134) DEBUG ClearTextReporter src/auth/token-session.service.ts:340:11
+08:25:53 (78134) DEBUG ClearTextReporter -           : Math.min(
+08:25:53 (78134) DEBUG ClearTextReporter -               Math.max(0, expiresAtOrTtlSeconds),
+08:25:53 (78134) DEBUG ClearTextReporter -               maximumRefreshLifetimeSeconds,
+08:25:53 (78134) DEBUG ClearTextReporter -             ) * 1000;
+08:25:53 (78134) DEBUG ClearTextReporter +           : Math.max(Math.max(0, expiresAtOrTtlSeconds), maximumRefreshLifetimeSeconds) * 1000;
+08:25:53 (78134) DEBUG ClearTextReporter Killed by: TokenSessionService clamps expired cookies at zero and changes only Secure outside production
+08:25:53 (78134) DEBUG ClearTextReporter
+08:25:53 (78134) DEBUG ClearTextReporter [Timeout] ArithmeticOperator
+08:25:53 (78134) DEBUG ClearTextReporter src/auth/token-session.service.ts:339:11
+08:25:53 (78134) DEBUG ClearTextReporter -           ? expiresAtOrTtlSeconds.getTime() - now.getTime()
+08:25:53 (78134) DEBUG ClearTextReporter +           ? expiresAtOrTtlSeconds.getTime() + now.getTime()
+08:25:53 (78134) DEBUG ClearTextReporter
+08:25:53 (78134) DEBUG ClearTextReporter [Killed] MethodExpression
+08:25:53 (78134) DEBUG ClearTextReporter src/auth/token-session.service.ts:341:13
+08:25:53 (78134) DEBUG ClearTextReporter -               Math.max(0, expiresAtOrTtlSeconds),
+08:25:53 (78134) DEBUG ClearTextReporter +               Math.min(0, expiresAtOrTtlSeconds),
+08:25:53 (78134) DEBUG ClearTextReporter Killed by: TokenSessionService clamps expired cookies at zero and changes only Secure outside production
+08:25:53 (78134) DEBUG ClearTextReporter
+08:25:53 (78134) DEBUG ClearTextReporter [Killed] StringLiteral
+08:25:53 (78134) DEBUG ClearTextReporter src/auth/token-session.service.ts:348:17
+08:25:53 (78134) DEBUG ClearTextReporter -         sameSite: 'strict',
+08:25:53 (78134) DEBUG ClearTextReporter +         sameSite: "",
+08:25:53 (78134) DEBUG ClearTextReporter Killed by: TokenSessionService uses remaining lifetime and strict host-only cookie parity
+08:25:53 (78134) DEBUG ClearTextReporter
+08:25:53 (78134) DEBUG ClearTextReporter [Killed] StringLiteral
+08:25:53 (78134) DEBUG ClearTextReporter src/auth/token-session.service.ts:349:13
+08:25:53 (78134) DEBUG ClearTextReporter -         path: '/auth',
+08:25:53 (78134) DEBUG ClearTextReporter +         path: "",
+08:25:53 (78134) DEBUG ClearTextReporter Killed by: TokenSessionService uses remaining lifetime and strict host-only cookie parity
+08:25:53 (78134) DEBUG ClearTextReporter
+08:25:53 (78134) DEBUG ClearTextReporter [Timeout] BooleanLiteral
+08:25:53 (78134) DEBUG ClearTextReporter src/auth/token-session.service.ts:346:17
+08:25:53 (78134) DEBUG ClearTextReporter -         httpOnly: true,
+08:25:53 (78134) DEBUG ClearTextReporter +         httpOnly: false,
+08:25:53 (78134) DEBUG ClearTextReporter
+08:25:53 (78134) DEBUG ClearTextReporter [Killed] MethodExpression
+08:25:53 (78134) DEBUG ClearTextReporter src/auth/token-session.service.ts:350:15
+08:25:53 (78134) DEBUG ClearTextReporter -         maxAge: Math.max(0, Math.floor(remainingMs)),
+08:25:53 (78134) DEBUG ClearTextReporter +         maxAge: Math.min(0, Math.floor(remainingMs)),
+08:25:53 (78134) DEBUG ClearTextReporter Killed by: TokenSessionService uses remaining lifetime and strict host-only cookie parity
+08:25:53 (78134) DEBUG ClearTextReporter
+Ran 6.33 tests per mutant on average.
+--------------------------|------------------|----------|-----------|------------|----------|----------|
+File                      |  total | covered | # killed | # timeout | # survived | # no cov | # errors |
+--------------------------|--------|---------|----------|-----------|------------|----------|----------|
+All files                 |  73.33 |  100.00 |        8 |         3 |          0 |        4 |        0 |
+ token-session.service.ts |  73.33 |  100.00 |        8 |         3 |          0 |        4 |        0 |
+--------------------------|--------|---------|----------|-----------|------------|----------|----------|
+08:25:53 (78134) INFO MutationTestReportHelper Final mutation score of 73.33 is greater than or equal to break threshold 70
+08:25:53 (78134) INFO JsonReporter Your report can be found at: file:///tmp/nestjs-t5-diagnostic-hygiene-cache-false.json
+08:25:53 (78134) INFO MutationTestExecutor Done in 1 minute and 5 seconds.

@@ -17,7 +17,7 @@ import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { RequirePermissions } from '../auth/permissions.decorator';
-import { AuditActor } from '../common/audit/audit-context';
+import type { AuditActor } from '../common/audit/audit-context';
 import { AuthPermission } from '../common/enums/auth-permission.enum';
 import {
   CreateMembershipTypeDto,

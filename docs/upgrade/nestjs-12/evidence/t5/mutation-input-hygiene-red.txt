@@ -1,0 +1,38 @@
+✖ generated mutation snapshots are excluded without losing any real input or default ignore (171.446081ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 284.002075
+
+✖ failing tests:
+
+test at test/quality/mutation-runner.test.mjs:808:1
+✖ generated mutation snapshots are excluded without losing any real input or default ignore (171.446081ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  ... Skipped lines
+
+    [
+      'node_modules',
+      '.git',
+      '*.tsbuildinfo',
+      '/stryker.log',
+  ...
+      'reports/mutation/complete/shards/token-session/mutation.json',
+  -   'reports/mutation/**'
+    ]
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:846:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'node_modules', '.git', '*.tsbuildinfo', '/stryker.log', '.next', '.nuxt', '.svelte-kit', 'reports/mutation/complete/shards/token-session/.stryker-tmp', 'reports/stryker-incremental.json', 'reports/mutation/complete/shards/token-session/mutation.html', 'reports/mutation/complete/shards/token-session/mutation.json' ],
+    expected: [ 'node_modules', '.git', '*.tsbuildinfo', '/stryker.log', '.next', '.nuxt', '.svelte-kit', 'reports/mutation/complete/shards/token-session/.stryker-tmp', 'reports/stryker-incremental.json', 'reports/mutation/complete/shards/token-session/mutation.html', 'reports/mutation/complete/shards/token-session/mutation.json', 'reports/mutation/**' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

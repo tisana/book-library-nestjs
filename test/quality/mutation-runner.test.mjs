@@ -4,14 +4,15 @@ import {
   existsSync,
   mkdtempSync,
   mkdirSync,
+  promises as filesystemPromises,
   readdirSync,
   readFileSync,
   rmSync,
   statSync,
   writeFileSync,
 } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { availableParallelism, tmpdir } from 'node:os';
+import { dirname, join, relative } from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { after, before, test } from 'node:test';
 
@@ -61,33 +62,43 @@ const COMPLETE_SHARDS = [
     id: 'token-session',
     source: SELECTED_SOURCES[0],
     concurrency: 4,
-    mutantCount: 300,
+    mutantCount: 272,
   },
   {
     id: 'identifier-repair',
     source: SELECTED_SOURCES[1],
     concurrency: 4,
-    mutantCount: 400,
+    mutantCount: 417,
   },
   {
     id: 'identifier-reconciliation',
     source: SELECTED_SOURCES[2],
     concurrency: 4,
-    mutantCount: 400,
+    mutantCount: 538,
   },
   {
     id: 'members',
     source: SELECTED_SOURCES[3],
     concurrency: 4,
-    mutantCount: 300,
+    mutantCount: 286,
   },
   {
     id: 'borrowings',
     source: SELECTED_SOURCES[4],
     concurrency: 4,
-    mutantCount: 327,
+    mutantCount: 231,
   },
 ];
+const MUTATION_JEST_CONFIG = {
+  ...JSON.parse(readFileSync(join(REPOSITORY_ROOT, 'package.json'), 'utf8'))
+    .jest,
+  transform: {
+    '^.+\\.(t|j)s$': [
+      'ts-jest',
+      { tsconfig: '<rootDir>/../tsconfig.mutation.json' },
+    ],
+  },
+};
 const MEMBERS_SMOKE_JEST = {
   projectType: 'custom',
   config: {
@@ -95,7 +106,12 @@ const MEMBERS_SMOKE_JEST = {
     rootDir: 'src',
     testMatch: ['<rootDir>/members/members.service.spec.ts'],
     testRegex: [],
-    transform: { '^.+\\.(t|j)s$': 'ts-jest' },
+    transform: {
+      '^.+\\.(t|j)s$': [
+        'ts-jest',
+        { tsconfig: '<rootDir>/../tsconfig.mutation.json' },
+      ],
+    },
     collectCoverageFrom: [
       '**/*.ts',
       '!**/*.spec.ts',
@@ -537,14 +553,84 @@ function findPreservedFile(root, name, expectedContents) {
 function pidIsAlive(pid) {
   try {
     process.kill(pid, 0);
+    if (process.platform === 'linux') {
+      const stat = readFileSync(`/proc/${pid}/stat`, 'utf8');
+      if (
+        ['Z', 'X'].includes(stat.slice(stat.lastIndexOf(')') + 2).split(' ')[0])
+      )
+        return false;
+    }
     return true;
   } catch (error) {
-    if (error?.code === 'ESRCH') {
+    if (error?.code === 'ESRCH' || error?.code === 'ENOENT') {
       return false;
     }
     throw error;
   }
 }
+
+// A zombie-only group cannot perform work, but a mixed live/zombie group can.
+test('Linux process-group verification rejects live work and accepts only terminated zombies', async () => {
+  if (process.platform !== 'linux') {
+    assert.throws(
+      () => runnerModule.linuxProcessGroupHasLiveMembers(0),
+      /owned positive/,
+    );
+    return;
+  }
+  const directory = mkdtempSync(join(tmpdir(), 'mutation-zombie-regression-'));
+  const pidFile = join(directory, 'pids.json');
+  const child = spawn(
+    'python3',
+    [
+      '-c',
+      [
+        'import os, json, signal, time, sys',
+        'descendant = os.fork()',
+        'if descendant == 0: os._exit(0)',
+        'signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))',
+        'with open(sys.argv[1], "w") as output: json.dump({"parent": os.getpid(), "descendant": descendant}, output)',
+        'while True: time.sleep(0.05)',
+      ].join('\n'),
+      pidFile,
+    ],
+    { detached: true, stdio: 'ignore' },
+  );
+  const exited = new Promise((resolvePromise) =>
+    child.once('close', resolvePromise),
+  );
+  try {
+    await waitForFile(pidFile);
+    const pids = JSON.parse(readFileSync(pidFile, 'utf8'));
+    const deadline = Date.now() + 5000;
+    while (
+      !readFileSync(`/proc/${pids.descendant}/stat`, 'utf8').includes(') Z ')
+    ) {
+      assert.ok(
+        Date.now() < deadline,
+        'Owned descendant must become a real zombie',
+      );
+      await new Promise((resolvePromise) => setTimeout(resolvePromise, 25));
+    }
+    assert.equal(
+      runnerModule.linuxProcessGroupHasLiveMembers(pids.parent),
+      true,
+    );
+    child.kill('SIGTERM');
+    await exited;
+    assert.equal(
+      runnerModule.linuxProcessGroupHasLiveMembers(pids.parent),
+      false,
+    );
+    assert.equal(pidIsAlive(pids.descendant), false);
+  } finally {
+    if (child.exitCode === null && child.signalCode === null) {
+      process.kill(-child.pid, 'SIGKILL');
+      await exited;
+    }
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
 
 async function waitForFile(path, timeoutMs = 5000) {
   const deadline = Date.now() + timeoutMs;
@@ -692,7 +778,7 @@ test('complete profile has five disjoint full-source shards', () => {
     const config = buildStrykerConfig('complete', MANIFEST, shard.id);
     owned.push(...config.mutate);
     assert.deepEqual(config.mutate, [shard.source]);
-    assert.equal(config.concurrency, 4);
+    assert.equal(config.concurrency, Math.min(4, availableParallelism()));
     const root = `reports/mutation/complete/shards/${shard.id}`;
     assert.equal(config.jsonReporter.fileName, `${root}/mutation.json`);
     assert.equal(config.htmlReporter.fileName, `${root}/mutation.html`);
@@ -729,7 +815,87 @@ test('smoke shards own every reviewed rule exactly once with isolated config', (
 
 // Production break caught: members loses the approved idle-runner four-worker
 // setting, or any other whole-source shard changes from two workers.
-test('smoke uses the exact five-shard concurrency map', () => {
+test('generated mutation snapshots are excluded without losing any real input or default ignore', async () => {
+  const { defaultOptions } =
+    await import('../../node_modules/@stryker-mutator/core/dist/src/config/index.js');
+  const { ProjectReader } =
+    await import('../../node_modules/@stryker-mutator/core/dist/src/fs/project-reader.js');
+  const fixture = mkdtempSync(join(tmpdir(), 'mutation-input-hygiene-'));
+  const originalCwd = process.cwd();
+  try {
+    const files = [
+      'src/auth/token-session.service.ts',
+      'src/auth/token-session.service.spec.ts',
+      'test/support/critical-auth-fixtures.ts',
+      'package.json',
+      'tsconfig.jest.json',
+      '.env',
+      'reports/mutation/history/shard/.stryker-tmp/src/abandoned.ts',
+      'reports/mutation/history/shard/summary.json',
+      'node_modules/ignored/index.js',
+      '.git/ignored',
+      'ignored.tsbuildinfo',
+    ];
+    for (const file of files) {
+      const path = join(fixture, file);
+      mkdirSync(dirname(path), { recursive: true });
+      writeFileSync(path, 'synthetic input fixture');
+    }
+    process.chdir(fixture);
+    const config = buildStrykerConfig('complete', MANIFEST, 'token-session');
+    const logger = { debug() {}, info() {}, warn() {}, error() {} };
+    const original = new ProjectReader(filesystemPromises, logger, {
+      ...defaultOptions,
+      ...config,
+      ignorePatterns: [],
+    });
+    const updated = new ProjectReader(filesystemPromises, logger, {
+      ...defaultOptions,
+      ...config,
+    });
+    assert.deepEqual(updated.ignoreRules, [
+      ...original.ignoreRules,
+      'reports/mutation/**',
+    ]);
+    const before = (await original.resolveInputFileNames()).map((path) =>
+      relative(fixture, path).replaceAll('\\', '/'),
+    );
+    const after = (await updated.resolveInputFileNames()).map((path) =>
+      relative(fixture, path).replaceAll('\\', '/'),
+    );
+    assert.deepEqual(
+      after.sort(),
+      before.filter((path) => !path.startsWith('reports/mutation/')).sort(),
+    );
+    assert.deepEqual(after, files.slice(0, 6).sort());
+  } finally {
+    process.chdir(originalCwd);
+    rmSync(fixture, { recursive: true, force: true });
+  }
+});
+
+test('mutation worker caps preserve maximums on small and large runners', () => {
+  for (const cpus of [1, 2, 4, 8]) {
+    for (const shard of SMOKE_SHARDS) {
+      assert.equal(
+        buildStrykerConfig('smoke', MANIFEST, shard.id, cpus).concurrency,
+        Math.min(shard.concurrency, cpus),
+      );
+      assert.equal(
+        buildStrykerConfig('complete', MANIFEST, shard.id, cpus).concurrency,
+        Math.min(4, cpus),
+      );
+    }
+  }
+  for (const cpus of [0, -1, 1.5, NaN]) {
+    assert.throws(
+      () => buildStrykerConfig('complete', MANIFEST, 'token-session', cpus),
+      /positive integer/,
+    );
+  }
+});
+
+test('smoke preserves five-shard concurrency maximums within available CPUs', () => {
   const actual = Object.fromEntries(
     SMOKE_SHARDS.map((shard) => [
       shard.id,
@@ -738,11 +904,11 @@ test('smoke uses the exact five-shard concurrency map', () => {
   );
 
   assert.deepEqual(actual, {
-    'token-session': 2,
-    'identifier-repair': 2,
-    'identifier-reconciliation': 2,
-    members: 4,
-    borrowings: 2,
+    'token-session': Math.min(2, availableParallelism()),
+    'identifier-repair': Math.min(2, availableParallelism()),
+    'identifier-reconciliation': Math.min(2, availableParallelism()),
+    members: Math.min(4, availableParallelism()),
+    borrowings: Math.min(2, availableParallelism()),
   });
 });
 
@@ -753,12 +919,37 @@ test('smoke members selects only its direct service specification', () => {
   const config = buildStrykerConfig('smoke', MANIFEST, 'members');
 
   assert.deepEqual(config.jest, MEMBERS_SMOKE_JEST);
-  assert.equal(config.concurrency, 4);
+  assert.equal(config.concurrency, Math.min(4, availableParallelism()));
   assert.ok(
     config.mutate.every((range) =>
       range.startsWith('src/members/members.service.ts:'),
     ),
   );
+});
+
+test('mutation compiler changes only isolated emit and preserves mandatory typed Jest', () => {
+  const mutation = JSON.parse(
+    readFileSync(join(REPOSITORY_ROOT, 'tsconfig.mutation.json'), 'utf8'),
+  );
+  assert.deepEqual(mutation, {
+    extends: './tsconfig.jest.json',
+    compilerOptions: { isolatedModules: true },
+  });
+  const mandatory = JSON.parse(
+    readFileSync(join(REPOSITORY_ROOT, 'tsconfig.jest.json'), 'utf8'),
+  );
+  assert.equal(mandatory.compilerOptions.isolatedModules, false);
+  assert.equal(mandatory.compilerOptions.module, 'CommonJS');
+  assert.equal(mandatory.compilerOptions.moduleResolution, 'Bundler');
+  const normalJest = JSON.parse(
+    readFileSync(join(REPOSITORY_ROOT, 'package.json'), 'utf8'),
+  ).jest;
+  assert.deepEqual(normalJest.transform, {
+    '^.+\\.(t|j)s$': [
+      'ts-jest',
+      { tsconfig: '<rootDir>/../tsconfig.jest.json' },
+    ],
+  });
 });
 
 test('smoke members Jest config discovers exactly the intended specification', () => {
@@ -793,7 +984,7 @@ test('smoke members Jest config discovers exactly the intended specification', (
 });
 
 // Production break caught: a profile weakens the agreed runner, reporters, or score gate.
-test('all shards and complete use exact Jest, reporters, mutators, thresholds, and fixed concurrency', () => {
+test('all shards and complete use exact Jest, reporters, mutators, thresholds, and capped concurrency maximums', () => {
   const configs = [
     ...SMOKE_SHARDS.map((shard) => ({
       concurrency: shard.concurrency,
@@ -802,7 +993,7 @@ test('all shards and complete use exact Jest, reporters, mutators, thresholds, a
           ? MEMBERS_SMOKE_JEST
           : {
               projectType: 'custom',
-              configFile: 'package.json',
+              config: MUTATION_JEST_CONFIG,
               enableFindRelatedTests: true,
             },
       config: buildStrykerConfig('smoke', MANIFEST, shard.id),
@@ -811,7 +1002,7 @@ test('all shards and complete use exact Jest, reporters, mutators, thresholds, a
       concurrency: 4,
       jest: {
         projectType: 'custom',
-        configFile: 'package.json',
+        config: MUTATION_JEST_CONFIG,
         enableFindRelatedTests: true,
       },
       config: buildStrykerConfig('complete', MANIFEST, shard.id),
@@ -832,7 +1023,7 @@ test('all shards and complete use exact Jest, reporters, mutators, thresholds, a
         coverageAnalysis: 'perTest',
         reporters: ['clear-text', 'progress', 'json', 'html'],
         thresholds: { high: 80, low: 70, break: 70 },
-        concurrency,
+        concurrency: Math.min(concurrency, availableParallelism()),
         jest,
       },
     );
@@ -1071,6 +1262,10 @@ test('runner writes commit, Node, OS, source hashes, score and policy result', a
   assert.equal(calls[0].options.shell, false);
   assert.equal(calls[0].options.cwd, root);
   assert.equal(calls[0].options.env.KEEP_ME, 'preserved');
+  assert.match(
+    calls[0].options.env.NODE_OPTIONS,
+    /(?:^|\s)--experimental-vm-modules(?:\s|$)/,
+  );
   assert.equal(calls[0].options.env.MUTATION_PROFILE, 'smoke');
   assert.deepEqual(
     calls.map((call) => call.options.env.MUTATION_SHARD),
@@ -1375,7 +1570,11 @@ test('merged policy cannot be bypassed by zero shard exits', async () => {
 test('distributed smoke config uses the approved whole-source worker map', () => {
   for (const shard of WHOLE_SOURCE_SHARDS) {
     const config = buildStrykerConfig('smoke', MANIFEST, shard.id);
-    assert.equal(config.concurrency, shard.concurrency, shard.id);
+    assert.equal(
+      config.concurrency,
+      Math.min(shard.concurrency, availableParallelism()),
+      shard.id,
+    );
     assert.deepEqual(
       config.mutate,
       MANIFEST.rules
@@ -1777,15 +1976,15 @@ test('named complete shard preserves but rejects stale mutation artifacts', asyn
 });
 
 // Production break caught: complete merge trusts report-local mutant ids,
-// accepts mixed provenance, or omits part of the preserved 1,727 denominator.
-test('complete canonical merge is id-independent and requires exact provenance and 1727 union', async (t) => {
+// accepts mixed provenance, or omits part of the preserved 1,744 denominator.
+test('complete canonical merge is id-independent and requires exact provenance and 1744 union', async (t) => {
   await t.test('exact five-source union', () => {
     const root = temporaryRepository();
     writeAllCompleteShardEvidence(root);
 
     const result = mergeCompleteReports(root);
 
-    assert.equal(result.canonicalMutantCount, 1727);
+    assert.equal(result.canonicalMutantCount, 1744);
     assert.deepEqual(Object.keys(result.report.files), SELECTED_SOURCES);
   });
 
@@ -1815,7 +2014,7 @@ test('complete canonical merge is id-independent and requires exact provenance a
 
     assert.throws(
       () => mergeCompleteReports(root),
-      /1727|canonical mutant union/i,
+      /1744|canonical mutant union/i,
     );
   });
 
@@ -1888,7 +2087,7 @@ test('complete merge writes one canonical policy summary for all five shards', a
   const summary = readArtifact(root, 'complete', 'summary.json');
 
   assert.equal(result.exitCode, 0);
-  assert.equal(result.canonicalMutantCount, 1727);
+  assert.equal(result.canonicalMutantCount, 1744);
   assert.equal(result.policyExitCode, 0);
   assert.equal(summary.profile, 'complete');
   assert.equal(summary.nodeMajor, 22);
@@ -1973,6 +2172,8 @@ test('mutation workflow distributes five shards and merges one exact profile', (
     'test/quality/**',
     'scripts/quality/**',
     'stryker.config.mjs',
+    'tsconfig.mutation.json',
+    'tsconfig.jest.json',
     'package.json',
     'package-lock.json',
     '.github/workflows/mutation.yml',
@@ -2010,7 +2211,10 @@ test('mutation workflow distributes five shards and merges one exact profile', (
   );
   assert.equal((workflow.match(/runs-on: ubuntu-24\.04/g) ?? []).length, 2);
   assert.equal((workflow.match(/timeout-minutes: 17/g) ?? []).length, 2);
-  assert.equal((workflow.match(/node-version: '22'/g) ?? []).length, 2);
+  assert.equal(
+    (workflow.match(/node-version-file: '.node-version'/g) ?? []).length,
+    2,
+  );
   assert.equal((workflow.match(/run: npm ci/g) ?? []).length, 2);
 
   const shardRuns = [

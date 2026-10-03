@@ -1,0 +1,5 @@
+{"check":"signal exit observation","elapsedMs":165,"exitCode":143,"oomKilled":false}
+Error     at createEsmNotFoundErr (node:internal/modules/cjs/loader:1554:15)
+    at finalizeEsmResolution (node:internal/modules/cjs/loader:1543:9)
+    at resolveExports (node:internal/modules/cjs/loader:707:14)
+Rollback rehearsal failed; sensitive diagnostics suppressed

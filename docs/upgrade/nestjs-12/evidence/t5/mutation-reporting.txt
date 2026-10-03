@@ -1,0 +1,426 @@
+✔ hashes text and canonical mutant identity with hand-derived literals (3.362319ms)
+✔ rejects a raw combined score below 70 (27.69429ms)
+✔ rejects a score below the tracked upward-only baseline (10.70854ms)
+✔ validates but does not compare smoke score with the complete baseline (4.430124ms)
+✔ accepts a null baseline for smoke and complete profiles (5.156905ms)
+✔ records a schema-v1 baseline from exact complete provenance (60.761394ms)
+✔ refuses a baseline when complete provenance is not exact (131.770158ms)
+✔ record-baseline CLI validates before writing the tracked baseline (780.221533ms)
+✔ rejects a surviving mutant overlapping a critical rule (5.250442ms)
+✔ rejects a no-coverage mutant overlapping a critical rule (0.930553ms)
+✔ rejects a report location beyond its source lines (1.607341ms)
+✔ rejects a report location beyond its source columns (0.424373ms)
+✔ accepts only an exact equivalent fingerprint tied to source SHA and rule id (1.796088ms)
+▶ rejects stale source SHA, expired equivalent entries, and wildcard entries
+  ✔ stale manifest hash (0.362732ms)
+  ✔ stale allowlist hash (0.315145ms)
+  ✔ expired entry (0.266699ms)
+  ✔ wildcard entry (0.233463ms)
+✔ rejects stale source SHA, expired equivalent entries, and wildcard entries (3.479573ms)
+✔ validates source hashes canonically across LF and CRLF without accepting drift (0.606771ms)
+▶ rejects reports whose mutated file set is not exactly the five selected files
+  ✔ missing file (3.174814ms)
+  ✔ extra file (0.371186ms)
+  ✔ backslash path (0.727841ms)
+✔ rejects reports whose mutated file set is not exactly the five selected files (4.909666ms)
+✔ writes module scores and critical findings without changing the raw score (3.460094ms)
+✔ uses Stryker raw status semantics and excludes ignored mutants (0.709178ms)
+▶ returns raw score 100 for empty and ignored-only reports
+  ✔ empty mutants (0.398655ms)
+  ✔ ignored-only mutants (0.501597ms)
+✔ returns raw score 100 for empty and ignored-only reports (1.345078ms)
+▶ fails closed on malformed schema, status, profile, paths, hashes, ranges, allowlist, and baseline
+  ✔ manifest schema (1.316762ms)
+  ✔ unknown and pending statuses (3.625455ms)
+  ✔ profile (0.199779ms)
+  ✔ manifest path (0.354508ms)
+  ✔ hash (0.287384ms)
+  ✔ range (1.938218ms)
+  ✔ allowlist cardinality (0.362944ms)
+  ✔ baseline (0.598183ms)
+  ✔ report location (0.419974ms)
+  ✔ ordered report location (0.406177ms)
+✔ fails closed on malformed schema, status, profile, paths, hashes, ranges, allowlist, and baseline (12.187749ms)
+✔ validates manifest against temporary source files (0.241905ms)
+✔ keeps Task 5 mutation assertions on public service paths (5.541526ms)
+✖ checks the tracked critical-rule manifest and reviewed allowlist (143.149613ms)
+✖ evaluates an exact tracked pre-baseline smoke artifact (2.133663ms)
+▶ check mode rejects stale SHA and missing or ambiguous anchors
+  ✔ stale source SHA (122.698143ms)
+  ✔ missing anchor (95.794566ms)
+  ✔ ambiguous anchor (196.106098ms)
+✔ check mode rejects stale SHA and missing or ambiguous anchors (417.166458ms)
+✔ candidate mode writes only a refreshed review candidate below reports (124.046212ms)
+✔ candidate mode emits the same source hash for LF and CRLF checkouts (163.711015ms)
+✔ requires complete ordered rule identity and invalidates a source edit (2.622175ms)
+✔ keeps the Fix Round 1 point inventory as a lower-bound overlap smoke (3.193294ms)
+✖ protects every named Plan 3 executable line with same-category manifest rules (4.020699ms)
+✔ complete profile has five disjoint full-source shards (4.514556ms)
+✔ smoke shards own every reviewed rule exactly once with isolated config (1.487139ms)
+✔ smoke uses the exact five-shard concurrency map (0.939852ms)
+✖ smoke members selects only its direct service specification (4.07061ms)
+✔ smoke members Jest config discovers exactly the intended specification (1011.580684ms)
+✖ all shards and complete use exact Jest, reporters, mutators, thresholds, and fixed concurrency (1.652714ms)
+✔ module load requires an exact shard for both profiles (1346.077019ms)
+✔ launches the local npx shim with shell disabled (460.10508ms)
+✔ complete shard retains the 900000 ms deadline and escalation (46.757958ms)
+✖ timeout gracefully terminates and verifies a real descendant process tree (20793.967519ms)
+✖ timeout force-kills a real SIGTERM-resistant process tree after ten seconds (20795.068507ms)
+✖ runner writes commit, Node, OS, source hashes, score and policy result (79.822239ms)
+✖ runner cannot bypass policy enforcement when Stryker exits zero (72.645296ms)
+✔ smoke records each shard duration at its actual settlement (66.534176ms)
+✖ smoke writes isolated reports, logs, temp paths, and per-shard durations (54.760302ms)
+▶ canonical merge fails closed on a missing shard report or HTML
+  ✔ missing JSON (5.827812ms)
+  ✔ missing HTML (5.330275ms)
+✔ canonical merge fails closed on a missing shard report or HTML (11.94076ms)
+▶ canonical merge rejects wrong, extra, or duplicated shard ownership
+  ✔ wrong shard source (13.630336ms)
+  ✔ duplicated source assignment (6.957864ms)
+✔ canonical merge rejects wrong, extra, or duplicated shard ownership (20.905232ms)
+▶ canonical merge rejects duplicate or omitted canonical mutant identity
+  ✔ duplicate identity with different local ids (5.889714ms)
+  ✔ missing replacement identity (4.221286ms)
+✔ canonical merge rejects duplicate or omitted canonical mutant identity (10.552095ms)
+✔ canonical merge writes five source maps with unmodified statuses and truthful HTML index (13.139952ms)
+✔ canonical merge rejects a 1365-mutant whole-source union (10.742813ms)
+✖ merged policy cannot be bypassed by zero shard exits (66.33261ms)
+✔ distributed smoke config uses the approved whole-source worker map (0.777049ms)
+✔ named smoke shard runs once and writes isolated provenance artifacts (2.056788ms)
+✔ named smoke shard preserves but rejects stale mutation artifacts (1.357964ms)
+✖ local smoke evidence runs five shards sequentially with independent budgets (65.432968ms)
+▶ sequential and standalone merge preserve stale evidence but invalidate active outputs
+  ✔ sequential launch writes no reports (5.313471ms)
+  ✔ standalone merge fails before writing a fresh aggregate (12.781452ms)
+✔ sequential and standalone merge preserve stale evidence but invalidate active outputs (18.702472ms)
+✔ whole-source merge rejects mismatched shard provenance (7.839899ms)
+✔ whole-source merge returns five files and exactly 1366 identities (11.52657ms)
+✖ whole-source merge writes a complete distributed policy summary (60.735651ms)
+✔ named complete shard runs once with isolated 900000 ms evidence (3.130465ms)
+✔ named complete shard preserves but rejects stale mutation artifacts (1.20552ms)
+▶ complete canonical merge is id-independent and requires exact provenance and 1727 union
+  ✔ exact five-source union (26.379371ms)
+  ✔ duplicate identity with different local ids (8.327772ms)
+  ✔ one omitted mutant (20.232212ms)
+  ✔ mixed commit provenance (10.230358ms)
+✔ complete canonical merge is id-independent and requires exact provenance and 1727 union (65.952928ms)
+✔ complete merge fails closed on missing current artifacts (6.21087ms)
+✖ complete merge writes one canonical policy summary for all five shards (98.613256ms)
+✖ named smoke shard timeout cleans its exact real process tree (20771.148807ms)
+✔ mutation report directory is ignored by Git (1.411807ms)
+✔ package exposes the exact selective mutation entry points (0.801798ms)
+✖ mutation workflow distributes five shards and merges one exact profile (1.720142ms)
+ℹ tests 102
+ℹ suites 0
+ℹ pass 86
+ℹ fail 16
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 68594.255938
+
+✖ failing tests:
+
+test at test/quality/mutation-policy.test.mjs:1030:1
+✖ checks the tracked critical-rule manifest and reviewed allowlist (143.149613ms)
+  AssertionError [ERR_ASSERTION]:
+  Critical mutation manifest error: manifest.rules[0] has a stale sourceSha256.
+
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-policy.test.mjs:1033:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-policy.test.mjs:1075:1
+✖ evaluates an exact tracked pre-baseline smoke artifact (2.133663ms)
+  TypeError: manifest.rules[0] has a stale sourceSha256.
+      at fail (file:///workspace/book-library-nestjs/scripts/quality/mutation-policy.mjs:33:9)
+      at validateCriticalManifest (file:///workspace/book-library-nestjs/scripts/quality/mutation-policy.mjs:483:7)
+      at evaluateMutationReport (file:///workspace/book-library-nestjs/scripts/quality/mutation-policy.mjs:597:25)
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-policy.test.mjs:1106:22)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at test/quality/mutation-policy.test.mjs:1658:1
+✖ protects every named Plan 3 executable line with same-category manifest rules (4.020699ms)
+  AssertionError [ERR_ASSERTION]: token-family-resolution:207
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-policy.test.mjs:2659:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: '',
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-runner.test.mjs:752:1
+✖ smoke members selects only its direct service specification (4.07061ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  ... Skipped lines
+
+    {
+      config: {
+        collectCoverageFrom: [
+          '**/*.ts',
+          '!**/*.spec.ts',
+  ...
+        transform: {
+  +       '^.+\\.(t|j)s$': [
+  +         'ts-jest',
+  +         {
+  +           tsconfig: '<rootDir>/../tsconfig.jest.json'
+  +         }
+  +       ]
+  -       '^.+\\.(t|j)s$': 'ts-jest'
+        }
+      },
+      enableFindRelatedTests: true,
+      projectType: 'custom'
+    }
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:755:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { projectType: 'custom', config: { moduleFileExtensions: [Array], rootDir: 'src', transform: [Object], collectCoverageFrom: [Array], coverageDirectory: '../coverage/backend-unit', coverageReporters: [Array], testEnvironment: 'node', testMatch: [Array], testRegex: [] }, enableFindRelatedTests: true },
+    expected: { projectType: 'custom', config: { moduleFileExtensions: [Array], rootDir: 'src', testMatch: [Array], testRegex: [], transform: [Object], collectCoverageFrom: [Array], coverageDirectory: '../coverage/backend-unit', coverageReporters: [Array], testEnvironment: 'node' }, enableFindRelatedTests: true },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-runner.test.mjs:796:1
+✖ all shards and complete use exact Jest, reporters, mutators, thresholds, and fixed concurrency (1.652714ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  ... Skipped lines
+
+    {
+      concurrency: 4,
+      coverageAnalysis: 'perTest',
+      jest: {
+        config: {
+  ...
+          transform: {
+  +         '^.+\\.(t|j)s$': [
+  +           'ts-jest',
+  +           {
+  +             tsconfig: '<rootDir>/../tsconfig.jest.json'
+  +           }
+  +         ]
+  -         '^.+\\.(t|j)s$': 'ts-jest'
+          }
+        },
+        enableFindRelatedTests: true,
+        projectType: 'custom'
+      },
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:821:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { testRunner: 'jest', coverageAnalysis: 'perTest', reporters: [ 'clear-text', 'progress', 'json', 'html' ], thresholds: { high: 80, low: 70, break: 70 }, concurrency: 4, jest: { projectType: 'custom', config: [Object], enableFindRelatedTests: true } },
+    expected: { testRunner: 'jest', coverageAnalysis: 'perTest', reporters: [ 'clear-text', 'progress', 'json', 'html' ], thresholds: { high: 80, low: 70, break: 70 }, concurrency: 4, jest: { projectType: 'custom', config: [Object], enableFindRelatedTests: true } },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-runner.test.mjs:996:1
+✖ timeout gracefully terminates and verifies a real descendant process tree (20793.967519ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  true !== false
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:1012:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-runner.test.mjs:1023:1
+✖ timeout force-kills a real SIGTERM-resistant process tree after ten seconds (20795.068507ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  true !== false
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:1048:14)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-runner.test.mjs:1059:1
+✖ runner writes commit, Node, OS, source hashes, score and policy result (79.822239ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:1067:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-runner.test.mjs:1102:1
+✖ runner cannot bypass policy enforcement when Stryker exits zero (72.645296ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  false !== true
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:1135:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-runner.test.mjs:1193:1
+✖ smoke writes isolated reports, logs, temp paths, and per-shard durations (54.760302ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  1 !== 0
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:1201:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-runner.test.mjs:1353:1
+✖ merged policy cannot be bypassed by zero shard exits (66.33261ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  false !== true
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:1371:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-runner.test.mjs:1480:1
+✖ local smoke evidence runs five shards sequentially with independent budgets (65.432968ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  null !== 1366
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:1516:10)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: 1366,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-runner.test.mjs:1668:1
+✖ whole-source merge writes a complete distributed policy summary (60.735651ms)
+  TypeError: manifest.rules[0] has a stale sourceSha256.
+      at fail (file:///workspace/book-library-nestjs/scripts/quality/mutation-policy.mjs:33:9)
+      at validateCriticalManifest (file:///workspace/book-library-nestjs/scripts/quality/mutation-policy.mjs:483:7)
+      at evaluateMutationReport (file:///workspace/book-library-nestjs/scripts/quality/mutation-policy.mjs:597:25)
+      at evaluateReport (file:///workspace/book-library-nestjs/scripts/quality/run-mutation.mjs:879:10)
+      at runMerge (file:///workspace/book-library-nestjs/scripts/quality/run-mutation.mjs:1223:22)
+      at Module.runSmokeMerge (file:///workspace/book-library-nestjs/scripts/quality/run-mutation.mjs:1265:10)
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:1674:37)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at test/quality/mutation-runner.test.mjs:1879:1
+✖ complete merge writes one canonical policy summary for all five shards (98.613256ms)
+  TypeError: manifest.rules[0] has a stale sourceSha256.
+      at fail (file:///workspace/book-library-nestjs/scripts/quality/mutation-policy.mjs:33:9)
+      at validateCriticalManifest (file:///workspace/book-library-nestjs/scripts/quality/mutation-policy.mjs:483:7)
+      at evaluateMutationReport (file:///workspace/book-library-nestjs/scripts/quality/mutation-policy.mjs:597:25)
+      at evaluateReport (file:///workspace/book-library-nestjs/scripts/quality/run-mutation.mjs:879:10)
+      at runMerge (file:///workspace/book-library-nestjs/scripts/quality/run-mutation.mjs:1223:22)
+      at Module.runCompleteMerge (file:///workspace/book-library-nestjs/scripts/quality/run-mutation.mjs:1269:10)
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:1883:37)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at test/quality/mutation-runner.test.mjs:1906:1
+✖ named smoke shard timeout cleans its exact real process tree (20771.148807ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  true !== false
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:1918:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-runner.test.mjs:1957:1
+✖ mutation workflow distributes five shards and merges one exact profile (1.720142ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  0 !== 2
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:2014:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

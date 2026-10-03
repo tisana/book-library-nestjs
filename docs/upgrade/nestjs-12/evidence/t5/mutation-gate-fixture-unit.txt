@@ -1,0 +1,18 @@
+
+> book-library@0.0.1 test
+> node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand src/auth/token-session.service.spec.ts --json --outputFile=/tmp/nestjs-t5-gate-fixture-unit.json
+
+[Nest] 80948  - 10/03/2026, 12:56:14 PM   ERROR [TokenSessionService] Refresh rotation reconciliation interrupted during shutdown
+(node:80948) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+Test Suites: 1 passed, 1 total
+Tests:       49 passed, 49 total
+Snapshots:   0 total
+Time:        4.544 s
+Ran all test suites matching src/auth/token-session.service.spec.ts.
+Test results written to: ../../tmp/nestjs-t5-gate-fixture-unit.json
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

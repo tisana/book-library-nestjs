@@ -1,0 +1,8 @@
+.github/workflows/ci.yml codeql parsed; one pinned setup/assert/npm11.9.0 step
+.github/workflows/ci.yml backend-quality parsed; one pinned setup/assert/npm11.9.0 step
+.github/workflows/ci.yml frontend-unit-quality parsed; one pinned setup/assert/npm11.9.0 step
+.github/workflows/ci.yml frontend-e2e-quality parsed; one pinned setup/assert/npm11.9.0 step
+.github/workflows/ci.yml build parsed; one pinned setup/assert/npm11.9.0 step
+.github/workflows/mutation.yml mutation-shards parsed; one pinned setup/assert/npm11.9.0 step
+.github/workflows/mutation.yml mutation-aggregate parsed; one pinned setup/assert/npm11.9.0 step
+Application upload block preserved

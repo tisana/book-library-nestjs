@@ -1,0 +1,6 @@
+{
+  "scope": "Global npm CLI bundled dependencies, separate from /app installed235 runtime application packages; production entry uses node dist/main.js",
+  "npm": "11.9.0",
+  "node": "24.19.0",
+  "findings": []
+}

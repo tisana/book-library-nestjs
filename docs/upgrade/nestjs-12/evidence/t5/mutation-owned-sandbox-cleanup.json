@@ -1,0 +1,16 @@
+[
+  {
+    "path": "reports/mutation/complete/shards/token-session/.stryker-tmp",
+    "ownedProducer": "T5 token-session",
+    "files": 3287,
+    "bytes": 75560309,
+    "scope": "Only temporary copied sandbox; failure logs and summaries retained"
+  },
+  {
+    "path": "reports/mutation/complete/history/shards/token-session/run-0001/.stryker-tmp",
+    "ownedProducer": "T5 token-session",
+    "files": 1629,
+    "bytes": 37716367,
+    "scope": "Only temporary copied sandbox; failure logs and summaries retained"
+  }
+]

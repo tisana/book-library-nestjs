@@ -1,0 +1,22 @@
+
+> book-library@0.0.1 pretest:e2e:report
+> node -e "require('fs').mkdirSync('test-results', { recursive: true })"
+
+
+> book-library@0.0.1 test:e2e:report
+> node --experimental-vm-modules node_modules/jest/bin/jest.js --config ./test/jest-e2e.json --runInBand --detectOpenHandles --json --outputFile=./test-results/backend-e2e.json
+
+(node:43148) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+Test Suites: 30 passed, 30 total
+Tests:       254 passed, 254 total
+Snapshots:   0 total
+Time:        285.01 s
+Ran all test suites.
+Test results written to: test-results/backend-e2e.json
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

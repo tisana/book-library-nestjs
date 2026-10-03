@@ -1,5 +1,5 @@
 import { Logger, UnauthorizedException } from '@nestjs/common';
-import * as crypto from 'node:crypto';
+import crypto from 'node:crypto';
 import { deferred } from '../../test/support/backend-coverage-fixtures';
 import { createReplayMarker } from '../../test/support/critical-auth-fixtures';
 import {
@@ -233,8 +233,8 @@ describe('TokenSessionService', () => {
     service = new TokenSessionService(families as never, markers as never);
   });
 
-  afterEach(() => {
-    service.onModuleDestroy();
+  afterEach(async () => {
+    await service.onModuleDestroy();
     jest.useRealTimers();
     jest.restoreAllMocks();
   });
@@ -930,6 +930,88 @@ describe('TokenSessionService', () => {
 
     expect(marker.status).toBe('committed');
     expect(marker).not.toHaveProperty('leaseExpiresAt');
+  });
+
+  it('still completes teardown when an active recovery query rejects', async () => {
+    const query = markers.find({ status: 'pending' });
+    const gate = deferred<Record<string, any>[]>();
+    // The fixture owns this promise even if a mutant removes its consumer.
+    void gate.promise.catch(() => undefined);
+    const exec = jest.spyOn(query, 'exec').mockReturnValue(gate.promise);
+    jest.spyOn(markers, 'find').mockReturnValueOnce(query);
+    const recovery = service.reconcileExpiredPendingMarkers();
+    void recovery.catch(() => undefined);
+    let closed = false;
+    const closing = service.onModuleDestroy().then(() => {
+      closed = true;
+    });
+    try {
+      expect(exec).toHaveBeenCalledTimes(1);
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(closed).toBe(false);
+      const failure = new Error('database unavailable during drain');
+      const rejected = expect(recovery).rejects.toThrow(failure);
+      gate.reject(failure);
+      await rejected;
+      await expect(closing).resolves.toBeUndefined();
+    } finally {
+      gate.resolve([]);
+      await Promise.allSettled([recovery, closing]);
+    }
+  });
+
+  it('shares overlapping recovery passes and waits for durable recovery on destroy', async () => {
+    const created = await createFamily('active-recovery');
+    const family = families.documents[0];
+    const tokenHash = service.hashRefreshToken(created.refreshToken);
+    family.currentTokenHash = service.hashRefreshToken('unreturned-next-token');
+    family.lastRotationOperationId = 'active-recovery-operation';
+    markers.documents.push({
+      tokenHash,
+      familyId: created.familyId,
+      status: 'pending',
+      rotationOperationId: family.lastRotationOperationId,
+      leaseExpiresAt: new Date(Date.now() - 1),
+      expiresAt: created.expiresAt,
+    });
+    const gate = deferred<Record<string, any>[]>();
+    const query = markers.find({ status: 'pending' });
+    const exec = jest.spyOn(query, 'exec').mockReturnValue(gate.promise);
+    jest.spyOn(markers, 'find').mockReturnValueOnce(query);
+    const first = service.reconcileExpiredPendingMarkers();
+    const second = service.reconcileExpiredPendingMarkers();
+    let closed = false;
+    const closing = service.onModuleDestroy().then(() => {
+      closed = true;
+    });
+    try {
+      expect(exec).toHaveBeenCalledTimes(1);
+      expect(first).toBe(second);
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(closed).toBe(false);
+      gate.resolve(markers.documents);
+      expect(await first).toBe(1);
+      await closing;
+      expect(markers.documents[0].status).toBe('committed');
+      expect(family.status).toBe('revoked');
+      expect(await service.reconcileExpiredPendingMarkers()).toBe(0);
+    } finally {
+      gate.resolve([]);
+      await Promise.allSettled([first, second, closing]);
+    }
+  });
+
+  it('owns only one timer across repeated initialization and clears every timer', async () => {
+    jest.useFakeTimers();
+    service.onModuleInit();
+    service.onModuleInit();
+    expect(jest.getTimerCount()).toBe(1);
+    service.onModuleDestroy();
+    expect(jest.getTimerCount()).toBe(0);
+    service.onModuleInit();
+    expect(jest.getTimerCount()).toBe(1);
   });
 
   it('runs bounded reconciliation every 60 seconds and stops on destroy', async () => {

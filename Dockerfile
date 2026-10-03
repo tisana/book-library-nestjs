@@ -1,9 +1,16 @@
-FROM node:22-alpine AS deps
+# syntax=docker/dockerfile:1
+FROM node:24.19.0-alpine AS base
+
+RUN --mount=type=secret,id=proxy_ca \
+    if [ -f /run/secrets/proxy_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca; fi; npm install --global npm@11.9.0 --strict-ssl=true
+
+FROM base AS deps
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci
+RUN --mount=type=secret,id=proxy_ca \
+    if [ -f /run/secrets/proxy_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca; fi; npm ci --strict-ssl=true
 
 FROM deps AS build
 
@@ -11,19 +18,20 @@ COPY tsconfig*.json nest-cli.json ./
 COPY src ./src
 RUN npm run build
 
-FROM node:22-alpine AS frontend-deps
+FROM base AS frontend-deps
 
 WORKDIR /app
 
 COPY frontend/package*.json ./frontend/
-RUN npm ci --prefix frontend
+RUN --mount=type=secret,id=proxy_ca \
+    if [ -f /run/secrets/proxy_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca; fi; npm ci --prefix frontend --strict-ssl=true
 
 FROM frontend-deps AS frontend-build
 
 COPY frontend ./frontend
 RUN npm run build --prefix frontend
 
-FROM node:22-alpine AS runtime
+FROM base AS runtime
 
 ENV NODE_ENV=production
 ENV PORT=3000
@@ -32,7 +40,8 @@ ENV FRONTEND_STATIC_DIR=/app/public
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+RUN --mount=type=secret,id=proxy_ca \
+    if [ -f /run/secrets/proxy_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca; fi; npm ci --omit=dev --strict-ssl=true && npm cache clean --force
 
 COPY --from=build /app/dist ./dist
 COPY --from=frontend-build /app/frontend/dist ./public

@@ -1,0 +1,99 @@
+{
+  "runtime": {
+    "node": "24.19.0",
+    "npm": "11.9.0",
+    "mongo": "8.2.12"
+  },
+  "commands": [
+    {
+      "command": "npm ci",
+      "exit": 0,
+      "evidence": "847 packages; exact approved manifest/lock; no force/legacy peer resolution"
+    },
+    {
+      "command": "npm ls --json",
+      "exit": 0,
+      "evidence": "no invalid dependency-tree problems"
+    },
+    {
+      "command": "tsc -p tsconfig.json --noEmit --incremental false",
+      "exit": 0,
+      "evidence": "source/scripts/migrations/tests; final imports and operational fixture"
+    },
+    {
+      "command": "tsc -p tsconfig.jest.json --noEmit --incremental false",
+      "exit": 0,
+      "evidence": "full-program TS6 CommonJS/Bundler; final imports and operational fixture"
+    },
+    {
+      "command": "npm run build",
+      "exit": 0,
+      "evidence": "explicit src-only CommonJS dist/main.js"
+    },
+    {
+      "command": "tsc -p tsconfig.performance.json",
+      "exit": 0,
+      "evidence": "existing root/output and actual runner entry"
+    },
+    {
+      "command": "npm run test:cov",
+      "exit": 0,
+      "evidence": "35 suites/560 pass/0 skips; baseline coverage all87files"
+    },
+    {
+      "command": "npm run test:production",
+      "exit": 0,
+      "evidence": "1 suite/48 pass/0 skips; builds and launches dist/main.js"
+    },
+    {
+      "command": "npm run test:quality-reporting",
+      "exit": 0,
+      "evidence": "4 suites/68 pass/0 skips"
+    },
+    {
+      "command": "Jest focused operational-cli + verify-auth-performance process regression",
+      "exit": 0,
+      "evidence": "2 suites/10 pass/0 skips;83.452s"
+    },
+    {
+      "command": "npm run test:e2e:report",
+      "exit": 0,
+      "evidence": "30 suites/249 pass/0 skips;131.87s; includes6newCLI+15preflight tests"
+    },
+    {
+      "command": "npm run quality:report:backend -- --check-only --producer-outcome backend-unit=success --producer-outcome backend-e2e=success",
+      "exit": 0,
+      "evidence": "successful actual producers;expected87files/floors unchanged"
+    },
+    {
+      "command": "npm run mutation:check",
+      "exit": 0,
+      "evidence": "existing89rules; full mutation belongs toT5"
+    },
+    {
+      "command": "npm run verify:auth-performance",
+      "exit": 0,
+      "evidence": "20.10ms boundaryp95/22.33ms first50; unchanged50ms/2000ms limits"
+    },
+    {
+      "command": "guarded operational source imports through ts-node/register + tsconfig-paths/register",
+      "exit": 0,
+      "evidence": "migrate/bootstrap/preflight/repair; source-cli-load.txt"
+    },
+    {
+      "command": "ESLint all changed TypeScript files; final added operational fixture",
+      "exit": 0,
+      "evidence": "no fixes/disabled rules"
+    },
+    {
+      "command": "git diff --check (implementation); git diff --cached --check (authored evidence, excluding unchanged inherited brief)",
+      "exit": 0,
+      "evidence": "clean; inherited brief retains pre-existing Markdown hard-break and blank EOF whitespace"
+    },
+    {
+      "command": "npm audit --json (2026-10-03)",
+      "exit": 1,
+      "evidence": "8 affected:5high/3moderate/0critical; full advisory/path/target evidence preserved"
+    }
+  ]
+}

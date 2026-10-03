@@ -1,0 +1,173 @@
+{
+  "executionBase": "9812ea907ed18ffc513ffdef0effc0e1ddaaa0df",
+  "currentEvidenceBase": "5eb44651a4b6315ce95f1e0a78263d1459d82b7f",
+  "oldBuild": "git archive exact execution base; temporary Dockerfile CA mounts only",
+  "oldDockerfileSha256": "6838ba3f3f1ba5c901c32cafc17b1137523dc60336a3b196d65572e5e7237871",
+  "oldLockSha256": "ba1c8eb980b6956dcbdcd9e50c26ddbc30f086dd747872c84a186b9ffcd3f1b6",
+  "newLockSha256": "b4fc498293073ee73c8007a9eeddd4aab5961f811f70b997c91f044d10d9b9ea",
+  "images": {
+    "book-library-upgrade:rollback-old": {
+      "id": "sha256:b9510bcd54efbd3d1d116b4608e65e29fcc7c416ae3619f20fc48586e86c0cbc",
+      "created": "2026-10-03T13:20:30.288304976Z",
+      "entry": [
+        "node",
+        "dist/main.js"
+      ],
+      "user": "node"
+    },
+    "book-library-upgrade:verification": {
+      "id": "sha256:a872334e275dc405302381a7d839950ba0ddf238be20e909352788176823a622",
+      "created": "2026-10-03T07:10:38.088309204Z",
+      "entry": [
+        "node",
+        "dist/main.js"
+      ],
+      "user": "node"
+    }
+  },
+  "schemas": [
+    {
+      "path": "src/auth/schemas/auth-client.schema.ts",
+      "oldSha256": "59c095f42a22b0808a2f4412fb12ed5b1386257924b07bd9708e33ffee453c26",
+      "newSha256": "59c095f42a22b0808a2f4412fb12ed5b1386257924b07bd9708e33ffee453c26",
+      "equal": true
+    },
+    {
+      "path": "src/auth/schemas/auth-identifier-operation.schema.ts",
+      "oldSha256": "02e4e782a51264974d21ac88e672d7cb996cb5112e8a5246659cc37b6fc46965",
+      "newSha256": "02e4e782a51264974d21ac88e672d7cb996cb5112e8a5246659cc37b6fc46965",
+      "equal": true
+    },
+    {
+      "path": "src/auth/schemas/auth-identifier-repair-batch.schema.ts",
+      "oldSha256": "84e8acd9fcd91e10e05fc795a16cbdffb1b1b06f6c8e7004bb89aa278267b93a",
+      "newSha256": "84e8acd9fcd91e10e05fc795a16cbdffb1b1b06f6c8e7004bb89aa278267b93a",
+      "equal": true
+    },
+    {
+      "path": "src/auth/schemas/auth-identifier.schema.ts",
+      "oldSha256": "06c29d83cea64ed50e703afb325bc4dfc6ff5fd839e4504c1f0b9aa406030054",
+      "newSha256": "06c29d83cea64ed50e703afb325bc4dfc6ff5fd839e4504c1f0b9aa406030054",
+      "equal": true
+    },
+    {
+      "path": "src/auth/schemas/auth-throttle-bucket.schema.ts",
+      "oldSha256": "afa1cd6d727b4c14fbc615653be6d8e1deb414c42974173100cf34ba309534b9",
+      "newSha256": "afa1cd6d727b4c14fbc615653be6d8e1deb414c42974173100cf34ba309534b9",
+      "equal": true
+    },
+    {
+      "path": "src/auth/schemas/refresh-token-family.schema.ts",
+      "oldSha256": "299585996b8465a4770d56a6eb3d20fc0d663f477f256e5ed6b67535ba4f5972",
+      "newSha256": "299585996b8465a4770d56a6eb3d20fc0d663f477f256e5ed6b67535ba4f5972",
+      "equal": true
+    },
+    {
+      "path": "src/auth/schemas/refresh-token-replay-marker.schema.ts",
+      "oldSha256": "acf2c3817c4c7a13252c4b3082944727c7caf3c6cee4fd22b903685f8475aaca",
+      "newSha256": "acf2c3817c4c7a13252c4b3082944727c7caf3c6cee4fd22b903685f8475aaca",
+      "equal": true
+    },
+    {
+      "path": "src/auth/schemas/security-activity-event.schema.ts",
+      "oldSha256": "95a899bfe0b65fed60f008d104ffb29ac032c98adcc1a29e86746f937a7849c1",
+      "newSha256": "95a899bfe0b65fed60f008d104ffb29ac032c98adcc1a29e86746f937a7849c1",
+      "equal": true
+    },
+    {
+      "path": "src/book-categories/schemas/book-category.schema.ts",
+      "oldSha256": "46749a149c3a37725cb527ae0028eea344cacd52c3e341359b9fc6d2eb2b4ebb",
+      "newSha256": "46749a149c3a37725cb527ae0028eea344cacd52c3e341359b9fc6d2eb2b4ebb",
+      "equal": true
+    },
+    {
+      "path": "src/books/schemas/book.schema.ts",
+      "oldSha256": "ae73134bb536b3ea9a382a3a93b07020df0f412b9294e7a7d499fc8e16720283",
+      "newSha256": "ae73134bb536b3ea9a382a3a93b07020df0f412b9294e7a7d499fc8e16720283",
+      "equal": true
+    },
+    {
+      "path": "src/borrowings/schemas/borrowing.schema.ts",
+      "oldSha256": "fe1bd43d056409a74306f636dad5cd53952e97cb40b28d049b982eefb2e6b7ce",
+      "newSha256": "fe1bd43d056409a74306f636dad5cd53952e97cb40b28d049b982eefb2e6b7ce",
+      "equal": true
+    },
+    {
+      "path": "src/common/audit/audit-fields.schema.ts",
+      "oldSha256": "83ccbd6b69a717eddb10b4ab136c068c3a36fe0b823fa1b5fc17580203b86c79",
+      "newSha256": "83ccbd6b69a717eddb10b4ab136c068c3a36fe0b823fa1b5fc17580203b86c79",
+      "equal": true
+    },
+    {
+      "path": "src/members/schemas/member.schema.ts",
+      "oldSha256": "8a26208d2a77f970eec56fa82bc032eda3a361ebf630a2811c1597056008c99f",
+      "newSha256": "8a26208d2a77f970eec56fa82bc032eda3a361ebf630a2811c1597056008c99f",
+      "equal": true
+    },
+    {
+      "path": "src/membership-types/schemas/membership-type.schema.ts",
+      "oldSha256": "252dae97519efca93a497cf7b3dcf689f9675cf0a8a0b85007713c3f7e6fb70f",
+      "newSha256": "252dae97519efca93a497cf7b3dcf689f9675cf0a8a0b85007713c3f7e6fb70f",
+      "equal": true
+    },
+    {
+      "path": "src/staff-users/schemas/staff-user.schema.ts",
+      "oldSha256": "96b64c8ac9681fc194079d1a344c537a81f3d84ce4ea056d7b812f743e5ab1b0",
+      "newSha256": "96b64c8ac9681fc194079d1a344c537a81f3d84ce4ea056d7b812f743e5ab1b0",
+      "equal": true
+    }
+  ],
+  "network": {
+    "observationsCurrent": true,
+    "policyState": "enforced",
+    "preset": "package_managers",
+    "customHosts": [],
+    "revision": 17,
+    "tlsVerification": true
+  },
+  "productionMutation": false,
+  "oldBase": {
+    "reference": "node:22-alpine",
+    "resolvedDigest": "sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402",
+    "provenance": "actual BuildKit FROM line, not local image-tag inspection"
+  },
+  "signalAcceptance": {
+    "init": true,
+    "signal": "SIGTERM",
+    "exits": [
+      0,
+      143
+    ],
+    "elapsedMsLessThan": 8000,
+    "oomKilled": false,
+    "forcedKillAccepted": false
+  },
+  "executionInputHashes": {
+    "docs/upgrade/nestjs-12/evidence/t6/rollback-rehearsal.ts": "08c1e64eb22fc03bc50a1b0ae0d4595b917e1f270bb55cbaf501d524372cb06d",
+    "scripts/quality/disposable-artifact-fixture.ts": "42eb710d079b01fe2dc9a4bfea5a7f74689543cdd352b7439f4928dc3221d181",
+    "docker-compose.yml": "97a2ab82580f10ec73cba199911ad367627a28f5ff8eca4b063d0ae243e750e8",
+    "package-lock.json": "b4fc498293073ee73c8007a9eeddd4aab5961f811f70b997c91f044d10d9b9ea"
+  },
+  "observedAtUtc": "2026-10-03T13:35:46.811358+00:00",
+  "finalRehearsalExitCode": 0,
+  "rehearsalConfigurationCommittedAtExecution": false,
+  "note": "Rehearsal evidence script/init configuration saved on implementation branch before evidence commit; exact hashes above. Application runtime artifacts immutable and unchanged.",
+  "reviewFixInputHashes": {
+    "docs/upgrade/nestjs-12/evidence/t6/rollback-rehearsal.ts": "51703d8679c2da282827d6ab6cf815df459672c049f046329e9d37e20a4a796d",
+    "scripts/quality/disposable-artifact-fixture.ts": "b545529a2c554403768ec94fe43daf46d79dc6d38bb400b09545663ed56d120e",
+    "docs/upgrade/nestjs-12/release-runbook.md": "03c3efda8becc5ade1618d7a5fa84f5f6833f4baa4a6d07e86a471069d4bc936",
+    "docs/upgrade/nestjs-12/evidence/t6/runbook-commands.test.mjs": "d69ac5735b1749e20a86342ccb9bda98a75ea2a3c3356dfec97fff93f366d55a",
+    "docs/upgrade/nestjs-12/evidence/t6/rehearsal-cleanup.test.mjs": "18acd989631a605335e2bf7a51b543e61f59db996defc8880f756adc5ac41c92",
+    "docs/upgrade/nestjs-12/evidence/t6/review-fix-tsconfig.json": "51d340f416c4f011a1ae9f9642f832b94e0a75001961ae7da12ccd1a45a4e918"
+  },
+  "reviewFixVerification": {
+    "normalRehearsalRepeated": false,
+    "boundedTests": 10,
+    "failed": 0,
+    "skipped": 0,
+    "typecheckCommand": "node_modules/.bin/tsc -p docs/upgrade/nestjs-12/evidence/t6/review-fix-tsconfig.json",
+    "typecheckExitCode": 0,
+    "compilerVersion": "Version 6.0.2",
+    "note": "Original full-run hashes retained separately; fresh exact operator/error-path tests on final formatted files."
+  }
+}

@@ -1,0 +1,9 @@
+
+> book-library@0.0.1 quality:report:backend
+> ts-node --transpile-only scripts/quality/report-quality.ts --stream backend --coverage coverage/backend-unit/coverage-summary.json --unit-tests test-results/backend-unit.json --e2e-tests test-results/backend-e2e.json --baselines quality/coverage-baselines.json --expected-files 87 --markdown test-results/backend-summary.md --json test-results/backend-summary.json --producer-outcome backend-unit=success --producer-outcome backend-e2e=success --changed-line-diff test-results/upgrade.diff --changed-line-lcov coverage/backend-unit/lcov.info
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

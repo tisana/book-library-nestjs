@@ -1,0 +1,53 @@
+{
+  "recordedAt": "2026-10-03T13:11:04.092149+00:00",
+  "preFixCommit": "e5cc50c0af9bc0b8cf1323b298021cd75c124f4a",
+  "node": "v24.19.0",
+  "command": "node --test test/quality/mutation-runner.test.mjs test/quality/mutation-policy.test.mjs",
+  "exitCode": 0,
+  "tests": 106,
+  "pass": 106,
+  "fail": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "durationMs": 15066.162698,
+  "inputs": [
+    {
+      "path": ".github/workflows/mutation.yml",
+      "sha256": "e0050bb1d4112b417afe1c5102ac6f8871d999e9bbc4dfbd1c5be41a0a1b56b5",
+      "matchesPreFixCommittedBytes": true
+    },
+    {
+      "path": "test/quality/mutation-runner.test.mjs",
+      "sha256": "1ea6b52383429f201147c5d42829f5f34c87d8d9a70214875b73dfbe8617008a",
+      "matchesPreFixCommittedBytes": false
+    },
+    {
+      "path": "test/quality/mutation-policy.test.mjs",
+      "sha256": "58700e30b1a9bf296669909b72fc6fa0de3596de49dd761b89daa3b19b15c606",
+      "matchesPreFixCommittedBytes": true
+    },
+    {
+      "path": "stryker.config.mjs",
+      "sha256": "f014fd408a2e97733a5a0f40da490296d7d4e90f7316b42f286086865df5588e",
+      "matchesPreFixCommittedBytes": true
+    },
+    {
+      "path": "tsconfig.mutation.json",
+      "sha256": "89f884c51a1e26fe422cf4cdf2f4cd49c3c2e58a0b038d2faa26d206153b4c3e",
+      "matchesPreFixCommittedBytes": true
+    },
+    {
+      "path": "tsconfig.jest.json",
+      "sha256": "224afaecd2beb76b0b18066b9fd5da4eeba2de0487d10ca9159cc3e94fc4e133",
+      "matchesPreFixCommittedBytes": true
+    },
+    {
+      "path": "test/quality/mutation-baseline.json",
+      "sha256": "cb1932bfb4f06cdd9a59ae617048143d696fc3fc0dedf8b66e2193d3209ce51a",
+      "matchesPreFixCommittedBytes": true
+    }
+  ],
+  "testInputChange": "Only expected PR-path list adds the two compiler paths already present in committed workflow",
+  "acceptanceScope": "Quality runner/policy regression; mutation complete/smoke acceptance remains blocked"
+}

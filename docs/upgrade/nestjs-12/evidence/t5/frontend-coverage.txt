@@ -1,0 +1,107 @@
+
+> book-library@0.0.1 frontend:test:coverage
+> npm run test:coverage --prefix frontend
+
+
+> book-library-frontend@0.0.1 test:coverage
+> vitest run --coverage
+
+
+ RUN  v4.1.11 /workspace/book-library-nestjs/frontend
+      Coverage enabled with v8
+
+ ✓ src/lib/auth/session.test.ts (11 tests) 136ms
+ ✓ src/lib/api/auth.test.ts (12 tests) 169ms
+ ✓ src/features/auth/shared-login.test.tsx (9 tests) 2833ms
+     ✓ routes staff@example.com from authenticated role area and permissions  1177ms
+     ✓ routes member-no-access@example.com from authenticated role area and permissions  330ms
+ ✓ src/routes/member/index.test.tsx (13 tests) 920ms
+     ✓ uses membership tier precedence for 'Gold Member'  326ms
+ ✓ src/features/auth/identifier-conflicts.test.tsx (4 tests) 2112ms
+     ✓ uses safe labels, validates replacements, and resolves a fully accounted conflict  1611ms
+     ✓ shows a retryable safe error when conflict resolution fails  412ms
+ ✓ src/routes/staff/borrowings.new.test.tsx (9 tests) 1163ms
+     ✓ blocks a borrowing when Member is suspended  513ms
+ ✓ src/lib/validation/schemas.test.ts (5 tests) 21ms
+ ✓ src/routes/staff/route.test.tsx (6 tests) 314ms
+ ✓ src/lib/api/members.test.ts (4 tests) 144ms
+ ✓ src/features/staff-dashboard/staff-dashboard.test.tsx (2 tests) 297ms
+ ✓ src/features/auth/staff-role-management.test.tsx (4 tests) 826ms
+     ✓ creates staff and assigns approved roles and status  772ms
+ ✓ src/lib/api/borrowings.test.ts (5 tests) 131ms
+ ✓ src/lib/api/member-self-service.test.ts (3 tests) 136ms
+ ✓ src/lib/api/client.test.ts (4 tests) 26ms
+ ✓ src/features/member-home/member-home.test.tsx (7 tests) 276ms
+ ✓ src/features/member-home/reminders.test.tsx (3 tests) 177ms
+ ✓ src/routes/staff/borrowings.$borrowingId.test.tsx (5 tests) 628ms
+     ✓ confirms and records an active return  363ms
+ ✓ src/features/auth/identifier-conflicts.integration.test.tsx (3 tests) 1046ms
+     ✓ retries a safe failure, completes resolution, and removes stale conflict data after refetch  716ms
+ ❯ tests/live/nestjs-upgrade.spec.ts (0 test)
+ ✓ src/features/auth/security-activity.test.tsx (7 tests) 1107ms
+     ✓ renders safe event context and applies event and outcome filters  992ms
+ ✓ src/routes/member/borrowings.$borrowingId.test.tsx (4 tests) 469ms
+ ✓ src/routes/staff/books.test.tsx (3 tests) 1433ms
+     ✓ shows empty and searched-empty catalog states  640ms
+     ✓ saves a book and closes the add form  578ms
+ ✓ src/lib/api/books.test.ts (4 tests) 131ms
+ ✓ src/lib/api/query-keys.test.ts (2 tests) 12ms
+ ✓ src/routes/public.test.tsx (4 tests) 419ms
+ ✓ src/routes/staff/members.$memberId.test.tsx (4 tests) 230ms
+ ✓ src/lib/auth/route-guards.test.ts (6 tests) 14ms
+ ✓ src/lib/api/mutations.test.ts (5 tests) 12ms
+ ✓ src/features/auth/staff-role-management.integration.test.tsx (3 tests) 418ms
+ ✓ src/lib/api/membership-types.test.ts (3 tests) 121ms
+ ✓ src/lib/api/catalog.test.ts (3 tests) 121ms
+ ✓ src/components/data-table/data-table.test.tsx (2 tests) 249ms
+ ✓ src/routes/staff/books.$bookId.test.tsx (4 tests) 287ms
+ ✓ src/routes/member/borrowings.test.tsx (2 tests) 361ms
+ ✓ src/routes/member/route.test.tsx (2 tests) 23ms
+ ✓ src/lib/auth/sign-out.test.ts (3 tests) 40ms
+ ✓ src/features/borrowings/borrowing-display.test.ts (2 tests) 9ms
+ ✓ src/app/router.test.tsx (2 tests) 10ms
+ ✓ src/lib/api/errors.test.ts (7 tests) 10ms
+ ✓ src/lib/dates/due-status.test.ts (2 tests) 18ms
+ ✓ src/components/layout/staff-shell.test.tsx (1 test) 250ms
+ ✓ src/components/layout/member-shell.test.tsx (1 test) 218ms
+ ✓ src/features/books/book-form.test.tsx (1 test) 242ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/live/nestjs-upgrade.spec.ts [ tests/live/nestjs-upgrade.spec.ts ]
+Error: Playwright Test did not expect test() to be called here.
+Most common reasons include:
+- You are calling test() in a configuration file.
+- You are calling test() in a file that is imported by the configuration file.
+- You have two different versions of @playwright/test. This usually happens
+  when one of the dependencies in your package.json depends on @playwright/test.
+ ❯ _TestTypeImpl._currentSuite node_modules/playwright/lib/common/index.js:2221:13
+ ❯ _TestTypeImpl._createTest node_modules/playwright/lib/common/index.js:2234:24
+ ❯ node_modules/playwright/lib/common/index.js:1111:12
+ ❯ tests/live/nestjs-upgrade.spec.ts:13:1
+     11| }
+     12|
+     13| test('built app signs in, refreshes on reload, serves deep links and s…
+       | ^
+     14|   await signIn(page, 'staff');
+     15|   const cookie = (await context.cookies()).find(c => c.httpOnly && c.p…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 42 passed (43)
+      Tests  186 passed (186)
+   Start at  06:59:39
+   Duration  103.83s (transform 2.05s, setup 13.27s, import 23.87s, tests 17.56s, environment 32.23s)
+
+JSON report written to /workspace/book-library-nestjs/frontend/test-results/vitest-results.json
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

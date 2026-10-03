@@ -1,0 +1,254 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.46kB done
+#1 DONE 0.0s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#2 DONE 0.8s
+
+#3 docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+#3 CACHED
+
+#4 [internal] load metadata for docker.io/library/node:22-alpine
+#4 DONE 1.9s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 346B done
+#5 DONE 0.0s
+
+#6 [frontend-deps 1/4] FROM docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
+#6 resolve docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402 done
+#6 ...
+
+#7 [internal] load build context
+#7 transferring context: 2.46MB 0.1s done
+#7 DONE 0.1s
+
+#6 [frontend-deps 1/4] FROM docker.io/library/node:22-alpine@sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402
+#6 sha256:0a7108bf6c7bf5de370ffb1a3ed6be93d405b43ff159f681a8d18c0e2bc2e402 6.41kB / 6.41kB done
+#6 sha256:2c752226d477b4a886378baa95b9af252be59301b725fdb0b7e15208131505a8 1.72kB / 1.72kB done
+#6 sha256:7c3b093add7c43400ee83b815ab2cda98794a10045bcf76ce9bb2f89b97cbc5c 6.48kB / 6.48kB done
+#6 sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5 0B / 3.85MB 0.2s
+#6 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 0B / 55.59MB 0.2s
+#6 sha256:e554276b05e6306c5ad33cd85bfa7f0693083e21f6114db5abf60a20fb413039 0B / 1.26MB 0.2s
+#6 sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5 2.10MB / 3.85MB 0.5s
+#6 extracting sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5
+#6 sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5 3.85MB / 3.85MB 0.5s done
+#6 sha256:e554276b05e6306c5ad33cd85bfa7f0693083e21f6114db5abf60a20fb413039 1.05MB / 1.26MB 0.6s
+#6 sha256:d39db1cf9caa4f49c5a2e67111fbe6e0d5eea8ede550cb82f3dc2b79712688d6 0B / 447B 0.6s
+#6 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 11.53MB / 55.59MB 0.8s
+#6 sha256:e554276b05e6306c5ad33cd85bfa7f0693083e21f6114db5abf60a20fb413039 1.26MB / 1.26MB 0.6s done
+#6 extracting sha256:e2de96513ba9eb53b431787ec8a65cdde380ac4772a3e4c4b714dcfde2a102b5 0.1s done
+#6 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 20.97MB / 55.59MB 0.9s
+#6 sha256:d39db1cf9caa4f49c5a2e67111fbe6e0d5eea8ede550cb82f3dc2b79712688d6 447B / 447B 0.9s done
+#6 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 38.80MB / 55.59MB 1.1s
+#6 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 48.23MB / 55.59MB 1.2s
+#6 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 55.59MB / 55.59MB 1.3s
+#6 extracting sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937
+#6 sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 55.59MB / 55.59MB 1.3s done
+#6 extracting sha256:f7f2d304681aaa935c9cfd180850cf616ae843efce7682873d6521ded7268937 1.8s done
+#6 extracting sha256:e554276b05e6306c5ad33cd85bfa7f0693083e21f6114db5abf60a20fb413039
+#6 extracting sha256:e554276b05e6306c5ad33cd85bfa7f0693083e21f6114db5abf60a20fb413039 0.4s done
+#6 extracting sha256:d39db1cf9caa4f49c5a2e67111fbe6e0d5eea8ede550cb82f3dc2b79712688d6 done
+#6 DONE 4.1s
+
+#8 [frontend-deps 2/4] WORKDIR /app
+#8 DONE 0.5s
+
+#9 [deps 3/4] COPY package*.json ./
+#9 DONE 0.4s
+
+#10 [frontend-deps 3/4] COPY frontend/package*.json ./frontend/
+#10 DONE 0.5s
+
+#11 [frontend-deps 4/4] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --strict-ssl=true --prefix frontend
+#11 ...
+
+#12 [runtime 4/6] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --strict-ssl=true --omit=dev && npm cache clean --force
+#12 ...
+
+#13 [deps 4/4] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --strict-ssl=true
+#13 ...
+
+#11 [frontend-deps 4/4] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --strict-ssl=true --prefix frontend
+#11 11.70 npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+#11 ...
+
+#12 [runtime 4/6] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --strict-ssl=true --omit=dev && npm cache clean --force
+#12 18.48
+#12 18.48 added 236 packages, and audited 237 packages in 17s
+#12 18.48
+#12 18.48 49 packages are looking for funding
+#12 18.48   run `npm fund` for details
+#12 18.50
+#12 18.50 3 vulnerabilities (2 moderate, 1 high)
+#12 18.50
+#12 18.50 To address issues that do not require attention, run:
+#12 18.50   npm audit fix
+#12 18.50
+#12 18.50 To address all issues (including breaking changes), run:
+#12 18.50   npm audit fix --force
+#12 18.50
+#12 18.50 Run `npm audit` for details.
+#12 18.50 npm notice
+#12 18.50 npm notice New major version of npm available! 10.9.9 -> 12.2.0
+#12 18.50 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+#12 18.50 npm notice To update run: npm install -g npm@12.2.0
+#12 18.50 npm notice
+#12 19.29 npm warn using --force Recommended protections disabled.
+#12 DONE 21.3s
+
+#11 [frontend-deps 4/4] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --strict-ssl=true --prefix frontend
+#11 ...
+
+#13 [deps 4/4] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --strict-ssl=true
+#13 25.07 npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+#13 25.08 npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+#13 25.59 npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+#13 ...
+
+#11 [frontend-deps 4/4] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --strict-ssl=true --prefix frontend
+#11 29.63
+#11 29.63 added 575 packages, and audited 576 packages in 29s
+#11 29.63
+#11 29.63 180 packages are looking for funding
+#11 29.63   run `npm fund` for details
+#11 29.64
+#11 29.64 11 vulnerabilities (1 low, 2 moderate, 8 high)
+#11 29.64
+#11 29.64 To address issues that do not require attention, run:
+#11 29.64   npm audit fix
+#11 29.64
+#11 29.64 To address all issues (including breaking changes), run:
+#11 29.64   npm audit fix --force
+#11 29.64
+#11 29.64 Run `npm audit` for details.
+#11 29.64 npm notice
+#11 29.64 npm notice New major version of npm available! 10.9.9 -> 12.2.0
+#11 29.64 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+#11 29.64 npm notice To update run: npm install -g npm@12.2.0
+#11 29.64 npm notice
+#11 DONE 29.7s
+
+#14 [frontend-build 1/2] COPY frontend ./frontend
+#14 DONE 3.2s
+
+#13 [deps 4/4] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --strict-ssl=true
+#13 ...
+
+#15 [frontend-build 2/2] RUN npm run build --prefix frontend
+#15 4.534
+#15 4.534 > book-library-frontend@0.0.1 build
+#15 4.534 > tsc -p tsconfig.json && tsc -p tsconfig.node.json && vite build
+#15 4.534
+#15 ...
+
+#13 [deps 4/4] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --strict-ssl=true
+#13 40.38
+#13 40.38 added 884 packages, and audited 885 packages in 39s
+#13 40.38
+#13 40.38 162 packages are looking for funding
+#13 40.38   run `npm fund` for details
+#13 40.53
+#13 40.53 35 vulnerabilities (5 moderate, 30 high)
+#13 40.53
+#13 40.53 To address issues that do not require attention, run:
+#13 40.53   npm audit fix
+#13 40.53
+#13 40.53 To address all issues (including breaking changes), run:
+#13 40.53   npm audit fix --force
+#13 40.53
+#13 40.53 Run `npm audit` for details.
+#13 40.53 npm notice
+#13 40.53 npm notice New major version of npm available! 10.9.9 -> 12.2.0
+#13 40.53 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+#13 40.53 npm notice To update run: npm install -g npm@12.2.0
+#13 40.53 npm notice
+#13 DONE 40.6s
+
+#15 [frontend-build 2/2] RUN npm run build --prefix frontend
+#15 ...
+
+#16 [build 1/3] COPY tsconfig*.json nest-cli.json ./
+#16 DONE 4.9s
+
+#15 [frontend-build 2/2] RUN npm run build --prefix frontend
+#15 ...
+
+#17 [build 2/3] COPY src ./src
+#17 DONE 4.8s
+
+#15 [frontend-build 2/2] RUN npm run build --prefix frontend
+#15 ...
+
+#18 [build 3/3] RUN npm run build
+#18 4.217
+#18 4.217 > book-library@0.0.1 prebuild
+#18 4.217 > rimraf dist
+#18 4.217
+#18 4.377
+#18 4.377 > book-library@0.0.1 build
+#18 4.377 > nest build
+#18 4.377
+#18 ...
+
+#15 [frontend-build 2/2] RUN npm run build --prefix frontend
+#15 24.81 vite v8.0.16 building client environment for production...
+#15 24.84 [2K
+transforming...✓ 2317 modules transformed.
+#15 25.99 rendering chunks...
+#15 27.50 computing gzip size...
+#15 27.53 dist/index.html                                    0.63 kB │ gzip:  0.34 kB
+#15 27.53 dist/assets/index-hVAmaMUb.css                    23.16 kB │ gzip:  5.51 kB
+#15 27.53 dist/assets/search-Dg6cNVSx.js                     0.16 kB │ gzip:  0.16 kB
+#15 27.53 dist/assets/borrowing-display-WU2Vrc3V.js          0.37 kB │ gzip:  0.24 kB
+#15 27.53 dist/assets/catalog-wCk7yMEM.js                    0.52 kB │ gzip:  0.34 kB
+#15 27.53 dist/assets/status-badge-Cco6Kbdp.js               0.53 kB │ gzip:  0.32 kB
+#15 27.53 dist/assets/books-BWFwUsQf.js                      0.81 kB │ gzip:  0.43 kB
+#15 27.53 dist/assets/members-DIJ3ssKN.js                    0.88 kB │ gzip:  0.39 kB
+#15 27.53 dist/assets/member-self-service-DZ2qS1bH.js        0.95 kB │ gzip:  0.45 kB
+#15 27.53 dist/assets/borrowings-ZL3J_isy.js                 0.98 kB │ gzip:  0.57 kB
+#15 27.53 dist/assets/borrowings-CcLHaUFy.js                 1.47 kB │ gzip:  0.55 kB
+#15 27.53 dist/assets/borrowings.overdue-Qwo26r2D.js         1.52 kB │ gzip:  0.69 kB
+#15 27.53 dist/assets/members-CGvTbzXq.js                    1.73 kB │ gzip:  0.89 kB
+#15 27.53 dist/assets/borrowings-BX7QtQqB.js                 1.82 kB │ gzip:  0.80 kB
+#15 27.53 dist/assets/borrowings._borrowingId-k3-goZDS.js    1.92 kB │ gzip:  0.91 kB
+#15 27.53 dist/assets/catalog-Cym8BKRT.js                    2.00 kB │ gzip:  0.90 kB
+#15 27.53 dist/assets/membership-types-9ZsLcSSW.js           2.36 kB │ gzip:  1.09 kB
+#15 27.53 dist/assets/members._memberId-D7pU6ox3.js          2.86 kB │ gzip:  1.16 kB
+#15 27.53 dist/assets/books._bookId-DkvuHaqZ.js              2.90 kB │ gzip:  1.12 kB
+#15 27.53 dist/assets/books-CVGvebYP.js                      3.18 kB │ gzip:  1.52 kB
+#15 27.53 dist/assets/member-empty-states-Ynyl4Qxl.js        3.51 kB │ gzip:  1.31 kB
+#15 27.53 dist/assets/staff-dashboard-B8zhT0WT.js            3.62 kB │ gzip:  1.41 kB
+#15 27.53 dist/assets/security-activity-PWbujftt.js          3.76 kB │ gzip:  1.54 kB
+#15 27.53 dist/assets/borrowings.new-CWyPnqg4.js             3.87 kB │ gzip:  1.48 kB
+#15 27.53 dist/assets/borrowings._borrowingId-C_qf1bm1.js    3.95 kB │ gzip:  1.26 kB
+#15 27.53 dist/assets/identifier-conflicts-faAay5Sp.js       4.73 kB │ gzip:  1.93 kB
+#15 27.53 dist/assets/member-_eY-USf0.js                     6.32 kB │ gzip:  2.33 kB
+#15 27.53 dist/assets/staff-users-D64j4IDZ.js                7.50 kB │ gzip:  2.48 kB
+#15 27.53 dist/assets/due-status-kptIFuAU.js                22.14 kB │ gzip:  6.67 kB
+#15 27.53 dist/assets/client-AoYQHbmO.js                    31.88 kB │ gzip: 10.48 kB
+#15 27.53 dist/assets/utils-wIxH_xSh.js                     35.69 kB │ gzip: 11.83 kB
+#15 27.53 dist/assets/data-table-DjWlQDID.js                47.19 kB │ gzip: 12.46 kB
+#15 27.53 dist/assets/book-form-DLzCDQCZ.js                 92.78 kB │ gzip: 27.46 kB
+#15 27.53 dist/assets/index-Dwdu1lx5.js                    300.37 kB │ gzip: 94.39 kB
+#15 27.53
+#15 27.54 ✓ built in 2.72s
+#15 DONE 27.7s
+
+#18 [build 3/3] RUN npm run build
+#18 DONE 18.0s
+
+#19 [runtime 5/6] COPY --from=build /app/dist ./dist
+#19 DONE 2.5s
+
+#20 [runtime 6/6] COPY --from=frontend-build /app/frontend/dist ./public
+#20 DONE 1.0s
+
+#21 exporting to image
+#21 exporting layers
+#21 exporting layers 2.7s done
+#21 writing image sha256:b9510bcd54efbd3d1d116b4608e65e29fcc7c416ae3619f20fc48586e86c0cbc done
+#21 naming to docker.io/library/book-library-upgrade:rollback-old done
+#21 DONE 2.7s

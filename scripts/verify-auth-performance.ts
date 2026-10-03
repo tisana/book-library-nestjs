@@ -6,7 +6,7 @@ import { NestFactory } from '@nestjs/core';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import mongoose, { Connection, Types } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
-import * as request from 'supertest';
+import request from 'supertest';
 import {
   MigrationConnection,
   loadMigrations,
@@ -138,7 +138,8 @@ async function runBenchmark(): Promise<PerformanceEvidence> {
     const serverStatus = await seedConnection.db.admin().serverStatus();
 
     app = await NestFactory.create(AuthBenchmarkModule, { logger: false });
-    await app.init();
+    // Own the listener so concurrent Supertest requests cannot close it.
+    await app.listen(0, '127.0.0.1');
     const server = app.getHttpServer();
     const login = await request(server)
       .post('/auth/login')

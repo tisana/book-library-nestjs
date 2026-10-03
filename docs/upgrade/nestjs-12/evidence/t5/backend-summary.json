@@ -1,0 +1,102 @@
+{
+  "stream": "backend",
+  "generatedAt": "2026-10-03T07:40:03.378Z",
+  "toolVersions": {
+    "node": "v24.19.0"
+  },
+  "sources": {
+    "coverage": {
+      "tool": "Jest",
+      "version": "30.4.1",
+      "command": "npm run test:cov"
+    },
+    "unitTests": {
+      "tool": "Jest",
+      "version": "30.4.1",
+      "command": "npm run test:cov"
+    },
+    "e2eTests": {
+      "tool": "Jest",
+      "version": "30.4.1",
+      "command": "npm run test:e2e:report"
+    }
+  },
+  "producerOutcomes": {
+    "backend-unit": "success",
+    "backend-e2e": "success"
+  },
+  "coverage": {
+    "scope": "backend",
+    "files": 87,
+    "metrics": {
+      "statements": {
+        "total": 3691,
+        "covered": 3011,
+        "skipped": 0,
+        "pct": 81.57
+      },
+      "branches": {
+        "total": 2844,
+        "covered": 2178,
+        "skipped": 0,
+        "pct": 76.58
+      },
+      "functions": {
+        "total": 616,
+        "covered": 503,
+        "skipped": 0,
+        "pct": 81.65
+      },
+      "lines": {
+        "total": 3524,
+        "covered": 2888,
+        "skipped": 0,
+        "pct": 81.95
+      }
+    }
+  },
+  "changedLineCoverage": {
+    "status": "passed",
+    "passed": true,
+    "pct": 91.66,
+    "covered": 11,
+    "total": 12,
+    "missingFiles": [],
+    "minimum": 80
+  },
+  "unitTests": {
+    "passed": 566,
+    "failed": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "total": 566,
+    "cleanPassRate": 100,
+    "eventualPassRate": 100,
+    "suites": {
+      "passed": 35,
+      "failed": 0,
+      "skipped": 0,
+      "total": 35
+    }
+  },
+  "e2eTests": {
+    "passed": 254,
+    "failed": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "total": 254,
+    "cleanPassRate": 100,
+    "eventualPassRate": 100,
+    "suites": {
+      "passed": 30,
+      "failed": 0,
+      "skipped": 0,
+      "total": 30
+    }
+  },
+  "gate": {
+    "passed": true,
+    "reasons": [],
+    "warnings": []
+  }
+}

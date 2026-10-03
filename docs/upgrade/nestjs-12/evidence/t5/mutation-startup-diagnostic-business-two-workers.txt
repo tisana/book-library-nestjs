@@ -1,0 +1,11 @@
+Condensed stage/status log; complete diagnostic raw SHA256 d964311dfe952487dc6889d23443a1585deeb6b8b1d8287a897a8b40581186b5; exact per-mutant results in mutation-isolated-control-comparison.json.
+07:51:12 (75941) INFO Instrumenter Instrumented 1 source file(s) with 3 mutant(s)
+07:51:22 (75941) INFO ConcurrencyTokenProvider Creating 2 test runner process(es).
+07:51:22 (75941) DEBUG Sandbox Creating a sandbox for files in /tmp/nestjs-t5-diagnostic-business-two-workers-sandbox/sandbox-fX1YrD
+07:51:23 (75941) DEBUG TimeoutDecorator Starting timeout timer (300000 ms) for a test run
+07:51:31 (75941) INFO DryRunExecutor Initial test run succeeded. Ran 98 tests in 7 seconds (net 119 ms, overhead 7626 ms).
+07:51:31 (75941) DEBUG TimeoutDecorator Starting timeout timer (12702.5 ms) for a test run
+07:51:31 (75941) DEBUG TimeoutDecorator Starting timeout timer (12702.5 ms) for a test run
+07:51:41 (75941) DEBUG TimeoutDecorator Starting timeout timer (12702.5 ms) for a test run
+07:51:45 (75941) INFO MutationTestReportHelper Final mutation score of 100.00 is greater than or equal to break threshold 70
+07:51:45 (75941) INFO MutationTestExecutor Done in 33 seconds.

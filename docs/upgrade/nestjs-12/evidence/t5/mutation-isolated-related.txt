@@ -1,0 +1,16 @@
+[Nest] 78540  - 07/15/2026, 12:00:00 AM    WARN [AuthIdentifierReconciliationService] Auth identifier reconciliation interrupted during shutdown
+[Nest] 78540  - 10/03/2026, 8:38:44 AM    WARN [AuthIdentifierReconciliationService] Auth identifier migration readiness check failed
+(node:78540) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+[Nest] 78540  - 10/03/2026, 8:39:44 AM    WARN [AuthIdentifierReconciliationService] Scheduled auth identifier reconciliation pass failed
+[Nest] 78540  - 10/03/2026, 8:38:44 AM    WARN [AuthIdentifierReconciliationService] Auth identifier reconciliation startup pass failed
+[Nest] 78540  - 10/03/2026, 8:38:44 AM    WARN [AuthIdentifierReconciliationService] Auth identifier migration readiness check failed
+[Nest] 78540  - 10/03/2026, 8:38:44 AM    WARN [AuthIdentifierReconciliationService] Auth identifier reconciliation operation failed
+[Nest] 78540  - 10/03/2026, 8:38:51 AM   ERROR [TokenSessionService] Refresh rotation reconciliation interrupted during shutdown
+
+Test Suites: 14 passed, 14 total
+Tests:       364 passed, 364 total
+Snapshots:   0 total
+Time:        15.557 s
+Ran all test suites related to files matching src/auth/token-session.service.ts|src/auth/auth-identifier-repair.service.ts|src/auth/auth-identifier-reconciliation.service.ts|src/members/members.service.ts|src/borrowings/borrowings.service.ts.
+Test results written to: test-results/mutation-isolated-related.json

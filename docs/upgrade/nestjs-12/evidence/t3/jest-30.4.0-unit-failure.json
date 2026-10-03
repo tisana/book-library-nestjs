@@ -1,0 +1,11 @@
+{
+  "numTotalTestSuites": 35,
+  "numPassedTestSuites": 1,
+  "numFailedTestSuites": 34,
+  "numTotalTests": 6,
+  "numPassedTests": 6,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "success": false,
+  "cause": "Jest30.4.0 native CJS-from-ESM default unwrapping yields undefined tslib default;34 suites fail before test execution."
+}

@@ -1,0 +1,60 @@
+  console.log
+    Applied 000 migration-record
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+  console.log
+    Applied 001 library-core
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+  console.log
+    Applied 002 member-auth
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+  console.log
+    Applied 003 auth-roles-permissions
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+FAIL test/production-shutdown.e2e-spec.ts (12.107 s)
+  ● Compiled HTTP application SIGTERM shutdown › finishes an accepted database-backed login before signal shutdown
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 0
+
+       95 |     await entered(count);
+       96 |     const stopping = stopWithinBudget();
+    >  97 |     expect((await response).status).toBe(200);
+          |                                     ^
+       98 |     await stopping;
+       99 |     expect(await context.connection.collection('refresh_token_families').countDocuments({ status: 'active' })).toBe(1);
+      100 |   });
+
+      at Object.<anonymous> (production-shutdown.e2e-spec.ts:97:37)
+
+  ● Compiled HTTP application SIGTERM shutdown › finishes a claimed reconciliation pass before closing its database
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "applying"
+    Received: "pending"
+
+      111 |     await stopWithinBudget();
+      112 |     const operation = await context.connection.collection('auth_identifier_operations').findOne({ operationId: 'shutdown-reconciliation' });
+    > 113 |     expect(operation.status).toBe('applying');
+          |                              ^
+      114 |     expect(operation.leaseExpiresAt.getTime()).toBeLessThanOrEqual(Date.now());
+      115 |     expect(child.diagnostics()).not.toMatch(/reconciliation operation failed|MongoNotConnectedError|MongoClientClosedError/);
+      116 |   });
+
+      at Object.<anonymous> (production-shutdown.e2e-spec.ts:113:30)
+
+Test Suites: 1 failed, 1 total
+Tests:       2 failed, 1 passed, 3 total
+Snapshots:   0 total
+Time:        12.47 s
+Ran all test suites matching production-shutdown.

@@ -1,0 +1,551 @@
+{
+  "beforeRules": 89,
+  "afterRules": 89,
+  "idsInvariantsSourcesPreserved": true,
+  "changes": [
+    {
+      "id": "token-rotation-input-and-interrupted-cas-denial",
+      "before": {
+        "startLine": 131,
+        "endLine": 171,
+        "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051"
+      },
+      "after": {
+        "startLine": 138,
+        "endLine": 178,
+        "sourceSha256": "fd877bca5956b96846a5414e7cea4b1d14b1212700ce44051441958cedfb9658"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "token-active-unexpired-family-cas",
+      "before": {
+        "startLine": 147,
+        "endLine": 150,
+        "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051"
+      },
+      "after": {
+        "startLine": 154,
+        "endLine": 157,
+        "sourceSha256": "fd877bca5956b96846a5414e7cea4b1d14b1212700ce44051441958cedfb9658"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "token-rotation-failure-revokes-family",
+      "before": {
+        "startLine": 171,
+        "endLine": 201,
+        "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051"
+      },
+      "after": {
+        "startLine": 178,
+        "endLine": 208,
+        "sourceSha256": "fd877bca5956b96846a5414e7cea4b1d14b1212700ce44051441958cedfb9658"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "token-family-resolution",
+      "before": {
+        "startLine": 204,
+        "endLine": 231,
+        "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051"
+      },
+      "after": {
+        "startLine": 211,
+        "endLine": 238,
+        "sourceSha256": "fd877bca5956b96846a5414e7cea4b1d14b1212700ce44051441958cedfb9658"
+      },
+      "anchorChanges": [
+        {
+          "field": "endAnchor",
+          "before": "  async reconcileExpiredPendingMarkers(now = new Date()): Promise<number> {",
+          "after": "  reconcileExpiredPendingMarkers(now = new Date()): Promise<number> {"
+        }
+      ]
+    },
+    {
+      "id": "token-expired-marker-reconciliation-revokes",
+      "before": {
+        "startLine": 231,
+        "endLine": 275,
+        "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051"
+      },
+      "after": {
+        "startLine": 249,
+        "endLine": 293,
+        "sourceSha256": "fd877bca5956b96846a5414e7cea4b1d14b1212700ce44051441958cedfb9658"
+      },
+      "anchorChanges": [
+        {
+          "field": "startAnchor",
+          "before": "  async reconcileExpiredPendingMarkers(now = new Date()): Promise<number> {",
+          "after": "  private async runExpiredPendingMarkers(now: Date): Promise<number> {"
+        }
+      ]
+    },
+    {
+      "id": "token-direct-revocation-selectors",
+      "before": {
+        "startLine": 275,
+        "endLine": 310,
+        "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051"
+      },
+      "after": {
+        "startLine": 293,
+        "endLine": 328,
+        "sourceSha256": "fd877bca5956b96846a5414e7cea4b1d14b1212700ce44051441958cedfb9658"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "token-prepare-marker-race-denial",
+      "before": {
+        "startLine": 348,
+        "endLine": 397,
+        "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051"
+      },
+      "after": {
+        "startLine": 366,
+        "endLine": 415,
+        "sourceSha256": "fd877bca5956b96846a5414e7cea4b1d14b1212700ce44051441958cedfb9658"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "token-rejects-missing-revoked-expired-family",
+      "before": {
+        "startLine": 362,
+        "endLine": 368,
+        "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051"
+      },
+      "after": {
+        "startLine": 380,
+        "endLine": 386,
+        "sourceSha256": "fd877bca5956b96846a5414e7cea4b1d14b1212700ce44051441958cedfb9658"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "token-committed-marker-replay-revokes",
+      "before": {
+        "startLine": 401,
+        "endLine": 420,
+        "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051"
+      },
+      "after": {
+        "startLine": 419,
+        "endLine": 438,
+        "sourceSha256": "fd877bca5956b96846a5414e7cea4b1d14b1212700ce44051441958cedfb9658"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "token-pending-marker-takeover-guard",
+      "before": {
+        "startLine": 420,
+        "endLine": 475,
+        "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051"
+      },
+      "after": {
+        "startLine": 438,
+        "endLine": 493,
+        "sourceSha256": "fd877bca5956b96846a5414e7cea4b1d14b1212700ce44051441958cedfb9658"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "token-interrupted-cas-finalization",
+      "before": {
+        "startLine": 475,
+        "endLine": 513,
+        "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051"
+      },
+      "after": {
+        "startLine": 493,
+        "endLine": 531,
+        "sourceSha256": "fd877bca5956b96846a5414e7cea4b1d14b1212700ce44051441958cedfb9658"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "token-marker-commit-cas",
+      "before": {
+        "startLine": 513,
+        "endLine": 536,
+        "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051"
+      },
+      "after": {
+        "startLine": 531,
+        "endLine": 554,
+        "sourceSha256": "fd877bca5956b96846a5414e7cea4b1d14b1212700ce44051441958cedfb9658"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "token-replay-revocation-clears-current-hash",
+      "before": {
+        "startLine": 536,
+        "endLine": 553,
+        "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051"
+      },
+      "after": {
+        "startLine": 554,
+        "endLine": 571,
+        "sourceSha256": "fd877bca5956b96846a5414e7cea4b1d14b1212700ce44051441958cedfb9658"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "token-shared-revocation-update",
+      "before": {
+        "startLine": 546,
+        "endLine": 557,
+        "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051"
+      },
+      "after": {
+        "startLine": 564,
+        "endLine": 575,
+        "sourceSha256": "fd877bca5956b96846a5414e7cea4b1d14b1212700ce44051441958cedfb9658"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "token-duplicate-key-classification",
+      "before": {
+        "startLine": 577,
+        "endLine": 586,
+        "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051"
+      },
+      "after": {
+        "startLine": 595,
+        "endLine": 604,
+        "sourceSha256": "fd877bca5956b96846a5414e7cea4b1d14b1212700ce44051441958cedfb9658"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "token-generic-refresh-denial",
+      "before": {
+        "startLine": 586,
+        "endLine": 587,
+        "sourceSha256": "72da52c9835a71d59bca5cd6b367be54b0257541a5bf273d4396700809fcd051"
+      },
+      "after": {
+        "startLine": 604,
+        "endLine": 605,
+        "sourceSha256": "fd877bca5956b96846a5414e7cea4b1d14b1212700ce44051441958cedfb9658"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-renews-only-owned-lease",
+      "before": {
+        "startLine": 179,
+        "endLine": 205,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 190,
+        "endLine": 216,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-bounded-claim-processing",
+      "before": {
+        "startLine": 222,
+        "endLine": 267,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 233,
+        "endLine": 278,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-candidate-status-and-lease-filter",
+      "before": {
+        "startLine": 267,
+        "endLine": 289,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 278,
+        "endLine": 300,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-repair-key-availability",
+      "before": {
+        "startLine": 289,
+        "endLine": 304,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 300,
+        "endLine": 315,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-claims-exact-eligible-operation",
+      "before": {
+        "startLine": 304,
+        "endLine": 360,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 315,
+        "endLine": 371,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-terminal-cleanup-and-state-dispatch",
+      "before": {
+        "startLine": 360,
+        "endLine": 378,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 371,
+        "endLine": 389,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-invalid-state-fails-terminally",
+      "before": {
+        "startLine": 378,
+        "endLine": 405,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 389,
+        "endLine": 416,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-invalid-event-precedes-terminal-ttl",
+      "before": {
+        "startLine": 444,
+        "endLine": 495,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 455,
+        "endLine": 506,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-attaches-operation-owned-reservations",
+      "before": {
+        "startLine": 495,
+        "endLine": 551,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 506,
+        "endLine": 562,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-recovers-applied-ownership",
+      "before": {
+        "startLine": 551,
+        "endLine": 596,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 562,
+        "endLine": 607,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-recovers-compensated-ownership",
+      "before": {
+        "startLine": 596,
+        "endLine": 654,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 607,
+        "endLine": 665,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-terminal-event-and-ttl-ordering",
+      "before": {
+        "startLine": 654,
+        "endLine": 721,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 665,
+        "endLine": 732,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-bounded-gate-and-batch-cleanup",
+      "before": {
+        "startLine": 721,
+        "endLine": 763,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 732,
+        "endLine": 774,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-parent-ttl-after-cleanup-and-event",
+      "before": {
+        "startLine": 763,
+        "endLine": 805,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 774,
+        "endLine": 816,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-finds-exact-assignment-reservation",
+      "before": {
+        "startLine": 805,
+        "endLine": 820,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 816,
+        "endLine": 831,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-owned-transition-and-release",
+      "before": {
+        "startLine": 820,
+        "endLine": 846,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 831,
+        "endLine": 857,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-correlation-keying",
+      "before": {
+        "startLine": 846,
+        "endLine": 875,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 857,
+        "endLine": 886,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-secret-decoding",
+      "before": {
+        "startLine": 875,
+        "endLine": 882,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 886,
+        "endLine": 893,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-lease-duration",
+      "before": {
+        "startLine": 882,
+        "endLine": 889,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 893,
+        "endLine": 900,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-batch-bound",
+      "before": {
+        "startLine": 897,
+        "endLine": 905,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 908,
+        "endLine": 916,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-retention-duration",
+      "before": {
+        "startLine": 905,
+        "endLine": 912,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 916,
+        "endLine": 923,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    },
+    {
+      "id": "reconciliation-assignment-bound",
+      "before": {
+        "startLine": 912,
+        "endLine": 916,
+        "sourceSha256": "b7f4f2b83c5cceb76bb19b37e0436a4493abb7b8d4591bc38cc0b5f064c65803"
+      },
+      "after": {
+        "startLine": 923,
+        "endLine": 927,
+        "sourceSha256": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53"
+      },
+      "anchorChanges": []
+    }
+  ]
+}

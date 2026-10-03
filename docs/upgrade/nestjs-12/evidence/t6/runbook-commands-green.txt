@@ -1,0 +1,14 @@
+✔ upgrade: running predecessor state (12.679283ms)
+✔ upgrade: ps-error predecessor state (6.797326ms)
+✔ upgrade: empty predecessor state (11.074997ms)
+✔ rollback: running predecessor state (5.505085ms)
+✔ rollback: ps-error predecessor state (5.168758ms)
+✔ rollback: empty predecessor state (9.259208ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 123.092447

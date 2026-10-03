@@ -65,6 +65,7 @@ export interface RefreshCookieOptions {
 @Injectable()
 export class TokenSessionService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(TokenSessionService.name);
+  private activeReconciliation?: Promise<number>;
   private reconciliationTimer?: ReturnType<typeof setInterval>;
 
   constructor(
@@ -75,6 +76,7 @@ export class TokenSessionService implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   onModuleInit(): void {
+    if (this.reconciliationTimer) return;
     this.reconciliationTimer = setInterval(() => {
       void this.reconcileExpiredPendingMarkers().catch(() => {
         this.logger.error('Refresh rotation reconciliation failed');
@@ -83,11 +85,16 @@ export class TokenSessionService implements OnModuleInit, OnModuleDestroy {
     this.reconciliationTimer.unref?.();
   }
 
-  onModuleDestroy(): void {
+  async onModuleDestroy(): Promise<void> {
     if (this.reconciliationTimer) {
       clearInterval(this.reconciliationTimer);
       this.reconciliationTimer = undefined;
     }
+    await this.activeReconciliation?.catch(() => {
+      this.logger.error(
+        'Refresh rotation reconciliation interrupted during shutdown',
+      );
+    });
   }
 
   async createFamily(
@@ -228,7 +235,18 @@ export class TokenSessionService implements OnModuleInit, OnModuleDestroy {
     return marker?.familyId;
   }
 
-  async reconcileExpiredPendingMarkers(now = new Date()): Promise<number> {
+  reconcileExpiredPendingMarkers(now = new Date()): Promise<number> {
+    if (!this.activeReconciliation) {
+      this.activeReconciliation = this.runExpiredPendingMarkers(now).finally(
+        () => {
+          this.activeReconciliation = undefined;
+        },
+      );
+    }
+    return this.activeReconciliation;
+  }
+
+  private async runExpiredPendingMarkers(now: Date): Promise<number> {
     const markers = await this.replayMarkerModel
       .find({
         status: RefreshTokenReplayMarkerStatus.Pending,

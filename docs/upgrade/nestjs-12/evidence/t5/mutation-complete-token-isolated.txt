@@ -1,0 +1,588 @@
+[32m08:54:27 (79287) INFO ProjectReader[39m Found 1 of 1618 file(s) to be mutated.
+[32m08:54:27 (79287) INFO Instrumenter[39m Instrumented 1 source file(s) with 272 mutant(s)
+[32m08:54:30 (79287) INFO ConcurrencyTokenProvider[39m Creating 2 test runner process(es).
+[32m08:54:31 (79287) INFO BroadcastReporter[39m Detected that current console does not support the "progress" reporter, downgrading to "progress-append-only" reporter
+[32m08:54:31 (79287) INFO DryRunExecutor[39m Starting initial test run (jest test runner with "perTest" coverage analysis). This may take a while.
+[32m08:54:36 (79287) INFO DryRunExecutor[39m Initial test run succeeded. Ran 98 tests in 4 seconds (net 141 ms, overhead 4354 ms).
+Mutation testing 0% (elapsed: <1m, remaining: ~19m) 12/272 tested (0 survived, 0 timed out)
+Mutation testing 3% (elapsed: <1m, remaining: ~10m) 16/272 tested (3 survived, 0 timed out)
+Mutation testing 9% (elapsed: <1m, remaining: ~4m) 20/272 tested (4 survived, 0 timed out)
+Mutation testing 11% (elapsed: <1m, remaining: ~5m) 23/272 tested (6 survived, 0 timed out)
+Mutation testing 17% (elapsed: <1m, remaining: ~3m) 27/272 tested (7 survived, 1 timed out)
+Mutation testing 21% (elapsed: ~1m, remaining: ~3m) 30/272 tested (7 survived, 1 timed out)
+Mutation testing 24% (elapsed: ~1m, remaining: ~3m) 33/272 tested (7 survived, 1 timed out)
+Mutation testing 26% (elapsed: ~1m, remaining: ~3m) 36/272 tested (7 survived, 1 timed out)
+Mutation testing 28% (elapsed: ~1m, remaining: ~3m) 39/272 tested (7 survived, 1 timed out)
+Mutation testing 29% (elapsed: ~1m, remaining: ~3m) 42/272 tested (7 survived, 2 timed out)
+Mutation testing 30% (elapsed: ~1m, remaining: ~4m) 45/272 tested (7 survived, 2 timed out)
+Mutation testing 31% (elapsed: ~2m, remaining: ~4m) 49/272 tested (7 survived, 2 timed out)
+Mutation testing 32% (elapsed: ~2m, remaining: ~4m) 52/272 tested (7 survived, 2 timed out)
+Mutation testing 32% (elapsed: ~2m, remaining: ~4m) 56/272 tested (7 survived, 2 timed out)
+Mutation testing 32% (elapsed: ~2m, remaining: ~5m) 58/272 tested (7 survived, 2 timed out)
+Mutation testing 32% (elapsed: ~2m, remaining: ~5m) 62/272 tested (7 survived, 2 timed out)
+Mutation testing 32% (elapsed: ~2m, remaining: ~5m) 64/272 tested (7 survived, 2 timed out)
+Mutation testing 32% (elapsed: ~3m, remaining: ~6m) 67/272 tested (7 survived, 3 timed out)
+Mutation testing 32% (elapsed: ~3m, remaining: ~6m) 70/272 tested (7 survived, 3 timed out)
+[33m08:57:52 (79287) WARN ChildProcessProxy[39m Child process [pid 79450] exited unexpectedly with exit code 1 (without signal). Last part of stdout and stderr was:
+	● Validation Warning:
+	
+	  Option "notify" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	● Validation Warning:
+	
+	  Option "bail" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	(node:79450) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+	(Use `node --trace-warnings ...` to show where the warning was created)
+	● Validation Warning:
+	
+	  Option "notify" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	● Validation Warning:
+	
+	  Option "bail" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	● Validation Warning:
+	
+	  Option "notify" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	● Validation Warning:
+	
+	  Option "bail" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	● Validation Warning:
+	
+	  Option "notify" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	● Validation Warning:
+	
+	  Option "bail" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	● Validation Warning:
+	
+	  Option "notify" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	● Validation Warning:
+	
+	  Option "bail" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:754
+	        gate.reject(new Error('database unavailable during drain'));
+	                    ^
+	
+	[Error: database unavailable during drain]
+	
+	Node.js v24.19.0
+	 ChildProcessCrashedError: Child process [pid 79450] exited unexpectedly with exit code 1 (without signal). Last part of stdout and stderr was:
+	● Validation Warning:
+	
+	  Option "notify" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	● Validation Warning:
+	
+	  Option "bail" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	(node:79450) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+	(Use `node --trace-warnings ...` to show where the warning was created)
+	● Validation Warning:
+	
+	  Option "notify" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	● Validation Warning:
+	
+	  Option "bail" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	● Validation Warning:
+	
+	  Option "notify" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	● Validation Warning:
+	
+	  Option "bail" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	● Validation Warning:
+	
+	  Option "notify" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	● Validation Warning:
+	
+	  Option "bail" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	● Validation Warning:
+	
+	  Option "notify" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	● Validation Warning:
+	
+	  Option "bail" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:754
+	        gate.reject(new Error('database unavailable during drain'));
+	                    ^
+	
+	[Error: database unavailable during drain]
+	
+	Node.js v24.19.0
+	
+    at ChildProcess.handleUnexpectedExit (file:///workspace/book-library-nestjs/node_modules/@stryker-mutator/core/dist/src/child-proxy/child-process-proxy.js:180:31)
+    at ChildProcess.emit (node:events:509:28)
+    at maybeClose (node:internal/child_process:1141:16)
+    at Socket.<anonymous> (node:internal/child_process:498:11)
+    at Socket.emit (node:events:509:28)
+    at Pipe.<anonymous> (node:net:355:12) {
+  innerError: undefined,
+  pid: 79450,
+  exitCode: 1,
+  signal: null
+}
+[33m08:57:56 (79287) WARN ChildProcessProxy[39m Child process [pid 79484] exited unexpectedly with exit code 1 (without signal). Last part of stdout and stderr was:
+	● Validation Warning:
+	
+	  Option "notify" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	● Validation Warning:
+	
+	  Option "bail" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	(node:79484) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+	(Use `node --trace-warnings ...` to show where the warning was created)
+	/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:754
+	        gate.reject(new Error('database unavailable during drain'));
+	                    ^
+	
+	[Error: database unavailable during drain]
+	
+	Node.js v24.19.0
+	 ChildProcessCrashedError: Child process [pid 79484] exited unexpectedly with exit code 1 (without signal). Last part of stdout and stderr was:
+	● Validation Warning:
+	
+	  Option "notify" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	● Validation Warning:
+	
+	  Option "bail" is not supported in an individual project configuration.
+	  Move it to the root configuration.
+	
+	  Configuration Documentation:
+	  https://jestjs.io/docs/configuration
+	
+	(node:79484) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+	(Use `node --trace-warnings ...` to show where the warning was created)
+	/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:754
+	        gate.reject(new Error('database unavailable during drain'));
+	                    ^
+	
+	[Error: database unavailable during drain]
+	
+	Node.js v24.19.0
+	
+    at ChildProcess.handleUnexpectedExit (file:///workspace/book-library-nestjs/node_modules/@stryker-mutator/core/dist/src/child-proxy/child-process-proxy.js:180:31)
+    at ChildProcess.emit (node:events:509:28)
+    at maybeClose (node:internal/child_process:1141:16)
+    at ChildProcess._handle.onexit (node:internal/child_process:306:5) {
+  innerError: undefined,
+  pid: 79484,
+  exitCode: 1,
+  signal: null
+}
+Mutation testing 33% (elapsed: ~3m, remaining: ~6m) 74/272 tested (7 survived, 3 timed out)
+Mutation testing 34% (elapsed: ~3m, remaining: ~6m) 79/272 tested (7 survived, 3 timed out)
+Mutation testing 34% (elapsed: ~3m, remaining: ~6m) 82/272 tested (7 survived, 3 timed out)
+Mutation testing 34% (elapsed: ~3m, remaining: ~7m) 85/272 tested (7 survived, 3 timed out)
+Mutation testing 35% (elapsed: ~4m, remaining: ~7m) 89/272 tested (7 survived, 3 timed out)
+Mutation testing 35% (elapsed: ~4m, remaining: ~7m) 90/272 tested (7 survived, 3 timed out)
+Mutation testing 35% (elapsed: ~4m, remaining: ~7m) 94/272 tested (7 survived, 4 timed out)
+Mutation testing 35% (elapsed: ~4m, remaining: ~8m) 98/272 tested (7 survived, 4 timed out)
+Mutation testing 35% (elapsed: ~4m, remaining: ~8m) 102/272 tested (7 survived, 4 timed out)
+Mutation testing 35% (elapsed: ~4m, remaining: ~8m) 104/272 tested (7 survived, 4 timed out)
+Mutation testing 36% (elapsed: ~5m, remaining: ~8m) 108/272 tested (7 survived, 5 timed out)
+Mutation testing 36% (elapsed: ~5m, remaining: ~8m) 112/272 tested (7 survived, 5 timed out)
+Mutation testing 39% (elapsed: ~5m, remaining: ~8m) 116/272 tested (7 survived, 5 timed out)
+Mutation testing 42% (elapsed: ~5m, remaining: ~7m) 119/272 tested (7 survived, 5 timed out)
+Mutation testing 42% (elapsed: ~5m, remaining: ~7m) 123/272 tested (7 survived, 5 timed out)
+Mutation testing 42% (elapsed: ~5m, remaining: ~7m) 126/272 tested (7 survived, 5 timed out)
+Mutation testing 42% (elapsed: ~6m, remaining: ~8m) 129/272 tested (7 survived, 5 timed out)
+Mutation testing 42% (elapsed: ~6m, remaining: ~8m) 132/272 tested (7 survived, 5 timed out)
+Mutation testing 44% (elapsed: ~6m, remaining: ~7m) 134/272 tested (7 survived, 5 timed out)
+Mutation testing 47% (elapsed: ~6m, remaining: ~7m) 136/272 tested (7 survived, 5 timed out)
+Mutation testing 49% (elapsed: ~6m, remaining: ~6m) 139/272 tested (7 survived, 5 timed out)
+Mutation testing 51% (elapsed: ~6m, remaining: ~6m) 141/272 tested (7 survived, 6 timed out)
+Mutation testing 54% (elapsed: ~7m, remaining: ~5m) 144/272 tested (7 survived, 6 timed out)
+Mutation testing 57% (elapsed: ~7m, remaining: ~5m) 149/272 tested (7 survived, 7 timed out)
+Mutation testing 57% (elapsed: ~7m, remaining: ~5m) 153/272 tested (7 survived, 7 timed out)
+Mutation testing 59% (elapsed: ~7m, remaining: ~5m) 158/272 tested (7 survived, 7 timed out)
+Mutation testing 61% (elapsed: ~7m, remaining: ~4m) 162/272 tested (7 survived, 7 timed out)
+Mutation testing 62% (elapsed: ~7m, remaining: ~4m) 164/272 tested (7 survived, 7 timed out)
+Mutation testing 62% (elapsed: ~8m, remaining: ~4m) 168/272 tested (7 survived, 8 timed out)
+Mutation testing 64% (elapsed: ~8m, remaining: ~4m) 172/272 tested (7 survived, 8 timed out)
+Mutation testing 65% (elapsed: ~8m, remaining: ~4m) 175/272 tested (7 survived, 8 timed out)
+Mutation testing 66% (elapsed: ~8m, remaining: ~4m) 179/272 tested (7 survived, 8 timed out)
+Mutation testing 67% (elapsed: ~8m, remaining: ~4m) 182/272 tested (7 survived, 8 timed out)
+Mutation testing 68% (elapsed: ~8m, remaining: ~4m) 186/272 tested (7 survived, 8 timed out)
+Mutation testing 68% (elapsed: ~9m, remaining: ~4m) 188/272 tested (7 survived, 8 timed out)
+Mutation testing 69% (elapsed: ~9m, remaining: ~4m) 191/272 tested (7 survived, 8 timed out)
+Mutation testing 69% (elapsed: ~9m, remaining: ~4m) 195/272 tested (7 survived, 9 timed out)
+Mutation testing 70% (elapsed: ~9m, remaining: ~3m) 199/272 tested (7 survived, 9 timed out)
+Mutation testing 70% (elapsed: ~9m, remaining: ~3m) 202/272 tested (7 survived, 9 timed out)
+Mutation testing 71% (elapsed: ~9m, remaining: ~3m) 206/272 tested (7 survived, 9 timed out)
+Mutation testing 71% (elapsed: ~10m, remaining: ~3m) 208/272 tested (7 survived, 9 timed out)
+Mutation testing 72% (elapsed: ~10m, remaining: ~3m) 211/272 tested (7 survived, 9 timed out)
+Mutation testing 72% (elapsed: ~10m, remaining: ~3m) 213/272 tested (7 survived, 9 timed out)
+Mutation testing 73% (elapsed: ~10m, remaining: ~3m) 217/272 tested (7 survived, 10 timed out)
+Mutation testing 73% (elapsed: ~10m, remaining: ~3m) 219/272 tested (7 survived, 10 timed out)
+Mutation testing 74% (elapsed: ~10m, remaining: ~3m) 223/272 tested (7 survived, 11 timed out)
+Mutation testing 74% (elapsed: ~11m, remaining: ~3m) 226/272 tested (7 survived, 11 timed out)
+Mutation testing 75% (elapsed: ~11m, remaining: ~3m) 230/272 tested (7 survived, 11 timed out)
+Mutation testing 76% (elapsed: ~11m, remaining: ~3m) 235/272 tested (8 survived, 11 timed out)
+Mutation testing 79% (elapsed: ~11m, remaining: ~3m) 238/272 tested (8 survived, 11 timed out)
+Mutation testing 82% (elapsed: ~11m, remaining: ~2m) 242/272 tested (8 survived, 11 timed out)
+Mutation testing 82% (elapsed: ~11m, remaining: ~2m) 245/272 tested (8 survived, 11 timed out)
+Mutation testing 84% (elapsed: ~12m, remaining: ~2m) 248/272 tested (8 survived, 11 timed out)
+Mutation testing 86% (elapsed: ~12m, remaining: ~1m) 250/272 tested (8 survived, 11 timed out)
+Mutation testing 89% (elapsed: ~12m, remaining: ~1m) 254/272 tested (9 survived, 11 timed out)
+Mutation testing 90% (elapsed: ~12m, remaining: ~1m) 256/272 tested (9 survived, 12 timed out)
+Mutation testing 91% (elapsed: ~12m, remaining: ~1m) 260/272 tested (9 survived, 12 timed out)
+Mutation testing 92% (elapsed: ~12m, remaining: ~1m) 263/272 tested (9 survived, 12 timed out)
+Mutation testing 93% (elapsed: ~13m, remaining: <1m) 266/272 tested (9 survived, 13 timed out)
+Mutation testing 95% (elapsed: ~13m, remaining: <1m) 271/272 tested (9 survived, 13 timed out)
+
+All tests
+  auth-endpoint-throttle.guard.spec.ts
+    ✘ AuthEndpointThrottleGuard counts a valid login source before DTO handling and attaches safe context [line 38] (covered 0)
+    ✘ AuthEndpointThrottleGuard counts a normalizable missing-credential request against both boundaries [line 61] (covered 0)
+    ✘ AuthEndpointThrottleGuard resolves a refresh family before consuming source and family boundaries [line 77] (covered 0)
+    ✘ AuthEndpointThrottleGuard fails closed with one generic 429 and optional Retry-After [line 96] (covered 0)
+  auth.controller.spec.ts
+    ✘ AuthController shared authentication adapters maps login to shared auth and sets the absolute-expiry named cookie [line 135] (covered 0)
+    ✘ AuthController shared authentication adapters maps staffLogin to shared auth and sets the absolute-expiry named cookie [line 135] (covered 0)
+    ✘ AuthController shared authentication adapters maps memberLogin to shared auth and sets the absolute-expiry named cookie [line 135] (covered 0)
+    ✘ AuthController shared authentication adapters projects member and staff auth contexts without cross-area fields [line 162] (covered 0)
+    ✘ AuthController shared authentication adapters forwards the public security activity query result [line 200] (covered 0)
+    ✘ AuthController shared authentication adapters reports when security activity is unavailable [line 215] (covered 0)
+    ✘ AuthController shared authentication adapters returns only the public conflict outcome and applies its HTTP status [line 223] (covered 0)
+    ✘ AuthController shared authentication adapters clears the named cookie without a service call when auth context is absent [line 245] (covered 0)
+    ✘ AuthController shared authentication adapters revokes all sessions for a present auth context before clearing the cookie [line 259] (covered 0)
+    ✘ AuthController shared authentication adapters preserves generic login failures while recording identifier throttle state [line 291] (covered 0)
+    ✘ AuthController shared authentication adapters preserves generic compatibility-login failures without throttle identifier context [line 315] (covered 0)
+  auth.service.spec.ts
+    ✘ AuthService login contract when AuthService is implemented returns a JWT and redacted user for valid active staff credentials [line 36] (covered 0)
+    ✘ AuthService login contract when AuthService is implemented rejects inactive staff/admin users before issuing a token [line 101] (covered 0)
+    ✘ AuthService login contract when AuthService is implemented creates a staff refresh session with hashed-token family metadata [line 134] (covered 0)
+    ✘ AuthService login contract when AuthService is implemented returns a member JWT and redacted member profile for valid member credentials [line 185] (covered 0)
+    ✘ AuthService login contract when AuthService is implemented rejects suspended member credentials before issuing a token [line 264] (covered 0)
+    ✘ AuthService login contract when AuthService is implemented revokes a rotated member family when the member is no longer active [line 298] (covered 0)
+    ✘ AuthService login contract when AuthService is implemented revokes a rotated member family when authVersion is stale [line 333] (covered 0)
+    ✘ AuthService login contract when AuthService is implemented keeps the refresh denial generic when inactive-family revocation fails [line 367] (covered 0)
+    ✘ AuthService login contract when AuthService is implemented revokes a rotated staff family when account authVersion is newer than the session [line 404] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available uses the normalized reserved staff identity and server role area [line 604] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available uses empty membership type fields when the member profile is absent [line 627] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available accepts a completed activation gate and fails closed for missing or failed gates [line 653] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available fails a inactive reservation generically with a redacted request [line 719] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available fails a active reservation without a subject type generically with a redacted request [line 719] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available fails a active reservation without a subject id generically with a redacted request [line 719] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available keeps unresolved identifier generic and records only a redacted category [line 843] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available keeps conflicting identifier generic and records only a redacted category [line 843] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available keeps mismatched staff reservation generic and records only a redacted category [line 843] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available keeps inactive staff account generic and records only a redacted category [line 843] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available keeps invalid staff password generic and records only a redacted category [line 843] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available keeps mismatched member reservation generic and records only a redacted category [line 843] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available keeps inactive member account generic and records only a redacted category [line 843] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available keeps locked member authentication generic and records only a redacted category [line 843] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available keeps member without a password credential generic and records only a redacted category [line 843] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available keeps invalid member password generic and records only a redacted category [line 843] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available fails a non-string identifier generically without querying reservations [line 861] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available fails generically when identifier reservations are unavailable [line 876] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available keeps dedicated failed-sign-in recording behind the generic response [line 891] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available normalizes a non-string password into the same generic denial [line 906] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available fails a gated reservation when the operation model is unavailable [line 917] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available uses zero auth versions when reserved account versions are absent [line 938] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available keeps unresolved activity redacted with fallback-version string key material [line 966] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available fails a reserved member generically when member auth is unavailable [line 988] (covered 0)
+    ✘ AuthService shared login resolution when identifier reservations are available authenticates a staff identity with no roles but issues no permissions [line 1007] (covered 0)
+  token-session.service.spec.ts
+    ✓ TokenSessionService stores only hashes and caps immutable family expiry at 30 days [line 242] (killed 8)
+    ✓ TokenSessionService commits a hash-only marker after operation-correlated family CAS [line 254] (killed 32)
+    ✓ TokenSessionService leaves the family unchanged when pending marker insertion fails [line 311] (killed 5)
+    ✓ TokenSessionService does not classify null as a duplicate-key race [line 331] (killed 7)
+    ✓ TokenSessionService does not classify a primitive as a duplicate-key race [line 331] (killed 1)
+    ~ TokenSessionService does not classify an empty object as a duplicate-key race [line 331] (covered 49)
+    ✓ TokenSessionService does not classify a nonduplicate code as a duplicate-key race [line 331] (killed 2)
+    ✓ TokenSessionService denies a lost duplicate-marker race without mutating the family [line 348] (killed 8)
+    ✓ TokenSessionService handles a duplicate-marker race through the persisted committed marker [line 383] (killed 11)
+    ✓ TokenSessionService denies an active pending lease without mutating the family [line 404] (killed 14)
+    ✓ TokenSessionService takes over an expired pre-CAS lease and rotates once [line 426] (killed 12)
+    ✓ TokenSessionService does not take over a pending marker when the family expires exactly now [line 461] (killed 11)
+    ✓ TokenSessionService takes over a pending marker whose lease expires exactly now [line 499] (killed 2)
+    ✓ TokenSessionService finalizes and revokes a pending marker whose lease is missing [line 537] (killed 2)
+    ✓ TokenSessionService finalizes a pending marker whose family no longer exists [line 560] (killed 4)
+    ✓ TokenSessionService denies a lost expired-marker takeover without creating a successor [line 578] (killed 2)
+    ✓ TokenSessionService finalizes a pending marker whose family hash no longer matches [line 603] (killed 1)
+    ✓ TokenSessionService revokes on replay from any committed generation [line 631] (killed 2)
+    ✓ TokenSessionService finalizes an operation-correlated pending marker against its exact family [line 661] (killed 4)
+    ~ TokenSessionService allows at most one successor under concurrent exchange [line 689] (covered 100)
+    ✓ TokenSessionService fails closed when marker commitment is interrupted after family CAS [line 702] (killed 2)
+    ✓ TokenSessionService leaves an uncertain family CAS pending and takeover-eligible [line 716] (killed 6)
+    ✓ TokenSessionService finalizes an uncertain family CAS that installed a successor [line 734] (killed 11)
+    ✓ TokenSessionService finalizes an interrupted CAS when the recovered family is missing [line 777] (killed 3)
+    ~ TokenSessionService finalizes an interrupted CAS when the recovered family is revoked [line 777] (covered 72)
+    ~ TokenSessionService finalizes an interrupted CAS when the recovered family is hash-mismatched [line 777] (covered 74)
+    ✓ TokenSessionService finalizes an interrupted CAS when the recovered family is expired [line 777] (killed 2)
+    ✓ TokenSessionService fails closed when the family compare-and-swap returns no successor [line 800] (killed 3)
+    ✓ TokenSessionService fails closed when a completed rotation marker cannot be found [line 817] (killed 3)
+    ✓ TokenSessionService reconciles orphaned rotations and leaves expired pre-CAS work for takeover [line 833] (killed 25)
+    ✓ TokenSessionService revokes an expired family with the invariant reason during marker reconciliation [line 873] (killed 4)
+    ✓ TokenSessionService finalizes a pending marker for a family that is no longer active [line 899] (killed 1)
+    ✓ TokenSessionService finalizes a reconciled pending marker whose family is missing [line 919] (killed 2)
+    ~ TokenSessionService still completes teardown when an active recovery query rejects [line 935] (covered 17)
+    ✓ TokenSessionService shares overlapping recovery passes and waits for durable recovery on destroy [line 949] (killed 3)
+    ✓ TokenSessionService owns only one timer across repeated initialization and clears every timer [line 984] (killed 5)
+    ✓ TokenSessionService runs bounded reconciliation every 60 seconds and stops on destroy [line 995] (killed 1)
+    ~ TokenSessionService contains scheduled reconciliation failures and leaves the next interval available [line 1009] (covered 12)
+    ✓ TokenSessionService contains individual reconciliation query failures [line 1024] (killed 1)
+    ✓ TokenSessionService uses remaining lifetime and strict host-only cookie parity [line 1045] (killed 12)
+    ✓ TokenSessionService clamps expired cookies at zero and changes only Secure outside production [line 1065] (killed 3)
+    ✓ TokenSessionService resolves only a family id for active and replayed refresh credentials [line 1092] (killed 12)
+    ✓ TokenSessionService does not resolve an unknown refresh credential through an unrelated replay marker [line 1110] (killed 1)
+    ~ TokenSessionService rejects an unknown refresh credential with the public denial contract [line 1123] (covered 22)
+    ~ TokenSessionService denies rotation when no active unexpired family exists [line 1132] (covered 22)
+    ✓ TokenSessionService denies a missing family before consuming a rotation operation id [line 1147] (killed 2)
+    ✓ TokenSessionService rejects malformed, missing, expired, and revoked credentials without mutation [line 1164] (killed 3)
+    ✓ TokenSessionService revokes families and subjects idempotently [line 1188] (killed 5)
+    ✓ TokenSessionService revokes current and all subject sessions without exposing token hashes [line 1233] (killed 3)
+
+[NoCoverage] ConditionalExpression
+src/auth/token-session.service.ts:334:20
+-       isProduction = process.env.NODE_ENV === 'production',
++       isProduction = true,
+
+[NoCoverage] ConditionalExpression
+src/auth/token-session.service.ts:334:20
+-       isProduction = process.env.NODE_ENV === 'production',
++       isProduction = false,
+
+[NoCoverage] EqualityOperator
+src/auth/token-session.service.ts:334:20
+-       isProduction = process.env.NODE_ENV === 'production',
++       isProduction = process.env.NODE_ENV !== 'production',
+
+[NoCoverage] StringLiteral
+src/auth/token-session.service.ts:334:45
+-       isProduction = process.env.NODE_ENV === 'production',
++       isProduction = process.env.NODE_ENV === "",
+
+[NoCoverage] ConditionalExpression
+src/auth/token-session.service.ts:355:20
+-       isProduction = process.env.NODE_ENV === 'production',
++       isProduction = true,
+
+[NoCoverage] ConditionalExpression
+src/auth/token-session.service.ts:355:20
+-       isProduction = process.env.NODE_ENV === 'production',
++       isProduction = false,
+
+[NoCoverage] EqualityOperator
+src/auth/token-session.service.ts:355:20
+-       isProduction = process.env.NODE_ENV === 'production',
++       isProduction = process.env.NODE_ENV !== 'production',
+
+[NoCoverage] StringLiteral
+src/auth/token-session.service.ts:355:45
+-       isProduction = process.env.NODE_ENV === 'production',
++       isProduction = process.env.NODE_ENV === "",
+
+[Survived] StringLiteral
+src/auth/token-session.service.ts:82:27
+-           this.logger.error('Refresh rotation reconciliation failed');
++           this.logger.error("");
+Tests ran:
+    TokenSessionService contains scheduled reconciliation failures and leaves the next interval available
+
+
+[Survived] BlockStatement
+src/auth/token-session.service.ts:81:62
+-         void this.reconcileExpiredPendingMarkers().catch(() => {
+-           this.logger.error('Refresh rotation reconciliation failed');
+-         });
++         void this.reconcileExpiredPendingMarkers().catch(() => {});
+Tests ran:
+    TokenSessionService contains scheduled reconciliation failures and leaves the next interval available
+
+
+[Survived] OptionalChaining
+src/auth/token-session.service.ts:85:5
+-       this.reconciliationTimer.unref?.();
++       this.reconciliationTimer.unref();
+Tests ran:
+    TokenSessionService owns only one timer across repeated initialization and clears every timer
+    TokenSessionService runs bounded reconciliation every 60 seconds and stops on destroy
+    TokenSessionService contains scheduled reconciliation failures and leaves the next interval available
+
+
+[Survived] ConditionalExpression
+src/auth/token-session.service.ts:89:9
+-       if (this.reconciliationTimer) {
++       if (true) {
+Tests ran:
+    TokenSessionService stores only hashes and caps immutable family expiry at 30 days
+    TokenSessionService commits a hash-only marker after operation-correlated family CAS
+    TokenSessionService leaves the family unchanged when pending marker insertion fails
+  and 46 more tests!
+
+
+[Survived] StringLiteral
+src/auth/token-session.service.ts:95:9
+-           'Refresh rotation reconciliation interrupted during shutdown',
++           "",
+Tests ran:
+    TokenSessionService still completes teardown when an active recovery query rejects
+
+
+[Survived] BlockStatement
+src/auth/token-session.service.ts:93:50
+-       await this.activeReconciliation?.catch(() => {
+-         this.logger.error(
+-           'Refresh rotation reconciliation interrupted during shutdown',
+-         );
+-       });
++       await this.activeReconciliation?.catch(() => {});
+Tests ran:
+    TokenSessionService still completes teardown when an active recovery query rejects
+
+
+[Survived] MethodExpression
+src/auth/token-session.service.ts:106:7
+-         Math.max(1, Math.floor(input.ttlSeconds)),
++         Math.min(1, Math.floor(input.ttlSeconds)),
+Tests ran:
+    TokenSessionService stores only hashes and caps immutable family expiry at 30 days
+    TokenSessionService commits a hash-only marker after operation-correlated family CAS
+    TokenSessionService leaves the family unchanged when pending marker insertion fails
+  and 35 more tests!
+
+
+[Survived] ArrowFunction
+src/auth/token-session.service.ts:527:59
+-       await this.commitMarker(tokenHash, operationId).catch(() => null);
++       await this.commitMarker(tokenHash, operationId).catch(() => undefined);
+Tests ran:
+    TokenSessionService does not take over a pending marker when the family expires exactly now
+    TokenSessionService finalizes and revokes a pending marker whose lease is missing
+    TokenSessionService finalizes a pending marker whose family no longer exists
+  and 14 more tests!
+
+
+[Survived] LogicalOperator
+src/auth/token-session.service.ts:585:20
+-         authVersion: family.authVersion ?? 0,
++         authVersion: family.authVersion && 0,
+Tests ran:
+    TokenSessionService commits a hash-only marker after operation-correlated family CAS
+    TokenSessionService takes over an expired pre-CAS lease and rotates once
+    TokenSessionService takes over a pending marker whose lease expires exactly now
+  and 4 more tests!
+
+
+Ran 9.24 tests per mutant on average.
+--------------------------|------------------|----------|-----------|------------|----------|----------|
+                          | % Mutation score |          |           |            |          |          |
+File                      |  total | covered | # killed | # timeout | # survived | # no cov | # errors |
+--------------------------|--------|---------|----------|-----------|------------|----------|----------|
+All files                 |  93.73 |   96.58 |      241 |        13 |          9 |        8 |        1 |
+ token-session.service.ts |  93.73 |   96.58 |      241 |        13 |          9 |        8 |        1 |
+--------------------------|--------|---------|----------|-----------|------------|----------|----------|
+[32m09:07:48 (79287) INFO MutationTestReportHelper[39m Final mutation score of 93.73 is greater than or equal to break threshold 70
+[32m09:07:48 (79287) INFO JsonReporter[39m Your report can be found at: file:///workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/mutation.json
+[32m09:07:48 (79287) INFO HtmlReporter[39m Your report can be found at: file:///workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/mutation.html
+[32m09:07:48 (79287) INFO MutationTestExecutor[39m Done in 13 minutes and 21 seconds.

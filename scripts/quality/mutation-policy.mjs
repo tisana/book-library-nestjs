@@ -748,8 +748,8 @@ function validateCompleteProvenance({
   if (summary.commitSha !== currentCommit) {
     fail('complete summary commitSha must equal the current committed state.');
   }
-  if (summary.nodeMajor !== 22) {
-    fail('complete summary nodeMajor must equal 22.');
+  if (summary.nodeMajor !== 24) {
+    fail('complete summary nodeMajor must equal 24.');
   }
   requireSha256(
     summary.configurationSha256,
@@ -762,8 +762,8 @@ function validateCompleteProvenance({
     (count, source) => count + report.files[source].mutants.length,
     0,
   );
-  if (summary.canonicalMutantCount !== 1727 || actualMutantCount !== 1727) {
-    fail('complete report must contain exactly 1727 canonical mutants.');
+  if (summary.canonicalMutantCount !== 1744 || actualMutantCount !== 1744) {
+    fail('complete report must contain exactly 1744 canonical mutants.');
   }
   if (
     !Number.isFinite(summary.maxShardDurationMs) ||

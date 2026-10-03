@@ -17,6 +17,8 @@ on:
       - 'test/quality/**'
       - 'scripts/quality/**'
       - 'stryker.config.mjs'
+      - 'tsconfig.mutation.json'
+      - 'tsconfig.jest.json'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/mutation.yml'
@@ -58,11 +60,17 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Use Node.js 22
+      - name: Use pinned Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version-file: '.node-version'
           cache: npm
+
+      - name: Verify runtime and select npm
+        run: |
+          test "$(node --version)" = "v$(cat .node-version)"
+          npm install --global npm@11.9.0
+          test "$(npm --version)" = "11.9.0"
 
       - name: Install dependencies
         run: npm ci
@@ -97,11 +105,17 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Use Node.js 22
+      - name: Use pinned Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version-file: '.node-version'
           cache: npm
+
+      - name: Verify runtime and select npm
+        run: |
+          test "$(node --version)" = "v$(cat .node-version)"
+          npm install --global npm@11.9.0
+          test "$(npm --version)" = "11.9.0"
 
       - name: Install dependencies
         run: npm ci

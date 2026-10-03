@@ -1,0 +1,9 @@
+{
+  "suites": 1,
+  "passed": 48,
+  "failed": 0,
+  "skipped": 0,
+  "durationSeconds": 23.878,
+  "entry": "dist/main.js",
+  "exit": 0
+}

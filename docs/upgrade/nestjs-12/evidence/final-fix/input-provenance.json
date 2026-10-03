@@ -1,0 +1,1264 @@
+{
+  "date": "2026-10-03T14:10:08.464Z",
+  "base": "5a167e907aa0c7ec5348d0278caa0d48c9e82b37",
+  "fixInputCommit": "ade92e4c31345e30300a1c64388f452f1363bcd9",
+  "node": "v24.19.0",
+  "npm": "11.9.0",
+  "purpose": "Bounded actual-transpiled verifier fault and normal-path proofs; no real Docker or Mongo producer rerun",
+  "inputs": [
+    {
+      "path": "scripts/quality/verify-production-image.ts",
+      "sha256": "c130fb39ef09d6a082335ee3b6c47eba35591a0d4a1ea468e3f9df3e247061f8",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "scripts/quality/disposable-artifact-fixture.ts",
+      "sha256": "b545529a2c554403768ec94fe43daf46d79dc6d38bb400b09545663ed56d120e",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "package.json",
+      "sha256": "f42c1a1b2e93b2dc5bbeaf27cdf7af54f3860f6ebc00dde36d941dd92db2bc83",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "b4fc498293073ee73c8007a9eeddd4aab5961f811f70b997c91f044d10d9b9ea",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "9a62a0dc1ba86015484b592fc202901b3c0d294f028932db8dc7fefaea822c44",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs",
+      "sha256": "718a07da3be0b2fa00b6cabfe2288cf4cd61911650a0ec8d7182ffc8bc836558",
+      "matchesCommittedBytes": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/final-fix/tsconfig.json",
+      "sha256": "78e196f8aeea38d797b7e3c61ba07ea7834aba915f8a643a2ff9a17f0ff38a60",
+      "matchesCommittedBytes": true
+    }
+  ],
+  "baseVerifierSha256": "26d81d06b1289e726d476eb250774595a4e8dec8ecd9f4272c8d3c7673df7a80",
+  "historicalDockerEvidence": {
+    "source": "docs/upgrade/nestjs-12/evidence/t6/provenance.json",
+    "newImageId": "sha256:a872334e275dc405302381a7d839950ba0ddf238be20e909352788176823a622",
+    "status": "Preserved historical T5/T6 runtime evidence; never attributed to a full run of the fixed verifier"
+  },
+  "historicalEvidenceFileCount": 242,
+  "preservedHistoricalEvidence": [
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/audit.json",
+      "sha256": "b4f4a8b3943f0b8a2061cea5486b202ac82c7f2684539764dbd5b6e0508cae86",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/auth-performance-baseline.md",
+      "sha256": "29478324965f5b85f4752ccda6b53fe8efe3d2c14092522710f9ddef523afceb",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/auth-performance-initial.txt",
+      "sha256": "38cadbdc58bccc3dc90c4a87b04605f38a11abfe234f6d758ccb8e1c0cf36aaa",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/auth-performance-retry-before-fix.txt",
+      "sha256": "38cadbdc58bccc3dc90c4a87b04605f38a11abfe234f6d758ccb8e1c0cf36aaa",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/auth-performance.txt",
+      "sha256": "9ada6d563d2d414dc11521164d4967e0da66027e9e044f6a81f215a52ea2cdd1",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/backend-e2e-after-fix-counts.json",
+      "sha256": "146cda9b3482a0d66262b25c6aab7ee41a4e605122f799667ca5b9f9730b178c",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/backend-e2e-counts.json",
+      "sha256": "83d4aca02c2535c471546f3da8e35358f3a8f7bf569d4ae2f1389b3360e561d8",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/backend-unit-counts.json",
+      "sha256": "f06c0bd7425ff3a17d96ec5dbbef11a5ef5a3a750d4eadc20bd7c1e4d1f5c377",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/coverage-summary.json",
+      "sha256": "c591ef23300bf54a92731ac80e7d1405910579eecb53755855e187bc6b0ef7c6",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/mongo-version.txt",
+      "sha256": "2b7c4d75aac38c4449a8f2a55e4cdba45e3d8a71696dda121dd9b71e21a1c83e",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/mutation-smoke-duration.json",
+      "sha256": "dae22333dc89b293f1d59752adfa03a6a04e54b473ad2f629db1cbd7b87badd5",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/mutation-smoke-shards.json",
+      "sha256": "6643c1baee3b80747941ce3375a1c5feed386d8bc27dac7e7f9b50a5254c9314",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/mutation-smoke-summary.json",
+      "sha256": "645fac434bf26ae3b702be534a33956c0d5d2a969eb0978abbd023095b2ddec7",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/mutation-smoke-summary.md",
+      "sha256": "9e842ca55babd294c031a087db1c28ce8f700c03d297e1700da612699d800cc3",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/performance-regression-green.txt",
+      "sha256": "1ff677e20e5fffffcdfd6b8891cf0dcafbd8997c64267237751cb6a7a9ea665a",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/performance-regression-red.txt",
+      "sha256": "f44d166f061d5be40162104cb69bc39dadd0269449b1426042a5eafb9cb63f55",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/release-notes.json",
+      "sha256": "990c31fdbcef9bfa710bb52847e4edbf283704194c8dc7ae8ba9ba60050ca68a",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/releases.json",
+      "sha256": "faef47a4449a919ebed77b7949903eada00e968abff099cdae978907375ee7b8",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/resolved-direct.json",
+      "sha256": "84d7c191ae33d7fcd432b57aef8f6c803025bfbe42540a521de0780629222d36",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/supertest-lifecycle-diagnostic.txt",
+      "sha256": "9587c5a6a73580fd1ad0bf7d75801ba9b69aa5bf129671dcecf7123bb2d295a5",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t1/audit.json",
+      "sha256": "7d3e1f60a1db1f9a58032d1ecf9497c344c9c44245cbd22e4f0c53d09acfbf8b",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t1/auth-performance-isolated.md",
+      "sha256": "02f51a61e5a7ae93775320d14c86b0fb425eff5ab6976dd0a3d8f597cd789227",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t1/auth-performance-isolated.txt",
+      "sha256": "165f9e9c090cb46362fd91e385801dbb6de54cf2a40a922297d0c70b80326bca",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t1/command-outcomes.txt",
+      "sha256": "5213345ae5ecaec3fee2703cc2d6b6c99ff3b1e63e637d4ae1a684be440fb267",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t1/coverage-summary.json",
+      "sha256": "c591ef23300bf54a92731ac80e7d1405910579eecb53755855e187bc6b0ef7c6",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t1/dependency-changes.json",
+      "sha256": "ff31fede3bd5e910eae94f11e6be6347f9261e73d20495837ee1085e84991300",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t1/devcontainer-pull-failure.txt",
+      "sha256": "ae3cf0f7356ff8c18d757658b5edfb63c543937cf5074f80eaa55eb9b1d961ac",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t1/e2e-initial-counts.json",
+      "sha256": "40f731a423415ecd30717bcb7e7c9da12045fd2f7a9cb1b6b7fa19a8fc554d57",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t1/e2e-initial-failure.txt",
+      "sha256": "e100fce2a5745631fe7142ab4d8b2877ffa50d5d4f5a266b93ac265de2b4084f",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t1/e2e-isolated-counts.json",
+      "sha256": "8ce3cb845ad87a346bb450d17411e78f46464a79e04bc9e76b266fa5562ef9be",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t1/local-runtime-version.txt",
+      "sha256": "6727253c98da63c5c731dd18b297516808542bf6289335794aef8d6fe42e7247",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t1/mutation-smoke-duration.json",
+      "sha256": "b3bea0d710d7e64f96266891606ce5950074d36824fbdecf7e1dae04358fa8ef",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t1/mutation-smoke-shards.json",
+      "sha256": "2bd1f8d1d3736d5c47ee7a39a35c098c566cbf13b444933ecdad31a44fa88758",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t1/mutation-smoke-summary.json",
+      "sha256": "af90dd1afd1e76ef55252d7342373dc4061e4ca842f40b99a3bc468715abbd82",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t1/mutation-smoke-summary.md",
+      "sha256": "786fa0762a9ef6cd124de69cfdf28b41841dbe590d173fbbbf5bbe53fac6fa19",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t1/node-image-version.txt",
+      "sha256": "dbf2907be644bf9ad220a6bfa3703b63248f7b6f8bcfbac14d7851279183418d",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t1/unit-counts.json",
+      "sha256": "ddae7a578c1efadf62e1a3c1039940caa02b194193c9b92e6d0466ab5d667677",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t1/workflow-runtime-validation.txt",
+      "sha256": "d6be50c219031b831aa251c16b1efd2676ad6021e7de60ba6ced3e91717432aa",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/audit-2026-10-02.json",
+      "sha256": "7ee8a2ec64ea5082c1d2df870facfd5aac35f0e04df9dce818348ea989b6a395",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/audit-2026-10-03.json",
+      "sha256": "60fe642f1077e60fcb3c83e40cc536764d388b2de8b3a069831e27579c26df1d",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/audit-triage.json",
+      "sha256": "927aa3e8dab9a6972d446e40c17c9021b3877636c07ab974a93c08b6fb606ea1",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/auth-performance.md",
+      "sha256": "b77ea69ddc3f8af7a3abb85459eae264b746c1ed2c003ce6bc5bcd69846779e3",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/cli-help.txt",
+      "sha256": "5ca4a278e89774d5a00a641c588562acacfd10e3e0d67b1fd5ca89c677863912",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/cli-upgrade-dry-run.txt",
+      "sha256": "2bfb8ed642162d679fc1a1ae7752bf5a362c95952e1fba0dc4ab994b471c8b82",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/command-outcomes.json",
+      "sha256": "6eb89ffb802557081aafe503a104580047b4654b8d6428873983b2182ab77fc0",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/compiler-artifacts.json",
+      "sha256": "824916fa00c7f02f022ce22f18678b81a7ac788a14ca87d7b8de8f75d6ea1f6e",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/coverage-summary.json",
+      "sha256": "033d17c91eacc098c82a3539184427d65b818828204716faa220e174f54142c3",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/e2e-counts.json",
+      "sha256": "44658113ab0dda1aa31d123a3c2349e6c04c70109b72d3f4af3ff9b7bd64f20c",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/implementation-files.json",
+      "sha256": "a845e0c191a738cff561c194a6261a202063f73c35b94afb3edd2ff237d4deb1",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/import-audit.json",
+      "sha256": "0689db6f63a2bbea04e248361c9e57b3dcdd421fdbd79ae2badbbb791f649bb9",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/initial-jest-30.4.1-unit.json",
+      "sha256": "be364113eeb835d0f10302f1efb9f1b0240147beb25f7fd21eec986c13df6657",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/jest-30.4.0-unit-failure.json",
+      "sha256": "0865e1bc39c37cf42fc08696e4b2e41ac09dbff3d147b445261ac84e9094c717",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/jest-loader-decision.md",
+      "sha256": "7498a40440af4847f41fa72ad7c03942060813676aa1f4dd0d578a52bc309b88",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/nest-peer-tree.json",
+      "sha256": "db3778103aceb60d9b361721a82e5512465152f5e56a08f48305c75dff9c9db3",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/prior-outcomes.json",
+      "sha256": "647167d8720de38df51b4a846bb9ad215d881b6e57c1ec3ba5ac502112e1c32f",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/production-counts.json",
+      "sha256": "864f672735828978c226ab3f798c93d3e929de6ce7f57f975a34e74386de506d",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/quality-gate.txt",
+      "sha256": "3abeff822e8c18840b767f4db28869b848ad7f5ac7e071a60bc989eb8ea0e7a1",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/reporting-counts.json",
+      "sha256": "f48d897778d50e93c89f12f7ce09fbfa40e3300d17099b4988a84587b8b9de41",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/resolved-direct.json",
+      "sha256": "a2213f5ad3c398b814e9a47fc1e83cb004c3c22b292aa5417d71e1bc8e3a1c8c",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/source-cli-load.txt",
+      "sha256": "b097cad45d9b905b1694839dd06c7dbc0ae7ecd14be38649baae157d77749cf9",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t3/unit-counts.json",
+      "sha256": "b5363bc2b273909acede134fa330329b6b54572f3a483f0e9af6c4a3376e7c85",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/build-drain.txt",
+      "sha256": "fa47877f8ffb2c9f77342d81cd670b688a92ffbb60ba770badb4145da0a38625",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/build-final.txt",
+      "sha256": "fa47877f8ffb2c9f77342d81cd670b688a92ffbb60ba770badb4145da0a38625",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/build-hooks.txt",
+      "sha256": "fa47877f8ffb2c9f77342d81cd670b688a92ffbb60ba770badb4145da0a38625",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/coverage-summary.json",
+      "sha256": "ff43c4f99e4776c8c49ddd78f92f9fd344779ab05735a9d177d5f1825650f360",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/drain-rejection-red.txt",
+      "sha256": "2785e69ad4dfd5c365abae942357e7cd492b81a0ea10f5f78d0b687182db2156",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/lifecycle-final-2.txt",
+      "sha256": "9dbed2e3377300524fed6b44ce0e429537cd29a40834d07bb572d2aeba32f651",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/lifecycle-final.txt",
+      "sha256": "059b2c21630e06c81154a138a4153b730120c6b6f5350673286bb8a5ebbdbfb5",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/lifecycle-green-1.txt",
+      "sha256": "80358353abf041a1a5a8d64295b99d55719541d1e53b41e26ac43823555c1313",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/lint.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/persistence-green-1.txt",
+      "sha256": "4fcd636b79126f4c6c62c2ddbebfb273d7d8db3cd3726246e4c503041bd2b9c8",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/persistence-isolated.txt",
+      "sha256": "56ea0b8c677e09e2efc6e7c7a714d4aba3a71e56f0453554c245135d71eec5df",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/persistence-red.txt",
+      "sha256": "ced93cb96cc2766037c27eb6eabbe761ccc8b88925013d8e5cb64df7be3fb143",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/process-active-red.txt",
+      "sha256": "b87c5a84142b510f7867ad4aabb093e2103ad305368df5857d48ca3c0b090418",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/process-final-focused.txt",
+      "sha256": "aa131ce752d10c4433489eb437f2291e483b528f5f798e80ec7525f9c9ce61fc",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/process-green-1.txt",
+      "sha256": "595e149c0102918766034c766d07762aec99fab6183f9e3926f0ad51f5118ef8",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/process-hooks.txt",
+      "sha256": "bf3c25b4be1ef23ac25ffe4acaf228479f9c5593d1ed3d263cbe7e0cc5ce093e",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/process-red-2.txt",
+      "sha256": "7d0f6dbaea26278a0627eff47393217f01d05be068c4e985d2ce6c215192d918",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/process-red.txt",
+      "sha256": "c85dfc6f0d4db5fcf135048eca5ba55a5b4b4764e9ea13f2887cb63526c3f78a",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/production-final.txt",
+      "sha256": "ed7f9397f5b4765a443cf5049d66bf6b718fe170c9d8789bca9d7e5e4ee143e4",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/typecheck.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/unit-final-2.txt",
+      "sha256": "359694a89c1f51711e1884aef1d94f125e2cbcf6520be8b8608eb1b8b734cea5",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/unit-final.txt",
+      "sha256": "4ffee73edb201bbdcde87fd8a559aa8fd0a729b86548c209b24b3c63e5d2b75d",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/unit-green.txt",
+      "sha256": "7b8bebdf111a0677d3e3998a8235b72234015b203685258f0b5c0245eded9b3b",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/unit-red.txt",
+      "sha256": "b31cbbe98ab0ca41d1fbb7794f6d7a5389cb9cb1c908da1a70267024a84b5730",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t4/verification.json",
+      "sha256": "6f98c031e4e68df0a48b1d4619da773561f049f3289d9b52d15dcea1281e9002",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/audit-final.json",
+      "sha256": "40bbb59dee50a09e535a5f336576d2909f045e5affeb65e6b2a4bf317acb20ea",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/audit-triage.json",
+      "sha256": "2ca55abf0626108b68e227224a58e372432a4e959e4ff06a2201c5e7be30b6b7",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/auth-performance.md",
+      "sha256": "cf6d8c2db857476e6e1258c82ba0af7357c41cc92e700ff4d0f59c88de27a1bf",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/auth-performance.txt",
+      "sha256": "9e2316bf6c4a7c463a321f4ecc70ff606e199b817bae0a40ad68738da0763ff0",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/backend-coverage-summary.json",
+      "sha256": "f79610f7b015c5e8975beb42fe27b7569d973ca4362345302c7cecf0fdc2111e",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/backend-e2e.txt",
+      "sha256": "858781305c7dec19bb2a51aeab11c425a99e5971f9258a941d13ee43b6068805",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/backend-lint.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/backend-quality-final.txt",
+      "sha256": "51666555980d5ba61133dce7f57577734e30950d62221613771d05ae1c599ae1",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/backend-quality.txt",
+      "sha256": "3d11e1f8533d53812d804794268abdbda03745031dbe66f1f3086fef63fd7105",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/backend-summary.json",
+      "sha256": "5fb9a0be8685685cfe85f894686309bcaa3583ba4f1ee0b21d2a627092ce4e02",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/backend-unit.txt",
+      "sha256": "6e096e72833f741ab737603c7fd07a09a2c73c3843f566696db5a1e4bfcddb01",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/build.txt",
+      "sha256": "fa47877f8ffb2c9f77342d81cd670b688a92ffbb60ba770badb4145da0a38625",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/clean-install-final.txt",
+      "sha256": "546752029db49b8ec7bdac1cdd44bbf3dfff437f0313d5c7a1cf8512de548b1c",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/clean-install.txt",
+      "sha256": "e66a778d8fa2e206e684a8faef1fb90ed1fc50ad58f1d925928f8c69d80b65df",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/docker-build-final.txt",
+      "sha256": "21ba6296125c6d339d461e04dc905408ae9668eca41a3a5a8227a1d7ab656d91",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/docker-build.txt",
+      "sha256": "4f88ec09a2c68921203480262c14fc1cea3f32e2f51863a07ed34fb09e4fa7b2",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/docker-runtime-diagnostic.txt",
+      "sha256": "875f8e27155b55d2da67fe6bd3a2e0deef7f3b292347674c235721b46be0b176",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/docker-runtime-final.txt",
+      "sha256": "c300430a55a738b91283aa40a7c0ddc51a44eb6cf29f0f50d4d8a0f07590c7fd",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/docker-runtime.txt",
+      "sha256": "69dc8ba51c051593db08ffe3c86a9d96caf2102fcef4458d3587af81279a35c2",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/docker-shutdown-diagnostic.txt",
+      "sha256": "3a1e87dde620415bcc140f29c5f68881a9fad96509f6393c80c30cf3b5d80851",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/equivalent-node24.json",
+      "sha256": "92ef24bb06c823555a153a73cf75fca8a16054ce2a60fa6b26b638d1c76685f1",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/equivalent-rebase.json",
+      "sha256": "962629204faa01787216e8523b445be41d6b00e5c39a5ced190bdefe7975f0ee",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/frontend-build.txt",
+      "sha256": "ab5382210c191c122c0a57f8e74c64882e404a5155cac4b1aafb73ba1a0ee8a5",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/frontend-coverage-final.txt",
+      "sha256": "822692ce6a0b3ee46b18766e2f820c614a7fa5ca8431cf74bbd0da411fd3ce85",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/frontend-coverage-summary.json",
+      "sha256": "953fd3ccb92bf965e7edc7900adb2357cb93db108d7e380eb5fed17844dcb3e3",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/frontend-coverage.txt",
+      "sha256": "40fb9651b760e8e6aa303b4bb3595cfca5c58c158f66c40df0f3e2c7753096b1",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/frontend-e2e-quality.txt",
+      "sha256": "4af2c588ef9fa62097803d8fe61e98f21ad45af86dabb5261da7456f64e41d2a",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/frontend-e2e-summary.json",
+      "sha256": "d2f8f8fd091e0201d463fc79205868c6195acd29e4b18727582fd9791cb66ce8",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/frontend-lint-final.txt",
+      "sha256": "1b7de4160f2e8f3e3efae86a53f2c958423029efacd9862fea0a30b5f358ad66",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/frontend-lint.txt",
+      "sha256": "1b7de4160f2e8f3e3efae86a53f2c958423029efacd9862fea0a30b5f358ad66",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/frontend-quality-final.txt",
+      "sha256": "fdba6e2b8fa960d06728189c0b00d40de2c07c2eb54c0fb02b1076b3d6afe761",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/frontend-quality.txt",
+      "sha256": "40e865ba0345c31ef1b7530ae6819062b71af25392eca5860951d3410a230a04",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/frontend-unit-summary.json",
+      "sha256": "4299b3eeb9fdd71d537b3368828ac91e2076d0a5a35b7a3d43af5bfa46b96632",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/image-global-npm-exposure.json",
+      "sha256": "6e9a8e58e9b79d2df4edc9cfa2c9026330e63cdc7b25b2b196f94ce562ba6f0a",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/live-final.txt",
+      "sha256": "3894ba8cb7af3660ab7bbe9d30a244da1ac7dd2321249faf7e0d17e06fe96345",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/live-green.txt",
+      "sha256": "f68e40150f08c8638ba1e7da180afa8c5fac1efaf2501ac046e99dea292e9c18",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/live-red.txt",
+      "sha256": "0b61ea0a5396fe53f402b1f96733ec043adea823c3623078f3e4611fe71a757c",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/manifest-comparison.json",
+      "sha256": "4519515f86fe6a0ac407a913266817ff71435ae068e0439bfb1aeb5c1b77b0ab",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/manifest-green.txt",
+      "sha256": "696d867946d228488c502f4b121188774c8eb14ce4cc7b8e4871719f7eb7f87e",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/manifest-red.txt",
+      "sha256": "26a06c3d4535ff75d78f84e9d3802f32146ea16569ff7d3ef05a274c93b21d6b",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mock-image-network.txt",
+      "sha256": "810c00e76b45ad91233454e4f29c198cac013efd22b18fdee284d2be30f3d0fc",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-baseline-historical.json",
+      "sha256": "cb1932bfb4f06cdd9a59ae617048143d696fc3fc0dedf8b66e2193d3209ce51a",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-check-historical-baseline-blocker.txt",
+      "sha256": "696d867946d228488c502f4b121188774c8eb14ce4cc7b8e4871719f7eb7f87e",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-complete-startup-red.json",
+      "sha256": "b60dcee874fbb5a33c32320a54abf5661f21288f58ac2a738cb4bf0142c0b06b",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-complete-startup-red.txt",
+      "sha256": "16c9b604e404d7b7b8bef527286a03acb10ef9b41e78e6ed9d8b8a9f5c2d1462",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-complete-token-budget-red.json",
+      "sha256": "31a167c30d21fc22528c818daefe93b2f6e80ecd0fcf8c0cc669e9ba4c7c1906",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-complete-token-budget-red.txt",
+      "sha256": "b1c385d2f5faf165c29272ba8b375d98f32e5f38dcb9d472850b503c124e5ff6",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-complete-token-isolated-report.json",
+      "sha256": "cafde42ca991737a289a61d9e865dbab3778ce08eb7e734aa1b73f1a3f242560",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-complete-token-isolated-statuses.json",
+      "sha256": "a2bb0fab9681bcee65762462db3006a85eb8e00c09cb5cbe4c3d9ecf04f70320",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-complete-token-isolated-summary.json",
+      "sha256": "1351024a1571943f657f573d588af6c77d0d13c72bde654d2f714b5a53906fb0",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-complete-token-isolated.txt",
+      "sha256": "09f054e1ac713a2bf6a160bc6fabbd0ca51c17f7e002f456d0ad6f421fdf9d12",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-complete-token.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-complete.txt",
+      "sha256": "1fa333648dc0da882bf4f54ac013c2653127217dbfc01987f6f7dd2d978bd85d",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-config-green.txt",
+      "sha256": "7a41a9a41b55835be03649db332a09fb0b6b34aa834ac443a595b30287817fb6",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-cpu-cap-green.txt",
+      "sha256": "76a42dbe9c167d8553dbfc8d383864abba6143b9b0685b10f3d6d5b8751bd78c",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-emit-equivalence.txt",
+      "sha256": "d705226c81fe7d4c3dc196588ce9f60fa4cfc671ce08ea13ed10fe00efa9d0a8",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-final-tooling-provenance.json",
+      "sha256": "5d31b34a521d5a7f2c7f8b464b9a709e001770ff1bad20b788597db90ffb7091",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-gate-diagnostic-base.mjs",
+      "sha256": "adfc7529bdb11dc0de49ee3d3bc7936006394c1fe8199ac2aa832444ff9ba191",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-gate-diagnostic.mjs",
+      "sha256": "7b4fdf76f109a2665beec9bd3d3d322b0fe93cb5837362f345eeb7d81f339940",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-gate-fixture-unit.txt",
+      "sha256": "a5c13c60995d8acb13522f7d922b719431847d535fde952f90bb6c5697d8a910",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-gate-owner-green.txt",
+      "sha256": "c7545a5f0a31a4ce04a3fd4659df8bcfc74500980032dbaa7f20d9046394279c",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-gate-owner-red-green.json",
+      "sha256": "f4da1bc8764710e2432b3666b7f09978a3c68f0a53ab0020513a2559cbb0860f",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-gate-owner-red.txt",
+      "sha256": "f01d1edaa6006e90c45fe3e94100ff0a7fafe2d627af4e0fdf067fab7724b878",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-gate-throughput-green.json",
+      "sha256": "09690aba841bd26f6e84c737113fbc197431a3899adae92384b7a26b2f213ef5",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-gate-throughput-green.txt",
+      "sha256": "b2c18793c911d81d2f1e72f15ba9f4ea3c07e63dbec80c511ae024da6a5e2dc8",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-generation.json",
+      "sha256": "14604b1f37df902a8d8a2a2d317b608dbfc0887fd2777aa0bda3f8554d5bb772",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-historical-baseline-gap.json",
+      "sha256": "00e41f5d9905bd3f2fb0d120127d7c614d9d2722809f77431da5de5be52c467d",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-input-hygiene-authoring-red.txt",
+      "sha256": "ecff2122e6c89af0a8ec71297c1acee1475f7afde07510ff7cee711f242de07e",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-input-hygiene-focused.txt",
+      "sha256": "1e7fd03431c383ac1d21cdf13ec67fb39dac777883d306a5aed9650f21875c0e",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-input-hygiene-green.txt",
+      "sha256": "c1a04fd81f86717573e876beefb4f5cda45380f4ca5ff40031db6c9a0fa5b9fc",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-input-hygiene-red.txt",
+      "sha256": "629a509f006e72e7c8564bb3385166cd795490c8da2a5ef170b984bd67026ef8",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-input-inventory.json",
+      "sha256": "8484335cad0125acdc2e425f3613ccf7e3b39af2d480f9e4e797fbc70080996c",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-isolated-config-green.txt",
+      "sha256": "f0d2536231a3ead34e035410dd267554fc564b5e113950c8f68dcbd51dab9653",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-isolated-config-red.txt",
+      "sha256": "74feee5c012099c137543e21a379e14539dac1288f1407d333d7618e2c634277",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-isolated-control-comparison.json",
+      "sha256": "9d1ca492e22441bd970b306da3cf0325113bb7726a1c761587561ed4c874d7f5",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-isolated-failed-producer-settlement.json",
+      "sha256": "5cb5ccbf5febd8beaa68a84be581e8b819dbebab9195f29b422a78f067c14434",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-isolated-log-provenance.json",
+      "sha256": "e0b2a87ed40618a80d2bb76a2670dc176fe638b5b78e85eaad4553da8eef5d61",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-isolated-proof.json",
+      "sha256": "294486e34e0423984feb1d019e0bb4710010596dde9ac756e74c61f646f22767",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-isolated-proof.mjs",
+      "sha256": "97fb3cbba11192d7ef1008d925f21a370e93d57c5e08d1643af87e9db713d605",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-isolated-proof.txt",
+      "sha256": "e3eb401999e6147b58e0aa4e69341c34bca1fdd256727151a8539db2ec6307b5",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-isolated-related-summary.json",
+      "sha256": "5923b1eee759dc5c389eb0c59f043bf8c60b61b2b882e90fdf91addf7f114384",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-isolated-related.txt",
+      "sha256": "ad25616b66606fc5c7118e47bcbae78020b3cfa14bb7bcbd03e451ae33acb612",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-manifest-review-final.txt",
+      "sha256": "696d867946d228488c502f4b121188774c8eb14ce4cc7b8e4871719f7eb7f87e",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-node24-baseline-review-red.txt",
+      "sha256": "0462c21da19787b52509338148a86b33174b84678c851b6c4ae1af91daf1f104",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-owned-sandbox-cleanup.json",
+      "sha256": "d41a1a8980c548cf6e99fdde5065a24239e1dfdf58f3edae71e4a8b8bbac8354",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-policy-after-manifest.txt",
+      "sha256": "46bbf07616e9ce9b788c46ef6e626329263d7bd191a1f48bb93e551efad6dba4",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-policy-final.txt",
+      "sha256": "3adb701c55017087cdd6328d9a5126bdeca48957ee78820c36d921ee885cfd8f",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-repair-tooling-provenance.json",
+      "sha256": "414c7cb32eb8638c99acd0b00832daae4fb070541d63ba98247229824754dd32",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-reporting-final.txt",
+      "sha256": "fb200fce31348d5c5d4cb782231090bae4ffd14dfbdf9e3c75dc2d01a6167c28",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-reporting.txt",
+      "sha256": "c7a2dd59fcbcbe4f402fa6fb4c294d6ccb49eeda369c308b3c8f6ea61b4a7c94",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-review-final-green.txt",
+      "sha256": "136f0f4956017b0abd883ae8053f1feacc788e151b314a7c043b194e5756a249",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-review-final-provenance.json",
+      "sha256": "b4512cf912177d9313edc2fa757e5896a36accaab5ade4096ceed18a7cc726a4",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-review-owned-sandbox-cleanup.json",
+      "sha256": "72b2d1bafc595b4bac27eb4b8ec553ad7b4b53ca57ffc6740dbc68fd4ef6d44e",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-runner-after-manifest.txt",
+      "sha256": "7339a97b193a7704a0b332e913259fd1665827b73f47e050b46c18af7e0b7e2d",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-smoke-generation.json",
+      "sha256": "b7dfa374684ec486b39f868223e8e4f8ac50c743a82d31b388920bcdd1602e68",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-smoke-token-isolated-summary.json",
+      "sha256": "d0aed99378fcac4d8010bf31c5fe5b30fcb5b3080837046eed376545320ff1c6",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-smoke-token-isolated.txt",
+      "sha256": "14199960ec9467c009e7f3dfddbe1a923badd7247aa60ff09b2ce28664b654f6",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-startup-diagnostic-business-control.txt",
+      "sha256": "7c24378c9bcb4a35a125ecda9e7c9f0e8f1ab5fa434c1ba9316b5b504a583b89",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-startup-diagnostic-business-two-workers.txt",
+      "sha256": "07a9bf82e82f26dca8872214bc606af59c868716017e4923be66d85cad02d649",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-startup-diagnostic-hygiene-cache-false.txt",
+      "sha256": "fda1a77fef345d5d56e28e52cfd580184d176de4a8ab6694cb15e9bbc1a460d2",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-startup-diagnostic-hygiene-cache-true.txt",
+      "sha256": "406a0dbe7f3634b6ae995f827da40b57219419864fdc4520911c69c8d12e09c4",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-startup-diagnostic-isolated-transpile.txt",
+      "sha256": "6945faf5b13473a9e97b7606c2face160c25ac2078d3018b7cd05e6573b51d64",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-startup-diagnostic-no-diagnostics.txt",
+      "sha256": "ca5f07b3df8d5cdf568dd4782f45367dc2a0bbda15caeefbb3fee6fa5ee510d5",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-startup-diagnostic-no-jest-cache.txt",
+      "sha256": "6520994a73226b96934980f447b19061c4fad68003b37eed145da705a4db973b",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-startup-diagnostic-original.txt",
+      "sha256": "85d1e0dd9c4a8bb2bf9a90347f68f759bfca7f72df1ba758435cb147a8fb7b43",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-startup-diagnostic-single-worker.txt",
+      "sha256": "b01cbca0c7146c28efe3783d97e8980f24158a3571505daa148ee8140aecfbc1",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-startup-diagnostic-stable-test-locations.txt",
+      "sha256": "b0ad1f5321023ba0f58e7a9e24ce48afb5d4c14b5df283630bb537e18f217a18",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-startup-diagnostics.json",
+      "sha256": "2f4a223d7907b33dd119c3016978089b9494edb23be98224230d602e935ac4e5",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-tree-green.txt",
+      "sha256": "e6f47b1173f1625f2055c0bc432a196100aa882e3cb3978db76ca33e632b42db",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-vm-green.txt",
+      "sha256": "2d9295c77b2e3c24e29bf93ff55d4c431fa7689a15eb578ecfe9c910b5d0c6e3",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-vm-red.txt",
+      "sha256": "ececd9e9181b7e0556841f37b5af3128a1b6e767405880cf50a5521be32f0ee9",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-workflow-paths-review-green.txt",
+      "sha256": "fe5c551128c2f6b3a119330804e0aa9ebf9952b5a7849a6b26c35dd480080d78",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-workflow-paths-review-provenance.json",
+      "sha256": "3e8007850f76c736dba613c91c60ea977a5fee6a2a9ef891f75128ce2ae86fd3",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/mutation-workflow-paths-review-red.txt",
+      "sha256": "8c2c577755d3765d647d3c7b1beb4e9a222c0362c7a87eeebcc5cfeb8c32a931",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/node24-encoding-source.json",
+      "sha256": "1bef773868f4b523024d81feca0bfd5c0caa07d76bd670528b7cb67661cc4944",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/playwright-ci-final.txt",
+      "sha256": "ed4df32edebd296978e57402a270b8e1f1b4ad2672242f88ec69a590c1ebdba6",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/playwright-ffmpeg-red.txt",
+      "sha256": "a2c654551620feeba1eec275b9cfbf4573a8de1b9f7d54c027a273bd0ec77650",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/playwright-final.txt",
+      "sha256": "580c563ae4b1fffc014936c19e6b3bd98547d19469720f060bd993c09b5ee9e1",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/playwright-video-proof.webm",
+      "sha256": "849a73eb37ffee8a0ae8eed9d65f5af063e5e2d1e963d36eb726be5d746178ea",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/playwright-video-provenance.json",
+      "sha256": "7594517bd09c4e9b417888cc399aed6c390a6bf14219d7a49679476d7137076a",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/privacy-isolated.txt",
+      "sha256": "fc443712e3234f71ab0996332cf2437477d82da5a6a17518d0eed54f7c7c1cf0",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/producer-counts.json",
+      "sha256": "a9903e731615ef0f0de5d3261e27cd2f4d71cd3378a81f6cf342f1201195e355",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/production-process.txt",
+      "sha256": "c7ff54525fd40522216463ec96ebce841fae3835fb5a082f4c2f34b92326e5b7",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/qs-override-resolution.txt",
+      "sha256": "ce7bf91f54adc7390cff6bf1c2572fd00ce9cfbd0611637e273059c4710a80c9",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/reporting-final.txt",
+      "sha256": "f77ac75289bf46f01e30e3d2d811826daf37357512c822d13bab780f20d314e5",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/reporting-review-final.txt",
+      "sha256": "59ee35172e1ee1753f61f627a054d485370121ab695ff1b47ab873577558457a",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/reporting.txt",
+      "sha256": "5b09c955d3aca1aff85076a45a4573630bd7dcb30e1dba9771df527d7b773352",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/security-lock.txt",
+      "sha256": "1fd30b6d27a3f4f8edde3bc9f68ac6769e220838968ae5bec9313f80f6eb7356",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/security-tree.json",
+      "sha256": "4344b9ad14f322e440127a87b472f3d0ac42986ce490f9a3356cd76bda4aec08",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/security-version-changes.json",
+      "sha256": "93a741121b5b57130eea892e7521c722c196b848095da388fd1bd2e67276d0f7",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/typecheck-final.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/typecheck.txt",
+      "sha256": "de0dd77125cd95be0a2b9cb33d4323e8fa4b703a3a309c05923c97c88cb5ec31",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t5/zombie-regression.txt",
+      "sha256": "6d4fe656796328339a83967529edd43b2cda0884d5a19b528e2e8988677f628a",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/document-checks.json",
+      "sha256": "153cdf01549314c6550da745bee8ee929f811f6bd2ccbe21b1c8304e8a63498b",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/init-exit-assertion-failure.txt",
+      "sha256": "91f1127ac930faa0ad6cc80ddc0fcc1528ce7db26d0072adb7a553933128bde3",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/initial-shutdown-failure.txt",
+      "sha256": "edb76585490307aed98f12c590f0736cc57b87f4f9cebe8c55b0394e65378a1b",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/metadata-probe-failure.txt",
+      "sha256": "6034751b9a8b7db3c1060239c6850d11286450a54a0281e8795902792795dee1",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/old-image-build.txt",
+      "sha256": "ce00f31c52391ac4e652f1ff264e317b70478bfae2769588fd908a1258faab4b",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/old-image.Dockerfile",
+      "sha256": "6838ba3f3f1ba5c901c32cafc17b1137523dc60336a3b196d65572e5e7237871",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/provenance.json",
+      "sha256": "cad87fc7819a53a00563d9d169aceb187d859ce76f290903fdcbb1e183841be5",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/rehearsal-cleanup-green.txt",
+      "sha256": "cf6b1e2df3b3914a035f8fbc48a14906111b659eec7ca410b5c6fd22a5933c3e",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/rehearsal-cleanup-red.txt",
+      "sha256": "777377e7cb5f62152843f92f65483b4b9f64d83fb5a5125c77df4b32e439d0ef",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/rehearsal-cleanup.test.mjs",
+      "sha256": "18acd989631a605335e2bf7a51b543e61f59db996defc8880f756adc5ac41c92",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/review-fix-final-tests.txt",
+      "sha256": "0011c8ff18c35b6f61f73d42a91cd53d4baadf7c554a20841be018d7fedf5d59",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/review-fix-tsconfig.json",
+      "sha256": "51d340f416c4f011a1ae9f9642f832b94e0a75001961ae7da12ccd1a45a4e918",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/review-fix-typecheck.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/rollback-rehearsal.ts",
+      "sha256": "51703d8679c2da282827d6ab6cf815df459672c049f046329e9d37e20a4a796d",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/rollback-result.json",
+      "sha256": "59f292758eb29920080ca862a4da1cf5a314f5ab02254d52f392ee090b54ce8a",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/runbook-commands-green.txt",
+      "sha256": "02027637e2673ccf09de12c741b5786abaabd16cc7e6bb734beeddf56c6a5c21",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/runbook-commands-red.txt",
+      "sha256": "bb339126c13bbee0fe95203048b086cddc836ac840b0587d77a6a9bf7727e151",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/runbook-commands.test.mjs",
+      "sha256": "d69ac5735b1749e20a86342ccb9bda98a75ea2a3c3356dfec97fff93f366d55a",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/t6/signal-exits.txt",
+      "sha256": "1ea8f61ee18277c427f69a875667168795b46c3b8bed4abef588fb54571315ac",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/target-advisories.json",
+      "sha256": "e5d9e666e09be883513386af4ca664249d78395f58da88e30e5fa6f1e918d80f",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/target-module-metadata.json",
+      "sha256": "4e4c4a8752b2caa24c3cfa4b29e142e27efdac121f52026f9f61e1bbea861c08",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/targets.json",
+      "sha256": "4ac432781787e7ac8784a8e7a6c1a906fe5433d5fd2aaab2fec7911d35ca44c1",
+      "matchesBase": true
+    },
+    {
+      "path": "docs/upgrade/nestjs-12/evidence/ts-jest-target-changelog.json",
+      "sha256": "4c06783bcd603bb8495a9accb23d4ac1d67c07905797edb21e9197f3d4e90490",
+      "matchesBase": true
+    }
+  ]
+}

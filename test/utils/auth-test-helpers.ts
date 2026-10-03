@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 
 import { StaffRole } from '../../src/common/enums/library-status.enum';
 

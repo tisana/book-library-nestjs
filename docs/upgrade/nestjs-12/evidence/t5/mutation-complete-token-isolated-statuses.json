@@ -1,0 +1,282 @@
+{
+  "purpose": "Actual complete shard artifact, not combined policy acceptance",
+  "statusCounts": {
+    "NoCoverage": 8,
+    "Killed": 241,
+    "Survived": 9,
+    "Timeout": 13,
+    "RuntimeError": 1
+  },
+  "timeoutErrorAndControlCases": [
+    {
+      "id": "111",
+      "status": "NoCoverage",
+      "line": 334,
+      "mutator": "ConditionalExpression",
+      "replacement": "true"
+    },
+    {
+      "id": "112",
+      "status": "NoCoverage",
+      "line": 334,
+      "mutator": "ConditionalExpression",
+      "replacement": "false"
+    },
+    {
+      "id": "113",
+      "status": "NoCoverage",
+      "line": 334,
+      "mutator": "EqualityOperator",
+      "replacement": "process.env.NODE_ENV !== 'production'"
+    },
+    {
+      "id": "114",
+      "status": "NoCoverage",
+      "line": 334,
+      "mutator": "StringLiteral",
+      "replacement": "\"\""
+    },
+    {
+      "id": "15",
+      "status": "Timeout",
+      "line": 102,
+      "mutator": "BlockStatement",
+      "replacement": "{}"
+    },
+    {
+      "id": "32",
+      "status": "Timeout",
+      "line": 166,
+      "mutator": "StringLiteral",
+      "replacement": "\"\""
+    },
+    {
+      "id": "58",
+      "status": "Timeout",
+      "line": 230,
+      "mutator": "ObjectLiteral",
+      "replacement": "{}"
+    },
+    {
+      "id": "67",
+      "status": "RuntimeError",
+      "line": 249,
+      "mutator": "BlockStatement",
+      "replacement": "{}",
+      "reason": "Test runner crashed. Tried twice to restart it without any luck. Last time the error message was: Error: Child process [pid 79484] exited unexpectedly with exit code 1 (without signal). Last part of stdout and stderr was:\n\t● Validation Warning:\n\t\n\t  Option \"notify\" is not supported in an individual project configuration.\n\t  Move it to the root configuration.\n\t\n\t  Configuration Documentation:\n\t  https://jestjs.io/docs/configuration\n\t\n\t● Validation Warning:\n\t\n\t  Option \"bail\" is not supported in an individual project configuration.\n\t  Move it to the root configuration.\n\t\n\t  Configuration Documentation:\n\t  https://jestjs.io/docs/configuration\n\t\n\t(node:79484) ExperimentalWarning: VM Modules is an experimental feature and might change at any time\n\t(Use `node --trace-warnings ...` to show where the warning was created)\n\t/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:754\n\t        gate.reject(new Error('database unavailable during drain'));\n\t                    ^\n\t\n\t[Error: database unavailable during drain]\n\t\n\tNode.js v24.19.0\n\t\nError: Child process [pid 79484] exited unexpectedly with exit code 1 (without signal). Last part of stdout and stderr was:\n\t● Validation Warning:\n\t\n\t  Option \"notify\" is not supported in an individual project configuration.\n\t  Move it to the root configuration.\n\t\n\t  Configuration Documentation:\n\t  https://jestjs.io/docs/configuration\n\t\n\t● Validation Warning:\n\t\n\t  Option \"bail\" is not supported in an individual project configuration.\n\t  Move it to the root configuration.\n\t\n\t  Configuration Documentation:\n\t  https://jestjs.io/docs/configuration\n\t\n\t(node:79484) ExperimentalWarning: VM Modules is an experimental feature and might change at any time\n\t(Use `node --trace-warnings ...` to show where the warning was created)\n\t/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:754\n\t        gate.reject(new Error('database unavailable during drain'));\n\t                    ^\n\t\n\t[Error: database unavailable during drain]\n\t\n\tNode.js v24.19.0\n\t\n    at ChildProcess.handleUnexpectedExit (file:///workspace/book-library-nestjs/node_modules/@stryker-mutator/core/dist/src/ch"
+    },
+    {
+      "id": "83",
+      "status": "Timeout",
+      "line": 268,
+      "mutator": "ConditionalExpression",
+      "replacement": "true"
+    },
+    {
+      "id": "97",
+      "status": "Timeout",
+      "line": 286,
+      "mutator": "StringLiteral",
+      "replacement": "\"\""
+    },
+    {
+      "id": "108",
+      "status": "Killed",
+      "line": 328,
+      "mutator": "BlockStatement",
+      "replacement": "{}",
+      "reason": "TypeError: expect(received).toHaveLength(expected)\n\nMatcher error: received value must have a length property whose value must be a number\n\nReceived has value: undefined\n    at Object.<anonymous> (/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:248:37)",
+      "killedBy": [
+        "0"
+      ]
+    },
+    {
+      "id": "109",
+      "status": "Killed",
+      "line": 329,
+      "mutator": "StringLiteral",
+      "replacement": "\"\"",
+      "reason": "Error: Digest method not supported\n    at new Hash (node:internal/crypto/hash:113:19)\n    at createHash (node:crypto:146:10)\n    at TokenSessionService.hashRefreshToken (/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.ts:434:24)\n    at TokenSessionService.createFamily (/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.ts:166:32)\n    at createFamily (/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:222:13)\n    at Object.<anonymous> (/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:245:26)\n    at Promise.finally.completed (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1561:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1501:10)\n    at _callCircusTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1011:40)\n    at _runTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:951:3)\n    at /workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:853:7\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:866:11)\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:861:11)\n    at run (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:765:3)\n    at runAndTransformResultsToJestFormat (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1993:21)\n    at jestAdapter (/workspace/book-library-nestjs/node_modules/jest-circus/build/runner.js:111:19)\n    at runTestInternal (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:276:16)\n    at runTest (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:344:7)",
+      "killedBy": [
+        "0"
+      ]
+    },
+    {
+      "id": "110",
+      "status": "Killed",
+      "line": 329,
+      "mutator": "StringLiteral",
+      "replacement": "\"\"",
+      "reason": "Error: expect(received).toHaveLength(expected)\n\nExpected length: 64\nReceived length: 32\nReceived object: {\"data\": [112, 150, 5, 171, 206, 117, 141, 16, 223, 230, …], \"type\": \"Buffer\"}\n    at Object.<anonymous> (/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:248:37)",
+      "killedBy": [
+        "0"
+      ]
+    },
+    {
+      "id": "115",
+      "status": "Killed",
+      "line": 336,
+      "mutator": "BlockStatement",
+      "replacement": "{}",
+      "reason": "Error: expect(received).toEqual(expected) // deep equality\n\nExpected: {\"httpOnly\": true, \"maxAge\": 12345, \"path\": \"/auth\", \"sameSite\": \"strict\", \"secure\": true}\nReceived: undefined\n    at Object.<anonymous> (/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:1055:21)\n    at Promise.finally.completed (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1561:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1501:10)\n    at _callCircusTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1011:40)\n    at _runTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:951:3)\n    at /workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:853:7\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:866:11)\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:861:11)\n    at run (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:765:3)\n    at runAndTransformResultsToJestFormat (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1993:21)\n    at jestAdapter (/workspace/book-library-nestjs/node_modules/jest-circus/build/runner.js:111:19)\n    at runTestInternal (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:276:16)\n    at runTest (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:344:7)",
+      "killedBy": [
+        "39"
+      ]
+    },
+    {
+      "id": "116",
+      "status": "Killed",
+      "line": 339,
+      "mutator": "ArithmeticOperator",
+      "replacement": "expiresAtOrTtlSeconds.getTime() + now.getTime()",
+      "reason": "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 1\n\n  Object {\n    \"httpOnly\": true,\n-   \"maxAge\": 12345,\n+   \"maxAge\": 3568147212345,\n    \"path\": \"/auth\",\n    \"sameSite\": \"strict\",\n    \"secure\": true,\n  }\n    at Object.<anonymous> (/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:1055:21)\n    at Promise.finally.completed (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1561:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1501:10)\n    at _callCircusTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1011:40)\n    at _runTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:951:3)\n    at /workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:853:7\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:866:11)\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:861:11)\n    at run (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:765:3)\n    at runAndTransformResultsToJestFormat (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1993:21)\n    at jestAdapter (/workspace/book-library-nestjs/node_modules/jest-circus/build/runner.js:111:19)\n    at runTestInternal (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:276:16)\n    at runTest (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:344:7)",
+      "killedBy": [
+        "39"
+      ]
+    },
+    {
+      "id": "117",
+      "status": "Killed",
+      "line": 340,
+      "mutator": "ArithmeticOperator",
+      "replacement": "Math.min(Math.max(0, expiresAtOrTtlSeconds), maximumRefreshLifetimeSeconds) / 1000",
+      "reason": "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 1\n\n  Object {\n    \"httpOnly\": true,\n-   \"maxAge\": 600000,\n+   \"maxAge\": 0,\n    \"path\": \"/auth\",\n    \"sameSite\": \"strict\",\n    \"secure\": true,\n  }\n    at Object.<anonymous> (/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:1082:24)\n    at Promise.finally.completed (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1561:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1501:10)\n    at _callCircusTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1011:40)\n    at _runTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:951:3)\n    at /workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:853:7\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:866:11)\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:861:11)\n    at run (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:765:3)\n    at runAndTransformResultsToJestFormat (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1993:21)\n    at jestAdapter (/workspace/book-library-nestjs/node_modules/jest-circus/build/runner.js:111:19)\n    at runTestInternal (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:276:16)\n    at runTest (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:344:7)",
+      "killedBy": [
+        "40"
+      ]
+    },
+    {
+      "id": "119",
+      "status": "Killed",
+      "line": 341,
+      "mutator": "MethodExpression",
+      "replacement": "Math.min(0, expiresAtOrTtlSeconds)",
+      "reason": "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 1\n\n  Object {\n    \"httpOnly\": true,\n-   \"maxAge\": 600000,\n+   \"maxAge\": 0,\n    \"path\": \"/auth\",\n    \"sameSite\": \"strict\",\n    \"secure\": true,\n  }\n    at Object.<anonymous> (/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:1082:24)\n    at Promise.finally.completed (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1561:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1501:10)\n    at _callCircusTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1011:40)\n    at _runTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:951:3)\n    at /workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:853:7\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:866:11)\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:861:11)\n    at run (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:765:3)\n    at runAndTransformResultsToJestFormat (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1993:21)\n    at jestAdapter (/workspace/book-library-nestjs/node_modules/jest-circus/build/runner.js:111:19)\n    at runTestInternal (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:276:16)\n    at runTest (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:344:7)",
+      "killedBy": [
+        "40"
+      ]
+    },
+    {
+      "id": "118",
+      "status": "Killed",
+      "line": 340,
+      "mutator": "MethodExpression",
+      "replacement": "Math.max(Math.max(0, expiresAtOrTtlSeconds), maximumRefreshLifetimeSeconds)",
+      "reason": "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 1\n\n  Object {\n    \"httpOnly\": true,\n-   \"maxAge\": 600000,\n+   \"maxAge\": 2592000000,\n    \"path\": \"/auth\",\n    \"sameSite\": \"strict\",\n    \"secure\": true,\n  }\n    at Object.<anonymous> (/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:1082:24)\n    at Promise.finally.completed (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1561:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1501:10)\n    at _callCircusTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1011:40)\n    at _runTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:951:3)\n    at /workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:853:7\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:866:11)\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:861:11)\n    at run (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:765:3)\n    at runAndTransformResultsToJestFormat (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1993:21)\n    at jestAdapter (/workspace/book-library-nestjs/node_modules/jest-circus/build/runner.js:111:19)\n    at runTestInternal (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:276:16)\n    at runTest (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:344:7)",
+      "killedBy": [
+        "40"
+      ]
+    },
+    {
+      "id": "120",
+      "status": "Killed",
+      "line": 345,
+      "mutator": "ObjectLiteral",
+      "replacement": "{}",
+      "reason": "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 7\n+ Received  + 1\n\n- Object {\n-   \"httpOnly\": true,\n-   \"maxAge\": 12345,\n-   \"path\": \"/auth\",\n-   \"sameSite\": \"strict\",\n-   \"secure\": true,\n- }\n+ Object {}\n    at Object.<anonymous> (/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:1055:21)\n    at Promise.finally.completed (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1561:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1501:10)\n    at _callCircusTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1011:40)\n    at _runTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:951:3)\n    at /workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:853:7\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:866:11)\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:861:11)\n    at run (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:765:3)\n    at runAndTransformResultsToJestFormat (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1993:21)\n    at jestAdapter (/workspace/book-library-nestjs/node_modules/jest-circus/build/runner.js:111:19)\n    at runTestInternal (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:276:16)\n    at runTest (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:344:7)",
+      "killedBy": [
+        "39"
+      ]
+    },
+    {
+      "id": "121",
+      "status": "Killed",
+      "line": 346,
+      "mutator": "BooleanLiteral",
+      "replacement": "false",
+      "reason": "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 1\n\n  Object {\n-   \"httpOnly\": true,\n+   \"httpOnly\": false,\n    \"maxAge\": 12345,\n    \"path\": \"/auth\",\n    \"sameSite\": \"strict\",\n    \"secure\": true,\n  }\n    at Object.<anonymous> (/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:1055:21)\n    at Promise.finally.completed (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1561:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1501:10)\n    at _callCircusTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1011:40)\n    at _runTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:951:3)\n    at /workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:853:7\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:866:11)\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:861:11)\n    at run (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:765:3)\n    at runAndTransformResultsToJestFormat (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1993:21)\n    at jestAdapter (/workspace/book-library-nestjs/node_modules/jest-circus/build/runner.js:111:19)\n    at runTestInternal (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:276:16)\n    at runTest (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:344:7)",
+      "killedBy": [
+        "39"
+      ]
+    },
+    {
+      "id": "122",
+      "status": "Killed",
+      "line": 348,
+      "mutator": "StringLiteral",
+      "replacement": "\"\"",
+      "reason": "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 1\n\n  Object {\n    \"httpOnly\": true,\n    \"maxAge\": 12345,\n    \"path\": \"/auth\",\n-   \"sameSite\": \"strict\",\n+   \"sameSite\": \"\",\n    \"secure\": true,\n  }\n    at Object.<anonymous> (/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:1055:21)\n    at Promise.finally.completed (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1561:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1501:10)\n    at _callCircusTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1011:40)\n    at _runTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:951:3)\n    at /workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:853:7\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:866:11)\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:861:11)\n    at run (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:765:3)\n    at runAndTransformResultsToJestFormat (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1993:21)\n    at jestAdapter (/workspace/book-library-nestjs/node_modules/jest-circus/build/runner.js:111:19)\n    at runTestInternal (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:276:16)\n    at runTest (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:344:7)",
+      "killedBy": [
+        "39"
+      ]
+    },
+    {
+      "id": "123",
+      "status": "Killed",
+      "line": 349,
+      "mutator": "StringLiteral",
+      "replacement": "\"\"",
+      "reason": "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 1\n\n  Object {\n    \"httpOnly\": true,\n    \"maxAge\": 12345,\n-   \"path\": \"/auth\",\n+   \"path\": \"\",\n    \"sameSite\": \"strict\",\n    \"secure\": true,\n  }\n    at Object.<anonymous> (/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:1055:21)\n    at Promise.finally.completed (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1561:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1501:10)\n    at _callCircusTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1011:40)\n    at _runTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:951:3)\n    at /workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:853:7\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:866:11)\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:861:11)\n    at run (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:765:3)\n    at runAndTransformResultsToJestFormat (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1993:21)\n    at jestAdapter (/workspace/book-library-nestjs/node_modules/jest-circus/build/runner.js:111:19)\n    at runTestInternal (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:276:16)\n    at runTest (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:344:7)",
+      "killedBy": [
+        "39"
+      ]
+    },
+    {
+      "id": "124",
+      "status": "Killed",
+      "line": 350,
+      "mutator": "MethodExpression",
+      "replacement": "Math.min(0, Math.floor(remainingMs))",
+      "reason": "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 1\n\n  Object {\n    \"httpOnly\": true,\n-   \"maxAge\": 12345,\n+   \"maxAge\": 0,\n    \"path\": \"/auth\",\n    \"sameSite\": \"strict\",\n    \"secure\": true,\n  }\n    at Object.<anonymous> (/workspace/book-library-nestjs/reports/mutation/complete/shards/token-session/.stryker-tmp/sandbox-GzJx5n/src/auth/token-session.service.spec.ts:1055:21)\n    at Promise.finally.completed (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1561:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1501:10)\n    at _callCircusTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1011:40)\n    at _runTest (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:951:3)\n    at /workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:853:7\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:866:11)\n    at _runTestsForDescribeBlock (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:861:11)\n    at run (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:765:3)\n    at runAndTransformResultsToJestFormat (/workspace/book-library-nestjs/node_modules/jest-circus/build/jestAdapterInit.js:1993:21)\n    at jestAdapter (/workspace/book-library-nestjs/node_modules/jest-circus/build/runner.js:111:19)\n    at runTestInternal (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:276:16)\n    at runTest (/workspace/book-library-nestjs/node_modules/jest-runner/build/index.js:344:7)",
+      "killedBy": [
+        "39"
+      ]
+    },
+    {
+      "id": "140",
+      "status": "Timeout",
+      "line": 382,
+      "mutator": "ObjectLiteral",
+      "replacement": "{}"
+    },
+    {
+      "id": "145",
+      "status": "Timeout",
+      "line": 391,
+      "mutator": "BlockStatement",
+      "replacement": "{}"
+    },
+    {
+      "id": "166",
+      "status": "Timeout",
+      "line": 428,
+      "mutator": "OptionalChaining",
+      "replacement": "family.lastRotationOperationId"
+    },
+    {
+      "id": "191",
+      "status": "Timeout",
+      "line": 458,
+      "mutator": "StringLiteral",
+      "replacement": "\"\""
+    },
+    {
+      "id": "214",
+      "status": "Timeout",
+      "line": 503,
+      "mutator": "ConditionalExpression",
+      "replacement": "true"
+    },
+    {
+      "id": "219",
+      "status": "Timeout",
+      "line": 505,
+      "mutator": "StringLiteral",
+      "replacement": "\"\""
+    },
+    {
+      "id": "256",
+      "status": "Timeout",
+      "line": 597,
+      "mutator": "ConditionalExpression",
+      "replacement": "true"
+    },
+    {
+      "id": "264",
+      "status": "Timeout",
+      "line": 597,
+      "mutator": "EqualityOperator",
+      "replacement": "typeof error !== 'object'"
+    }
+  ]
+}
