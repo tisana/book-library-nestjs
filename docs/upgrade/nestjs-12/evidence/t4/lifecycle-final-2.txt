@@ -1,0 +1,17 @@
+
+> book-library@0.0.1 test:e2e
+> node --experimental-vm-modules node_modules/jest/bin/jest.js --config ./test/jest-e2e.json --runInBand --detectOpenHandles auth-persistence auth-identifier-recovery auth-browser-session-security auth-identifier-migration auth-identifier-offline-repair
+
+(node:35025) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+Test Suites: 6 passed, 6 total
+Tests:       33 passed, 33 total
+Snapshots:   0 total
+Time:        17.783 s
+Ran all test suites matching auth-persistence|auth-identifier-recovery|auth-browser-session-security|auth-identifier-migration|auth-identifier-offline-repair.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

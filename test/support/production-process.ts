@@ -11,6 +11,7 @@ export interface ProductionProcessOptions {
   staticDirectory?: string;
   startupTimeoutMs?: number;
   startupAttempts?: number;
+  shutdownTimeoutMs?: number;
 }
 
 export interface ProductionExit {
@@ -24,6 +25,9 @@ export interface ProductionProcess {
   diagnostics(): string;
   stop(): Promise<ProductionExit>;
 }
+
+// Leaves two seconds before the default Docker Compose 10-second stop grace.
+export const productionShutdownBudgetMs = 8_000;
 
 const delay = (milliseconds: number) =>
   new Promise<void>((resolve) => setTimeout(resolve, milliseconds));
@@ -43,13 +47,14 @@ async function reservePort(): Promise<number> {
 
 async function waitForExit(
   exited: Promise<ProductionExit>,
+  timeoutMs = 2_000,
 ): Promise<ProductionExit | null> {
   let timeout: NodeJS.Timeout;
   try {
     return await Promise.race([
       exited,
       new Promise<null>((resolve) => {
-        timeout = setTimeout(() => resolve(null), 2_000);
+        timeout = setTimeout(() => resolve(null), timeoutMs);
       }),
     ]);
   } finally {
@@ -60,15 +65,18 @@ async function waitForExit(
 async function terminate(
   child: ChildProcess,
   exited: Promise<ProductionExit>,
+  timeoutMs = productionShutdownBudgetMs,
 ): Promise<ProductionExit> {
   if (child.exitCode === null && child.signalCode === null)
     child.kill('SIGTERM');
-  const graceful = await waitForExit(exited);
+  const graceful = await waitForExit(exited, timeoutMs);
   if (graceful) return graceful;
   child.kill('SIGKILL');
   const forced = await waitForExit(exited);
   if (!forced) throw new Error('Production process did not exit after SIGKILL');
-  return forced;
+  throw new Error(
+    `Production SIGTERM shutdown exceeded ${timeoutMs}ms; SIGKILL was required for cleanup`,
+  );
 }
 
 /** Launch the built bootstrap, never a TestingModule or reconstructed main.ts. */
@@ -183,7 +191,11 @@ export async function startProductionProcess(
               stop: () =>
                 (shutdown ??= (async () => {
                   try {
-                    return await terminate(runningChild, observedExit);
+                    return await terminate(
+                      runningChild,
+                      observedExit,
+                      options.shutdownTimeoutMs ?? productionShutdownBudgetMs,
+                    );
                   } finally {
                     await rm(directory, { recursive: true, force: true });
                   }

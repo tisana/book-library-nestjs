@@ -1,0 +1,56 @@
+
+> book-library@0.0.1 test
+> node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand token-session.service.spec auth-identifier-reconciliation.service.spec
+
+(node:31828) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+[Nest] 31828  - 10/03/2026, 1:35:48 AM    WARN [AuthIdentifierReconciliationService] Scheduled auth identifier reconciliation pass failed
+[Nest] 31828  - 10/03/2026, 1:34:48 AM    WARN [AuthIdentifierReconciliationService] Auth identifier reconciliation startup pass failed
+[Nest] 31828  - 10/03/2026, 1:34:48 AM    WARN [AuthIdentifierReconciliationService] Auth identifier migration readiness check failed
+[Nest] 31828  - 10/03/2026, 1:34:48 AM    WARN [AuthIdentifierReconciliationService] Auth identifier reconciliation operation failed
+FAIL src/auth/auth-identifier-reconciliation.service.spec.ts (5.967 s)
+  ● AuthIdentifierReconciliationService › does not register work after shutdown wins a migration-readiness race
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 1
+
+      1154 |     expect(scheduler.addInterval).not.toHaveBeenCalled();
+      1155 |     expect(operations.findOneAndUpdate).not.toHaveBeenCalled();
+    > 1156 |     expect(jest.getTimerCount()).toBe(0);
+           |                                  ^
+      1157 |
+      1158 |     service.onApplicationShutdown();
+      1159 |     expect(jest.getTimerCount()).toBe(0);
+
+      at Object.<anonymous> (auth/auth-identifier-reconciliation.service.spec.ts:1156:34)
+
+FAIL src/auth/token-session.service.spec.ts
+  ● TokenSessionService › owns only one timer across repeated initialization and clears every timer
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 2
+
+      937 |     service.onModuleInit();
+      938 |     service.onModuleInit();
+    > 939 |     expect(jest.getTimerCount()).toBe(1);
+          |                                  ^
+      940 |     service.onModuleDestroy();
+      941 |     expect(jest.getTimerCount()).toBe(0);
+      942 |     service.onModuleInit();
+
+      at Object.<anonymous> (auth/token-session.service.spec.ts:939:34)
+
+Test Suites: 2 failed, 2 total
+Tests:       2 failed, 127 passed, 129 total
+Snapshots:   0 total
+Time:        6.896 s
+Ran all test suites matching token-session.service.spec|auth-identifier-reconciliation.service.spec.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

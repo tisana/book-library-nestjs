@@ -233,8 +233,8 @@ describe('TokenSessionService', () => {
     service = new TokenSessionService(families as never, markers as never);
   });
 
-  afterEach(() => {
-    service.onModuleDestroy();
+  afterEach(async () => {
+    await service.onModuleDestroy();
     jest.useRealTimers();
     jest.restoreAllMocks();
   });
@@ -930,6 +930,66 @@ describe('TokenSessionService', () => {
 
     expect(marker.status).toBe('committed');
     expect(marker).not.toHaveProperty('leaseExpiresAt');
+  });
+
+  it('still completes teardown when an active recovery query rejects', async () => {
+    const query = markers.find({ status: 'pending' });
+    const gate = deferred<Record<string, any>[]>();
+    jest.spyOn(query, 'exec').mockReturnValue(gate.promise);
+    jest.spyOn(markers, 'find').mockReturnValueOnce(query);
+    const recovery = service
+      .reconcileExpiredPendingMarkers()
+      .catch(() => undefined);
+    const closing = service.onModuleDestroy();
+    gate.reject(new Error('database unavailable during drain'));
+    await expect(closing).resolves.toBeUndefined();
+    await recovery;
+  });
+
+  it('shares overlapping recovery passes and waits for durable recovery on destroy', async () => {
+    const created = await createFamily('active-recovery');
+    const family = families.documents[0];
+    const tokenHash = service.hashRefreshToken(created.refreshToken);
+    family.currentTokenHash = service.hashRefreshToken('unreturned-next-token');
+    family.lastRotationOperationId = 'active-recovery-operation';
+    markers.documents.push({
+      tokenHash,
+      familyId: created.familyId,
+      status: 'pending',
+      rotationOperationId: family.lastRotationOperationId,
+      leaseExpiresAt: new Date(Date.now() - 1),
+      expiresAt: created.expiresAt,
+    });
+    const gate = deferred<Record<string, any>[]>();
+    const query = markers.find({ status: 'pending' });
+    jest.spyOn(query, 'exec').mockReturnValue(gate.promise);
+    jest.spyOn(markers, 'find').mockReturnValueOnce(query);
+    const first = service.reconcileExpiredPendingMarkers();
+    const second = service.reconcileExpiredPendingMarkers();
+    expect(first).toBe(second);
+    let closed = false;
+    const closing = service.onModuleDestroy().then(() => {
+      closed = true;
+    });
+    await Promise.resolve();
+    expect(closed).toBe(false);
+    gate.resolve(markers.documents);
+    expect(await first).toBe(1);
+    await closing;
+    expect(markers.documents[0].status).toBe('committed');
+    expect(family.status).toBe('revoked');
+    expect(await service.reconcileExpiredPendingMarkers()).toBe(0);
+  });
+
+  it('owns only one timer across repeated initialization and clears every timer', async () => {
+    jest.useFakeTimers();
+    service.onModuleInit();
+    service.onModuleInit();
+    expect(jest.getTimerCount()).toBe(1);
+    service.onModuleDestroy();
+    expect(jest.getTimerCount()).toBe(0);
+    service.onModuleInit();
+    expect(jest.getTimerCount()).toBe(1);
   });
 
   it('runs bounded reconciliation every 60 seconds and stops on destroy', async () => {

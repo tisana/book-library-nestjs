@@ -1,0 +1,59 @@
+
+> book-library@0.0.1 test
+> node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand token-session.service.spec auth-identifier-reconciliation.service.spec
+
+[Nest] 34613  - 10/03/2026, 1:46:47 AM    WARN [AuthIdentifierReconciliationService] Auth identifier migration readiness check failed
+(node:34613) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+[Nest] 34613  - 10/03/2026, 1:47:47 AM    WARN [AuthIdentifierReconciliationService] Scheduled auth identifier reconciliation pass failed
+[Nest] 34613  - 10/03/2026, 1:46:47 AM    WARN [AuthIdentifierReconciliationService] Auth identifier reconciliation startup pass failed
+[Nest] 34613  - 10/03/2026, 1:46:47 AM    WARN [AuthIdentifierReconciliationService] Auth identifier migration readiness check failed
+[Nest] 34613  - 10/03/2026, 1:46:47 AM    WARN [AuthIdentifierReconciliationService] Auth identifier reconciliation operation failed
+FAIL src/auth/auth-identifier-reconciliation.service.spec.ts
+  ● AuthIdentifierReconciliationService › still completes teardown when an active reconciliation query rejects
+
+    expect(received).resolves.toBeUndefined()
+
+    Received promise rejected instead of resolved
+    Rejected to value: [Error: database unavailable during drain]
+
+      898 |     const closing = service.onModuleDestroy();
+      899 |     gate.reject(new Error('database unavailable during drain'));
+    > 900 |     await expect(closing).resolves.toBeUndefined();
+          |           ^
+      901 |     await recovery;
+      902 |   });
+      903 |
+
+      at expect (../node_modules/expect/build/index.js:2116:15)
+      at Object.<anonymous> (auth/auth-identifier-reconciliation.service.spec.ts:900:11)
+
+FAIL src/auth/token-session.service.spec.ts
+  ● TokenSessionService › still completes teardown when an active recovery query rejects
+
+    expect(received).resolves.toBeUndefined()
+
+    Received promise rejected instead of resolved
+    Rejected to value: [Error: database unavailable during drain]
+
+      941 |     const closing = service.onModuleDestroy();
+      942 |     gate.reject(new Error('database unavailable during drain'));
+    > 943 |     await expect(closing).resolves.toBeUndefined();
+          |           ^
+      944 |     await recovery;
+      945 |   });
+      946 |
+
+      at expect (../node_modules/expect/build/index.js:2116:15)
+      at Object.<anonymous> (auth/token-session.service.spec.ts:943:11)
+
+Test Suites: 2 failed, 2 total
+Tests:       2 failed, 132 passed, 134 total
+Snapshots:   0 total
+Time:        5.063 s
+Ran all test suites matching token-session.service.spec|auth-identifier-reconciliation.service.spec.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

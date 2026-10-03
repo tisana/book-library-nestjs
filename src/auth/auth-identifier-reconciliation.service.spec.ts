@@ -889,6 +889,72 @@ describe('AuthIdentifierReconciliationService', () => {
     expect(operations.findOneAndUpdate).not.toHaveBeenCalled();
   });
 
+  it('still completes teardown when an active reconciliation query rejects', async () => {
+    const gate = deferred<never[]>();
+    const query = criticalQueryResult([]);
+    jest.spyOn(query, 'exec').mockReturnValue(gate.promise);
+    operations.find.mockReturnValueOnce(query);
+    const recovery = service.reconcileOnce().catch(() => undefined);
+    const closing = service.onModuleDestroy();
+    gate.reject(new Error('database unavailable during drain'));
+    await expect(closing).resolves.toBeUndefined();
+    await recovery;
+  });
+
+  it('waits for a claimed pass in module destroy before database teardown', async () => {
+    const candidate = operation();
+    operations.find.mockReturnValue(criticalQueryResult([candidate]));
+    const claim = deferred<typeof candidate>();
+    operations.findOneAndUpdate.mockReturnValueOnce(claim.promise);
+    const active = service.reconcileOnce();
+    let closed = false;
+    const closing = service.onModuleDestroy().then(() => {
+      closed = true;
+    });
+    await Promise.resolve();
+    expect(closed).toBe(false);
+    claim.resolve(candidate);
+    await expect(active).resolves.toMatchObject({ claimed: 1, processed: 1 });
+    await closing;
+    expect(closed).toBe(true);
+    await expect(service.onModuleDestroy()).resolves.toBeUndefined();
+  });
+
+  it('retries failed bootstrap readiness through one probe until the migration appears', async () => {
+    jest.useFakeTimers();
+    const registry = new SchedulerRegistry();
+    const findOne = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('temporary readiness query failure'))
+      .mockResolvedValueOnce(null)
+      .mockResolvedValue({ version: '003' });
+    const worker = createReconciliationService({
+      scheduler: registry,
+      connection: {
+        db: { collection: () => ({ findOne }) },
+      } as unknown as Connection,
+    });
+    try {
+      await worker.onApplicationBootstrap();
+      await worker.onApplicationBootstrap();
+      expect(jest.getTimerCount()).toBe(1);
+      expect(registry.getIntervals()).toEqual([]);
+      expect(operations.find).not.toHaveBeenCalled();
+      await jest.advanceTimersByTimeAsync(60_000);
+      expect(registry.getIntervals()).toEqual([
+        'auth-identifier-reconciliation',
+      ]);
+      expect(jest.getTimerCount()).toBe(1);
+      expect(operations.find).toHaveBeenCalledTimes(1);
+      await worker.onApplicationBootstrap();
+      expect(jest.getTimerCount()).toBe(1);
+    } finally {
+      await worker.onModuleDestroy();
+      expect(jest.getTimerCount()).toBe(0);
+      jest.useRealTimers();
+    }
+  });
+
   it('starts one bounded schedule at bootstrap and clears it once on shutdown', async () => {
     const registry = {
       addInterval: jest.fn(),
@@ -1153,6 +1219,7 @@ describe('AuthIdentifierReconciliationService', () => {
 
     expect(scheduler.addInterval).not.toHaveBeenCalled();
     expect(operations.findOneAndUpdate).not.toHaveBeenCalled();
+    expect(jest.getTimerCount()).toBe(0);
 
     service.onApplicationShutdown();
     expect(jest.getTimerCount()).toBe(0);

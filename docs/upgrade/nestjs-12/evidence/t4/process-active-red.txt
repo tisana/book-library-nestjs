@@ -1,0 +1,43 @@
+  console.log
+    Applied 000 migration-record
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+  console.log
+    Applied 001 library-core
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+  console.log
+    Applied 002 member-auth
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+  console.log
+    Applied 003 auth-roles-permissions
+
+      at runPendingMigrations (../migrations/migrate.ts:168:15)
+
+FAIL test/production-shutdown.e2e-spec.ts (11.973 s)
+  ● Compiled HTTP application SIGTERM shutdown › finishes a claimed reconciliation pass before closing its database
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "completed"
+    Received: "finalizing"
+
+      120 |     await stopWithinBudget();
+      121 |     const operation = await context.connection.collection('auth_identifier_operations').findOne({ operationId: 'shutdown-reconciliation' });
+    > 122 |     expect(operation.status).toBe('completed');
+          |                              ^
+      123 |     expect(operation.terminalEventId).toEqual(expect.any(String));
+      124 |     expect(await context.connection.collection('security_activity_events').countDocuments({ operationId: operation.operationId })).toBe(1);
+      125 |     expect(operation.leaseExpiresAt.getTime()).toBeLessThanOrEqual(Date.now());
+
+      at Object.<anonymous> (production-shutdown.e2e-spec.ts:122:30)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 2 passed, 3 total
+Snapshots:   0 total
+Time:        12.229 s, estimated 13 s
+Ran all test suites matching production-shutdown.

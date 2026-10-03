@@ -6,7 +6,7 @@
   ],
   "rootDir": ".",
   "testEnvironment": "node",
-  "testRegex": "^.*[/\\\\]production-bootstrap\\.e2e-spec\\.ts$",
+  "testRegex": "^.*[/\\\\]production-(?:bootstrap|shutdown)\\.e2e-spec\\.ts$",
   "testTimeout": 60000,
   "transform": {
     "^.+\\.(t|j)s$": [

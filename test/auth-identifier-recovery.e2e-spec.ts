@@ -1,3 +1,4 @@
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose, { Connection, Model } from 'mongoose';
@@ -142,7 +143,9 @@ describe('auth identifier reconciliation recovery (e2e)', () => {
     securityActivity = new SecurityActivityService(events);
   });
 
-  function createService(): AuthIdentifierReconciliationService {
+  function createService(
+    scheduler?: SchedulerRegistry,
+  ): AuthIdentifierReconciliationService {
     return new AuthIdentifierReconciliationService(
       operations,
       identifiers,
@@ -150,6 +153,8 @@ describe('auth identifier reconciliation recovery (e2e)', () => {
       policy,
       securityActivity,
       config,
+      scheduler,
+      connection,
     );
   }
 
@@ -170,6 +175,107 @@ describe('auth identifier reconciliation recovery (e2e)', () => {
       ...overrides,
     };
   }
+
+  it('gates startup on migration 003 and registers one interval across repeated readiness checks', async () => {
+    const registry = new SchedulerRegistry();
+    const service = createService(registry);
+    await operations.create(baseOperation('startup-gate'));
+    try {
+      await Promise.all([
+        service.onApplicationBootstrap(),
+        service.onApplicationBootstrap(),
+      ]);
+      expect(registry.getIntervals()).toEqual([]);
+      expect(
+        (await operations.findOne({ operationId: 'startup-gate' })).status,
+      ).toBe(AuthIdentifierOperationStatus.Pending);
+      await connection
+        .collection('migration_records')
+        .insertOne({ version: '003' });
+      await Promise.all([
+        service.onApplicationBootstrap(),
+        service.onApplicationBootstrap(),
+      ]);
+      expect(registry.getIntervals()).toEqual([
+        'auth-identifier-reconciliation',
+      ]);
+      expect(
+        (await operations.findOne({ operationId: 'startup-gate' })).status,
+      ).toBe(AuthIdentifierOperationStatus.Applying);
+      await service.onApplicationBootstrap();
+      expect(registry.getIntervals()).toEqual([
+        'auth-identifier-reconciliation',
+      ]);
+    } finally {
+      await service.onModuleDestroy();
+      expect(registry.getIntervals()).toEqual([]);
+      await connection.collection('migration_records').deleteMany({});
+    }
+  });
+
+  it('recovers an expired interrupted lease with one terminal audit across competing instances', async () => {
+    const reservation = await identifiers.create({
+      normalizedIdentifier: 'recovered@example.test',
+      identifierType: AuthIdentifierType.Email,
+      subjectType: AuthIdentifierSubjectType.Staff,
+      subjectId: 'recovered-staff',
+      status: AuthIdentifierStatus.Active,
+      lastOperationId: 'interrupted-lease',
+      createdBy: 'admin-1',
+      updatedBy: 'admin-1',
+    });
+    await operations.create(
+      baseOperation('interrupted-lease', {
+        status: AuthIdentifierOperationStatus.Finalizing,
+        leaseOwner: 'lost-process',
+        leaseExpiresAt: new Date(Date.now() + 30_000),
+        assignments: [
+          {
+            assignmentId: 'recover-assignment',
+            subjectType: AuthIdentifierSubjectType.Staff,
+            subjectId: 'recovered-staff',
+            action: AuthIdentifierAssignmentAction.Claim,
+            status: AuthIdentifierAssignmentStatus.Applied,
+            targetReservationId: reservation._id,
+          },
+        ],
+      }),
+    );
+    const first = createService();
+    const second = createService();
+    expect((await first.reconcileOnce()).claimed).toBe(0);
+    expect(
+      await events.countDocuments({ operationId: 'interrupted-lease' }),
+    ).toBe(0);
+    await operations.updateOne(
+      { operationId: 'interrupted-lease' },
+      { $set: { leaseExpiresAt: new Date(Date.now() - 6_000) } },
+    );
+    const results = await Promise.all([
+      first.reconcileOnce(),
+      second.reconcileOnce(),
+    ]);
+    expect(results.reduce((sum, result) => sum + result.claimed, 0)).toBe(1);
+    const recovered = await operations.findOne({
+      operationId: 'interrupted-lease',
+    });
+    expect(recovered.status).toBe(AuthIdentifierOperationStatus.Completed);
+    expect(recovered.terminalEventId).toEqual(expect.any(String));
+    expect(
+      await events.countDocuments({ operationId: 'interrupted-lease' }),
+    ).toBe(1);
+    expect((await first.reconcileOnce()).claimed).toBe(0);
+    expect((await second.reconcileOnce()).claimed).toBe(0);
+    expect(
+      await identifiers.countDocuments({
+        lastOperationId: 'interrupted-lease',
+        status: AuthIdentifierStatus.Active,
+      }),
+    ).toBe(1);
+    expect(
+      await events.countDocuments({ operationId: 'interrupted-lease' }),
+    ).toBe(1);
+  });
 
   it('allows only one competing worker to claim an operation', async () => {
     await operations.create(baseOperation('competing-operation'));

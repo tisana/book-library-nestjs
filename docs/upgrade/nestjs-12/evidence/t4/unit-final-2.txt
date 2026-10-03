@@ -1,0 +1,36 @@
+
+> book-library@0.0.1 pretest:cov
+> node -e "require('fs').mkdirSync('test-results', { recursive: true })"
+
+
+> book-library@0.0.1 test:cov
+> node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --runInBand --json --outputFile=test-results/backend-unit.json
+
+[Nest] 35569  - 07/15/2026, 12:00:00 AM    WARN [AuthIdentifierReconciliationService] Auth identifier reconciliation interrupted during shutdown
+[Nest] 35569  - 10/03/2026, 1:49:52 AM    WARN [AuthIdentifierReconciliationService] Auth identifier migration readiness check failed
+(node:35569) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+[Nest] 35569  - 10/03/2026, 1:50:52 AM    WARN [AuthIdentifierReconciliationService] Scheduled auth identifier reconciliation pass failed
+[Nest] 35569  - 10/03/2026, 1:49:52 AM    WARN [AuthIdentifierReconciliationService] Auth identifier reconciliation startup pass failed
+[Nest] 35569  - 10/03/2026, 1:49:52 AM    WARN [AuthIdentifierReconciliationService] Auth identifier migration readiness check failed
+[Nest] 35569  - 10/03/2026, 1:49:52 AM    WARN [AuthIdentifierReconciliationService] Auth identifier reconciliation operation failed
+[Nest] 35569  - 10/03/2026, 1:49:54 AM   ERROR [TokenSessionService] Refresh rotation reconciliation interrupted during shutdown
+
+=============================== Coverage summary ===============================
+Statements   : 81.57% ( 3011/3691 )
+Branches     : 76.58% ( 2178/2844 )
+Functions    : 81.65% ( 503/616 )
+Lines        : 81.95% ( 2888/3524 )
+================================================================================
+
+Test Suites: 35 passed, 35 total
+Tests:       566 passed, 566 total
+Snapshots:   0 total
+Time:        37.832 s
+Ran all test suites.
+Test results written to: test-results/backend-unit.json
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
