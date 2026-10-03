@@ -1,0 +1,33 @@
+{
+  "purpose": "Trial mutation-only isolated transpilation; mandatory typed unit coverage unchanged",
+  "tests": 364,
+  "passed": 364,
+  "failed": 0,
+  "pending": 0,
+  "suites": 14,
+  "passedSuites": 14,
+  "success": true,
+  "selectedSources": [
+    "src/auth/token-session.service.ts",
+    "src/auth/auth-identifier-repair.service.ts",
+    "src/auth/auth-identifier-reconciliation.service.ts",
+    "src/members/members.service.ts",
+    "src/borrowings/borrowings.service.ts"
+  ],
+  "testFiles": [
+    "src/auth/auth-identifier-reconciliation.service.spec.ts",
+    "src/auth/auth-identifier-repair.service.spec.ts",
+    "src/members/members.service.spec.ts",
+    "src/auth/token-session.service.spec.ts",
+    "src/auth/auth.service.spec.ts",
+    "src/borrowings/borrowings.service.spec.ts",
+    "src/auth/auth.controller.spec.ts",
+    "src/auth/permissions.service.spec.ts",
+    "src/auth/permissions.guard.spec.ts",
+    "src/auth/auth-endpoint-throttle.guard.spec.ts",
+    "src/staff-users/staff-users.controller.spec.ts",
+    "src/membership-types/membership-types.controller.spec.ts",
+    "src/book-categories/book-categories.controller.spec.ts",
+    "src/books/books.controller.spec.ts"
+  ]
+}

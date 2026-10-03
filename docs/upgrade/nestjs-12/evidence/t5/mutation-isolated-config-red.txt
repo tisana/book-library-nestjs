@@ -1,0 +1,84 @@
+✖ mutation compiler changes only isolated emit and preserves mandatory typed Jest (1.721216ms)
+✖ all shards and complete use exact Jest, reporters, mutators, thresholds, and capped concurrency maximums (3.261193ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 122.994685
+
+✖ failing tests:
+
+test at test/quality/mutation-runner.test.mjs:926:1
+✖ mutation compiler changes only isolated emit and preserves mandatory typed Jest (1.721216ms)
+  Error: ENOENT: no such file or directory, open '/workspace/book-library-nestjs/tsconfig.mutation.json'
+      at readFileSync (node:fs:484:20)
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:927:31)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/workspace/book-library-nestjs/tsconfig.mutation.json'
+  }
+
+test at test/quality/mutation-runner.test.mjs:969:1
+✖ all shards and complete use exact Jest, reporters, mutators, thresholds, and capped concurrency maximums (3.261193ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    {
+      concurrency: 2,
+      coverageAnalysis: 'perTest',
+      jest: {
+  +     configFile: 'package.json',
+  -     config: {
+  -       collectCoverageFrom: [
+  -         '**/*.ts',
+  -         '!**/*.spec.ts',
+  -         '!books/interfaces/book.interface.ts'
+  -       ],
+  -       coverageDirectory: '../coverage/backend-unit',
+  -       coverageReporters: [
+  -         'text-summary',
+  -         'json-summary',
+  -         'lcov',
+  -         'html'
+  -       ],
+  -       moduleFileExtensions: [
+  -         'js',
+  -         'json',
+  -         'ts'
+  -       ],
+  -       rootDir: 'src',
+  -       testEnvironment: 'node',
+  -       testRegex: '.spec.ts$',
+  -       transform: {
+  -         '^.+\\.(t|j)s$': [
+  -           'ts-jest',
+  -           {
+  -             tsconfig: '<rootDir>/../tsconfig.mutation.json'
+  -           }
+  -         ]
+  -       }
+  -     },
+        enableFindRelatedTests: true,
+        projectType: 'custom'
+      },
+      reporters: [
+        'clear-text',
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:994:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { testRunner: 'jest', coverageAnalysis: 'perTest', reporters: [ 'clear-text', 'progress', 'json', 'html' ], thresholds: { high: 80, low: 70, break: 70 }, concurrency: 2, jest: { projectType: 'custom', configFile: 'package.json', enableFindRelatedTests: true } },
+    expected: { testRunner: 'jest', coverageAnalysis: 'perTest', reporters: [ 'clear-text', 'progress', 'json', 'html' ], thresholds: { high: 80, low: 70, break: 70 }, concurrency: 2, jest: { projectType: 'custom', config: [Object], enableFindRelatedTests: true } },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

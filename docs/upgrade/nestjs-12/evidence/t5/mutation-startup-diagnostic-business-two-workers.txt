@@ -1,4 +1,4 @@
-Bounded diagnostic only; not complete/smoke acceptance. Original debug output condensed to producer stages; exact mutants/statuses retained in mutation-startup-diagnostics.json.
+Condensed stage/status log; complete diagnostic raw SHA256 d964311dfe952487dc6889d23443a1585deeb6b8b1d8287a897a8b40581186b5; exact per-mutant results in mutation-isolated-control-comparison.json.
 07:51:12 (75941) INFO Instrumenter Instrumented 1 source file(s) with 3 mutant(s)
 07:51:22 (75941) INFO ConcurrencyTokenProvider Creating 2 test runner process(es).
 07:51:22 (75941) DEBUG Sandbox Creating a sandbox for files in /tmp/nestjs-t5-diagnostic-business-two-workers-sandbox/sandbox-fX1YrD

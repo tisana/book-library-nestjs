@@ -1,0 +1,12 @@
+✔ timeout gracefully terminates and verifies a real descendant process tree (771.35707ms)
+✔ timeout force-kills a real SIGTERM-resistant process tree after ten seconds (10758.490378ms)
+✔ named smoke shard timeout cleans its exact real process tree (758.880315ms)
+✔ mutation workflow distributes five shards and merges one exact profile (2.968275ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12398.19576

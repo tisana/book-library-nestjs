@@ -1,0 +1,1129 @@
+{
+  "purpose": "Bounded controls only; not complete/smoke acceptance",
+  "results": [
+    {
+      "mode": "hygiene-cache-true",
+      "generated": 15,
+      "statusCounts": {
+        "NoCoverage": 4,
+        "Killed": 11
+      },
+      "mutants": [
+        {
+          "id": "3",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "true",
+          "location": {
+            "end": {
+              "column": 57,
+              "line": 334
+            },
+            "start": {
+              "column": 20,
+              "line": 334
+            }
+          },
+          "status": "NoCoverage"
+        },
+        {
+          "id": "4",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "false",
+          "location": {
+            "end": {
+              "column": 57,
+              "line": 334
+            },
+            "start": {
+              "column": 20,
+              "line": 334
+            }
+          },
+          "status": "NoCoverage"
+        },
+        {
+          "id": "5",
+          "mutatorName": "EqualityOperator",
+          "replacement": "process.env.NODE_ENV !== 'production'",
+          "location": {
+            "end": {
+              "column": 57,
+              "line": 334
+            },
+            "start": {
+              "column": 20,
+              "line": 334
+            }
+          },
+          "status": "NoCoverage"
+        },
+        {
+          "id": "6",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 57,
+              "line": 334
+            },
+            "start": {
+              "column": 45,
+              "line": 334
+            }
+          },
+          "status": "NoCoverage"
+        },
+        {
+          "id": "1",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 31,
+              "line": 329
+            },
+            "start": {
+              "column": 23,
+              "line": 329
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "0"
+          ]
+        },
+        {
+          "id": "0",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 330
+            },
+            "start": {
+              "column": 50,
+              "line": 328
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "0"
+          ]
+        },
+        {
+          "id": "2",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 66,
+              "line": 329
+            },
+            "start": {
+              "column": 61,
+              "line": 329
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "0"
+          ]
+        },
+        {
+          "id": "7",
+          "mutatorName": "ArithmeticOperator",
+          "replacement": "expiresAtOrTtlSeconds.getTime() + now.getTime()",
+          "location": {
+            "end": {
+              "column": 58,
+              "line": 339
+            },
+            "start": {
+              "column": 11,
+              "line": 339
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "39"
+          ]
+        },
+        {
+          "id": "8",
+          "mutatorName": "ArithmeticOperator",
+          "replacement": "Math.min(Math.max(0, expiresAtOrTtlSeconds), maximumRefreshLifetimeSeconds) / 1000",
+          "location": {
+            "end": {
+              "column": 19,
+              "line": 343
+            },
+            "start": {
+              "column": 11,
+              "line": 340
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "40"
+          ]
+        },
+        {
+          "id": "9",
+          "mutatorName": "MethodExpression",
+          "replacement": "Math.max(Math.max(0, expiresAtOrTtlSeconds), maximumRefreshLifetimeSeconds)",
+          "location": {
+            "end": {
+              "column": 12,
+              "line": 343
+            },
+            "start": {
+              "column": 11,
+              "line": 340
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "40"
+          ]
+        },
+        {
+          "id": "10",
+          "mutatorName": "MethodExpression",
+          "replacement": "Math.min(0, expiresAtOrTtlSeconds)",
+          "location": {
+            "end": {
+              "column": 47,
+              "line": 341
+            },
+            "start": {
+              "column": 13,
+              "line": 341
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "40"
+          ]
+        },
+        {
+          "id": "11",
+          "mutatorName": "BooleanLiteral",
+          "replacement": "false",
+          "location": {
+            "end": {
+              "column": 21,
+              "line": 346
+            },
+            "start": {
+              "column": 17,
+              "line": 346
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "39"
+          ]
+        },
+        {
+          "id": "12",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 25,
+              "line": 348
+            },
+            "start": {
+              "column": 17,
+              "line": 348
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "39"
+          ]
+        },
+        {
+          "id": "13",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 20,
+              "line": 349
+            },
+            "start": {
+              "column": 13,
+              "line": 349
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "39"
+          ]
+        },
+        {
+          "id": "14",
+          "mutatorName": "MethodExpression",
+          "replacement": "Math.min(0, Math.floor(remainingMs))",
+          "location": {
+            "end": {
+              "column": 51,
+              "line": 350
+            },
+            "start": {
+              "column": 15,
+              "line": 350
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "39"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "hygiene-cache-false",
+      "generated": 15,
+      "statusCounts": {
+        "NoCoverage": 4,
+        "Killed": 8,
+        "Timeout": 3
+      },
+      "mutants": [
+        {
+          "id": "3",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "true",
+          "location": {
+            "end": {
+              "column": 57,
+              "line": 334
+            },
+            "start": {
+              "column": 20,
+              "line": 334
+            }
+          },
+          "status": "NoCoverage"
+        },
+        {
+          "id": "4",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "false",
+          "location": {
+            "end": {
+              "column": 57,
+              "line": 334
+            },
+            "start": {
+              "column": 20,
+              "line": 334
+            }
+          },
+          "status": "NoCoverage"
+        },
+        {
+          "id": "5",
+          "mutatorName": "EqualityOperator",
+          "replacement": "process.env.NODE_ENV !== 'production'",
+          "location": {
+            "end": {
+              "column": 57,
+              "line": 334
+            },
+            "start": {
+              "column": 20,
+              "line": 334
+            }
+          },
+          "status": "NoCoverage"
+        },
+        {
+          "id": "6",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 57,
+              "line": 334
+            },
+            "start": {
+              "column": 45,
+              "line": 334
+            }
+          },
+          "status": "NoCoverage"
+        },
+        {
+          "id": "1",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 31,
+              "line": 329
+            },
+            "start": {
+              "column": 23,
+              "line": 329
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "0"
+          ]
+        },
+        {
+          "id": "0",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 330
+            },
+            "start": {
+              "column": 50,
+              "line": 328
+            }
+          },
+          "status": "Timeout"
+        },
+        {
+          "id": "2",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 66,
+              "line": 329
+            },
+            "start": {
+              "column": 61,
+              "line": 329
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "0"
+          ]
+        },
+        {
+          "id": "8",
+          "mutatorName": "ArithmeticOperator",
+          "replacement": "Math.min(Math.max(0, expiresAtOrTtlSeconds), maximumRefreshLifetimeSeconds) / 1000",
+          "location": {
+            "end": {
+              "column": 19,
+              "line": 343
+            },
+            "start": {
+              "column": 11,
+              "line": 340
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "40"
+          ]
+        },
+        {
+          "id": "9",
+          "mutatorName": "MethodExpression",
+          "replacement": "Math.max(Math.max(0, expiresAtOrTtlSeconds), maximumRefreshLifetimeSeconds)",
+          "location": {
+            "end": {
+              "column": 12,
+              "line": 343
+            },
+            "start": {
+              "column": 11,
+              "line": 340
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "40"
+          ]
+        },
+        {
+          "id": "7",
+          "mutatorName": "ArithmeticOperator",
+          "replacement": "expiresAtOrTtlSeconds.getTime() + now.getTime()",
+          "location": {
+            "end": {
+              "column": 58,
+              "line": 339
+            },
+            "start": {
+              "column": 11,
+              "line": 339
+            }
+          },
+          "status": "Timeout"
+        },
+        {
+          "id": "10",
+          "mutatorName": "MethodExpression",
+          "replacement": "Math.min(0, expiresAtOrTtlSeconds)",
+          "location": {
+            "end": {
+              "column": 47,
+              "line": 341
+            },
+            "start": {
+              "column": 13,
+              "line": 341
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "40"
+          ]
+        },
+        {
+          "id": "12",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 25,
+              "line": 348
+            },
+            "start": {
+              "column": 17,
+              "line": 348
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "39"
+          ]
+        },
+        {
+          "id": "13",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 20,
+              "line": 349
+            },
+            "start": {
+              "column": 13,
+              "line": 349
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "39"
+          ]
+        },
+        {
+          "id": "11",
+          "mutatorName": "BooleanLiteral",
+          "replacement": "false",
+          "location": {
+            "end": {
+              "column": 21,
+              "line": 346
+            },
+            "start": {
+              "column": 17,
+              "line": 346
+            }
+          },
+          "status": "Timeout"
+        },
+        {
+          "id": "14",
+          "mutatorName": "MethodExpression",
+          "replacement": "Math.min(0, Math.floor(remainingMs))",
+          "location": {
+            "end": {
+              "column": 51,
+              "line": 350
+            },
+            "start": {
+              "column": 15,
+              "line": 350
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "39"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "stable-test-locations",
+      "generated": 15,
+      "statusCounts": {
+        "NoCoverage": 4,
+        "Killed": 11
+      },
+      "mutants": [
+        {
+          "id": "3",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "true",
+          "location": {
+            "end": {
+              "column": 57,
+              "line": 334
+            },
+            "start": {
+              "column": 20,
+              "line": 334
+            }
+          },
+          "status": "NoCoverage"
+        },
+        {
+          "id": "4",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "false",
+          "location": {
+            "end": {
+              "column": 57,
+              "line": 334
+            },
+            "start": {
+              "column": 20,
+              "line": 334
+            }
+          },
+          "status": "NoCoverage"
+        },
+        {
+          "id": "5",
+          "mutatorName": "EqualityOperator",
+          "replacement": "process.env.NODE_ENV !== 'production'",
+          "location": {
+            "end": {
+              "column": 57,
+              "line": 334
+            },
+            "start": {
+              "column": 20,
+              "line": 334
+            }
+          },
+          "status": "NoCoverage"
+        },
+        {
+          "id": "6",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 57,
+              "line": 334
+            },
+            "start": {
+              "column": 45,
+              "line": 334
+            }
+          },
+          "status": "NoCoverage"
+        },
+        {
+          "id": "1",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 31,
+              "line": 329
+            },
+            "start": {
+              "column": 23,
+              "line": 329
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "0"
+          ]
+        },
+        {
+          "id": "0",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 330
+            },
+            "start": {
+              "column": 50,
+              "line": 328
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "0"
+          ]
+        },
+        {
+          "id": "2",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 66,
+              "line": 329
+            },
+            "start": {
+              "column": 61,
+              "line": 329
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "0"
+          ]
+        },
+        {
+          "id": "7",
+          "mutatorName": "ArithmeticOperator",
+          "replacement": "expiresAtOrTtlSeconds.getTime() + now.getTime()",
+          "location": {
+            "end": {
+              "column": 58,
+              "line": 339
+            },
+            "start": {
+              "column": 11,
+              "line": 339
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "39"
+          ]
+        },
+        {
+          "id": "8",
+          "mutatorName": "ArithmeticOperator",
+          "replacement": "Math.min(Math.max(0, expiresAtOrTtlSeconds), maximumRefreshLifetimeSeconds) / 1000",
+          "location": {
+            "end": {
+              "column": 19,
+              "line": 343
+            },
+            "start": {
+              "column": 11,
+              "line": 340
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "40"
+          ]
+        },
+        {
+          "id": "9",
+          "mutatorName": "MethodExpression",
+          "replacement": "Math.max(Math.max(0, expiresAtOrTtlSeconds), maximumRefreshLifetimeSeconds)",
+          "location": {
+            "end": {
+              "column": 12,
+              "line": 343
+            },
+            "start": {
+              "column": 11,
+              "line": 340
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "40"
+          ]
+        },
+        {
+          "id": "10",
+          "mutatorName": "MethodExpression",
+          "replacement": "Math.min(0, expiresAtOrTtlSeconds)",
+          "location": {
+            "end": {
+              "column": 47,
+              "line": 341
+            },
+            "start": {
+              "column": 13,
+              "line": 341
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "40"
+          ]
+        },
+        {
+          "id": "11",
+          "mutatorName": "BooleanLiteral",
+          "replacement": "false",
+          "location": {
+            "end": {
+              "column": 21,
+              "line": 346
+            },
+            "start": {
+              "column": 17,
+              "line": 346
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "39"
+          ]
+        },
+        {
+          "id": "12",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 25,
+              "line": 348
+            },
+            "start": {
+              "column": 17,
+              "line": 348
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "39"
+          ]
+        },
+        {
+          "id": "13",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 20,
+              "line": 349
+            },
+            "start": {
+              "column": 13,
+              "line": 349
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "39"
+          ]
+        },
+        {
+          "id": "14",
+          "mutatorName": "MethodExpression",
+          "replacement": "Math.min(0, Math.floor(remainingMs))",
+          "location": {
+            "end": {
+              "column": 51,
+              "line": 350
+            },
+            "start": {
+              "column": 15,
+              "line": 350
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "39"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "isolated-transpile",
+      "generated": 15,
+      "statusCounts": {
+        "NoCoverage": 4,
+        "Killed": 11
+      },
+      "mutants": [
+        {
+          "id": "3",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "true",
+          "location": {
+            "end": {
+              "column": 57,
+              "line": 334
+            },
+            "start": {
+              "column": 20,
+              "line": 334
+            }
+          },
+          "status": "NoCoverage"
+        },
+        {
+          "id": "4",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "false",
+          "location": {
+            "end": {
+              "column": 57,
+              "line": 334
+            },
+            "start": {
+              "column": 20,
+              "line": 334
+            }
+          },
+          "status": "NoCoverage"
+        },
+        {
+          "id": "5",
+          "mutatorName": "EqualityOperator",
+          "replacement": "process.env.NODE_ENV !== 'production'",
+          "location": {
+            "end": {
+              "column": 57,
+              "line": 334
+            },
+            "start": {
+              "column": 20,
+              "line": 334
+            }
+          },
+          "status": "NoCoverage"
+        },
+        {
+          "id": "6",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 57,
+              "line": 334
+            },
+            "start": {
+              "column": 45,
+              "line": 334
+            }
+          },
+          "status": "NoCoverage"
+        },
+        {
+          "id": "1",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 31,
+              "line": 329
+            },
+            "start": {
+              "column": 23,
+              "line": 329
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "0"
+          ]
+        },
+        {
+          "id": "0",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 330
+            },
+            "start": {
+              "column": 50,
+              "line": 328
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "0"
+          ]
+        },
+        {
+          "id": "2",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 66,
+              "line": 329
+            },
+            "start": {
+              "column": 61,
+              "line": 329
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "0"
+          ]
+        },
+        {
+          "id": "7",
+          "mutatorName": "ArithmeticOperator",
+          "replacement": "expiresAtOrTtlSeconds.getTime() + now.getTime()",
+          "location": {
+            "end": {
+              "column": 58,
+              "line": 339
+            },
+            "start": {
+              "column": 11,
+              "line": 339
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "39"
+          ]
+        },
+        {
+          "id": "8",
+          "mutatorName": "ArithmeticOperator",
+          "replacement": "Math.min(Math.max(0, expiresAtOrTtlSeconds), maximumRefreshLifetimeSeconds) / 1000",
+          "location": {
+            "end": {
+              "column": 19,
+              "line": 343
+            },
+            "start": {
+              "column": 11,
+              "line": 340
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "40"
+          ]
+        },
+        {
+          "id": "9",
+          "mutatorName": "MethodExpression",
+          "replacement": "Math.max(Math.max(0, expiresAtOrTtlSeconds), maximumRefreshLifetimeSeconds)",
+          "location": {
+            "end": {
+              "column": 12,
+              "line": 343
+            },
+            "start": {
+              "column": 11,
+              "line": 340
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "40"
+          ]
+        },
+        {
+          "id": "10",
+          "mutatorName": "MethodExpression",
+          "replacement": "Math.min(0, expiresAtOrTtlSeconds)",
+          "location": {
+            "end": {
+              "column": 47,
+              "line": 341
+            },
+            "start": {
+              "column": 13,
+              "line": 341
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "40"
+          ]
+        },
+        {
+          "id": "11",
+          "mutatorName": "BooleanLiteral",
+          "replacement": "false",
+          "location": {
+            "end": {
+              "column": 21,
+              "line": 346
+            },
+            "start": {
+              "column": 17,
+              "line": 346
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "39"
+          ]
+        },
+        {
+          "id": "12",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 25,
+              "line": 348
+            },
+            "start": {
+              "column": 17,
+              "line": 348
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "39"
+          ]
+        },
+        {
+          "id": "13",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "location": {
+            "end": {
+              "column": 20,
+              "line": 349
+            },
+            "start": {
+              "column": 13,
+              "line": 349
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "39"
+          ]
+        },
+        {
+          "id": "14",
+          "mutatorName": "MethodExpression",
+          "replacement": "Math.min(0, Math.floor(remainingMs))",
+          "location": {
+            "end": {
+              "column": 51,
+              "line": 350
+            },
+            "start": {
+              "column": 15,
+              "line": 350
+            }
+          },
+          "status": "Killed",
+          "killedBy": [
+            "39"
+          ]
+        }
+      ]
+    }
+  ]
+}

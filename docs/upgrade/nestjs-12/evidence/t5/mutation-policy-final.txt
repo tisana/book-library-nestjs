@@ -1,0 +1,65 @@
+✔ hashes text and canonical mutant identity with hand-derived literals (2.347832ms)
+✔ rejects a raw combined score below 70 (5.696581ms)
+✔ rejects a score below the tracked upward-only baseline (36.380509ms)
+✔ validates but does not compare smoke score with the complete baseline (0.822532ms)
+✔ accepts a null baseline for smoke and complete profiles (1.306619ms)
+✔ records a schema-v1 baseline from exact complete provenance (15.149947ms)
+✔ refuses a baseline when complete provenance is not exact (146.747472ms)
+✔ record-baseline CLI validates before writing the tracked baseline (865.487339ms)
+✔ rejects a surviving mutant overlapping a critical rule (7.12985ms)
+✔ rejects a no-coverage mutant overlapping a critical rule (0.784025ms)
+✔ rejects a report location beyond its source lines (5.28326ms)
+✔ rejects a report location beyond its source columns (0.376319ms)
+✔ accepts only an exact equivalent fingerprint tied to source SHA and rule id (3.13698ms)
+▶ rejects stale source SHA, expired equivalent entries, and wildcard entries
+  ✔ stale manifest hash (0.393606ms)
+  ✔ stale allowlist hash (5.008468ms)
+  ✔ expired entry (0.354413ms)
+  ✔ wildcard entry (0.265997ms)
+✔ rejects stale source SHA, expired equivalent entries, and wildcard entries (7.094321ms)
+✔ validates source hashes canonically across LF and CRLF without accepting drift (0.618123ms)
+▶ rejects reports whose mutated file set is not exactly the five selected files
+  ✔ missing file (0.239349ms)
+  ✔ extra file (0.217786ms)
+  ✔ backslash path (0.240912ms)
+✔ rejects reports whose mutated file set is not exactly the five selected files (1.287335ms)
+✔ writes module scores and critical findings without changing the raw score (3.939846ms)
+✔ uses Stryker raw status semantics and excludes ignored mutants (4.868775ms)
+▶ returns raw score 100 for empty and ignored-only reports
+  ✔ empty mutants (0.473464ms)
+  ✔ ignored-only mutants (0.331849ms)
+✔ returns raw score 100 for empty and ignored-only reports (1.102145ms)
+▶ fails closed on malformed schema, status, profile, paths, hashes, ranges, allowlist, and baseline
+  ✔ manifest schema (0.199704ms)
+  ✔ unknown and pending statuses (0.230388ms)
+  ✔ profile (0.101919ms)
+  ✔ manifest path (0.092071ms)
+  ✔ hash (0.089969ms)
+  ✔ range (0.309508ms)
+  ✔ allowlist cardinality (35.598272ms)
+  ✔ baseline (0.580618ms)
+  ✔ report location (0.371296ms)
+  ✔ ordered report location (0.316644ms)
+✔ fails closed on malformed schema, status, profile, paths, hashes, ranges, allowlist, and baseline (38.933089ms)
+✔ validates manifest against temporary source files (0.313075ms)
+✔ keeps Task 5 mutation assertions on public service paths (7.594369ms)
+✔ checks the tracked critical-rule manifest and reviewed allowlist (548.053903ms)
+✔ evaluates an exact tracked pre-baseline smoke artifact (59.310205ms)
+▶ check mode rejects stale SHA and missing or ambiguous anchors
+  ✔ stale source SHA (190.241112ms)
+  ✔ missing anchor (149.208192ms)
+  ✔ ambiguous anchor (291.286844ms)
+✔ check mode rejects stale SHA and missing or ambiguous anchors (632.233665ms)
+✔ candidate mode writes only a refreshed review candidate below reports (254.868699ms)
+✔ candidate mode emits the same source hash for LF and CRLF checkouts (253.46172ms)
+✔ requires complete ordered rule identity and invalidates a source edit (36.246433ms)
+✔ keeps the Fix Round 1 point inventory as a lower-bound overlap smoke (4.348568ms)
+✔ protects every named Plan 3 executable line with same-category manifest rules (44.214186ms)
+ℹ tests 52
+ℹ suites 0
+ℹ pass 52
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3421.660941

@@ -11,8 +11,20 @@ const SELECTED_SOURCES = [
 const PACKAGE_JEST_CONFIG = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf8'),
 ).jest;
+// Mutation instrumentation already suppresses type checking in its sandbox.
+// Keep mandatory unit coverage on the typed compiler; use the production-like
+// isolated emitter only for mutation workers, with identical business/DI emit.
+const MUTATION_JEST_CONFIG = {
+  ...PACKAGE_JEST_CONFIG,
+  transform: {
+    '^.+\\.(t|j)s$': [
+      'ts-jest',
+      { tsconfig: '<rootDir>/../tsconfig.mutation.json' },
+    ],
+  },
+};
 const PACKAGE_JEST_CONFIG_WITHOUT_TEST_REGEX = Object.fromEntries(
-  Object.entries(PACKAGE_JEST_CONFIG).filter(([key]) => key !== 'testRegex'),
+  Object.entries(MUTATION_JEST_CONFIG).filter(([key]) => key !== 'testRegex'),
 );
 const SMOKE_SHARDS = [
   {
@@ -110,6 +122,8 @@ export function buildStrykerConfig(
     testRunner: 'jest',
     coverageAnalysis: 'perTest',
     reporters: ['clear-text', 'progress', 'json', 'html'],
+    // Generated snapshots must not become input to later mutation runs.
+    ignorePatterns: ['reports/mutation/**'],
     thresholds: { high: 80, low: 70, break: 70 },
     concurrency: Math.min(
       validatedProfile === 'complete' ? 4 : shard.concurrency,
@@ -128,7 +142,7 @@ export function buildStrykerConfig(
           }
         : {
             projectType: 'custom',
-            configFile: 'package.json',
+            config: MUTATION_JEST_CONFIG,
             enableFindRelatedTests: true,
           },
     mutate:

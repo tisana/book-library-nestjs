@@ -1,0 +1,210 @@
+✔ complete profile has five disjoint full-source shards (7.660694ms)
+✔ smoke shards own every reviewed rule exactly once with isolated config (1.138333ms)
+✔ smoke uses the exact five-shard concurrency map (0.97111ms)
+✖ smoke members selects only its direct service specification (10.863842ms)
+✔ smoke members Jest config discovers exactly the intended specification (2565.784813ms)
+✖ all shards and complete use exact Jest, reporters, mutators, thresholds, and fixed concurrency (1.433902ms)
+✔ module load requires an exact shard for both profiles (2725.376732ms)
+✔ launches the local npx shim with shell disabled (397.623198ms)
+✔ complete shard retains the 900000 ms deadline and escalation (15.488812ms)
+✖ timeout gracefully terminates and verifies a real descendant process tree (20806.565584ms)
+✖ timeout force-kills a real SIGTERM-resistant process tree after ten seconds (20799.937631ms)
+✔ runner writes commit, Node, OS, source hashes, score and policy result (552.550286ms)
+✔ runner cannot bypass policy enforcement when Stryker exits zero (201.507451ms)
+✔ smoke records each shard duration at its actual settlement (138.450981ms)
+✔ smoke writes isolated reports, logs, temp paths, and per-shard durations (187.794957ms)
+▶ canonical merge fails closed on a missing shard report or HTML
+  ✔ missing JSON (8.053352ms)
+  ✔ missing HTML (6.704957ms)
+✔ canonical merge fails closed on a missing shard report or HTML (15.313002ms)
+▶ canonical merge rejects wrong, extra, or duplicated shard ownership
+  ✔ wrong shard source (12.406589ms)
+  ✔ duplicated source assignment (54.706746ms)
+✔ canonical merge rejects wrong, extra, or duplicated shard ownership (67.594335ms)
+▶ canonical merge rejects duplicate or omitted canonical mutant identity
+  ✔ duplicate identity with different local ids (12.045404ms)
+  ✔ missing replacement identity (11.398709ms)
+✔ canonical merge rejects duplicate or omitted canonical mutant identity (23.728223ms)
+✔ canonical merge writes five source maps with unmodified statuses and truthful HTML index (17.447424ms)
+✔ canonical merge rejects a 1365-mutant whole-source union (46.655288ms)
+✔ merged policy cannot be bypassed by zero shard exits (190.594978ms)
+✔ distributed smoke config uses the approved whole-source worker map (0.437605ms)
+✔ named smoke shard runs once and writes isolated provenance artifacts (8.877891ms)
+✔ named smoke shard preserves but rejects stale mutation artifacts (4.278825ms)
+✔ local smoke evidence runs five shards sequentially with independent budgets (320.902315ms)
+▶ sequential and standalone merge preserve stale evidence but invalidate active outputs
+  ✔ sequential launch writes no reports (69.596675ms)
+  ✔ standalone merge fails before writing a fresh aggregate (38.341677ms)
+✔ sequential and standalone merge preserve stale evidence but invalidate active outputs (108.635979ms)
+✔ whole-source merge rejects mismatched shard provenance (65.42299ms)
+✔ whole-source merge returns five files and exactly 1366 identities (35.731002ms)
+✔ whole-source merge writes a complete distributed policy summary (423.273475ms)
+✔ named complete shard runs once with isolated 900000 ms evidence (17.64292ms)
+✔ named complete shard preserves but rejects stale mutation artifacts (2.021086ms)
+▶ complete canonical merge is id-independent and requires exact provenance and 1727 union
+  ✔ exact five-source union (176.171583ms)
+  ✔ duplicate identity with different local ids (55.713443ms)
+  ✔ one omitted mutant (58.155508ms)
+  ✔ mixed commit provenance (72.117624ms)
+✔ complete canonical merge is id-independent and requires exact provenance and 1727 union (363.229254ms)
+✔ complete merge fails closed on missing current artifacts (72.174636ms)
+✔ complete merge writes one canonical policy summary for all five shards (1010.593214ms)
+✖ named smoke shard timeout cleans its exact real process tree (20787.114103ms)
+✔ mutation report directory is ignored by Git (0.914258ms)
+✔ package exposes the exact selective mutation entry points (0.454088ms)
+✖ mutation workflow distributes five shards and merges one exact profile (1.508314ms)
+ℹ tests 50
+ℹ suites 0
+ℹ pass 44
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 72596.812088
+
+✖ failing tests:
+
+test at test/quality/mutation-runner.test.mjs:752:1
+✖ smoke members selects only its direct service specification (10.863842ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  ... Skipped lines
+
+    {
+      config: {
+        collectCoverageFrom: [
+          '**/*.ts',
+          '!**/*.spec.ts',
+  ...
+        transform: {
+  +       '^.+\\.(t|j)s$': [
+  +         'ts-jest',
+  +         {
+  +           tsconfig: '<rootDir>/../tsconfig.jest.json'
+  +         }
+  +       ]
+  -       '^.+\\.(t|j)s$': 'ts-jest'
+        }
+      },
+      enableFindRelatedTests: true,
+      projectType: 'custom'
+    }
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:755:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { projectType: 'custom', config: { moduleFileExtensions: [Array], rootDir: 'src', transform: [Object], collectCoverageFrom: [Array], coverageDirectory: '../coverage/backend-unit', coverageReporters: [Array], testEnvironment: 'node', testMatch: [Array], testRegex: [] }, enableFindRelatedTests: true },
+    expected: { projectType: 'custom', config: { moduleFileExtensions: [Array], rootDir: 'src', testMatch: [Array], testRegex: [], transform: [Object], collectCoverageFrom: [Array], coverageDirectory: '../coverage/backend-unit', coverageReporters: [Array], testEnvironment: 'node' }, enableFindRelatedTests: true },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-runner.test.mjs:796:1
+✖ all shards and complete use exact Jest, reporters, mutators, thresholds, and fixed concurrency (1.433902ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  ... Skipped lines
+
+    {
+      concurrency: 4,
+      coverageAnalysis: 'perTest',
+      jest: {
+        config: {
+  ...
+          transform: {
+  +         '^.+\\.(t|j)s$': [
+  +           'ts-jest',
+  +           {
+  +             tsconfig: '<rootDir>/../tsconfig.jest.json'
+  +           }
+  +         ]
+  -         '^.+\\.(t|j)s$': 'ts-jest'
+          }
+        },
+        enableFindRelatedTests: true,
+        projectType: 'custom'
+      },
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:821:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { testRunner: 'jest', coverageAnalysis: 'perTest', reporters: [ 'clear-text', 'progress', 'json', 'html' ], thresholds: { high: 80, low: 70, break: 70 }, concurrency: 4, jest: { projectType: 'custom', config: [Object], enableFindRelatedTests: true } },
+    expected: { testRunner: 'jest', coverageAnalysis: 'perTest', reporters: [ 'clear-text', 'progress', 'json', 'html' ], thresholds: { high: 80, low: 70, break: 70 }, concurrency: 4, jest: { projectType: 'custom', config: [Object], enableFindRelatedTests: true } },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-runner.test.mjs:996:1
+✖ timeout gracefully terminates and verifies a real descendant process tree (20806.565584ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  true !== false
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:1012:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-runner.test.mjs:1023:1
+✖ timeout force-kills a real SIGTERM-resistant process tree after ten seconds (20799.937631ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  true !== false
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:1048:14)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-runner.test.mjs:1906:1
+✖ named smoke shard timeout cleans its exact real process tree (20787.114103ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  true !== false
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:1918:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test/quality/mutation-runner.test.mjs:1957:1
+✖ mutation workflow distributes five shards and merges one exact profile (1.508314ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  0 !== 2
+
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:2014:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
