@@ -1,0 +1,33 @@
+
+> book-library@0.0.1 pretest:production:report
+> node -e "require('fs').mkdirSync('test-results', { recursive: true })"
+
+
+> book-library@0.0.1 test:production:report
+> npm run build && node --experimental-vm-modules node_modules/jest/bin/jest.js --config ./test/jest-production.json --runInBand --detectOpenHandles --json --outputFile=test-results/backend-production.json
+
+
+> book-library@0.0.1 prebuild
+> rimraf dist
+
+
+> book-library@0.0.1 build
+> nest build
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+
+Test Suites: 2 passed, 2 total
+Tests:       54 passed, 54 total
+Snapshots:   0 total
+Time:        52.773 s, estimated 122 s
+Ran all test suites.
+Test results written to: test-results/backend-production.json
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

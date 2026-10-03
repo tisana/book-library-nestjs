@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "numTotalTestSuites": 2,
+  "numPassedTestSuites": 2,
+  "numFailedTestSuites": 0,
+  "numTotalTests": 54,
+  "numPassedTests": 54,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "command": "npm run test:production:report",
+  "initialReportDirectoryExists": false,
+  "processExitCode": 0
+}

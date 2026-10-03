@@ -50,6 +50,7 @@
     "test:live:serve": "ts-node --transpile-only -r tsconfig-paths/register scripts/quality/serve-live-artifact.ts",
     "frontend:test:live": "npm run test:live --prefix frontend",
     "verify:production-image": "ts-node --transpile-only -r tsconfig-paths/register scripts/quality/verify-production-image.ts",
+    "pretest:production:report": "node -e \"require('fs').mkdirSync('test-results', { recursive: true })\"",
     "test:production:report": "npm run build && node --experimental-vm-modules node_modules/jest/bin/jest.js --config ./test/jest-production.json --runInBand --detectOpenHandles --json --outputFile=test-results/backend-production.json"
   },
   "dependencies": {
