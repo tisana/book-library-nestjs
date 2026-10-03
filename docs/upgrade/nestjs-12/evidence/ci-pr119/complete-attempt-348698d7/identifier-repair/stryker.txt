@@ -1,0 +1,150 @@
+[32m16:43:52 (96142) INFO ProjectReader[39m Found 1 of 1720 file(s) to be mutated.
+[32m16:43:52 (96142) INFO Instrumenter[39m Instrumented 1 source file(s) with 417 mutant(s)
+[32m16:43:56 (96142) INFO ConcurrencyTokenProvider[39m Creating 2 test runner process(es).
+[32m16:43:57 (96142) INFO BroadcastReporter[39m Detected that current console does not support the "progress" reporter, downgrading to "progress-append-only" reporter
+[32m16:43:58 (96142) INFO DryRunExecutor[39m Starting initial test run (jest test runner with "perTest" coverage analysis). This may take a while.
+[32m16:44:01 (96142) INFO DryRunExecutor[39m Initial test run succeeded. Ran 62 tests in 3 seconds (net 199 ms, overhead 2883 ms).
+Mutation testing 2% (elapsed: <1m, remaining: ~8m) 13/417 tested (0 survived, 0 timed out)
+Mutation testing 4% (elapsed: <1m, remaining: ~7m) 26/417 tested (0 survived, 0 timed out)
+Mutation testing 8% (elapsed: <1m, remaining: ~5m) 38/417 tested (0 survived, 0 timed out)
+Mutation testing 11% (elapsed: <1m, remaining: ~5m) 50/417 tested (0 survived, 0 timed out)
+Mutation testing 14% (elapsed: <1m, remaining: ~5m) 62/417 tested (0 survived, 2 timed out)
+Mutation testing 15% (elapsed: ~1m, remaining: ~5m) 73/417 tested (0 survived, 2 timed out)
+Mutation testing 16% (elapsed: ~1m, remaining: ~5m) 84/417 tested (0 survived, 2 timed out)
+Mutation testing 16% (elapsed: ~1m, remaining: ~6m) 93/417 tested (0 survived, 2 timed out)
+Mutation testing 19% (elapsed: ~1m, remaining: ~6m) 103/417 tested (0 survived, 2 timed out)
+Mutation testing 22% (elapsed: ~1m, remaining: ~5m) 112/417 tested (1 survived, 2 timed out)
+Mutation testing 25% (elapsed: ~1m, remaining: ~5m) 120/417 tested (1 survived, 2 timed out)
+Mutation testing 26% (elapsed: ~2m, remaining: ~5m) 127/417 tested (1 survived, 2 timed out)
+Mutation testing 28% (elapsed: ~2m, remaining: ~5m) 136/417 tested (1 survived, 2 timed out)
+Mutation testing 28% (elapsed: ~2m, remaining: ~5m) 139/417 tested (1 survived, 3 timed out)
+Mutation testing 30% (elapsed: ~2m, remaining: ~5m) 150/417 tested (1 survived, 3 timed out)
+Mutation testing 31% (elapsed: ~2m, remaining: ~5m) 158/417 tested (1 survived, 3 timed out)
+Mutation testing 32% (elapsed: ~2m, remaining: ~5m) 169/417 tested (1 survived, 3 timed out)
+Mutation testing 33% (elapsed: ~3m, remaining: ~5m) 179/417 tested (1 survived, 3 timed out)
+Mutation testing 34% (elapsed: ~3m, remaining: ~6m) 188/417 tested (1 survived, 3 timed out)
+Mutation testing 34% (elapsed: ~3m, remaining: ~6m) 196/417 tested (1 survived, 3 timed out)
+Mutation testing 35% (elapsed: ~3m, remaining: ~6m) 205/417 tested (1 survived, 3 timed out)
+Mutation testing 35% (elapsed: ~3m, remaining: ~6m) 213/417 tested (1 survived, 3 timed out)
+Mutation testing 36% (elapsed: ~3m, remaining: ~6m) 221/417 tested (1 survived, 3 timed out)
+Mutation testing 36% (elapsed: ~4m, remaining: ~6m) 228/417 tested (1 survived, 3 timed out)
+Mutation testing 36% (elapsed: ~4m, remaining: ~7m) 235/417 tested (1 survived, 3 timed out)
+Mutation testing 36% (elapsed: ~4m, remaining: ~7m) 241/417 tested (1 survived, 3 timed out)
+Mutation testing 37% (elapsed: ~4m, remaining: ~7m) 246/417 tested (1 survived, 3 timed out)
+Mutation testing 38% (elapsed: ~4m, remaining: ~7m) 253/417 tested (1 survived, 3 timed out)
+Mutation testing 41% (elapsed: ~4m, remaining: ~6m) 259/417 tested (1 survived, 3 timed out)
+Mutation testing 42% (elapsed: ~5m, remaining: ~6m) 263/417 tested (1 survived, 3 timed out)
+Mutation testing 43% (elapsed: ~5m, remaining: ~6m) 267/417 tested (1 survived, 3 timed out)
+Mutation testing 43% (elapsed: ~5m, remaining: ~6m) 270/417 tested (1 survived, 3 timed out)
+Mutation testing 44% (elapsed: ~5m, remaining: ~6m) 275/417 tested (1 survived, 3 timed out)
+Mutation testing 45% (elapsed: ~5m, remaining: ~6m) 279/417 tested (1 survived, 4 timed out)
+Mutation testing 46% (elapsed: ~5m, remaining: ~6m) 288/417 tested (1 survived, 4 timed out)
+Mutation testing 47% (elapsed: ~6m, remaining: ~6m) 296/417 tested (1 survived, 4 timed out)
+Mutation testing 47% (elapsed: ~6m, remaining: ~6m) 306/417 tested (1 survived, 4 timed out)
+Mutation testing 49% (elapsed: ~6m, remaining: ~6m) 316/417 tested (1 survived, 4 timed out)
+Mutation testing 54% (elapsed: ~6m, remaining: ~5m) 324/417 tested (1 survived, 4 timed out)
+Mutation testing 60% (elapsed: ~6m, remaining: ~4m) 331/417 tested (1 survived, 4 timed out)
+Mutation testing 65% (elapsed: ~6m, remaining: ~3m) 337/417 tested (1 survived, 4 timed out)
+Mutation testing 69% (elapsed: ~7m, remaining: ~3m) 344/417 tested (1 survived, 4 timed out)
+Mutation testing 72% (elapsed: ~7m, remaining: ~2m) 351/417 tested (1 survived, 4 timed out)
+Mutation testing 75% (elapsed: ~7m, remaining: ~2m) 360/417 tested (1 survived, 4 timed out)
+Mutation testing 78% (elapsed: ~7m, remaining: ~2m) 365/417 tested (1 survived, 4 timed out)
+Mutation testing 81% (elapsed: ~7m, remaining: ~1m) 371/417 tested (1 survived, 4 timed out)
+Mutation testing 82% (elapsed: ~7m, remaining: ~1m) 375/417 tested (1 survived, 4 timed out)
+Mutation testing 83% (elapsed: ~8m, remaining: ~1m) 378/417 tested (1 survived, 4 timed out)
+Mutation testing 87% (elapsed: ~8m, remaining: ~1m) 388/417 tested (1 survived, 5 timed out)
+Mutation testing 92% (elapsed: ~8m, remaining: <1m) 400/417 tested (1 survived, 6 timed out)
+Mutation testing 96% (elapsed: ~8m, remaining: <1m) 408/417 tested (1 survived, 6 timed out)
+
+All tests/auth-identifier-repair.service.spec.ts
+  ✓ AuthIdentifierRepairService rejects unstable resume id undefined before authorization or mutation [line 233] (killed 6)
+  ~ AuthIdentifierRepairService rejects unstable resume id "" before authorization or mutation [line 233] (covered 8)
+  ✓ AuthIdentifierRepairService rejects unstable resume id "   " before authorization or mutation [line 233] (killed 1)
+  ✓ AuthIdentifierRepairService rejects a missing current key version before operation lookup or creation [line 257] (killed 17)
+  ✓ AuthIdentifierRepairService rejects an existing operation with a wrong operation type without mutation [line 306] (killed 15)
+  ✓ AuthIdentifierRepairService rejects an existing operation with a wrong manifest key version without mutation [line 306] (killed 2)
+  ✓ AuthIdentifierRepairService rejects an existing operation with a wrong manifest hash without mutation [line 306] (killed 2)
+  ✓ AuthIdentifierRepairService returns the same public error for a missing conflict [line 335] (killed 4)
+  ✓ AuthIdentifierRepairService returns the same public error for a non-conflict reservation [line 335] (killed 1)
+  ✓ AuthIdentifierRepairService rejects a manifest with an omitted claimant before operation mutation [line 379] (killed 8)
+  ✓ AuthIdentifierRepairService rejects a manifest with a foreign claimant before operation mutation [line 379] (killed 2)
+  ~ AuthIdentifierRepairService rejects a manifest with a duplicate claimant before operation mutation [line 379] (covered 23)
+  ✓ AuthIdentifierRepairService returns the same public error when apply cannot find its operation [line 403] (killed 6)
+  ✓ AuthIdentifierRepairService returns the same public error when cancel cannot find its operation [line 403] (killed 1)
+  ✓ AuthIdentifierRepairService uses bounded unique batches, reauthorizes each mutation boundary, and completes atomically [line 425] (killed 44)
+  ✓ AuthIdentifierRepairService fails closed before parent completion when authorization expires [line 526] (killed 6)
+  ✓ AuthIdentifierRepairService reverse-compensates batches before terminal cancellation [line 584] (killed 21)
+  ✓ AuthIdentifierRepairService resumes a retryable operation through the exact Applying transition [line 668] (killed 1)
+  ✓ AuthIdentifierRepairService dry-runs an existing matching operation without mutating any model [line 727] (killed 4)
+  ✓ AuthIdentifierRepairService authorizes and persists a new dry-run operation bound to the exact claimants [line 780] (killed 6)
+  ✓ AuthIdentifierRepairService rejects an unavailable manifest key before looking up an operation [line 827] (killed 4)
+  ✓ AuthIdentifierRepairService replays a completed operation without preparing or activating batches [line 852] (killed 7)
+  ✓ AuthIdentifierRepairService fails closed when a resume manifest differs from the persisted hash [line 895] (killed 9)
+  ✓ AuthIdentifierRepairService replays terminal cancellation without compensation mutations [line 920] (killed 4)
+  ✓ AuthIdentifierRepairService leaves cancellation retryable when authorization expires between compensation batches [line 953] (killed 4)
+  ~ AuthIdentifierRepairService revalidates authorization after the final compensation batch before parent mutations [line 1003] (covered 26)
+  ✓ AuthIdentifierRepairService prepares a new bounded batch before applying its aggregate changes [line 1053] (killed 38)
+  ✓ AuthIdentifierRepairService binds a multi-assignment checkpoint with the exact ordered separator [line 1143] (killed 1)
+  ✓ AuthIdentifierRepairService activates a prepared batch and keeps its identifiers gated until parent completion [line 1173] (killed 23)
+  ✓ AuthIdentifierRepairService compensates batch assignments in reverse and releases their reservations [line 1219] (killed 28)
+  ✓ AuthIdentifierRepairService treats already prepared batch work as idempotent without opening a transaction [line 1301] (killed 3)
+  ✓ AuthIdentifierRepairService does not activate missing or already activated batches [line 1317] (killed 4)
+  ✓ AuthIdentifierRepairService does not compensate an already compensated batch [line 1330] (killed 1)
+  ✓ AuthIdentifierRepairService completes the parent only after recording its terminal event [line 1342] (killed 19)
+  ✓ AuthIdentifierRepairService records a cancellation terminal event before failing its parent [line 1412] (killed 11)
+  ✓ AuthIdentifierRepairService reserves a replacement with pending ownership for the repair operation [line 1457] (killed 16)
+  ✓ AuthIdentifierRepairService reserves a staff replacement with the exact email identifier type [line 1500] (killed 1)
+  ✓ AuthIdentifierRepairService maps duplicate replacement reservations to a conflict without leaking database errors [line 1531] (killed 8)
+  ✓ AuthIdentifierRepairService rethrows the exact null nonduplicate replacement rejection [line 1552] (killed 7)
+  ✓ AuthIdentifierRepairService rethrows the exact string nonduplicate replacement rejection [line 1552] (killed 1)
+  ~ AuthIdentifierRepairService rethrows the exact empty object nonduplicate replacement rejection [line 1552] (covered 29)
+  ✓ AuthIdentifierRepairService rethrows the exact nonduplicate code nonduplicate replacement rejection [line 1552] (killed 1)
+  ~ AuthIdentifierRepairService honors the duplicate-code ownership check before reading the code value [line 1571] (covered 29)
+  ✓ AuthIdentifierRepairService rejects a mismatched pending batch checkpoint before aggregate mutation and ends the session [line 1594] (killed 7)
+  ✓ AuthIdentifierRepairService rejects activation when a public apply observes a batch that is no longer prepared [line 1625] (killed 3)
+  ✓ AuthIdentifierRepairService fails before repair writes when MongoDB transaction support is absent [line 1657] (killed 2)
+  ✓ AuthIdentifierRepairService maps a null replacement upsert to the fixed unavailable error and ends the session [line 1688] (killed 2)
+  ~ AuthIdentifierRepairService maps duplicate replacement writes to the fixed reservation conflict [line 1714] (covered 163)
+  ~ AuthIdentifierRepairService rethrows a nonduplicate replacement write failure unchanged [line 1747] (covered 159)
+  ✓ AuthIdentifierRepairService maps a missing staff aggregate to the fixed subject-not-found error [line 1792] (killed 4)
+  ~ AuthIdentifierRepairService maps a missing member aggregate to the fixed subject-not-found error [line 1792] (covered 157)
+  ✓ AuthIdentifierRepairService skips the aggregate update when the replacement identifier is already assigned [line 1847] (killed 8)
+  ✓ AuthIdentifierRepairService updates staff email and member loginIdentifier while incrementing authVersion once [line 1897] (killed 9)
+  ✓ AuthIdentifierRepairService continues an exact matching pending checkpoint without recreating its batch [line 1989] (killed 1)
+  ✓ AuthIdentifierRepairService restores the exact staff aggregate owner during compensation [line 2021] (killed 9)
+  ✓ AuthIdentifierRepairService rejects a dry-run manifest when the conflict has no persisted claimants [line 2043] (killed 1)
+  ~ AuthIdentifierRepairService rejects public apply when its manifest differs from the dry-run operation [line 2074] (covered 32)
+  ✓ AuthIdentifierRepairService rejects public cancel with persisted-manifest authorization wrong operation type [line 2107] (killed 7)
+  ~ AuthIdentifierRepairService rejects public cancel with persisted-manifest authorization missing manifest hash [line 2107] (covered 17)
+  ~ AuthIdentifierRepairService rejects public cancel with persisted-manifest authorization missing manifest key version [line 2107] (covered 18)
+  ✓ AuthIdentifierRepairService releases the original conflict under the first reassigned subject and records the terminal event first [line 2129] (killed 12)
+  ✓ AuthIdentifierRepairService skips non-releasable cancellation assignments and still records a redacted failed terminal event first [line 2232] (killed 8)
+
+[Survived] StringLiteral
+src/auth/auth-identifier-repair.service.ts:292:39
+-             .update(item.newIdentifier, 'utf8')
++             .update(item.newIdentifier, "")
+Tests ran:
+    AuthIdentifierRepairService prepares a new bounded batch before applying its aggregate changes
+    AuthIdentifierRepairService binds a multi-assignment checkpoint with the exact ordered separator
+    AuthIdentifierRepairService rejects a mismatched pending batch checkpoint before aggregate mutation and ends the session
+  and 10 more tests!
+
+
+Ran 8.07 tests per mutant on average.
+-----------------------------------|------------------|----------|-----------|------------|----------|----------|
+                                   | % Mutation score |          |           |            |          |          |
+File                               |  total | covered | # killed | # timeout | # survived | # no cov | # errors |
+-----------------------------------|--------|---------|----------|-----------|------------|----------|----------|
+All files                          |  99.76 |   99.76 |      410 |         6 |          1 |        0 |        0 |
+ auth-identifier-repair.service.ts |  99.76 |   99.76 |      410 |         6 |          1 |        0 |        0 |
+-----------------------------------|--------|---------|----------|-----------|------------|----------|----------|
+[32m16:52:40 (96142) INFO MutationTestReportHelper[39m Final mutation score of 99.76 is greater than or equal to break threshold 70
+[32m16:52:40 (96142) INFO JsonReporter[39m Your report can be found at: file:///workspace/book-library-nestjs/reports/mutation/complete/shards/identifier-repair/mutation.json
+[32m16:52:40 (96142) INFO HtmlReporter[39m Your report can be found at: file:///workspace/book-library-nestjs/reports/mutation/complete/shards/identifier-repair/mutation.html
+[32m16:52:40 (96142) INFO MutationTestExecutor[39m Done in 8 minutes and 47 seconds.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
