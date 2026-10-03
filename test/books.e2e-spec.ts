@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { BookResponseDto } from '../src/books/dto/book.dto';
 import { BooksService } from '../src/books/books.service';
 import { Test } from '@nestjs/testing';

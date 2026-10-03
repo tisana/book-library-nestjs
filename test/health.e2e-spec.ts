@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test } from '@nestjs/testing';
 import { Connection } from 'mongoose';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AuthIdentifierRepairKeyPolicyService } from '../src/auth/auth-identifier-repair-key-policy.service';
 import { HealthController } from '../src/health/health.controller';
 import {

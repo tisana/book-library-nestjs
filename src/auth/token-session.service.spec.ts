@@ -1,5 +1,5 @@
 import { Logger, UnauthorizedException } from '@nestjs/common';
-import * as crypto from 'node:crypto';
+import crypto from 'node:crypto';
 import { deferred } from '../../test/support/backend-coverage-fixtures';
 import { createReplayMarker } from '../../test/support/critical-auth-fixtures';
 import {

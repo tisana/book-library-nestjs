@@ -6,7 +6,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
+import request from 'supertest';
 
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
 import { MemberAuthGuard } from '../src/auth/member-auth.guard';

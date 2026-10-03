@@ -6,7 +6,7 @@ import { NestFactory } from '@nestjs/core';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import mongoose, { Connection, Types } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
-import * as request from 'supertest';
+import request from 'supertest';
 import {
   MigrationConnection,
   loadMigrations,

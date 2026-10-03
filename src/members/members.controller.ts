@@ -22,7 +22,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { MemberAuthGuard } from '../auth/member-auth.guard';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { RequirePermissions } from '../auth/permissions.decorator';
-import { AuditActor } from '../common/audit/audit-context';
+import type { AuditActor } from '../common/audit/audit-context';
 import { AuthPermission } from '../common/enums/auth-permission.enum';
 import { BorrowingsService } from '../borrowings/borrowings.service';
 import {

@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import mongoose, { Connection, Types } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import {
   MigrationConnection,

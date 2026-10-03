@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "NodeNext",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -8,9 +8,13 @@
     "target": "es2017",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
     "incremental": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "moduleResolution": "NodeNext",
+    "rootDir": ".",
+    "strict": false,
+    "types": ["node", "jest"],
+    "isolatedModules": true
   },
-  "exclude": ["node_modules", "dist", "frontend"]
+  "exclude": ["node_modules", "dist", "dist-performance", "frontend"]
 }

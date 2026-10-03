@@ -1,7 +1,17 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "incremental": false
+    "incremental": false,
+    "rootDir": "src",
+    "types": ["node"]
   },
-  "exclude": ["node_modules", "test", "dist", "frontend", "**/*spec.ts"]
+  "exclude": [
+    "node_modules",
+    "test",
+    "dist",
+    "dist-performance",
+    "frontend",
+    "**/*spec.ts"
+  ],
+  "include": ["src/**/*.ts"]
 }
