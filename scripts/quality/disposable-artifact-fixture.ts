@@ -110,8 +110,14 @@ export async function createArtifactFixture(bindAll = false) {
       otherMemberId,
       bookId,
       async stop() {
-        await connection.close();
-        await mongo.stop();
+        const outcomes = await Promise.allSettled([
+          Promise.resolve().then(() => connection.close()),
+          Promise.resolve().then(() => mongo.stop()),
+        ]);
+        const failed = outcomes.find(
+          (outcome) => outcome.status === 'rejected',
+        );
+        if (failed?.status === 'rejected') throw failed.reason;
       },
     };
   } catch (error) {

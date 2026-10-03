@@ -38,178 +38,191 @@ async function until(check: () => Promise<boolean>, budget = 75000) {
   throw new Error('Bounded rehearsal check failed');
 }
 async function main() {
-  const fixture = await createArtifactFixture(true); // migration helper logs are outside machine JSON
-  const directory = await mkdtemp(join(tmpdir(), 'nestjs-t6-'));
+  let fixtureToClean:
+    | Awaited<ReturnType<typeof createArtifactFixture>>
+    | undefined;
+  let directoryToClean: string | undefined;
   const containers: string[] = [];
-  const origin = 'https://artifact.example.test';
-  const gateway = JSON.parse(docker(['network', 'inspect', 'bridge']))[0].IPAM
-    .Config[0].Gateway;
-  const envFile = join(directory, 'app.env');
-  await writeFile(
-    envFile,
-    Object.entries({
-      ...fixture.environment,
-      MONGODB_URI: fixture.uri.replace('127.0.0.1', gateway),
-    })
-      .map(([k, v]) => `${k}=${v}`)
-      .join('\n'),
-    { mode: 0o600 },
-  );
-  const families = fixture.connection.collection('refresh_token_families');
-  const markers = fixture.connection.collection('refresh_token_replay_markers');
-  const operations = fixture.connection.collection(
-    'auth_identifier_operations',
-  );
-  let live: string | undefined;
-  let base = '';
-  let cookie = '';
-  let access = '';
-  let originalCookie = '';
-  const checkpoints: unknown[] = [];
-  async function http(path: string, body?: unknown, session = cookie) {
-    return fetch(base + path, {
-      method: body === undefined ? 'GET' : 'POST',
-      headers: {
-        Origin: origin,
-        ...(body === undefined
-          ? { Authorization: `Bearer ${access}` }
-          : { 'content-type': 'application/json' }),
-        ...(session ? { Cookie: session } : {}),
-      },
-      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-      signal: AbortSignal.timeout(5000),
-    });
-  }
-  async function rotate() {
-    const before = cookie;
-    const result = await http('/auth/refresh', {});
-    assert.equal(result.status, 200);
-    cookie = (result.headers.get('set-cookie') ?? '').split(';')[0];
-    assert.ok(cookie && cookie !== before);
-    access = ((await result.json()) as any).accessToken;
-    assert.ok(access);
-  }
-  async function stop() {
-    assert.ok(live);
-    const started = performance.now();
-    docker(['stop', '--time', '10', live!]);
-    const elapsedMs = Math.round(performance.now() - started);
-    const state = JSON.parse(
-      docker(['inspect', '-f', '{{json .State}}', live!]),
+  let originalFailed = false;
+  try {
+    const fixture = await createArtifactFixture(true); // migration helper logs are outside machine JSON
+    fixtureToClean = fixture;
+    const directory = await mkdtemp(join(tmpdir(), 'nestjs-t6-'));
+    directoryToClean = directory;
+    const origin = 'https://artifact.example.test';
+    const gateway = JSON.parse(docker(['network', 'inspect', 'bridge']))[0].IPAM
+      .Config[0].Gateway;
+    const envFile = join(directory, 'app.env');
+    await writeFile(
+      envFile,
+      Object.entries({
+        ...fixture.environment,
+        MONGODB_URI: fixture.uri.replace('127.0.0.1', gateway),
+      })
+        .map(([k, v]) => `${k}=${v}`)
+        .join('\n'),
+      { mode: 0o600 },
     );
-    console.error(
-      JSON.stringify({
-        check: 'signal exit observation',
+    const families = fixture.connection.collection('refresh_token_families');
+    const markers = fixture.connection.collection(
+      'refresh_token_replay_markers',
+    );
+    const operations = fixture.connection.collection(
+      'auth_identifier_operations',
+    );
+    let live: string | undefined;
+    let base = '';
+    let cookie = '';
+    let access = '';
+    let originalCookie = '';
+    const checkpoints: unknown[] = [];
+    async function http(path: string, body?: unknown, session = cookie) {
+      return fetch(base + path, {
+        method: body === undefined ? 'GET' : 'POST',
+        headers: {
+          Origin: origin,
+          ...(body === undefined
+            ? { Authorization: `Bearer ${access}` }
+            : { 'content-type': 'application/json' }),
+          ...(session ? { Cookie: session } : {}),
+        },
+        ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+        signal: AbortSignal.timeout(5000),
+      });
+    }
+    async function rotate() {
+      const before = cookie;
+      const result = await http('/auth/refresh', {});
+      assert.equal(result.status, 200);
+      cookie = (result.headers.get('set-cookie') ?? '').split(';')[0];
+      assert.ok(cookie && cookie !== before);
+      access = ((await result.json()) as any).accessToken;
+      assert.ok(access);
+    }
+    async function stop() {
+      assert.ok(live);
+      const started = performance.now();
+      docker(['stop', '--time', '10', live!]);
+      const elapsedMs = Math.round(performance.now() - started);
+      const state = JSON.parse(
+        docker(['inspect', '-f', '{{json .State}}', live!]),
+      );
+      console.error(
+        JSON.stringify({
+          check: 'signal exit observation',
+          elapsedMs,
+          exitCode: state.ExitCode,
+          oomKilled: state.OOMKilled,
+        }),
+      );
+      assert.equal(state.Running, false);
+      assert.equal(state.OOMKilled, false);
+      assert.ok([0, 143].includes(state.ExitCode));
+      assert.ok(elapsedMs < 8000);
+      checkpoints.push({
+        check: 'SIGTERM non-overlap',
         elapsedMs,
         exitCode: state.ExitCode,
-        oomKilled: state.OOMKilled,
-      }),
-    );
-    assert.equal(state.Running, false);
-    assert.equal(state.OOMKilled, false);
-    assert.ok([0, 143].includes(state.ExitCode));
-    assert.ok(elapsedMs < 8000);
-    checkpoints.push({
-      check: 'SIGTERM non-overlap',
-      elapsedMs,
-      exitCode: state.ExitCode,
-      oomKilled: false,
-    });
-    live = undefined;
-  }
-  async function seedRecovery(label: string) {
-    const reservationId = new Types.ObjectId();
-    await fixture.connection.collection('auth_identifiers').insertOne({
-      _id: reservationId,
-      normalizedIdentifier: `${label}@example.test`,
-      subjectType: 'staff',
-      subjectId: 'synthetic-staff',
-      identifierType: 'email',
-      status: 'active',
-      lastOperationId: label,
-      createdBy: 'synthetic-staff',
-      updatedBy: 'synthetic-staff',
-    });
-    await operations.insertOne({
-      operationId: label,
-      operationType: 'claim',
-      status: 'finalizing',
-      assignments: [
-        {
-          assignmentId: `${label}-assignment`,
-          subjectType: 'staff',
-          subjectId: 'synthetic-staff',
-          action: 'claim',
-          status: 'applied',
-          targetReservationId: reservationId,
-        },
-      ],
-      cleanupStatus: 'not-required',
-      requestedBy: { subjectType: 'staff', subjectId: 'synthetic-staff' },
-      leaseOwner: 'terminated-synthetic-instance',
-      leaseExpiresAt: new Date(Date.now() + 2000),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    const familyId = `${label}-orphan`,
-      tokenHash = randomBytes(32).toString('hex'),
-      rotationOperationId = `${label}-rotation`;
-    await families.insertOne({
-      familyId,
-      clientId: 'synthetic',
-      subjectType: 'staff',
-      subjectId: 'synthetic-staff',
-      scopes: [],
-      authVersion: 0,
-      status: 'active',
-      currentTokenHash: randomBytes(32).toString('hex'),
-      lastRotationOperationId: rotationOperationId,
-      issuedAt: new Date(),
-      lastRotatedAt: new Date(),
-      expiresAt: new Date(Date.now() + 3600000),
-    });
-    await markers.insertOne({
-      tokenHash,
-      familyId,
-      status: 'pending',
-      rotationOperationId,
-      leaseExpiresAt: new Date(Date.now() + 2000),
-      expiresAt: new Date(Date.now() + 3600000),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    return { label, familyId, tokenHash };
-  }
-  async function verifyRecovery(
-    checkpoint: Awaited<ReturnType<typeof seedRecovery>>,
-  ) {
-    const elapsedMs = await until(async () => {
-      const op = await operations.findOne({ operationId: checkpoint.label });
-      const marker = await markers.findOne({ tokenHash: checkpoint.tokenHash });
-      const family = await families.findOne({ familyId: checkpoint.familyId });
-      return (
-        op?.status === 'completed' &&
-        marker?.status === 'committed' &&
-        family?.status === 'revoked'
+        oomKilled: false,
+      });
+      live = undefined;
+    }
+    async function seedRecovery(label: string) {
+      const reservationId = new Types.ObjectId();
+      await fixture.connection.collection('auth_identifiers').insertOne({
+        _id: reservationId,
+        normalizedIdentifier: `${label}@example.test`,
+        subjectType: 'staff',
+        subjectId: 'synthetic-staff',
+        identifierType: 'email',
+        status: 'active',
+        lastOperationId: label,
+        createdBy: 'synthetic-staff',
+        updatedBy: 'synthetic-staff',
+      });
+      await operations.insertOne({
+        operationId: label,
+        operationType: 'claim',
+        status: 'finalizing',
+        assignments: [
+          {
+            assignmentId: `${label}-assignment`,
+            subjectType: 'staff',
+            subjectId: 'synthetic-staff',
+            action: 'claim',
+            status: 'applied',
+            targetReservationId: reservationId,
+          },
+        ],
+        cleanupStatus: 'not-required',
+        requestedBy: { subjectType: 'staff', subjectId: 'synthetic-staff' },
+        leaseOwner: 'terminated-synthetic-instance',
+        leaseExpiresAt: new Date(Date.now() + 2000),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      const familyId = `${label}-orphan`,
+        tokenHash = randomBytes(32).toString('hex'),
+        rotationOperationId = `${label}-rotation`;
+      await families.insertOne({
+        familyId,
+        clientId: 'synthetic',
+        subjectType: 'staff',
+        subjectId: 'synthetic-staff',
+        scopes: [],
+        authVersion: 0,
+        status: 'active',
+        currentTokenHash: randomBytes(32).toString('hex'),
+        lastRotationOperationId: rotationOperationId,
+        issuedAt: new Date(),
+        lastRotatedAt: new Date(),
+        expiresAt: new Date(Date.now() + 3600000),
+      });
+      await markers.insertOne({
+        tokenHash,
+        familyId,
+        status: 'pending',
+        rotationOperationId,
+        leaseExpiresAt: new Date(Date.now() + 2000),
+        expiresAt: new Date(Date.now() + 3600000),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      return { label, familyId, tokenHash };
+    }
+    async function verifyRecovery(
+      checkpoint: Awaited<ReturnType<typeof seedRecovery>>,
+    ) {
+      const elapsedMs = await until(async () => {
+        const op = await operations.findOne({ operationId: checkpoint.label });
+        const marker = await markers.findOne({
+          tokenHash: checkpoint.tokenHash,
+        });
+        const family = await families.findOne({
+          familyId: checkpoint.familyId,
+        });
+        return (
+          op?.status === 'completed' &&
+          marker?.status === 'committed' &&
+          family?.status === 'revoked'
+        );
+      });
+      assert.equal(
+        await fixture.connection
+          .collection('security_activity_events')
+          .countDocuments({ operationId: checkpoint.label }),
+        1,
       );
-    });
-    assert.equal(
-      await fixture.connection
-        .collection('security_activity_events')
-        .countDocuments({ operationId: checkpoint.label }),
-      1,
-    );
-    const family = await families.findOne({ familyId: checkpoint.familyId });
-    assert.equal(family!.revokedReason, 'refresh-rotation-orphaned');
-    assert.equal(family!.currentTokenHash, undefined);
-    checkpoints.push({
-      check: 'durable identifier lease and orphan refresh marker recovery',
-      label: checkpoint.label,
-      elapsedMs,
-      terminalAuditEvents: 1,
-    });
-  }
-  try {
+      const family = await families.findOne({ familyId: checkpoint.familyId });
+      assert.equal(family!.revokedReason, 'refresh-rotation-orphaned');
+      assert.equal(family!.currentTokenHash, undefined);
+      checkpoints.push({
+        check: 'durable identifier lease and orphan refresh marker recovery',
+        label: checkpoint.label,
+        elapsedMs,
+        terminalAuditEvents: 1,
+      });
+    }
     let recovery: Awaited<ReturnType<typeof seedRecovery>> | undefined;
     for (const [index, image] of [
       'book-library-upgrade:rollback-old',
@@ -323,14 +336,36 @@ async function main() {
         2,
       ),
     );
+  } catch (error) {
+    originalFailed = true;
+    throw error;
   } finally {
+    const cleanupErrors: unknown[] = [];
     for (const id of containers) {
       try {
         docker(['rm', '-f', id]);
-      } catch {}
+      } catch (error) {
+        cleanupErrors.push(error);
+      }
     }
-    await fixture.stop();
-    await rm(directory, { recursive: true, force: true });
+    try {
+      await fixtureToClean?.stop();
+    } catch (error) {
+      cleanupErrors.push(error);
+    }
+    try {
+      if (directoryToClean)
+        await rm(directoryToClean, { recursive: true, force: true });
+    } catch (error) {
+      cleanupErrors.push(error);
+    }
+    if (cleanupErrors.length) {
+      if (originalFailed)
+        console.error(
+          'Additional rehearsal cleanup failure; original failure retained',
+        );
+      else throw cleanupErrors[0];
+    }
   }
 }
 main().catch((error) => {

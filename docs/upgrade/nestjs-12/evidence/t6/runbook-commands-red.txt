@@ -1,0 +1,86 @@
+✖ upgrade: running predecessor state (17.343726ms)
+✖ upgrade: ps-error predecessor state (14.197426ms)
+✔ upgrade: empty predecessor state (23.373974ms)
+✖ rollback: running predecessor state (7.864491ms)
+✖ rollback: ps-error predecessor state (10.65191ms)
+✔ rollback: empty predecessor state (8.109329ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 2
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 159.755389
+
+✖ failing tests:
+
+test at docs/upgrade/nestjs-12/evidence/t6/runbook-commands.test.mjs:16:5
+✖ upgrade: running predecessor state (17.343726ms)
+  AssertionError [ERR_ASSERTION]: unsafe state must abort command block
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/t6/runbook-commands.test.mjs:44:18)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 0,
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }
+
+test at docs/upgrade/nestjs-12/evidence/t6/runbook-commands.test.mjs:16:5
+✖ upgrade: ps-error predecessor state (14.197426ms)
+  AssertionError [ERR_ASSERTION]: unsafe state must abort command block
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/t6/runbook-commands.test.mjs:44:18)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 0,
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }
+
+test at docs/upgrade/nestjs-12/evidence/t6/runbook-commands.test.mjs:16:5
+✖ rollback: running predecessor state (7.864491ms)
+  AssertionError [ERR_ASSERTION]: unsafe state must abort command block
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/t6/runbook-commands.test.mjs:44:18)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 0,
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }
+
+test at docs/upgrade/nestjs-12/evidence/t6/runbook-commands.test.mjs:16:5
+✖ rollback: ps-error predecessor state (10.65191ms)
+  AssertionError [ERR_ASSERTION]: unsafe state must abort command block
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/docs/upgrade/nestjs-12/evidence/t6/runbook-commands.test.mjs:44:18)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 0,
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }
