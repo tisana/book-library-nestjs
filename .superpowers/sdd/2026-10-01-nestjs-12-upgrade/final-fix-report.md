@@ -1,0 +1,32 @@
+# Consolidated final-review verifier fix
+
+Base: `5a167e907aa0c7ec5348d0278caa0d48c9e82b37`. Fix and regression evidence commit: `ade92e4c31345e30300a1c64388f452f1363bcd9`. Branch: `upgrade/nestjs-12`. Node24.19.0/npm11.9.0. Both P2 findings in [final-review.md](final-review.md) are addressed; scoped independent re-review remains required. This does not close overall acceptance or authorize a release.
+
+Only `scripts/quality/verify-production-image.ts` implementation changed. Docker stderr is fully redacted with the existing configured-value and generic rules before the final 2,000-character limit. The generic failing verifier status and useful Docker action/code/context remain intact. Fixture creation and temporary-directory acquisition now occur inside an optional resource-ownership scope. Every acquired container, fixture and directory receives an independent cleanup attempt. An earlier verification failure survives additional cleanup errors; cleanup errors fail an otherwise successful verification. This follows the reviewed T6 rehearsal approach without modifying the shared fixture, application, image, runtime assertions, deadlines, CI or mutation policies.
+
+Evidence: `docs/upgrade/nestjs-12/evidence/final-fix/`.
+
+- The reviewer's unchanged harmless probe is retained in `reviewer-red-probes.cjs`; `reviewer-red-results.json` confirms the original suffix leak and three cleanup omissions against the exact base. Its assertions intentionally expect defects; it is diagnostic RED evidence, not an acceptance test.
+- `image-verifier.test.mjs` uses ordinary TypeScript transpilation of the actual verifier body, replacing only subprocess/filesystem/fixture/HTTP dependencies and exposing the existing entry promise to wait for settlement. It makes no real Docker/Mongo/environment-file calls. Error is shared across VM realms so original and cleanup error identities are asserted correctly. The one-second watchdog bounds each probe.
+- The same final test file against base verifier bytes gives RED **5 passed / 8 failed**, exit1; against fixed bytes gives GREEN **13/13 passed**, exit0, no skipped/cancelled/todo cases. The redaction probe puts a known synthetic64-character credential across the original cutoff and checks both full credential and ten-character suffix absence, exactly2,000 diagnostic characters, retained action/code and final safe context. Extra safe prefix text makes a missing final truncation fail the bound assertion.
+- Acquisition cases cover fixture rejection, early `mkdtemp` rejection, initial Docker inspection rejection and env-write rejection, with exact owned-resource cleanup events. Cleanup cases cover first-container removal failure, fixture-stop failure and directory-removal failure, independently and combined. They prove remaining containers/fixture/directory are attempted, the original named HTTP failure is retained, and cleanup-only failures still produce nonzero status. The full mocked normal verifier path passes before and after, including all four containers and existing production-contract checks.
+- Focused verifier/shared-fixture TypeScript6 no-emit check passes, exit0. Scoped Prettier and `git diff --check` pass. Raw transcripts and the focused compiler configuration are retained.
+
+Reproduce from repository root:
+
+```sh
+git show 5a167e907aa0c7ec5348d0278caa0d48c9e82b37:scripts/quality/verify-production-image.ts > /tmp/nestjs-final-fix-original-verifier.ts
+IMAGE_VERIFIER_PROBE_SOURCE=/tmp/nestjs-final-fix-original-verifier.ts node --test docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs # expected RED exit1
+node --test docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs
+node node_modules/typescript/bin/tsc -p docs/upgrade/nestjs-12/evidence/final-fix/tsconfig.json
+node node_modules/prettier/bin/prettier.cjs --check scripts/quality/verify-production-image.ts docs/upgrade/nestjs-12/evidence/final-fix/image-verifier.test.mjs docs/upgrade/nestjs-12/evidence/final-fix/tsconfig.json
+git diff --check 5a167e907aa0c7ec5348d0278caa0d48c9e82b37..HEAD -- scripts/quality/verify-production-image.ts 'docs/upgrade/nestjs-12/evidence/final-fix/*.mjs' 'docs/upgrade/nestjs-12/evidence/final-fix/*.json' 'docs/upgrade/nestjs-12/evidence/final-fix/*.cjs' .superpowers/sdd/2026-10-01-nestjs-12-upgrade/final-fix-report.md .superpowers/sdd/2026-10-01-nestjs-12-upgrade/final-review.md .superpowers/sdd/2026-10-01-nestjs-12-upgrade/progress.md
+```
+
+The raw RED test transcript retains the Node reporter's whitespace-only diagnostic lines; a blanket range whitespace check therefore reports those lines. The scoped source/test/configuration/metadata check above passes. No blanket raw-evidence whitespace pass is asserted.
+
+`input-provenance.json` binds seven current proof inputs to the fix commit, records the base verifier hash separately and verifies **all242 existing tracked evidence files** against exact base bytes. The new verifier hash is `c130fb39ef09d6a082335ee3b6c47eba35591a0d4a1ea468e3f9df3e247061f8`. The fixture is unchanged. Historical Docker image `sha256:a872334e275dc405302381a7d839950ba0ddf238be20e909352788176823a622` and its producer logs/provenance remain historical runtime evidence. These mock proofs do not establish a full image run using the new verifier. No producer hash, score, baseline, image or prior runtime claim was rebound.
+
+The parent already ran fresh dependency/typechecks,89manifest rules and10T6 command/cleanup cases during whole-branch review. Shared helper and policies are unchanged, so this focused fix does not repeat those controls, the preserved106 runner/policy and68 reporting controls, or full Docker/browser/mutation producers. No subagent, push, merge or deployment was used.
+
+Unchanged blockers: T1 actual devcontainer build/runtime verification remains blocked by configured network access; T5 actual smoke exceeded350000ms at350132ms and there is no accepted coherent current1744complete/1366smoke five-shard acceptance. Historical mutation baseline bytes remain untouched. Production still requires adopted error/latency objectives and traffic baseline, named owner, verified immutable old/new registry artifacts and protected configuration versions, deployed init/grace, backup/recovery readiness, required CI completion and separate deployment authorization. Two addressed verifier findings are not all-plan acceptance or production readiness.
