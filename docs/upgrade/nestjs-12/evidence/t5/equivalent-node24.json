@@ -1,0 +1,9 @@
+{
+  "node": "v24.19.0",
+  "vectors": 6,
+  "bufferUtf8FallbackEqual": true,
+  "hmacUtf8InputEqual": true,
+  "proof": "Node24.19 internal encoding fallback and six Unicode/NUL/surrogate vectors match. catch(()=>null) versus catch(()=>undefined) leaves identical rejection-to-fulfillment scheduling and the value is unobserved before awaited revocation. Exact expressions unchanged; only source hash/position fingerprint rebased.",
+  "expiryPreserved": true,
+  "newEntries": 0
+}

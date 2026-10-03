@@ -26,6 +26,7 @@ export default tseslint.config(
         projectService: {
           allowDefaultProject: [
             'playwright.config.ts',
+            'playwright.live.config.ts',
             'vite.config.ts',
             'vitest.config.ts',
           ],

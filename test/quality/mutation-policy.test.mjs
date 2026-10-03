@@ -149,7 +149,7 @@ function makeReport(mutantsBySource = {}) {
 }
 
 function makeCanonicalCompleteReport() {
-  const counts = [346, 346, 345, 345, 345];
+  const counts = [272, 417, 538, 286, 231];
   return makeReport(
     Object.fromEntries(
       SELECTED_SOURCES.map((source, sourceIndex) => [
@@ -165,7 +165,7 @@ function makeCanonicalCompleteReport() {
 }
 
 function makeCompleteSummary(overrides = {}) {
-  const counts = [346, 346, 345, 345, 345];
+  const counts = [272, 417, 538, 286, 231];
   return {
     profile: 'complete',
     commitSha: '0123456789abcdef0123456789abcdef01234567',
@@ -176,7 +176,7 @@ function makeCompleteSummary(overrides = {}) {
     configurationSha256:
       'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
     reportSchemaVersion: '2.0',
-    canonicalMutantCount: 1727,
+    canonicalMutantCount: 1744,
     maxShardDurationMs: 100,
     budgetMs: 900000,
     timedOut: false,
@@ -391,7 +391,7 @@ test('refuses a baseline when complete provenance is not exact', () => {
       (summary) => {
         summary.canonicalMutantCount = 1726;
       },
-      /exactly 1727/,
+      /exactly 1744/,
     ],
     [
       'timed out producer',
@@ -1055,9 +1055,9 @@ test('checks the tracked critical-rule manifest and reviewed allowlist', () => {
   assert.deepEqual(
     allowlist.entries.map((entry) => entry.fingerprint),
     [
-      '0108d029ef22842e4c8a00d900136b2dbc483f0013d796483b852f024a550cc5',
+      'acb2e7754474bbff9585c981cd3e53270038e9b17efa24ccc29d8437ba536ebd',
       'c010a2ec5f4bb9177df61f0bc8326b2d04d2463a59bf5dd2337b840dedc2f36e',
-      'b4a9385a539d4b16ca74d4f3f5c70adb2775a73e50a66a80aa1acf17e30bd51a',
+      'aacb161042f6806a7975df97942a802eda877d311c32c32bd54df465b818c4b4',
     ],
   );
   assert.deepEqual(
@@ -1282,56 +1282,56 @@ test('keeps the Fix Round 1 point inventory as a lower-bound overlap smoke', () 
     // Refresh denial, replay, revocation, and revoked/expired-family handling.
     [
       'src/auth/token-session.service.ts',
-      132,
+      139,
       'revoked/expired token rejection',
     ],
-    ['src/auth/token-session.service.ts', 163, 'replay/revocation'],
-    ['src/auth/token-session.service.ts', 191, 'replay/revocation'],
-    ['src/auth/token-session.service.ts', 197, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 170, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 198, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 204, 'replay/revocation'],
     [
       'src/auth/token-session.service.ts',
-      249,
+      267,
       'revoked/expired token rejection',
     ],
-    ['src/auth/token-session.service.ts', 275, 'replay/revocation'],
-    ['src/auth/token-session.service.ts', 292, 'replay/revocation'],
-    ['src/auth/token-session.service.ts', 299, 'replay/revocation'],
-    ['src/auth/token-session.service.ts', 356, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 293, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 310, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 317, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 374, 'replay/revocation'],
     [
       'src/auth/token-session.service.ts',
-      368,
-      'revoked/expired token rejection',
-    ],
-    ['src/auth/token-session.service.ts', 383, 'replay/revocation'],
-    [
-      'src/auth/token-session.service.ts',
-      391,
+      386,
       'revoked/expired token rejection',
     ],
     ['src/auth/token-session.service.ts', 401, 'replay/revocation'],
-    ['src/auth/token-session.service.ts', 410, 'replay/revocation'],
     [
       'src/auth/token-session.service.ts',
-      425,
+      409,
+      'revoked/expired token rejection',
+    ],
+    ['src/auth/token-session.service.ts', 419, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 428, 'replay/revocation'],
+    [
+      'src/auth/token-session.service.ts',
+      443,
       'revoked/expired token rejection',
     ],
     [
       'src/auth/token-session.service.ts',
-      435,
+      453,
       'revoked/expired token rejection',
     ],
     [
       'src/auth/token-session.service.ts',
-      445,
+      463,
       'revoked/expired token rejection',
     ],
-    ['src/auth/token-session.service.ts', 468, 'replay/revocation'],
-    ['src/auth/token-session.service.ts', 475, 'replay/revocation'],
-    ['src/auth/token-session.service.ts', 497, 'replay/revocation'],
-    ['src/auth/token-session.service.ts', 503, 'replay/revocation'],
-    ['src/auth/token-session.service.ts', 513, 'replay/revocation'],
-    ['src/auth/token-session.service.ts', 536, 'replay/revocation'],
-    ['src/auth/token-session.service.ts', 546, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 486, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 493, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 515, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 521, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 531, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 554, 'replay/revocation'],
+    ['src/auth/token-session.service.ts', 564, 'replay/revocation'],
 
     // Offline-repair authorization, claimant ownership, and terminal ordering.
     [
@@ -1488,72 +1488,72 @@ test('keeps the Fix Round 1 point inventory as a lower-bound overlap smoke', () 
     // Reconciliation lease ownership, recovery ownership, and terminal cleanup.
     [
       'src/auth/auth-identifier-reconciliation.service.ts',
-      179,
+      190,
       'member/staff ownership',
     ],
     [
       'src/auth/auth-identifier-reconciliation.service.ts',
-      222,
+      233,
       'member/staff ownership',
     ],
     [
       'src/auth/auth-identifier-reconciliation.service.ts',
-      267,
+      278,
       'terminal event/cleanup/TTL ordering',
     ],
     [
       'src/auth/auth-identifier-reconciliation.service.ts',
-      304,
+      315,
       'member/staff ownership',
     ],
     [
       'src/auth/auth-identifier-reconciliation.service.ts',
-      360,
+      371,
       'terminal event/cleanup/TTL ordering',
     ],
     [
       'src/auth/auth-identifier-reconciliation.service.ts',
-      444,
+      455,
       'terminal event/cleanup/TTL ordering',
     ],
     [
       'src/auth/auth-identifier-reconciliation.service.ts',
-      495,
+      506,
       'member/staff ownership',
     ],
     [
       'src/auth/auth-identifier-reconciliation.service.ts',
-      551,
+      562,
       'member/staff ownership',
     ],
     [
       'src/auth/auth-identifier-reconciliation.service.ts',
-      596,
+      607,
       'member/staff ownership',
     ],
     [
       'src/auth/auth-identifier-reconciliation.service.ts',
-      654,
+      665,
       'terminal event/cleanup/TTL ordering',
     ],
     [
       'src/auth/auth-identifier-reconciliation.service.ts',
-      721,
+      732,
       'terminal event/cleanup/TTL ordering',
     ],
     [
       'src/auth/auth-identifier-reconciliation.service.ts',
-      805,
+      816,
       'member/staff ownership',
     ],
     [
       'src/auth/auth-identifier-reconciliation.service.ts',
-      820,
+      831,
       'member/staff ownership',
     ],
     [
       'src/auth/auth-identifier-reconciliation.service.ts',
-      834,
+      845,
       'member/staff ownership',
     ],
 
@@ -1691,8 +1691,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
       items: [
         item(
           'token-empty-refresh-denial',
-          132,
-          133,
+          139,
+          140,
           [TOKEN_REJECTION],
           [
             'rejects malformed, missing, expired, and revoked credentials without mutation',
@@ -1700,8 +1700,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'token-family-cas-and-interruption',
-          136,
-          168,
+          143,
+          175,
           [REPLAY],
           [
             'commits a hash-only marker after operation-correlated family CAS',
@@ -1710,8 +1710,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'token-rotation-failure-denial',
-          171,
-          198,
+          178,
+          205,
           [REPLAY],
           [
             'fails closed when marker commitment is interrupted after family CAS',
@@ -1720,8 +1720,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'token-family-resolution',
-          207,
-          228,
+          214,
+          235,
           [REPLAY],
           [
             'resolves only a family id for active and replayed refresh credentials',
@@ -1729,8 +1729,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'token-expired-marker-reconciliation',
-          232,
-          272,
+          250,
+          290,
           [REPLAY, TOKEN_REJECTION],
           [
             'reconciles orphaned rotations and leaves expired pre-CAS work for takeover',
@@ -1738,22 +1738,22 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'token-refresh-revocation-selector',
-          279,
-          289,
+          297,
+          307,
           [REPLAY],
           ['revokes families and subjects idempotently'],
         ),
         item(
           'token-family-revocation-selector',
-          293,
-          296,
+          311,
+          314,
           [REPLAY],
           ['revokes families and subjects idempotently'],
         ),
         item(
           'token-subject-revocation-selector',
-          304,
-          307,
+          322,
+          325,
           [REPLAY],
           [
             'revokes current and all subject sessions without exposing token hashes',
@@ -1761,8 +1761,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'token-marker-preparation',
-          352,
-          394,
+          370,
+          412,
           [REPLAY, TOKEN_REJECTION],
           [
             'denies a lost duplicate-marker race without mutating the family',
@@ -1771,15 +1771,15 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'token-committed-marker-replay',
-          401,
-          417,
+          419,
+          435,
           [REPLAY],
           ['revokes on replay from any committed generation'],
         ),
         item(
           'token-pending-marker-takeover',
-          420,
-          470,
+          438,
+          488,
           [REPLAY, TOKEN_REJECTION],
           [
             'denies an active pending lease without mutating the family',
@@ -1789,8 +1789,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'token-interrupted-cas-recovery',
-          480,
-          497,
+          498,
+          515,
           [REPLAY],
           [
             'finalizes an uncertain family CAS that installed a successor',
@@ -1799,8 +1799,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'token-finalize-before-revoke',
-          509,
-          510,
+          527,
+          528,
           [REPLAY],
           [
             'reconciles orphaned rotations and leaves expired pre-CAS work for takeover',
@@ -1808,22 +1808,22 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'token-marker-commit-cas',
-          517,
-          533,
+          535,
+          551,
           [REPLAY],
           ['commits a hash-only marker after operation-correlated family CAS'],
         ),
         item(
           'token-replay-family-revocation',
-          537,
-          543,
+          555,
+          561,
           [REPLAY],
           ['revokes on replay from any committed generation'],
         ),
         item(
           'token-hash-clearing-revocation-update',
-          547,
-          554,
+          565,
+          572,
           [REPLAY],
           [
             'revokes current and all subject sessions without exposing token hashes',
@@ -1831,15 +1831,15 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'token-duplicate-key-classification',
-          578,
-          583,
+          596,
+          601,
           [REPLAY],
           ['denies a lost duplicate-marker race without mutating the family'],
         ),
         item(
           'token-generic-refresh-denial',
-          587,
-          587,
+          605,
+          605,
           [AUTHORIZATION, TOKEN_REJECTION],
           [
             'rejects malformed, missing, expired, and revoked credentials without mutation',
@@ -2102,8 +2102,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
       items: [
         item(
           'reconciliation-owned-lease-renewal',
-          180,
-          202,
+          191,
+          213,
           [OWNERSHIP, TERMINAL_ORDERING],
           [
             'uses MongoDB time for atomic lease acquisition and renewal',
@@ -2112,8 +2112,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-bounded-claim-pass',
-          223,
-          264,
+          234,
+          275,
           [OWNERSHIP, TERMINAL_ORDERING],
           [
             'caps claims at the configured batch size and releases every acquired lease',
@@ -2122,8 +2122,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-candidate-filter',
-          268,
-          286,
+          279,
+          297,
           [TERMINAL_ORDERING],
           [
             'processes claimed terminal cleanup and releases its lease through the public pass',
@@ -2131,8 +2131,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-repair-key-availability',
-          295,
-          301,
+          306,
+          312,
           [AUTHORIZATION],
           [
             'skips an offline repair with unavailable audit material before claiming it',
@@ -2140,8 +2140,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-exact-claim',
-          307,
-          357,
+          318,
+          368,
           [OWNERSHIP, TERMINAL_ORDERING],
           [
             'counts a lost claim as examined without claiming or processing it',
@@ -2150,8 +2150,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-state-dispatch',
-          363,
-          405,
+          374,
+          416,
           [TERMINAL_ORDERING],
           [
             'moves a recoverable failed operation through a valid retry transition',
@@ -2160,8 +2160,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-invalid-terminal-order',
-          447,
-          493,
+          458,
+          504,
           [TERMINAL_ORDERING],
           [
             'fails an invalid transition terminally with a redacted event',
@@ -2170,8 +2170,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-reservation-attachment',
-          498,
-          549,
+          509,
+          560,
           [OWNERSHIP],
           [
             'attaches an HMAC-only reservation reference under the requested key version',
@@ -2180,8 +2180,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-application-recovery',
-          554,
-          594,
+          565,
+          605,
           [OWNERSHIP, TERMINAL_ORDERING],
           [
             'recovers applied reservations into finalization when every assignment is durable',
@@ -2190,8 +2190,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-compensation-recovery',
-          599,
-          652,
+          610,
+          663,
           [OWNERSHIP, TERMINAL_ORDERING],
           [
             'compensates a pending reservation and advances a recovered operation to finalization',
@@ -2200,8 +2200,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-terminal-event-and-ttl',
-          657,
-          719,
+          668,
+          730,
           [TERMINAL_ORDERING],
           [
             'records the terminal event before finalizing cleanup-pending state without a parent TTL',
@@ -2210,8 +2210,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-bounded-cleanup',
-          724,
-          803,
+          735,
+          814,
           [OWNERSHIP, TERMINAL_ORDERING],
           [
             'defers batch expiry when gated identifiers exhaust cleanup capacity',
@@ -2220,8 +2220,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-exact-reservation-lookup',
-          809,
-          817,
+          820,
+          828,
           [OWNERSHIP],
           [
             'returns missing application and operation-mismatched compensation reservations to retryable',
@@ -2229,8 +2229,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-owned-transition',
-          825,
-          831,
+          836,
+          842,
           [OWNERSHIP, TERMINAL_ORDERING],
           [
             'moves a recoverable failed operation through a valid retry transition',
@@ -2238,8 +2238,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-owned-lease-release',
-          835,
-          843,
+          846,
+          854,
           [OWNERSHIP, TERMINAL_ORDERING],
           [
             'releases every claimed lease when one public operation recovery fails',
@@ -2247,8 +2247,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-correlation-keying',
-          850,
-          872,
+          861,
+          883,
           [OWNERSHIP],
           [
             'attaches an HMAC-only reservation reference under the requested key version',
@@ -2256,8 +2256,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-secret-decoding',
-          876,
-          879,
+          887,
+          890,
           [OWNERSHIP],
           [
             'attaches an HMAC-only reservation reference under the requested key version',
@@ -2265,15 +2265,15 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-lease-duration',
-          883,
-          887,
+          894,
+          898,
           [OWNERSHIP, TERMINAL_ORDERING],
           ['uses MongoDB time for atomic lease acquisition and renewal'],
         ),
         item(
           'reconciliation-batch-bound',
-          898,
-          903,
+          909,
+          914,
           [TERMINAL_ORDERING],
           [
             'caps claims at the configured batch size and releases every acquired lease',
@@ -2281,8 +2281,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-retention-duration',
-          906,
-          909,
+          917,
+          920,
           [TERMINAL_ORDERING],
           [
             'records the terminal event before clean terminal state and retention TTL',
@@ -2290,8 +2290,8 @@ test('protects every named Plan 3 executable line with same-category manifest ru
         ),
         item(
           'reconciliation-assignment-bound',
-          913,
-          916,
+          924,
+          927,
           [OWNERSHIP, TERMINAL_ORDERING],
           [
             'defers batch expiry when gated identifiers exhaust cleanup capacity',

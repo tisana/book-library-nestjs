@@ -1,0 +1,326 @@
+{
+  "tool": "Stryker instrumenter9.6.1, all mutators, full source selection",
+  "priorSourceCommit": "e01d4e2",
+  "checkedAt": "2026-10-03T07:21:59.048Z",
+  "beforeTotal": 1727,
+  "afterTotal": 1744,
+  "sources": [
+    {
+      "source": "src/auth/token-session.service.ts",
+      "before": 261,
+      "after": 272,
+      "delta": 11,
+      "newSourcePositions": [
+        {
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "column": 23,
+              "line": 77
+            },
+            "end": {
+              "column": 3,
+              "line": 85
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "column": 49,
+              "line": 79
+            },
+            "end": {
+              "column": 5,
+              "line": 83
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "column": 41,
+              "line": 87
+            },
+            "end": {
+              "column": 3,
+              "line": 97
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "column": 8,
+              "line": 88
+            },
+            "end": {
+              "column": 32,
+              "line": 88
+            }
+          },
+          "replacement": "true"
+        },
+        {
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "column": 8,
+              "line": 88
+            },
+            "end": {
+              "column": 32,
+              "line": 88
+            }
+          },
+          "replacement": "false"
+        },
+        {
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "column": 34,
+              "line": 88
+            },
+            "end": {
+              "column": 5,
+              "line": 91
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "column": 49,
+              "line": 92
+            },
+            "end": {
+              "column": 5,
+              "line": 96
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "column": 68,
+              "line": 237
+            },
+            "end": {
+              "column": 3,
+              "line": 246
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "mutatorName": "BooleanLiteral",
+          "location": {
+            "start": {
+              "column": 8,
+              "line": 238
+            },
+            "end": {
+              "column": 34,
+              "line": 238
+            }
+          },
+          "replacement": "this.activeReconciliation"
+        },
+        {
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "column": 8,
+              "line": 238
+            },
+            "end": {
+              "column": 34,
+              "line": 238
+            }
+          },
+          "replacement": "true"
+        },
+        {
+          "mutatorName": "ConditionalExpression",
+          "location": {
+            "start": {
+              "column": 8,
+              "line": 238
+            },
+            "end": {
+              "column": 34,
+              "line": 238
+            }
+          },
+          "replacement": "false"
+        },
+        {
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "column": 36,
+              "line": 238
+            },
+            "end": {
+              "column": 5,
+              "line": 244
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "column": 14,
+              "line": 240
+            },
+            "end": {
+              "column": 9,
+              "line": 242
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "column": 69,
+              "line": 248
+            },
+            "end": {
+              "column": 3,
+              "line": 290
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "mutatorName": "MethodExpression",
+          "location": {
+            "start": {
+              "column": 26,
+              "line": 249
+            },
+            "end": {
+              "column": 34,
+              "line": 254
+            }
+          },
+          "replacement": "this.replayMarkerModel.find({\n  status: RefreshTokenReplayMarkerStatus.Pending,\n  leaseExpiresAt: {\n    $lte: now\n  }\n})"
+        }
+      ]
+    },
+    {
+      "source": "src/auth/auth-identifier-repair.service.ts",
+      "before": 417,
+      "after": 417,
+      "delta": 0,
+      "newSourcePositions": []
+    },
+    {
+      "source": "src/auth/auth-identifier-reconciliation.service.ts",
+      "before": 532,
+      "after": 538,
+      "delta": 6,
+      "newSourcePositions": [
+        {
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "column": 41,
+              "line": 154
+            },
+            "end": {
+              "column": 3,
+              "line": 162
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "mutatorName": "OptionalChaining",
+          "location": {
+            "start": {
+              "column": 10,
+              "line": 157
+            },
+            "end": {
+              "column": 31,
+              "line": 157
+            }
+          },
+          "replacement": "this.activeRun.catch"
+        },
+        {
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "column": 38,
+              "line": 157
+            },
+            "end": {
+              "column": 5,
+              "line": 161
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "column": 41,
+              "line": 430
+            },
+            "end": {
+              "column": 3,
+              "line": 438
+            }
+          },
+          "replacement": "{}"
+        },
+        {
+          "mutatorName": "BlockStatement",
+          "location": {
+            "start": {
+              "column": 63,
+              "line": 431
+            },
+            "end": {
+              "column": 5,
+              "line": 433
+            }
+          },
+          "replacement": "{}"
+        }
+      ]
+    },
+    {
+      "source": "src/members/members.service.ts",
+      "before": 286,
+      "after": 286,
+      "delta": 0,
+      "newSourcePositions": []
+    },
+    {
+      "source": "src/borrowings/borrowings.service.ts",
+      "before": 231,
+      "after": 231,
+      "delta": 0,
+      "newSourcePositions": []
+    }
+  ]
+}

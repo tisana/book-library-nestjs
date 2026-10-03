@@ -3,6 +3,14 @@ import { expect, test, type Page } from '@playwright/test';
 test('staff can create and update a book from the collection screen', async ({
   page,
 }) => {
+  await page.route(
+    'https://covers.openlibrary.org/b/isbn/9780132350884-L.jpg',
+    (route) =>
+      route.fulfill({
+        contentType: 'image/svg+xml',
+        body: '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="48"><rect width="32" height="48" fill="#47658a"/></svg>',
+      }),
+  );
   await mockStaffLogin(page);
   await page.route('http://*:3000/members**', (route) =>
     route.fulfill({ json: [] }),
