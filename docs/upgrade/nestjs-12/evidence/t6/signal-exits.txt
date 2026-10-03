@@ -1,0 +1,3 @@
+{"check":"signal exit observation","elapsedMs":154,"exitCode":143,"oomKilled":false}
+{"check":"signal exit observation","elapsedMs":152,"exitCode":143,"oomKilled":false}
+{"check":"signal exit observation","elapsedMs":157,"exitCode":143,"oomKilled":false}

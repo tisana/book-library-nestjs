@@ -1,0 +1,91 @@
+{
+  "result": "PASS",
+  "sequence": "old/new/old",
+  "concurrentInstances": false,
+  "database": "disposable MongoMemoryReplSet 8.2.12",
+  "workerIntervalSeconds": 60,
+  "leaseFixture": "2s future persisted lease; real expiry/skew/cadence; default300s not elapsed",
+  "checkpoints": [
+    {
+      "phase": 0,
+      "image": "book-library-upgrade:rollback-old",
+      "imageId": "sha256:b9510bcd54efbd3d1d116b4608e65e29fcc7c416ae3619f20fc48586e86c0cbc",
+      "npm": "10.9.9",
+      "versions": {
+        "node": "v22.23.3",
+        "nest": "11.1.18",
+        "mongoose": "9.8.1",
+        "entry": true
+      },
+      "readyMs": 1504,
+      "accessContinuity": true,
+      "cookieRotation": true
+    },
+    {
+      "check": "SIGTERM non-overlap",
+      "elapsedMs": 154,
+      "exitCode": 143,
+      "oomKilled": false
+    },
+    {
+      "check": "durable identifier lease and orphan refresh marker recovery",
+      "label": "transition-1",
+      "elapsedMs": 59821,
+      "terminalAuditEvents": 1
+    },
+    {
+      "phase": 1,
+      "image": "book-library-upgrade:verification",
+      "imageId": "sha256:a872334e275dc405302381a7d839950ba0ddf238be20e909352788176823a622",
+      "npm": "11.9.0",
+      "versions": {
+        "node": "v24.19.0",
+        "nest": "12.1.1",
+        "mongoose": "9.8.1",
+        "entry": true
+      },
+      "readyMs": 1644,
+      "accessContinuity": true,
+      "cookieRotation": true
+    },
+    {
+      "check": "SIGTERM non-overlap",
+      "elapsedMs": 152,
+      "exitCode": 143,
+      "oomKilled": false
+    },
+    {
+      "check": "durable identifier lease and orphan refresh marker recovery",
+      "label": "transition-2",
+      "elapsedMs": 59920,
+      "terminalAuditEvents": 1
+    },
+    {
+      "phase": 2,
+      "image": "book-library-upgrade:rollback-old",
+      "imageId": "sha256:b9510bcd54efbd3d1d116b4608e65e29fcc7c416ae3619f20fc48586e86c0cbc",
+      "npm": "10.9.9",
+      "versions": {
+        "node": "v22.23.3",
+        "nest": "11.1.18",
+        "mongoose": "9.8.1",
+        "entry": true
+      },
+      "readyMs": 1248,
+      "accessContinuity": true,
+      "cookieRotation": true
+    },
+    {
+      "check": "old cookie replay across both transitions revokes family",
+      "status": 401,
+      "persistedStatus": "replayed",
+      "hashCleared": true
+    },
+    {
+      "check": "SIGTERM non-overlap",
+      "elapsedMs": 157,
+      "exitCode": 143,
+      "oomKilled": false
+    }
+  ]
+}
