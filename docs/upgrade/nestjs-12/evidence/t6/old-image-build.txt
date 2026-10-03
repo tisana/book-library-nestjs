@@ -76,20 +76,20 @@
 #11 ...
 
 #12 [runtime 4/6] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --strict-ssl=true --omit=dev && npm cache clean --force
-#12 18.48 
+#12 18.48
 #12 18.48 added 236 packages, and audited 237 packages in 17s
-#12 18.48 
+#12 18.48
 #12 18.48 49 packages are looking for funding
 #12 18.48   run `npm fund` for details
-#12 18.50 
+#12 18.50
 #12 18.50 3 vulnerabilities (2 moderate, 1 high)
-#12 18.50 
+#12 18.50
 #12 18.50 To address issues that do not require attention, run:
 #12 18.50   npm audit fix
-#12 18.50 
+#12 18.50
 #12 18.50 To address all issues (including breaking changes), run:
 #12 18.50   npm audit fix --force
-#12 18.50 
+#12 18.50
 #12 18.50 Run `npm audit` for details.
 #12 18.50 npm notice
 #12 18.50 npm notice New major version of npm available! 10.9.9 -> 12.2.0
@@ -109,20 +109,20 @@
 #13 ...
 
 #11 [frontend-deps 4/4] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --strict-ssl=true --prefix frontend
-#11 29.63 
+#11 29.63
 #11 29.63 added 575 packages, and audited 576 packages in 29s
-#11 29.63 
+#11 29.63
 #11 29.63 180 packages are looking for funding
 #11 29.63   run `npm fund` for details
-#11 29.64 
+#11 29.64
 #11 29.64 11 vulnerabilities (1 low, 2 moderate, 8 high)
-#11 29.64 
+#11 29.64
 #11 29.64 To address issues that do not require attention, run:
 #11 29.64   npm audit fix
-#11 29.64 
+#11 29.64
 #11 29.64 To address all issues (including breaking changes), run:
 #11 29.64   npm audit fix --force
-#11 29.64 
+#11 29.64
 #11 29.64 Run `npm audit` for details.
 #11 29.64 npm notice
 #11 29.64 npm notice New major version of npm available! 10.9.9 -> 12.2.0
@@ -138,27 +138,27 @@
 #13 ...
 
 #15 [frontend-build 2/2] RUN npm run build --prefix frontend
-#15 4.534 
+#15 4.534
 #15 4.534 > book-library-frontend@0.0.1 build
 #15 4.534 > tsc -p tsconfig.json && tsc -p tsconfig.node.json && vite build
-#15 4.534 
+#15 4.534
 #15 ...
 
 #13 [deps 4/4] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --strict-ssl=true
-#13 40.38 
+#13 40.38
 #13 40.38 added 884 packages, and audited 885 packages in 39s
-#13 40.38 
+#13 40.38
 #13 40.38 162 packages are looking for funding
 #13 40.38   run `npm fund` for details
-#13 40.53 
+#13 40.53
 #13 40.53 35 vulnerabilities (5 moderate, 30 high)
-#13 40.53 
+#13 40.53
 #13 40.53 To address issues that do not require attention, run:
 #13 40.53   npm audit fix
-#13 40.53 
+#13 40.53
 #13 40.53 To address all issues (including breaking changes), run:
 #13 40.53   npm audit fix --force
-#13 40.53 
+#13 40.53
 #13 40.53 Run `npm audit` for details.
 #13 40.53 npm notice
 #13 40.53 npm notice New major version of npm available! 10.9.9 -> 12.2.0
@@ -183,19 +183,20 @@
 #15 ...
 
 #18 [build 3/3] RUN npm run build
-#18 4.217 
+#18 4.217
 #18 4.217 > book-library@0.0.1 prebuild
 #18 4.217 > rimraf dist
-#18 4.217 
-#18 4.377 
+#18 4.217
+#18 4.377
 #18 4.377 > book-library@0.0.1 build
 #18 4.377 > nest build
-#18 4.377 
+#18 4.377
 #18 ...
 
 #15 [frontend-build 2/2] RUN npm run build --prefix frontend
 #15 24.81 vite v8.0.16 building client environment for production...
-#15 24.84 [2Ktransforming...✓ 2317 modules transformed.
+#15 24.84 [2K
+transforming...✓ 2317 modules transformed.
 #15 25.99 rendering chunks...
 #15 27.50 computing gzip size...
 #15 27.53 dist/index.html                                    0.63 kB │ gzip:  0.34 kB
@@ -232,7 +233,7 @@
 #15 27.53 dist/assets/data-table-DjWlQDID.js                47.19 kB │ gzip: 12.46 kB
 #15 27.53 dist/assets/book-form-DLzCDQCZ.js                 92.78 kB │ gzip: 27.46 kB
 #15 27.53 dist/assets/index-Dwdu1lx5.js                    300.37 kB │ gzip: 94.39 kB
-#15 27.53 
+#15 27.53
 #15 27.54 ✓ built in 2.72s
 #15 DONE 27.7s
 
