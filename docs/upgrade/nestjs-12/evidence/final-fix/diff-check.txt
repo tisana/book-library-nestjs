@@ -1,0 +1,1 @@
+Scoped working-tree diff check exit: 0

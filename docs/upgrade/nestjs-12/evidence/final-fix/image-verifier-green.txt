@@ -1,0 +1,21 @@
+✔ redact full configured credentials before bounding Docker diagnostics (7.841606ms)
+✔ fixtureFailure: release only acquired resources (2.277292ms)
+✔ directoryFailure: release only acquired resources (6.443789ms)
+✔ networkFailure: release only acquired resources (1.222003ms)
+✔ writeFailure: release only acquired resources (1.283156ms)
+✔ dockerRemoveFailure: preserve original verification failure and attempt all cleanup (1.590779ms)
+✔ dockerRemoveFailure: fail successful verification if cleanup fails; continue all four containers (2.174973ms)
+✔ stopFailure: preserve original verification failure and attempt all cleanup (1.363485ms)
+✔ stopFailure: fail successful verification if cleanup fails; continue all four containers (1.650693ms)
+✔ removeDirectoryFailure: preserve original verification failure and attempt all cleanup (1.45761ms)
+✔ removeDirectoryFailure: fail successful verification if cleanup fails; continue all four containers (2.002799ms)
+✔ combined cleanup failures retain the original HTTP failure (1.504172ms)
+✔ normal verifier contract, thresholds and cleanup remain unchanged (1.346495ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 457.690365
