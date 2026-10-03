@@ -1,0 +1,61 @@
+{
+  "cliUpgrade": {
+    "version": "12.0.8",
+    "command": "nest upgrade --dry-run --no-observe",
+    "exit": 1,
+    "reason": "Invalid command; verified version/help; manual exact matrix authorized"
+  },
+  "jest30.4.0": {
+    "exit": 1,
+    "passedSuites": 1,
+    "failedSuites": 34,
+    "cause": "tslib CJS default interop; official Jest30.4.1 patch selected"
+  },
+  "isolatedTranspile": {
+    "passed": 559,
+    "failed": 1,
+    "branches": 3591,
+    "branchPercent": 73.21,
+    "disposition": "replaced with full-program test compiler; no gate/exclusion changes"
+  },
+  "fullE2eBeforeTerminalCollisionFixture": {
+    "exit": 1,
+    "suites": 30,
+    "passed": 247,
+    "failed": 2,
+    "skipped": 0,
+    "seconds": 142.932,
+    "failures": [
+      {
+        "test": "operational repair manifest collision",
+        "reason": "pending operation legitimately reconciled during AppModule startup",
+        "changedFields": [
+          "status",
+          "updatedAt",
+          "leaseOwner",
+          "leaseExpiresAt"
+        ],
+        "resolution": "terminal/no-cleanup fixture isolates collision; retains operation and identifier no-write assertions"
+      },
+      {
+        "test": "actual compiled performance runner",
+        "reason": "child exit1, no ECONNRESET; original regression discarded stdout so exact cause unknown",
+        "resolution": "standalone runner0 (20.10ms/22.33ms) and focused actual runner regression0; bounded full rerun"
+      }
+    ]
+  },
+  "sourceLoadProbe": {
+    "exit": 1,
+    "reason": "accidentally required two unguarded seed entries; local127.0.0.1:27017 ECONNREFUSED and buffer timeout",
+    "writes": "no connection established/no writes",
+    "resolution": "guarded four operational source imports only; final exit0; no further seed imports"
+  },
+  "focusedRecheck": {
+    "exit": 0,
+    "suites": 2,
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 83.452
+  }
+}

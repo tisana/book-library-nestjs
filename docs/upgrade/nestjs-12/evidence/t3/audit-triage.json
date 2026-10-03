@@ -1,0 +1,3371 @@
+{
+  "brace-expansion": {
+    "severity": "high",
+    "isDirect": false,
+    "range": "<=1.1.20 || 4.0.0 - 5.0.11",
+    "fixAvailable": true,
+    "advisories": [
+      {
+        "source": 1240100,
+        "name": "brace-expansion",
+        "dependency": "brace-expansion",
+        "title": "brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service",
+        "url": "https://github.com/advisories/GHSA-q2hr-2g5m-vwhr",
+        "severity": "moderate",
+        "cwe": [
+          "CWE-400",
+          "CWE-407"
+        ],
+        "cvss": {
+          "score": 5.3,
+          "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+        },
+        "range": "<1.1.21"
+      },
+      {
+        "source": 1240103,
+        "name": "brace-expansion",
+        "dependency": "brace-expansion",
+        "title": "brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service",
+        "url": "https://github.com/advisories/GHSA-q2hr-2g5m-vwhr",
+        "severity": "moderate",
+        "cwe": [
+          "CWE-400",
+          "CWE-407"
+        ],
+        "cvss": {
+          "score": 5.3,
+          "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+        },
+        "range": ">=4.0.0 <5.0.12"
+      },
+      {
+        "source": 1240104,
+        "name": "brace-expansion",
+        "dependency": "brace-expansion",
+        "title": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion",
+        "url": "https://github.com/advisories/GHSA-qhr7-859c-m2p7",
+        "severity": "high",
+        "cwe": [
+          "CWE-400",
+          "CWE-674"
+        ],
+        "cvss": {
+          "score": 7.5,
+          "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        },
+        "range": "<1.1.20"
+      },
+      {
+        "source": 1240107,
+        "name": "brace-expansion",
+        "dependency": "brace-expansion",
+        "title": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion",
+        "url": "https://github.com/advisories/GHSA-qhr7-859c-m2p7",
+        "severity": "high",
+        "cwe": [
+          "CWE-400",
+          "CWE-674"
+        ],
+        "cvss": {
+          "score": 7.5,
+          "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        },
+        "range": ">=4.0.0 <5.0.11"
+      },
+      {
+        "source": 1240108,
+        "name": "brace-expansion",
+        "dependency": "brace-expansion",
+        "title": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion",
+        "url": "https://github.com/advisories/GHSA-6j4f-fj2g-mc7p",
+        "severity": "high",
+        "cwe": [
+          "CWE-400",
+          "CWE-674"
+        ],
+        "cvss": {
+          "score": 7.5,
+          "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        },
+        "range": "<1.1.19"
+      },
+      {
+        "source": 1240111,
+        "name": "brace-expansion",
+        "dependency": "brace-expansion",
+        "title": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion",
+        "url": "https://github.com/advisories/GHSA-6j4f-fj2g-mc7p",
+        "severity": "high",
+        "cwe": [
+          "CWE-400",
+          "CWE-674"
+        ],
+        "cvss": {
+          "score": 7.5,
+          "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        },
+        "range": ">=4.0.0 <5.0.10"
+      }
+    ],
+    "installedPaths": [
+      "node_modules/@eslint/config-array/node_modules/brace-expansion",
+      "node_modules/@stryker-mutator/core/node_modules/brace-expansion",
+      "node_modules/@typescript-eslint/typescript-estree/node_modules/brace-expansion",
+      "node_modules/brace-expansion",
+      "node_modules/eslint/node_modules/brace-expansion"
+    ],
+    "registryPatchedCandidates": [
+      {
+        "path": "node_modules/@eslint/config-array/node_modules/brace-expansion",
+        "current": "5.0.9",
+        "minimumStableUnaffectedNewerVersion": "5.0.12"
+      },
+      {
+        "path": "node_modules/@stryker-mutator/core/node_modules/brace-expansion",
+        "current": "5.0.9",
+        "minimumStableUnaffectedNewerVersion": "5.0.12"
+      },
+      {
+        "path": "node_modules/@typescript-eslint/typescript-estree/node_modules/brace-expansion",
+        "current": "5.0.9",
+        "minimumStableUnaffectedNewerVersion": "5.0.12"
+      },
+      {
+        "path": "node_modules/brace-expansion",
+        "current": "1.1.18",
+        "minimumStableUnaffectedNewerVersion": "1.1.21"
+      },
+      {
+        "path": "node_modules/eslint/node_modules/brace-expansion",
+        "current": "5.0.9",
+        "minimumStableUnaffectedNewerVersion": "5.0.12"
+      }
+    ],
+    "patchedCandidateNote": "Registry candidates outside the current npm-audit aggregate affected range; upstream constraints and behavior still require T5 review. No fixes applied.",
+    "dependencyGraph": {
+      "nodes": [
+        {
+          "name": "brace-expansion",
+          "version": "5.0.9",
+          "location": "node_modules/@eslint/config-array/node_modules/brace-expansion",
+          "dev": true,
+          "isWorkspace": false
+        },
+        {
+          "name": "minimatch",
+          "version": "10.2.5",
+          "location": "node_modules/@eslint/config-array/node_modules/minimatch",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@eslint/config-array",
+          "version": "0.23.5",
+          "location": "node_modules/@eslint/config-array",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "eslint",
+          "version": "10.2.0",
+          "location": "node_modules/eslint",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@eslint-community/eslint-utils",
+          "version": "4.9.1",
+          "location": "node_modules/@eslint-community/eslint-utils",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@typescript-eslint/utils",
+          "version": "8.58.1",
+          "location": "node_modules/@typescript-eslint/utils",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@typescript-eslint/eslint-plugin",
+          "version": "8.58.1",
+          "location": "node_modules/@typescript-eslint/eslint-plugin",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@typescript-eslint/type-utils",
+          "version": "8.58.1",
+          "location": "node_modules/@typescript-eslint/type-utils",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@typescript-eslint/parser",
+          "version": "8.58.1",
+          "location": "node_modules/@typescript-eslint/parser",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "eslint-config-prettier",
+          "version": "10.1.8",
+          "location": "node_modules/eslint-config-prettier",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "brace-expansion",
+          "version": "2.1.7",
+          "location": "node_modules/@jest/reporters/node_modules/brace-expansion",
+          "dev": true,
+          "isWorkspace": false
+        },
+        {
+          "name": "minimatch",
+          "version": "9.0.9",
+          "location": "node_modules/@jest/reporters/node_modules/minimatch",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "glob",
+          "version": "10.5.0",
+          "location": "node_modules/@jest/reporters/node_modules/glob",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@jest/reporters",
+          "version": "30.4.1",
+          "location": "node_modules/@jest/reporters",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@jest/core",
+          "version": "30.4.1",
+          "location": "node_modules/@jest/core",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "jest",
+          "version": "30.4.1",
+          "location": "node_modules/jest",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "ts-jest",
+          "version": "29.4.14",
+          "location": "node_modules/ts-jest",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "jest-cli",
+          "version": "30.4.1",
+          "location": "node_modules/jest-cli",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "brace-expansion",
+          "version": "5.0.12",
+          "location": "node_modules/@nestjs/cli/node_modules/brace-expansion",
+          "dev": true,
+          "isWorkspace": false
+        },
+        {
+          "name": "minimatch",
+          "version": "10.2.6",
+          "location": "node_modules/@nestjs/cli/node_modules/minimatch",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@nestjs/cli",
+          "version": "12.0.8",
+          "location": "node_modules/@nestjs/cli",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "brace-expansion",
+          "version": "5.0.9",
+          "location": "node_modules/@stryker-mutator/core/node_modules/brace-expansion",
+          "dev": true,
+          "isWorkspace": false
+        },
+        {
+          "name": "minimatch",
+          "version": "10.2.6",
+          "location": "node_modules/@stryker-mutator/core/node_modules/minimatch",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@stryker-mutator/core",
+          "version": "9.6.1",
+          "location": "node_modules/@stryker-mutator/core",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@stryker-mutator/jest-runner",
+          "version": "9.6.1",
+          "location": "node_modules/@stryker-mutator/jest-runner",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "brace-expansion",
+          "version": "5.0.9",
+          "location": "node_modules/@typescript-eslint/typescript-estree/node_modules/brace-expansion",
+          "dev": true,
+          "isWorkspace": false
+        },
+        {
+          "name": "minimatch",
+          "version": "10.2.5",
+          "location": "node_modules/@typescript-eslint/typescript-estree/node_modules/minimatch",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@typescript-eslint/typescript-estree",
+          "version": "8.58.1",
+          "location": "node_modules/@typescript-eslint/typescript-estree",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "brace-expansion",
+          "version": "1.1.18",
+          "location": "node_modules/brace-expansion",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "minimatch",
+          "version": "3.1.5",
+          "location": "node_modules/minimatch",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "glob",
+          "version": "7.1.6",
+          "location": "node_modules/glob",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "rimraf",
+          "version": "3.0.2",
+          "location": "node_modules/rimraf",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "test-exclude",
+          "version": "6.0.0",
+          "location": "node_modules/test-exclude",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "babel-plugin-istanbul",
+          "version": "7.0.1",
+          "location": "node_modules/babel-plugin-istanbul",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@jest/transform",
+          "version": "30.4.1",
+          "location": "node_modules/@jest/transform",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "babel-jest",
+          "version": "30.4.1",
+          "location": "node_modules/babel-jest",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "jest-config",
+          "version": "30.4.1",
+          "location": "node_modules/jest-config",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "jest-runner",
+          "version": "30.4.1",
+          "location": "node_modules/jest-runner",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "jest-runtime",
+          "version": "30.4.1",
+          "location": "node_modules/jest-runtime",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "jest-circus",
+          "version": "30.4.1",
+          "location": "node_modules/jest-circus",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "jest-snapshot",
+          "version": "30.4.1",
+          "location": "node_modules/jest-snapshot",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@jest/expect",
+          "version": "30.4.1",
+          "location": "node_modules/@jest/expect",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@jest/globals",
+          "version": "30.4.1",
+          "location": "node_modules/@jest/globals",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "jest-resolve-dependencies",
+          "version": "30.4.1",
+          "location": "node_modules/jest-resolve-dependencies",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "brace-expansion",
+          "version": "5.0.9",
+          "location": "node_modules/eslint/node_modules/brace-expansion",
+          "dev": true,
+          "isWorkspace": false
+        },
+        {
+          "name": "minimatch",
+          "version": "10.2.5",
+          "location": "node_modules/eslint/node_modules/minimatch",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "brace-expansion",
+          "version": "2.1.7",
+          "location": "node_modules/jest-config/node_modules/brace-expansion",
+          "dev": true,
+          "isWorkspace": false
+        },
+        {
+          "name": "minimatch",
+          "version": "9.0.9",
+          "location": "node_modules/jest-config/node_modules/minimatch",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "glob",
+          "version": "10.5.0",
+          "location": "node_modules/jest-config/node_modules/glob",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "brace-expansion",
+          "version": "2.1.7",
+          "location": "node_modules/jest-runtime/node_modules/brace-expansion",
+          "dev": true,
+          "isWorkspace": false
+        },
+        {
+          "name": "minimatch",
+          "version": "9.0.9",
+          "location": "node_modules/jest-runtime/node_modules/minimatch",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "glob",
+          "version": "10.5.0",
+          "location": "node_modules/jest-runtime/node_modules/glob",
+          "dev": false,
+          "isWorkspace": false
+        }
+      ],
+      "edges": [
+        {
+          "dependency": "node_modules/@eslint/config-array/node_modules/brace-expansion",
+          "dependent": "node_modules/@eslint/config-array/node_modules/minimatch",
+          "type": "prod",
+          "spec": "^5.0.5"
+        },
+        {
+          "dependency": "node_modules/@eslint/config-array/node_modules/minimatch",
+          "dependent": "node_modules/@eslint/config-array",
+          "type": "prod",
+          "spec": "^10.2.4"
+        },
+        {
+          "dependency": "node_modules/@eslint/config-array",
+          "dependent": "node_modules/eslint",
+          "type": "prod",
+          "spec": "^0.23.4"
+        },
+        {
+          "dependency": "node_modules/eslint",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "^10.2.0"
+        },
+        {
+          "dependency": "node_modules/eslint",
+          "dependent": "node_modules/@eslint-community/eslint-utils",
+          "type": "peer",
+          "spec": "^6.0.0 || ^7.0.0 || >=8.0.0"
+        },
+        {
+          "dependency": "node_modules/@eslint-community/eslint-utils",
+          "dependent": "node_modules/@typescript-eslint/utils",
+          "type": "prod",
+          "spec": "^4.9.1"
+        },
+        {
+          "dependency": "node_modules/@typescript-eslint/utils",
+          "dependent": "node_modules/@typescript-eslint/eslint-plugin",
+          "type": "prod",
+          "spec": "8.58.1"
+        },
+        {
+          "dependency": "node_modules/@typescript-eslint/eslint-plugin",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "^8.58.1"
+        },
+        {
+          "dependency": "node_modules/@typescript-eslint/utils",
+          "dependent": "node_modules/@typescript-eslint/type-utils",
+          "type": "prod",
+          "spec": "8.58.1"
+        },
+        {
+          "dependency": "node_modules/@typescript-eslint/type-utils",
+          "dependent": "node_modules/@typescript-eslint/eslint-plugin",
+          "type": "prod",
+          "spec": "8.58.1"
+        },
+        {
+          "dependency": "node_modules/eslint",
+          "dependent": "node_modules/@typescript-eslint/eslint-plugin",
+          "type": "peer",
+          "spec": "^8.57.0 || ^9.0.0 || ^10.0.0"
+        },
+        {
+          "dependency": "node_modules/eslint",
+          "dependent": "node_modules/@typescript-eslint/parser",
+          "type": "peer",
+          "spec": "^8.57.0 || ^9.0.0 || ^10.0.0"
+        },
+        {
+          "dependency": "node_modules/@typescript-eslint/parser",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "^8.58.1"
+        },
+        {
+          "dependency": "node_modules/@typescript-eslint/parser",
+          "dependent": "node_modules/@typescript-eslint/eslint-plugin",
+          "type": "peer",
+          "spec": "^8.58.1"
+        },
+        {
+          "dependency": "node_modules/eslint",
+          "dependent": "node_modules/@typescript-eslint/type-utils",
+          "type": "peer",
+          "spec": "^8.57.0 || ^9.0.0 || ^10.0.0"
+        },
+        {
+          "dependency": "node_modules/eslint",
+          "dependent": "node_modules/@typescript-eslint/utils",
+          "type": "peer",
+          "spec": "^8.57.0 || ^9.0.0 || ^10.0.0"
+        },
+        {
+          "dependency": "node_modules/eslint",
+          "dependent": "node_modules/eslint-config-prettier",
+          "type": "peer",
+          "spec": ">=7.0.0"
+        },
+        {
+          "dependency": "node_modules/eslint-config-prettier",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "^10.1.8"
+        },
+        {
+          "dependency": "node_modules/@jest/reporters/node_modules/brace-expansion",
+          "dependent": "node_modules/@jest/reporters/node_modules/minimatch",
+          "type": "prod",
+          "spec": "^2.0.2"
+        },
+        {
+          "dependency": "node_modules/@jest/reporters/node_modules/minimatch",
+          "dependent": "node_modules/@jest/reporters/node_modules/glob",
+          "type": "prod",
+          "spec": "^9.0.4"
+        },
+        {
+          "dependency": "node_modules/@jest/reporters/node_modules/glob",
+          "dependent": "node_modules/@jest/reporters",
+          "type": "prod",
+          "spec": "^10.5.0"
+        },
+        {
+          "dependency": "node_modules/@jest/reporters",
+          "dependent": "node_modules/@jest/core",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/core",
+          "dependent": "node_modules/jest",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest",
+          "dependent": "node_modules/ts-jest",
+          "type": "peer",
+          "spec": "^29.0.0 || ^30.0.0"
+        },
+        {
+          "dependency": "node_modules/ts-jest",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "29.4.14"
+        },
+        {
+          "dependency": "node_modules/@jest/core",
+          "dependent": "node_modules/jest-cli",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-cli",
+          "dependent": "node_modules/jest",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@nestjs/cli/node_modules/brace-expansion",
+          "dependent": "node_modules/@nestjs/cli/node_modules/minimatch",
+          "type": "prod",
+          "spec": "^5.0.8"
+        },
+        {
+          "dependency": "node_modules/@nestjs/cli/node_modules/minimatch",
+          "dependent": "node_modules/@nestjs/cli",
+          "type": "prod",
+          "spec": "10.2.6"
+        },
+        {
+          "dependency": "node_modules/@nestjs/cli",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "12.0.8"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/core/node_modules/brace-expansion",
+          "dependent": "node_modules/@stryker-mutator/core/node_modules/minimatch",
+          "type": "prod",
+          "spec": "^5.0.8"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/core/node_modules/minimatch",
+          "dependent": "node_modules/@stryker-mutator/core",
+          "type": "prod",
+          "spec": "~10.2.4"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/core",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "9.6.1"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/core",
+          "dependent": "node_modules/@stryker-mutator/jest-runner",
+          "type": "peer",
+          "spec": "9.6.1"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/jest-runner",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "9.6.1"
+        },
+        {
+          "dependency": "node_modules/@typescript-eslint/typescript-estree/node_modules/brace-expansion",
+          "dependent": "node_modules/@typescript-eslint/typescript-estree/node_modules/minimatch",
+          "type": "prod",
+          "spec": "^5.0.5"
+        },
+        {
+          "dependency": "node_modules/@typescript-eslint/typescript-estree/node_modules/minimatch",
+          "dependent": "node_modules/@typescript-eslint/typescript-estree",
+          "type": "prod",
+          "spec": "^10.2.2"
+        },
+        {
+          "dependency": "node_modules/@typescript-eslint/typescript-estree",
+          "dependent": "node_modules/@typescript-eslint/parser",
+          "type": "prod",
+          "spec": "8.58.1"
+        },
+        {
+          "dependency": "node_modules/@typescript-eslint/typescript-estree",
+          "dependent": "node_modules/@typescript-eslint/type-utils",
+          "type": "prod",
+          "spec": "8.58.1"
+        },
+        {
+          "dependency": "node_modules/@typescript-eslint/typescript-estree",
+          "dependent": "node_modules/@typescript-eslint/utils",
+          "type": "prod",
+          "spec": "8.58.1"
+        },
+        {
+          "dependency": "node_modules/brace-expansion",
+          "dependent": "node_modules/minimatch",
+          "type": "prod",
+          "spec": "^1.1.7"
+        },
+        {
+          "dependency": "node_modules/minimatch",
+          "dependent": "node_modules/glob",
+          "type": "prod",
+          "spec": "^3.0.4"
+        },
+        {
+          "dependency": "node_modules/glob",
+          "dependent": "node_modules/rimraf",
+          "type": "prod",
+          "spec": "^7.1.3"
+        },
+        {
+          "dependency": "node_modules/rimraf",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "prod",
+          "spec": "^3.0.2"
+        },
+        {
+          "dependency": "node_modules/glob",
+          "dependent": "node_modules/test-exclude",
+          "type": "prod",
+          "spec": "^7.1.4"
+        },
+        {
+          "dependency": "node_modules/test-exclude",
+          "dependent": "node_modules/babel-plugin-istanbul",
+          "type": "prod",
+          "spec": "^6.0.0"
+        },
+        {
+          "dependency": "node_modules/babel-plugin-istanbul",
+          "dependent": "node_modules/@jest/transform",
+          "type": "prod",
+          "spec": "^7.0.1"
+        },
+        {
+          "dependency": "node_modules/@jest/transform",
+          "dependent": "node_modules/@jest/core",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/transform",
+          "dependent": "node_modules/@jest/reporters",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/transform",
+          "dependent": "node_modules/babel-jest",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/babel-jest",
+          "dependent": "node_modules/jest-config",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-config",
+          "dependent": "node_modules/@jest/core",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-config",
+          "dependent": "node_modules/jest-cli",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/babel-jest",
+          "dependent": "node_modules/ts-jest",
+          "type": "peerOptional",
+          "spec": "^29.0.0 || ^30.0.0"
+        },
+        {
+          "dependency": "node_modules/@jest/transform",
+          "dependent": "node_modules/jest-runner",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-runner",
+          "dependent": "node_modules/@jest/core",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-runner",
+          "dependent": "node_modules/jest-config",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/transform",
+          "dependent": "node_modules/jest-runtime",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-runtime",
+          "dependent": "node_modules/@jest/core",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-runtime",
+          "dependent": "node_modules/jest-circus",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-circus",
+          "dependent": "node_modules/jest-config",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-runtime",
+          "dependent": "node_modules/jest-runner",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/transform",
+          "dependent": "node_modules/jest-snapshot",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-snapshot",
+          "dependent": "node_modules/@jest/core",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-snapshot",
+          "dependent": "node_modules/@jest/expect",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/expect",
+          "dependent": "node_modules/@jest/globals",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/globals",
+          "dependent": "node_modules/jest-runtime",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/expect",
+          "dependent": "node_modules/jest-circus",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-snapshot",
+          "dependent": "node_modules/jest-circus",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-snapshot",
+          "dependent": "node_modules/jest-resolve-dependencies",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-resolve-dependencies",
+          "dependent": "node_modules/@jest/core",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-snapshot",
+          "dependent": "node_modules/jest-runtime",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/transform",
+          "dependent": "node_modules/ts-jest",
+          "type": "peerOptional",
+          "spec": "^29.0.0 || ^30.0.0"
+        },
+        {
+          "dependency": "node_modules/babel-plugin-istanbul",
+          "dependent": "node_modules/babel-jest",
+          "type": "prod",
+          "spec": "^7.0.1"
+        },
+        {
+          "dependency": "node_modules/minimatch",
+          "dependent": "node_modules/test-exclude",
+          "type": "prod",
+          "spec": "^3.0.4"
+        },
+        {
+          "dependency": "node_modules/eslint/node_modules/brace-expansion",
+          "dependent": "node_modules/eslint/node_modules/minimatch",
+          "type": "prod",
+          "spec": "^5.0.5"
+        },
+        {
+          "dependency": "node_modules/eslint/node_modules/minimatch",
+          "dependent": "node_modules/eslint",
+          "type": "prod",
+          "spec": "^10.2.4"
+        },
+        {
+          "dependency": "node_modules/jest-config/node_modules/brace-expansion",
+          "dependent": "node_modules/jest-config/node_modules/minimatch",
+          "type": "prod",
+          "spec": "^2.0.2"
+        },
+        {
+          "dependency": "node_modules/jest-config/node_modules/minimatch",
+          "dependent": "node_modules/jest-config/node_modules/glob",
+          "type": "prod",
+          "spec": "^9.0.4"
+        },
+        {
+          "dependency": "node_modules/jest-config/node_modules/glob",
+          "dependent": "node_modules/jest-config",
+          "type": "prod",
+          "spec": "^10.5.0"
+        },
+        {
+          "dependency": "node_modules/jest-runtime/node_modules/brace-expansion",
+          "dependent": "node_modules/jest-runtime/node_modules/minimatch",
+          "type": "prod",
+          "spec": "^2.0.2"
+        },
+        {
+          "dependency": "node_modules/jest-runtime/node_modules/minimatch",
+          "dependent": "node_modules/jest-runtime/node_modules/glob",
+          "type": "prod",
+          "spec": "^9.0.4"
+        },
+        {
+          "dependency": "node_modules/jest-runtime/node_modules/glob",
+          "dependent": "node_modules/jest-runtime",
+          "type": "prod",
+          "spec": "^10.5.0"
+        }
+      ]
+    }
+  },
+  "braces": {
+    "severity": "high",
+    "isDirect": false,
+    "range": "*",
+    "fixAvailable": true,
+    "advisories": [
+      {
+        "source": 1240992,
+        "name": "braces",
+        "dependency": "braces",
+        "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+        "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+        "severity": "high",
+        "cwe": [
+          "CWE-674"
+        ],
+        "cvss": {
+          "score": 7.5,
+          "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        },
+        "range": "<=3.0.3"
+      }
+    ],
+    "installedPaths": [
+      "node_modules/braces"
+    ],
+    "registryPatchedCandidates": [
+      {
+        "path": "node_modules/braces",
+        "current": "3.0.3",
+        "minimumStableUnaffectedNewerVersion": null
+      }
+    ],
+    "patchedCandidateNote": "Registry candidates outside the current npm-audit aggregate affected range; upstream constraints and behavior still require T5 review. No fixes applied.",
+    "dependencyGraph": {
+      "nodes": [
+        {
+          "name": "braces",
+          "version": "3.0.3",
+          "location": "node_modules/braces",
+          "dev": true,
+          "isWorkspace": false
+        },
+        {
+          "name": "micromatch",
+          "version": "4.0.8",
+          "location": "node_modules/micromatch",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "ts-loader",
+          "version": "9.5.4",
+          "location": "node_modules/ts-loader",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@nestjs/cli",
+          "version": "12.0.8",
+          "location": "node_modules/@nestjs/cli",
+          "dev": false,
+          "isWorkspace": false
+        }
+      ],
+      "edges": [
+        {
+          "dependency": "node_modules/braces",
+          "dependent": "node_modules/micromatch",
+          "type": "prod",
+          "spec": "^3.0.3"
+        },
+        {
+          "dependency": "node_modules/micromatch",
+          "dependent": "node_modules/ts-loader",
+          "type": "prod",
+          "spec": "^4.0.0"
+        },
+        {
+          "dependency": "node_modules/ts-loader",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "^9.5.4"
+        },
+        {
+          "dependency": "node_modules/ts-loader",
+          "dependent": "node_modules/@nestjs/cli",
+          "type": "peerOptional",
+          "spec": "^9.5.4"
+        },
+        {
+          "dependency": "node_modules/@nestjs/cli",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "12.0.8"
+        }
+      ]
+    }
+  },
+  "browserslist": {
+    "severity": "high",
+    "isDirect": false,
+    "range": "<=4.28.6",
+    "fixAvailable": true,
+    "advisories": [
+      {
+        "source": 1153171,
+        "name": "browserslist",
+        "dependency": "browserslist",
+        "title": "Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM",
+        "url": "https://github.com/advisories/GHSA-c83g-rgw3-j3cx",
+        "severity": "high",
+        "cwe": [
+          "CWE-770"
+        ],
+        "cvss": {
+          "score": 7.5,
+          "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        },
+        "range": "<=4.28.6"
+      },
+      {
+        "source": 1153172,
+        "name": "browserslist",
+        "dependency": "browserslist",
+        "title": "Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats)",
+        "url": "https://github.com/advisories/GHSA-73wf-gq98-2v4g",
+        "severity": "high",
+        "cwe": [
+          "CWE-248",
+          "CWE-1321"
+        ],
+        "cvss": {
+          "score": 7.5,
+          "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        },
+        "range": "<=4.28.6"
+      }
+    ],
+    "installedPaths": [
+      "node_modules/browserslist"
+    ],
+    "registryPatchedCandidates": [
+      {
+        "path": "node_modules/browserslist",
+        "current": "4.28.1",
+        "minimumStableUnaffectedNewerVersion": "4.28.7"
+      }
+    ],
+    "patchedCandidateNote": "Registry candidates outside the current npm-audit aggregate affected range; upstream constraints and behavior still require T5 review. No fixes applied.",
+    "dependencyGraph": {
+      "nodes": [
+        {
+          "name": "browserslist",
+          "version": "4.28.1",
+          "location": "node_modules/browserslist",
+          "dev": true,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/helper-compilation-targets",
+          "version": "7.29.7",
+          "location": "node_modules/@babel/helper-compilation-targets",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/core",
+          "version": "7.29.7",
+          "location": "node_modules/@babel/core",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/helper-create-class-features-plugin",
+          "version": "7.29.7",
+          "location": "node_modules/@babel/helper-create-class-features-plugin",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-proposal-decorators",
+          "version": "7.29.7",
+          "location": "node_modules/@babel/plugin-proposal-decorators",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@stryker-mutator/instrumenter",
+          "version": "9.6.1",
+          "location": "node_modules/@stryker-mutator/instrumenter",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@stryker-mutator/core",
+          "version": "9.6.1",
+          "location": "node_modules/@stryker-mutator/core",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@stryker-mutator/jest-runner",
+          "version": "9.6.1",
+          "location": "node_modules/@stryker-mutator/jest-runner",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-transform-typescript",
+          "version": "7.29.7",
+          "location": "node_modules/@babel/plugin-transform-typescript",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/preset-typescript",
+          "version": "7.28.5",
+          "location": "node_modules/@babel/preset-typescript",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/helper-module-transforms",
+          "version": "7.29.7",
+          "location": "node_modules/@babel/helper-module-transforms",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-transform-modules-commonjs",
+          "version": "7.29.7",
+          "location": "node_modules/@babel/plugin-transform-modules-commonjs",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/helper-replace-supers",
+          "version": "7.29.7",
+          "location": "node_modules/@babel/helper-replace-supers",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-syntax-async-generators",
+          "version": "7.8.4",
+          "location": "node_modules/@babel/plugin-syntax-async-generators",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "babel-preset-current-node-syntax",
+          "version": "1.2.0",
+          "location": "node_modules/babel-preset-current-node-syntax",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "babel-preset-jest",
+          "version": "30.4.0",
+          "location": "node_modules/babel-preset-jest",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "babel-jest",
+          "version": "30.4.1",
+          "location": "node_modules/babel-jest",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "jest-config",
+          "version": "30.4.1",
+          "location": "node_modules/jest-config",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@jest/core",
+          "version": "30.4.1",
+          "location": "node_modules/@jest/core",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "jest",
+          "version": "30.4.1",
+          "location": "node_modules/jest",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "ts-jest",
+          "version": "29.4.14",
+          "location": "node_modules/ts-jest",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "jest-cli",
+          "version": "30.4.1",
+          "location": "node_modules/jest-cli",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "jest-snapshot",
+          "version": "30.4.1",
+          "location": "node_modules/jest-snapshot",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@jest/expect",
+          "version": "30.4.1",
+          "location": "node_modules/@jest/expect",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@jest/globals",
+          "version": "30.4.1",
+          "location": "node_modules/@jest/globals",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "jest-runtime",
+          "version": "30.4.1",
+          "location": "node_modules/jest-runtime",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "jest-circus",
+          "version": "30.4.1",
+          "location": "node_modules/jest-circus",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "jest-runner",
+          "version": "30.4.1",
+          "location": "node_modules/jest-runner",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "jest-resolve-dependencies",
+          "version": "30.4.1",
+          "location": "node_modules/jest-resolve-dependencies",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-syntax-bigint",
+          "version": "7.8.3",
+          "location": "node_modules/@babel/plugin-syntax-bigint",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-syntax-class-properties",
+          "version": "7.12.13",
+          "location": "node_modules/@babel/plugin-syntax-class-properties",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-syntax-class-static-block",
+          "version": "7.14.5",
+          "location": "node_modules/@babel/plugin-syntax-class-static-block",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-syntax-decorators",
+          "version": "7.29.7",
+          "location": "node_modules/@babel/plugin-syntax-decorators",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-syntax-import-attributes",
+          "version": "7.28.6",
+          "location": "node_modules/@babel/plugin-syntax-import-attributes",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-syntax-import-meta",
+          "version": "7.10.4",
+          "location": "node_modules/@babel/plugin-syntax-import-meta",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-syntax-json-strings",
+          "version": "7.8.3",
+          "location": "node_modules/@babel/plugin-syntax-json-strings",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-syntax-jsx",
+          "version": "7.28.6",
+          "location": "node_modules/@babel/plugin-syntax-jsx",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-syntax-logical-assignment-operators",
+          "version": "7.10.4",
+          "location": "node_modules/@babel/plugin-syntax-logical-assignment-operators",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-syntax-nullish-coalescing-operator",
+          "version": "7.8.3",
+          "location": "node_modules/@babel/plugin-syntax-nullish-coalescing-operator",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-syntax-numeric-separator",
+          "version": "7.10.4",
+          "location": "node_modules/@babel/plugin-syntax-numeric-separator",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-syntax-object-rest-spread",
+          "version": "7.8.3",
+          "location": "node_modules/@babel/plugin-syntax-object-rest-spread",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-syntax-optional-catch-binding",
+          "version": "7.8.3",
+          "location": "node_modules/@babel/plugin-syntax-optional-catch-binding",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-syntax-optional-chaining",
+          "version": "7.8.3",
+          "location": "node_modules/@babel/plugin-syntax-optional-chaining",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-syntax-private-property-in-object",
+          "version": "7.14.5",
+          "location": "node_modules/@babel/plugin-syntax-private-property-in-object",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-syntax-top-level-await",
+          "version": "7.14.5",
+          "location": "node_modules/@babel/plugin-syntax-top-level-await",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-syntax-typescript",
+          "version": "7.29.7",
+          "location": "node_modules/@babel/plugin-syntax-typescript",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-transform-destructuring",
+          "version": "7.29.7",
+          "location": "node_modules/@babel/plugin-transform-destructuring",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@babel/plugin-transform-explicit-resource-management",
+          "version": "7.29.7",
+          "location": "node_modules/@babel/plugin-transform-explicit-resource-management",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@jest/transform",
+          "version": "30.4.1",
+          "location": "node_modules/@jest/transform",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@jest/reporters",
+          "version": "30.4.1",
+          "location": "node_modules/@jest/reporters",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "istanbul-lib-instrument",
+          "version": "6.0.3",
+          "location": "node_modules/istanbul-lib-instrument",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "babel-plugin-istanbul",
+          "version": "7.0.1",
+          "location": "node_modules/babel-plugin-istanbul",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "update-browserslist-db",
+          "version": "1.2.3",
+          "location": "node_modules/update-browserslist-db",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "webpack",
+          "version": "5.106.0",
+          "location": "node_modules/webpack",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@nestjs/cli",
+          "version": "12.0.8",
+          "location": "node_modules/@nestjs/cli",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "terser-webpack-plugin",
+          "version": "5.4.0",
+          "location": "node_modules/terser-webpack-plugin",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "ts-loader",
+          "version": "9.5.4",
+          "location": "node_modules/ts-loader",
+          "dev": false,
+          "isWorkspace": false
+        }
+      ],
+      "edges": [
+        {
+          "dependency": "node_modules/browserslist",
+          "dependent": "node_modules/@babel/helper-compilation-targets",
+          "type": "prod",
+          "spec": "^4.24.0"
+        },
+        {
+          "dependency": "node_modules/@babel/helper-compilation-targets",
+          "dependent": "node_modules/@babel/core",
+          "type": "prod",
+          "spec": "^7.29.7"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/helper-create-class-features-plugin",
+          "type": "peer",
+          "spec": "^7.0.0"
+        },
+        {
+          "dependency": "node_modules/@babel/helper-create-class-features-plugin",
+          "dependent": "node_modules/@babel/plugin-proposal-decorators",
+          "type": "prod",
+          "spec": "^7.29.7"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-proposal-decorators",
+          "dependent": "node_modules/@stryker-mutator/instrumenter",
+          "type": "prod",
+          "spec": "~7.29.0"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/instrumenter",
+          "dependent": "node_modules/@stryker-mutator/core",
+          "type": "prod",
+          "spec": "9.6.1"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/core",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "9.6.1"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/core",
+          "dependent": "node_modules/@stryker-mutator/jest-runner",
+          "type": "peer",
+          "spec": "9.6.1"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/jest-runner",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "9.6.1"
+        },
+        {
+          "dependency": "node_modules/@babel/helper-create-class-features-plugin",
+          "dependent": "node_modules/@babel/plugin-transform-typescript",
+          "type": "prod",
+          "spec": "^7.29.7"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-transform-typescript",
+          "dependent": "node_modules/@babel/preset-typescript",
+          "type": "prod",
+          "spec": "^7.28.5"
+        },
+        {
+          "dependency": "node_modules/@babel/preset-typescript",
+          "dependent": "node_modules/@stryker-mutator/instrumenter",
+          "type": "prod",
+          "spec": "~7.28.0"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/helper-module-transforms",
+          "type": "peer",
+          "spec": "^7.0.0"
+        },
+        {
+          "dependency": "node_modules/@babel/helper-module-transforms",
+          "dependent": "node_modules/@babel/plugin-transform-modules-commonjs",
+          "type": "prod",
+          "spec": "^7.29.7"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-transform-modules-commonjs",
+          "dependent": "node_modules/@babel/preset-typescript",
+          "type": "prod",
+          "spec": "^7.27.1"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/helper-replace-supers",
+          "type": "peer",
+          "spec": "^7.0.0"
+        },
+        {
+          "dependency": "node_modules/@babel/helper-replace-supers",
+          "dependent": "node_modules/@babel/helper-create-class-features-plugin",
+          "type": "prod",
+          "spec": "^7.29.7"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-proposal-decorators",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-syntax-async-generators",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-async-generators",
+          "dependent": "node_modules/babel-preset-current-node-syntax",
+          "type": "prod",
+          "spec": "^7.8.4"
+        },
+        {
+          "dependency": "node_modules/babel-preset-current-node-syntax",
+          "dependent": "node_modules/babel-preset-jest",
+          "type": "prod",
+          "spec": "^1.2.0"
+        },
+        {
+          "dependency": "node_modules/babel-preset-jest",
+          "dependent": "node_modules/babel-jest",
+          "type": "prod",
+          "spec": "30.4.0"
+        },
+        {
+          "dependency": "node_modules/babel-jest",
+          "dependent": "node_modules/jest-config",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-config",
+          "dependent": "node_modules/@jest/core",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/core",
+          "dependent": "node_modules/jest",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest",
+          "dependent": "node_modules/ts-jest",
+          "type": "peer",
+          "spec": "^29.0.0 || ^30.0.0"
+        },
+        {
+          "dependency": "node_modules/ts-jest",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "29.4.14"
+        },
+        {
+          "dependency": "node_modules/@jest/core",
+          "dependent": "node_modules/jest-cli",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-cli",
+          "dependent": "node_modules/jest",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-config",
+          "dependent": "node_modules/jest-cli",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/babel-jest",
+          "dependent": "node_modules/ts-jest",
+          "type": "peerOptional",
+          "spec": "^29.0.0 || ^30.0.0"
+        },
+        {
+          "dependency": "node_modules/babel-preset-current-node-syntax",
+          "dependent": "node_modules/jest-snapshot",
+          "type": "prod",
+          "spec": "^1.2.0"
+        },
+        {
+          "dependency": "node_modules/jest-snapshot",
+          "dependent": "node_modules/@jest/core",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-snapshot",
+          "dependent": "node_modules/@jest/expect",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/expect",
+          "dependent": "node_modules/@jest/globals",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/globals",
+          "dependent": "node_modules/jest-runtime",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-runtime",
+          "dependent": "node_modules/@jest/core",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-runtime",
+          "dependent": "node_modules/jest-circus",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-circus",
+          "dependent": "node_modules/jest-config",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-runtime",
+          "dependent": "node_modules/jest-runner",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-runner",
+          "dependent": "node_modules/@jest/core",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-runner",
+          "dependent": "node_modules/jest-config",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/expect",
+          "dependent": "node_modules/jest-circus",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-snapshot",
+          "dependent": "node_modules/jest-circus",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-snapshot",
+          "dependent": "node_modules/jest-resolve-dependencies",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-resolve-dependencies",
+          "dependent": "node_modules/@jest/core",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/jest-snapshot",
+          "dependent": "node_modules/jest-runtime",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-syntax-bigint",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-bigint",
+          "dependent": "node_modules/babel-preset-current-node-syntax",
+          "type": "prod",
+          "spec": "^7.8.3"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-syntax-class-properties",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-class-properties",
+          "dependent": "node_modules/babel-preset-current-node-syntax",
+          "type": "prod",
+          "spec": "^7.12.13"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-syntax-class-static-block",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-class-static-block",
+          "dependent": "node_modules/babel-preset-current-node-syntax",
+          "type": "prod",
+          "spec": "^7.14.5"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-syntax-decorators",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-decorators",
+          "dependent": "node_modules/@babel/plugin-proposal-decorators",
+          "type": "prod",
+          "spec": "^7.29.7"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-syntax-import-attributes",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-import-attributes",
+          "dependent": "node_modules/babel-preset-current-node-syntax",
+          "type": "prod",
+          "spec": "^7.24.7"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-syntax-import-meta",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-import-meta",
+          "dependent": "node_modules/babel-preset-current-node-syntax",
+          "type": "prod",
+          "spec": "^7.10.4"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-syntax-json-strings",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-json-strings",
+          "dependent": "node_modules/babel-preset-current-node-syntax",
+          "type": "prod",
+          "spec": "^7.8.3"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-syntax-jsx",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-jsx",
+          "dependent": "node_modules/@babel/preset-typescript",
+          "type": "prod",
+          "spec": "^7.27.1"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-jsx",
+          "dependent": "node_modules/jest-snapshot",
+          "type": "prod",
+          "spec": "^7.27.1"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-syntax-logical-assignment-operators",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-logical-assignment-operators",
+          "dependent": "node_modules/babel-preset-current-node-syntax",
+          "type": "prod",
+          "spec": "^7.10.4"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-syntax-nullish-coalescing-operator",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-nullish-coalescing-operator",
+          "dependent": "node_modules/babel-preset-current-node-syntax",
+          "type": "prod",
+          "spec": "^7.8.3"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-syntax-numeric-separator",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-numeric-separator",
+          "dependent": "node_modules/babel-preset-current-node-syntax",
+          "type": "prod",
+          "spec": "^7.10.4"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-syntax-object-rest-spread",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-object-rest-spread",
+          "dependent": "node_modules/babel-preset-current-node-syntax",
+          "type": "prod",
+          "spec": "^7.8.3"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-syntax-optional-catch-binding",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-optional-catch-binding",
+          "dependent": "node_modules/babel-preset-current-node-syntax",
+          "type": "prod",
+          "spec": "^7.8.3"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-syntax-optional-chaining",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-optional-chaining",
+          "dependent": "node_modules/babel-preset-current-node-syntax",
+          "type": "prod",
+          "spec": "^7.8.3"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-syntax-private-property-in-object",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-private-property-in-object",
+          "dependent": "node_modules/babel-preset-current-node-syntax",
+          "type": "prod",
+          "spec": "^7.14.5"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-syntax-top-level-await",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-top-level-await",
+          "dependent": "node_modules/babel-preset-current-node-syntax",
+          "type": "prod",
+          "spec": "^7.14.5"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-syntax-typescript",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-typescript",
+          "dependent": "node_modules/@babel/plugin-transform-typescript",
+          "type": "prod",
+          "spec": "^7.29.7"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-syntax-typescript",
+          "dependent": "node_modules/jest-snapshot",
+          "type": "prod",
+          "spec": "^7.27.1"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-transform-destructuring",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-transform-destructuring",
+          "dependent": "node_modules/@babel/plugin-transform-explicit-resource-management",
+          "type": "prod",
+          "spec": "^7.29.7"
+        },
+        {
+          "dependency": "node_modules/@babel/plugin-transform-explicit-resource-management",
+          "dependent": "node_modules/@stryker-mutator/instrumenter",
+          "type": "prod",
+          "spec": "^7.28.0"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-transform-explicit-resource-management",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-transform-modules-commonjs",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/plugin-transform-typescript",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@babel/preset-typescript",
+          "type": "peer",
+          "spec": "^7.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@jest/transform",
+          "type": "prod",
+          "spec": "^7.27.4"
+        },
+        {
+          "dependency": "node_modules/@jest/transform",
+          "dependent": "node_modules/@jest/core",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/transform",
+          "dependent": "node_modules/@jest/reporters",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/reporters",
+          "dependent": "node_modules/@jest/core",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/transform",
+          "dependent": "node_modules/babel-jest",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/transform",
+          "dependent": "node_modules/jest-runner",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/transform",
+          "dependent": "node_modules/jest-runtime",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/transform",
+          "dependent": "node_modules/jest-snapshot",
+          "type": "prod",
+          "spec": "30.4.1"
+        },
+        {
+          "dependency": "node_modules/@jest/transform",
+          "dependent": "node_modules/ts-jest",
+          "type": "peerOptional",
+          "spec": "^29.0.0 || ^30.0.0"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/@stryker-mutator/instrumenter",
+          "type": "prod",
+          "spec": "~7.29.0"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/babel-jest",
+          "type": "peer",
+          "spec": "^7.11.0 || ^8.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/babel-preset-current-node-syntax",
+          "type": "peer",
+          "spec": "^7.0.0 || ^8.0.0-0"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/babel-preset-jest",
+          "type": "peer",
+          "spec": "^7.11.0 || ^8.0.0-beta.1"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/istanbul-lib-instrument",
+          "type": "prod",
+          "spec": "^7.23.9"
+        },
+        {
+          "dependency": "node_modules/istanbul-lib-instrument",
+          "dependent": "node_modules/@jest/reporters",
+          "type": "prod",
+          "spec": "^6.0.0"
+        },
+        {
+          "dependency": "node_modules/istanbul-lib-instrument",
+          "dependent": "node_modules/babel-plugin-istanbul",
+          "type": "prod",
+          "spec": "^6.0.2"
+        },
+        {
+          "dependency": "node_modules/babel-plugin-istanbul",
+          "dependent": "node_modules/@jest/transform",
+          "type": "prod",
+          "spec": "^7.0.1"
+        },
+        {
+          "dependency": "node_modules/babel-plugin-istanbul",
+          "dependent": "node_modules/babel-jest",
+          "type": "prod",
+          "spec": "^7.0.1"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/jest-config",
+          "type": "prod",
+          "spec": "^7.27.4"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/jest-snapshot",
+          "type": "prod",
+          "spec": "^7.27.4"
+        },
+        {
+          "dependency": "node_modules/@babel/core",
+          "dependent": "node_modules/ts-jest",
+          "type": "peerOptional",
+          "spec": ">=7.0.0-beta.0 <9"
+        },
+        {
+          "dependency": "node_modules/browserslist",
+          "dependent": "node_modules/update-browserslist-db",
+          "type": "peer",
+          "spec": ">= 4.21.0"
+        },
+        {
+          "dependency": "node_modules/browserslist",
+          "dependent": "node_modules/webpack",
+          "type": "prod",
+          "spec": "^4.28.1"
+        },
+        {
+          "dependency": "node_modules/webpack",
+          "dependent": "node_modules/@nestjs/cli",
+          "type": "peerOptional",
+          "spec": "^5.105.4"
+        },
+        {
+          "dependency": "node_modules/@nestjs/cli",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "12.0.8"
+        },
+        {
+          "dependency": "node_modules/webpack",
+          "dependent": "node_modules/terser-webpack-plugin",
+          "type": "peer",
+          "spec": "^5.1.0"
+        },
+        {
+          "dependency": "node_modules/webpack",
+          "dependent": "node_modules/ts-loader",
+          "type": "peer",
+          "spec": "^5.0.0"
+        },
+        {
+          "dependency": "node_modules/ts-loader",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "^9.5.4"
+        },
+        {
+          "dependency": "node_modules/ts-loader",
+          "dependent": "node_modules/@nestjs/cli",
+          "type": "peerOptional",
+          "spec": "^9.5.4"
+        }
+      ]
+    }
+  },
+  "fast-uri": {
+    "severity": "moderate",
+    "isDirect": false,
+    "range": "3.0.0 - 3.1.7",
+    "fixAvailable": true,
+    "advisories": [
+      {
+        "source": 1240091,
+        "name": "fast-uri",
+        "dependency": "fast-uri",
+        "title": "fast-uri vulnerable to inconsistent host case normalization via percent-encoded octets",
+        "url": "https://github.com/advisories/GHSA-hrr3-gc8f-f4qj",
+        "severity": "moderate",
+        "cwe": [
+          "CWE-178"
+        ],
+        "cvss": {
+          "score": 4.8,
+          "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N"
+        },
+        "range": ">=3.0.0 <3.1.8"
+      }
+    ],
+    "installedPaths": [
+      "node_modules/fast-uri"
+    ],
+    "registryPatchedCandidates": [
+      {
+        "path": "node_modules/fast-uri",
+        "current": "3.1.7",
+        "minimumStableUnaffectedNewerVersion": "3.1.8"
+      }
+    ],
+    "patchedCandidateNote": "Registry candidates outside the current npm-audit aggregate affected range; upstream constraints and behavior still require T5 review. No fixes applied.",
+    "dependencyGraph": {
+      "nodes": [
+        {
+          "name": "fast-uri",
+          "version": "3.1.7",
+          "location": "node_modules/fast-uri",
+          "dev": true,
+          "isWorkspace": false
+        },
+        {
+          "name": "ajv",
+          "version": "8.20.0",
+          "location": "node_modules/@angular-devkit/schematics/node_modules/ajv",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@angular-devkit/core",
+          "version": "22.2.0",
+          "location": "node_modules/@angular-devkit/schematics/node_modules/@angular-devkit/core",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@angular-devkit/schematics",
+          "version": "22.2.0",
+          "location": "node_modules/@angular-devkit/schematics",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@angular-devkit/schematics-cli",
+          "version": "22.2.0",
+          "location": "node_modules/@angular-devkit/schematics-cli",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@nestjs/cli",
+          "version": "12.0.8",
+          "location": "node_modules/@nestjs/cli",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@nestjs/schematics",
+          "version": "12.0.6",
+          "location": "node_modules/@nestjs/schematics",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "ajv",
+          "version": "8.20.0",
+          "location": "node_modules/@angular-devkit/schematics-cli/node_modules/ajv",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@angular-devkit/core",
+          "version": "22.2.0",
+          "location": "node_modules/@angular-devkit/schematics-cli/node_modules/@angular-devkit/core",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "ajv",
+          "version": "8.20.0",
+          "location": "node_modules/@nestjs/cli/node_modules/ajv",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@angular-devkit/core",
+          "version": "22.2.0",
+          "location": "node_modules/@nestjs/cli/node_modules/@angular-devkit/core",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "ajv",
+          "version": "8.20.0",
+          "location": "node_modules/@nestjs/schematics/node_modules/ajv",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@angular-devkit/core",
+          "version": "22.2.0",
+          "location": "node_modules/@nestjs/schematics/node_modules/@angular-devkit/core",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "ajv",
+          "version": "8.18.0",
+          "location": "node_modules/@stryker-mutator/core/node_modules/ajv",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@stryker-mutator/core",
+          "version": "9.6.1",
+          "location": "node_modules/@stryker-mutator/core",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@stryker-mutator/jest-runner",
+          "version": "9.6.1",
+          "location": "node_modules/@stryker-mutator/jest-runner",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "ajv",
+          "version": "8.20.0",
+          "location": "node_modules/ajv-formats/node_modules/ajv",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "ajv-formats",
+          "version": "3.0.1",
+          "location": "node_modules/ajv-formats",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "ajv",
+          "version": "8.18.0",
+          "location": "node_modules/terser-webpack-plugin/node_modules/ajv",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "ajv-formats",
+          "version": "2.1.1",
+          "location": "node_modules/terser-webpack-plugin/node_modules/ajv-formats",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "schema-utils",
+          "version": "4.3.3",
+          "location": "node_modules/terser-webpack-plugin/node_modules/schema-utils",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "terser-webpack-plugin",
+          "version": "5.4.0",
+          "location": "node_modules/terser-webpack-plugin",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "webpack",
+          "version": "5.106.0",
+          "location": "node_modules/webpack",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "ts-loader",
+          "version": "9.5.4",
+          "location": "node_modules/ts-loader",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "ajv-keywords",
+          "version": "5.1.0",
+          "location": "node_modules/terser-webpack-plugin/node_modules/ajv-keywords",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "ajv",
+          "version": "8.18.0",
+          "location": "node_modules/webpack/node_modules/ajv",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "ajv-formats",
+          "version": "2.1.1",
+          "location": "node_modules/webpack/node_modules/ajv-formats",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "schema-utils",
+          "version": "4.3.3",
+          "location": "node_modules/webpack/node_modules/schema-utils",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "ajv-keywords",
+          "version": "5.1.0",
+          "location": "node_modules/webpack/node_modules/ajv-keywords",
+          "dev": false,
+          "isWorkspace": false
+        }
+      ],
+      "edges": [
+        {
+          "dependency": "node_modules/fast-uri",
+          "dependent": "node_modules/@angular-devkit/schematics/node_modules/ajv",
+          "type": "prod",
+          "spec": "^3.0.1"
+        },
+        {
+          "dependency": "node_modules/@angular-devkit/schematics/node_modules/ajv",
+          "dependent": "node_modules/@angular-devkit/schematics/node_modules/@angular-devkit/core",
+          "type": "prod",
+          "spec": "8.20.0"
+        },
+        {
+          "dependency": "node_modules/@angular-devkit/schematics/node_modules/@angular-devkit/core",
+          "dependent": "node_modules/@angular-devkit/schematics",
+          "type": "prod",
+          "spec": "22.2.0"
+        },
+        {
+          "dependency": "node_modules/@angular-devkit/schematics",
+          "dependent": "node_modules/@angular-devkit/schematics-cli",
+          "type": "prod",
+          "spec": "22.2.0"
+        },
+        {
+          "dependency": "node_modules/@angular-devkit/schematics-cli",
+          "dependent": "node_modules/@nestjs/cli",
+          "type": "prod",
+          "spec": "22.2.0"
+        },
+        {
+          "dependency": "node_modules/@nestjs/cli",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "12.0.8"
+        },
+        {
+          "dependency": "node_modules/@angular-devkit/schematics",
+          "dependent": "node_modules/@nestjs/cli",
+          "type": "prod",
+          "spec": "22.2.0"
+        },
+        {
+          "dependency": "node_modules/@angular-devkit/schematics",
+          "dependent": "node_modules/@nestjs/schematics",
+          "type": "prod",
+          "spec": "22.2.0"
+        },
+        {
+          "dependency": "node_modules/@nestjs/schematics",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "12.0.6"
+        },
+        {
+          "dependency": "node_modules/@nestjs/schematics",
+          "dependent": "node_modules/@nestjs/cli",
+          "type": "prod",
+          "spec": "^12.0.0"
+        },
+        {
+          "dependency": "node_modules/fast-uri",
+          "dependent": "node_modules/@angular-devkit/schematics-cli/node_modules/ajv",
+          "type": "prod",
+          "spec": "^3.0.1"
+        },
+        {
+          "dependency": "node_modules/@angular-devkit/schematics-cli/node_modules/ajv",
+          "dependent": "node_modules/@angular-devkit/schematics-cli/node_modules/@angular-devkit/core",
+          "type": "prod",
+          "spec": "8.20.0"
+        },
+        {
+          "dependency": "node_modules/@angular-devkit/schematics-cli/node_modules/@angular-devkit/core",
+          "dependent": "node_modules/@angular-devkit/schematics-cli",
+          "type": "prod",
+          "spec": "22.2.0"
+        },
+        {
+          "dependency": "node_modules/fast-uri",
+          "dependent": "node_modules/@nestjs/cli/node_modules/ajv",
+          "type": "prod",
+          "spec": "^3.0.1"
+        },
+        {
+          "dependency": "node_modules/@nestjs/cli/node_modules/ajv",
+          "dependent": "node_modules/@nestjs/cli/node_modules/@angular-devkit/core",
+          "type": "prod",
+          "spec": "8.20.0"
+        },
+        {
+          "dependency": "node_modules/@nestjs/cli/node_modules/@angular-devkit/core",
+          "dependent": "node_modules/@nestjs/cli",
+          "type": "prod",
+          "spec": "22.2.0"
+        },
+        {
+          "dependency": "node_modules/fast-uri",
+          "dependent": "node_modules/@nestjs/schematics/node_modules/ajv",
+          "type": "prod",
+          "spec": "^3.0.1"
+        },
+        {
+          "dependency": "node_modules/@nestjs/schematics/node_modules/ajv",
+          "dependent": "node_modules/@nestjs/schematics/node_modules/@angular-devkit/core",
+          "type": "prod",
+          "spec": "8.20.0"
+        },
+        {
+          "dependency": "node_modules/@nestjs/schematics/node_modules/@angular-devkit/core",
+          "dependent": "node_modules/@nestjs/schematics",
+          "type": "prod",
+          "spec": "22.2.0"
+        },
+        {
+          "dependency": "node_modules/fast-uri",
+          "dependent": "node_modules/@stryker-mutator/core/node_modules/ajv",
+          "type": "prod",
+          "spec": "^3.0.1"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/core/node_modules/ajv",
+          "dependent": "node_modules/@stryker-mutator/core",
+          "type": "prod",
+          "spec": "~8.18.0"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/core",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "9.6.1"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/core",
+          "dependent": "node_modules/@stryker-mutator/jest-runner",
+          "type": "peer",
+          "spec": "9.6.1"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/jest-runner",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "9.6.1"
+        },
+        {
+          "dependency": "node_modules/fast-uri",
+          "dependent": "node_modules/ajv-formats/node_modules/ajv",
+          "type": "prod",
+          "spec": "^3.0.1"
+        },
+        {
+          "dependency": "node_modules/ajv-formats/node_modules/ajv",
+          "dependent": "node_modules/ajv-formats",
+          "type": "prod",
+          "spec": "^8.0.0"
+        },
+        {
+          "dependency": "node_modules/ajv-formats",
+          "dependent": "node_modules/@angular-devkit/schematics/node_modules/@angular-devkit/core",
+          "type": "prod",
+          "spec": "3.0.1"
+        },
+        {
+          "dependency": "node_modules/ajv-formats",
+          "dependent": "node_modules/@angular-devkit/schematics-cli/node_modules/@angular-devkit/core",
+          "type": "prod",
+          "spec": "3.0.1"
+        },
+        {
+          "dependency": "node_modules/ajv-formats",
+          "dependent": "node_modules/@nestjs/cli/node_modules/@angular-devkit/core",
+          "type": "prod",
+          "spec": "3.0.1"
+        },
+        {
+          "dependency": "node_modules/ajv-formats",
+          "dependent": "node_modules/@nestjs/schematics/node_modules/@angular-devkit/core",
+          "type": "prod",
+          "spec": "3.0.1"
+        },
+        {
+          "dependency": "node_modules/fast-uri",
+          "dependent": "node_modules/terser-webpack-plugin/node_modules/ajv",
+          "type": "prod",
+          "spec": "^3.0.1"
+        },
+        {
+          "dependency": "node_modules/terser-webpack-plugin/node_modules/ajv",
+          "dependent": "node_modules/terser-webpack-plugin/node_modules/ajv-formats",
+          "type": "prod",
+          "spec": "^8.0.0"
+        },
+        {
+          "dependency": "node_modules/terser-webpack-plugin/node_modules/ajv-formats",
+          "dependent": "node_modules/terser-webpack-plugin/node_modules/schema-utils",
+          "type": "prod",
+          "spec": "^2.1.1"
+        },
+        {
+          "dependency": "node_modules/terser-webpack-plugin/node_modules/schema-utils",
+          "dependent": "node_modules/terser-webpack-plugin",
+          "type": "prod",
+          "spec": "^4.3.0"
+        },
+        {
+          "dependency": "node_modules/terser-webpack-plugin",
+          "dependent": "node_modules/webpack",
+          "type": "prod",
+          "spec": "^5.3.17"
+        },
+        {
+          "dependency": "node_modules/webpack",
+          "dependent": "node_modules/@nestjs/cli",
+          "type": "peerOptional",
+          "spec": "^5.105.4"
+        },
+        {
+          "dependency": "node_modules/webpack",
+          "dependent": "node_modules/ts-loader",
+          "type": "peer",
+          "spec": "^5.0.0"
+        },
+        {
+          "dependency": "node_modules/ts-loader",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "^9.5.4"
+        },
+        {
+          "dependency": "node_modules/ts-loader",
+          "dependent": "node_modules/@nestjs/cli",
+          "type": "peerOptional",
+          "spec": "^9.5.4"
+        },
+        {
+          "dependency": "node_modules/terser-webpack-plugin/node_modules/ajv",
+          "dependent": "node_modules/terser-webpack-plugin/node_modules/ajv-keywords",
+          "type": "peer",
+          "spec": "^8.8.2"
+        },
+        {
+          "dependency": "node_modules/terser-webpack-plugin/node_modules/ajv-keywords",
+          "dependent": "node_modules/terser-webpack-plugin/node_modules/schema-utils",
+          "type": "prod",
+          "spec": "^5.1.0"
+        },
+        {
+          "dependency": "node_modules/terser-webpack-plugin/node_modules/ajv",
+          "dependent": "node_modules/terser-webpack-plugin/node_modules/schema-utils",
+          "type": "prod",
+          "spec": "^8.9.0"
+        },
+        {
+          "dependency": "node_modules/fast-uri",
+          "dependent": "node_modules/webpack/node_modules/ajv",
+          "type": "prod",
+          "spec": "^3.0.1"
+        },
+        {
+          "dependency": "node_modules/webpack/node_modules/ajv",
+          "dependent": "node_modules/webpack/node_modules/ajv-formats",
+          "type": "prod",
+          "spec": "^8.0.0"
+        },
+        {
+          "dependency": "node_modules/webpack/node_modules/ajv-formats",
+          "dependent": "node_modules/webpack/node_modules/schema-utils",
+          "type": "prod",
+          "spec": "^2.1.1"
+        },
+        {
+          "dependency": "node_modules/webpack/node_modules/schema-utils",
+          "dependent": "node_modules/webpack",
+          "type": "prod",
+          "spec": "^4.3.3"
+        },
+        {
+          "dependency": "node_modules/webpack/node_modules/ajv",
+          "dependent": "node_modules/webpack/node_modules/ajv-keywords",
+          "type": "peer",
+          "spec": "^8.8.2"
+        },
+        {
+          "dependency": "node_modules/webpack/node_modules/ajv-keywords",
+          "dependent": "node_modules/webpack/node_modules/schema-utils",
+          "type": "prod",
+          "spec": "^5.1.0"
+        },
+        {
+          "dependency": "node_modules/webpack/node_modules/ajv",
+          "dependent": "node_modules/webpack/node_modules/schema-utils",
+          "type": "prod",
+          "spec": "^8.9.0"
+        }
+      ]
+    }
+  },
+  "micromatch": {
+    "severity": "high",
+    "isDirect": false,
+    "range": ">=0.2.0",
+    "fixAvailable": true,
+    "advisories": [],
+    "installedPaths": [
+      "node_modules/micromatch"
+    ],
+    "registryPatchedCandidates": [
+      {
+        "path": "node_modules/micromatch",
+        "current": "4.0.8",
+        "minimumStableUnaffectedNewerVersion": null
+      }
+    ],
+    "patchedCandidateNote": "Registry candidates outside the current npm-audit aggregate affected range; upstream constraints and behavior still require T5 review. No fixes applied.",
+    "dependencyGraph": {
+      "nodes": [
+        {
+          "name": "micromatch",
+          "version": "4.0.8",
+          "location": "node_modules/micromatch",
+          "dev": true,
+          "isWorkspace": false
+        },
+        {
+          "name": "ts-loader",
+          "version": "9.5.4",
+          "location": "node_modules/ts-loader",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@nestjs/cli",
+          "version": "12.0.8",
+          "location": "node_modules/@nestjs/cli",
+          "dev": false,
+          "isWorkspace": false
+        }
+      ],
+      "edges": [
+        {
+          "dependency": "node_modules/micromatch",
+          "dependent": "node_modules/ts-loader",
+          "type": "prod",
+          "spec": "^4.0.0"
+        },
+        {
+          "dependency": "node_modules/ts-loader",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "^9.5.4"
+        },
+        {
+          "dependency": "node_modules/ts-loader",
+          "dependent": "node_modules/@nestjs/cli",
+          "type": "peerOptional",
+          "spec": "^9.5.4"
+        },
+        {
+          "dependency": "node_modules/@nestjs/cli",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "12.0.8"
+        }
+      ]
+    }
+  },
+  "qs": {
+    "severity": "moderate",
+    "isDirect": false,
+    "range": "2.2.5 - 6.15.3",
+    "fixAvailable": true,
+    "advisories": [
+      {
+        "source": 1119502,
+        "name": "qs",
+        "dependency": "qs",
+        "title": "qs has a remotely triggerable DoS: qs.stringify crashes with TypeError on null/undefined entries in comma-format arrays when encodeValuesOnly is set",
+        "url": "https://github.com/advisories/GHSA-q8mj-m7cp-5q26",
+        "severity": "moderate",
+        "cwe": [
+          "CWE-476"
+        ],
+        "cvss": {
+          "score": 5.3,
+          "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+        },
+        "range": ">=6.11.1 <=6.15.1"
+      },
+      {
+        "source": 1158506,
+        "name": "qs",
+        "dependency": "qs",
+        "title": "qs array-limit bypass via bracket-key comma parsing",
+        "url": "https://github.com/advisories/GHSA-x5fp-wj9c-mxmx",
+        "severity": "moderate",
+        "cwe": [
+          "CWE-770"
+        ],
+        "cvss": {
+          "score": 3.7,
+          "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L"
+        },
+        "range": ">=6.14.2 <=6.15.3"
+      },
+      {
+        "source": 1158507,
+        "name": "qs",
+        "dependency": "qs",
+        "title": "qs: Denial of Service via Attacker Controlled isBuffer",
+        "url": "https://github.com/advisories/GHSA-4mjr-xmp4-gh2g",
+        "severity": "moderate",
+        "cwe": [
+          "CWE-248",
+          "CWE-703"
+        ],
+        "cvss": {
+          "score": 5.3,
+          "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+        },
+        "range": ">=2.2.5 <6.16.0"
+      }
+    ],
+    "installedPaths": [
+      "node_modules/typed-rest-client/node_modules/qs"
+    ],
+    "registryPatchedCandidates": [
+      {
+        "path": "node_modules/typed-rest-client/node_modules/qs",
+        "current": "6.15.1",
+        "minimumStableUnaffectedNewerVersion": "6.16.0"
+      }
+    ],
+    "patchedCandidateNote": "Registry candidates outside the current npm-audit aggregate affected range; upstream constraints and behavior still require T5 review. No fixes applied.",
+    "dependencyGraph": {
+      "nodes": [
+        {
+          "name": "qs",
+          "version": "6.16.0",
+          "location": "node_modules/qs",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "body-parser",
+          "version": "2.3.0",
+          "location": "node_modules/body-parser",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "express",
+          "version": "5.2.1",
+          "location": "node_modules/express",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@nestjs/platform-express",
+          "version": "12.1.1",
+          "location": "node_modules/@nestjs/platform-express",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@nestjs/core",
+          "version": "12.1.1",
+          "location": "node_modules/@nestjs/core",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@nestjs/mongoose",
+          "version": "12.0.0",
+          "location": "node_modules/@nestjs/mongoose",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@nestjs/schedule",
+          "version": "12.0.2",
+          "location": "node_modules/@nestjs/schedule",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@nestjs/swagger",
+          "version": "12.0.2",
+          "location": "node_modules/@nestjs/swagger",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@nestjs/testing",
+          "version": "12.1.1",
+          "location": "node_modules/@nestjs/testing",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "swagger-ui-express",
+          "version": "5.0.1",
+          "location": "node_modules/swagger-ui-express",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "superagent",
+          "version": "3.8.3",
+          "location": "node_modules/superagent",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "supertest",
+          "version": "4.0.2",
+          "location": "node_modules/supertest",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "qs",
+          "version": "6.15.1",
+          "location": "node_modules/typed-rest-client/node_modules/qs",
+          "dev": true,
+          "isWorkspace": false
+        },
+        {
+          "name": "typed-rest-client",
+          "version": "2.3.1",
+          "location": "node_modules/typed-rest-client",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@stryker-mutator/core",
+          "version": "9.6.1",
+          "location": "node_modules/@stryker-mutator/core",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@stryker-mutator/jest-runner",
+          "version": "9.6.1",
+          "location": "node_modules/@stryker-mutator/jest-runner",
+          "dev": false,
+          "isWorkspace": false
+        }
+      ],
+      "edges": [
+        {
+          "dependency": "node_modules/qs",
+          "dependent": "node_modules/body-parser",
+          "type": "prod",
+          "spec": "^6.15.2"
+        },
+        {
+          "dependency": "node_modules/body-parser",
+          "dependent": "node_modules/express",
+          "type": "prod",
+          "spec": "^2.2.1"
+        },
+        {
+          "dependency": "node_modules/express",
+          "dependent": "node_modules/@nestjs/platform-express",
+          "type": "prod",
+          "spec": "5.2.1"
+        },
+        {
+          "dependency": "node_modules/@nestjs/platform-express",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "prod",
+          "spec": "12.1.1"
+        },
+        {
+          "dependency": "node_modules/@nestjs/platform-express",
+          "dependent": "node_modules/@nestjs/core",
+          "type": "peerOptional",
+          "spec": "^12.0.0"
+        },
+        {
+          "dependency": "node_modules/@nestjs/core",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "prod",
+          "spec": "12.1.1"
+        },
+        {
+          "dependency": "node_modules/@nestjs/core",
+          "dependent": "node_modules/@nestjs/mongoose",
+          "type": "peer",
+          "spec": "^11.0.0 || ^12.0.0"
+        },
+        {
+          "dependency": "node_modules/@nestjs/mongoose",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "prod",
+          "spec": "12.0.0"
+        },
+        {
+          "dependency": "node_modules/@nestjs/core",
+          "dependent": "node_modules/@nestjs/schedule",
+          "type": "peer",
+          "spec": "^11.0.0 || ^12.0.0"
+        },
+        {
+          "dependency": "node_modules/@nestjs/schedule",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "prod",
+          "spec": "12.0.2"
+        },
+        {
+          "dependency": "node_modules/@nestjs/core",
+          "dependent": "node_modules/@nestjs/swagger",
+          "type": "peer",
+          "spec": "^12.0.0"
+        },
+        {
+          "dependency": "node_modules/@nestjs/swagger",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "prod",
+          "spec": "12.0.2"
+        },
+        {
+          "dependency": "node_modules/@nestjs/core",
+          "dependent": "node_modules/@nestjs/testing",
+          "type": "peer",
+          "spec": "^12.0.0"
+        },
+        {
+          "dependency": "node_modules/@nestjs/testing",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "12.1.1"
+        },
+        {
+          "dependency": "node_modules/@nestjs/platform-express",
+          "dependent": "node_modules/@nestjs/testing",
+          "type": "peerOptional",
+          "spec": "^12.0.0"
+        },
+        {
+          "dependency": "node_modules/express",
+          "dependent": "node_modules/swagger-ui-express",
+          "type": "peer",
+          "spec": ">=4.0.0 || >=5.0.0-beta"
+        },
+        {
+          "dependency": "node_modules/swagger-ui-express",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "prod",
+          "spec": "^5.0.1"
+        },
+        {
+          "dependency": "node_modules/qs",
+          "dependent": "node_modules/express",
+          "type": "prod",
+          "spec": "^6.14.0"
+        },
+        {
+          "dependency": "node_modules/qs",
+          "dependent": "node_modules/superagent",
+          "type": "prod",
+          "spec": "^6.5.1"
+        },
+        {
+          "dependency": "node_modules/superagent",
+          "dependent": "node_modules/supertest",
+          "type": "prod",
+          "spec": "^3.8.3"
+        },
+        {
+          "dependency": "node_modules/supertest",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "^4.0.2"
+        },
+        {
+          "dependency": "node_modules/typed-rest-client/node_modules/qs",
+          "dependent": "node_modules/typed-rest-client",
+          "type": "prod",
+          "spec": "6.15.1"
+        },
+        {
+          "dependency": "node_modules/typed-rest-client",
+          "dependent": "node_modules/@stryker-mutator/core",
+          "type": "prod",
+          "spec": "~2.3.0"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/core",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "9.6.1"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/core",
+          "dependent": "node_modules/@stryker-mutator/jest-runner",
+          "type": "peer",
+          "spec": "9.6.1"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/jest-runner",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "9.6.1"
+        }
+      ]
+    }
+  },
+  "ts-loader": {
+    "severity": "high",
+    "isDirect": true,
+    "range": "3.3.0 - 9.6.1",
+    "fixAvailable": true,
+    "advisories": [],
+    "installedPaths": [
+      "node_modules/ts-loader"
+    ],
+    "registryPatchedCandidates": [
+      {
+        "path": "node_modules/ts-loader",
+        "current": "9.5.4",
+        "minimumStableUnaffectedNewerVersion": "9.6.2"
+      }
+    ],
+    "patchedCandidateNote": "Registry candidates outside the current npm-audit aggregate affected range; upstream constraints and behavior still require T5 review. No fixes applied.",
+    "dependencyGraph": {
+      "nodes": [
+        {
+          "name": "ts-loader",
+          "version": "9.5.4",
+          "location": "node_modules/ts-loader",
+          "dev": true,
+          "isWorkspace": false
+        },
+        {
+          "name": "@nestjs/cli",
+          "version": "12.0.8",
+          "location": "node_modules/@nestjs/cli",
+          "dev": false,
+          "isWorkspace": false
+        }
+      ],
+      "edges": [
+        {
+          "dependency": "node_modules/ts-loader",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "^9.5.4"
+        },
+        {
+          "dependency": "node_modules/ts-loader",
+          "dependent": "node_modules/@nestjs/cli",
+          "type": "peerOptional",
+          "spec": "^9.5.4"
+        },
+        {
+          "dependency": "node_modules/@nestjs/cli",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "12.0.8"
+        }
+      ]
+    }
+  },
+  "typed-rest-client": {
+    "severity": "moderate",
+    "isDirect": false,
+    "range": "2.3.1 - 3.1.0",
+    "fixAvailable": true,
+    "advisories": [],
+    "installedPaths": [
+      "node_modules/typed-rest-client"
+    ],
+    "registryPatchedCandidates": [
+      {
+        "path": "node_modules/typed-rest-client",
+        "current": "2.3.1",
+        "minimumStableUnaffectedNewerVersion": "3.1.1"
+      }
+    ],
+    "patchedCandidateNote": "Registry candidates outside the current npm-audit aggregate affected range; upstream constraints and behavior still require T5 review. No fixes applied.",
+    "dependencyGraph": {
+      "nodes": [
+        {
+          "name": "typed-rest-client",
+          "version": "2.3.1",
+          "location": "node_modules/typed-rest-client",
+          "dev": true,
+          "isWorkspace": false
+        },
+        {
+          "name": "@stryker-mutator/core",
+          "version": "9.6.1",
+          "location": "node_modules/@stryker-mutator/core",
+          "dev": false,
+          "isWorkspace": false
+        },
+        {
+          "name": "@stryker-mutator/jest-runner",
+          "version": "9.6.1",
+          "location": "node_modules/@stryker-mutator/jest-runner",
+          "dev": false,
+          "isWorkspace": false
+        }
+      ],
+      "edges": [
+        {
+          "dependency": "node_modules/typed-rest-client",
+          "dependent": "node_modules/@stryker-mutator/core",
+          "type": "prod",
+          "spec": "~2.3.0"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/core",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "9.6.1"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/core",
+          "dependent": "node_modules/@stryker-mutator/jest-runner",
+          "type": "peer",
+          "spec": "9.6.1"
+        },
+        {
+          "dependency": "node_modules/@stryker-mutator/jest-runner",
+          "dependent": "/workspace/book-library-nestjs",
+          "type": "dev",
+          "spec": "9.6.1"
+        }
+      ]
+    }
+  }
+}

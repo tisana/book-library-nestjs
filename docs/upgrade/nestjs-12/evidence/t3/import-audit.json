@@ -1,0 +1,14 @@
+{
+  "rootAliasImports": [],
+  "nestDeepImports": [
+    [
+      "test/authorization-matrix.e2e-spec.ts",
+      "@nestjs/common/constants"
+    ],
+    [
+      "test/performance/auth-benchmark-isolation.spec.ts",
+      "@nestjs/common/constants"
+    ]
+  ],
+  "supertestNamespaceImports": []
+}
