@@ -4,6 +4,7 @@ import {
   existsSync,
   mkdtempSync,
   mkdirSync,
+  promises as filesystemPromises,
   readdirSync,
   readFileSync,
   rmSync,
@@ -11,7 +12,7 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { availableParallelism, tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { after, before, test } from 'node:test';
 
@@ -88,6 +89,16 @@ const COMPLETE_SHARDS = [
     mutantCount: 231,
   },
 ];
+const MUTATION_JEST_CONFIG = {
+  ...JSON.parse(readFileSync(join(REPOSITORY_ROOT, 'package.json'), 'utf8'))
+    .jest,
+  transform: {
+    '^.+\\.(t|j)s$': [
+      'ts-jest',
+      { tsconfig: '<rootDir>/../tsconfig.mutation.json' },
+    ],
+  },
+};
 const MEMBERS_SMOKE_JEST = {
   projectType: 'custom',
   config: {
@@ -98,7 +109,7 @@ const MEMBERS_SMOKE_JEST = {
     transform: {
       '^.+\\.(t|j)s$': [
         'ts-jest',
-        { tsconfig: '<rootDir>/../tsconfig.jest.json' },
+        { tsconfig: '<rootDir>/../tsconfig.mutation.json' },
       ],
     },
     collectCoverageFrom: [
@@ -804,6 +815,65 @@ test('smoke shards own every reviewed rule exactly once with isolated config', (
 
 // Production break caught: members loses the approved idle-runner four-worker
 // setting, or any other whole-source shard changes from two workers.
+test('generated mutation snapshots are excluded without losing any real input or default ignore', async () => {
+  const { defaultOptions } =
+    await import('../../node_modules/@stryker-mutator/core/dist/src/config/index.js');
+  const { ProjectReader } =
+    await import('../../node_modules/@stryker-mutator/core/dist/src/fs/project-reader.js');
+  const fixture = mkdtempSync(join(tmpdir(), 'mutation-input-hygiene-'));
+  const originalCwd = process.cwd();
+  try {
+    const files = [
+      'src/auth/token-session.service.ts',
+      'src/auth/token-session.service.spec.ts',
+      'test/support/critical-auth-fixtures.ts',
+      'package.json',
+      'tsconfig.jest.json',
+      '.env',
+      'reports/mutation/history/shard/.stryker-tmp/src/abandoned.ts',
+      'reports/mutation/history/shard/summary.json',
+      'node_modules/ignored/index.js',
+      '.git/ignored',
+      'ignored.tsbuildinfo',
+    ];
+    for (const file of files) {
+      const path = join(fixture, file);
+      mkdirSync(dirname(path), { recursive: true });
+      writeFileSync(path, 'synthetic input fixture');
+    }
+    process.chdir(fixture);
+    const config = buildStrykerConfig('complete', MANIFEST, 'token-session');
+    const logger = { debug() {}, info() {}, warn() {}, error() {} };
+    const original = new ProjectReader(filesystemPromises, logger, {
+      ...defaultOptions,
+      ...config,
+      ignorePatterns: [],
+    });
+    const updated = new ProjectReader(filesystemPromises, logger, {
+      ...defaultOptions,
+      ...config,
+    });
+    assert.deepEqual(updated.ignoreRules, [
+      ...original.ignoreRules,
+      'reports/mutation/**',
+    ]);
+    const before = (await original.resolveInputFileNames()).map((path) =>
+      relative(fixture, path).replaceAll('\\', '/'),
+    );
+    const after = (await updated.resolveInputFileNames()).map((path) =>
+      relative(fixture, path).replaceAll('\\', '/'),
+    );
+    assert.deepEqual(
+      after.sort(),
+      before.filter((path) => !path.startsWith('reports/mutation/')).sort(),
+    );
+    assert.deepEqual(after, files.slice(0, 6).sort());
+  } finally {
+    process.chdir(originalCwd);
+    rmSync(fixture, { recursive: true, force: true });
+  }
+});
+
 test('mutation worker caps preserve maximums on small and large runners', () => {
   for (const cpus of [1, 2, 4, 8]) {
     for (const shard of SMOKE_SHARDS) {
@@ -857,6 +927,31 @@ test('smoke members selects only its direct service specification', () => {
   );
 });
 
+test('mutation compiler changes only isolated emit and preserves mandatory typed Jest', () => {
+  const mutation = JSON.parse(
+    readFileSync(join(REPOSITORY_ROOT, 'tsconfig.mutation.json'), 'utf8'),
+  );
+  assert.deepEqual(mutation, {
+    extends: './tsconfig.jest.json',
+    compilerOptions: { isolatedModules: true },
+  });
+  const mandatory = JSON.parse(
+    readFileSync(join(REPOSITORY_ROOT, 'tsconfig.jest.json'), 'utf8'),
+  );
+  assert.equal(mandatory.compilerOptions.isolatedModules, false);
+  assert.equal(mandatory.compilerOptions.module, 'CommonJS');
+  assert.equal(mandatory.compilerOptions.moduleResolution, 'Bundler');
+  const normalJest = JSON.parse(
+    readFileSync(join(REPOSITORY_ROOT, 'package.json'), 'utf8'),
+  ).jest;
+  assert.deepEqual(normalJest.transform, {
+    '^.+\\.(t|j)s$': [
+      'ts-jest',
+      { tsconfig: '<rootDir>/../tsconfig.jest.json' },
+    ],
+  });
+});
+
 test('smoke members Jest config discovers exactly the intended specification', () => {
   const config = buildStrykerConfig('smoke', MANIFEST, 'members');
   const result = spawnSync(
@@ -898,7 +993,7 @@ test('all shards and complete use exact Jest, reporters, mutators, thresholds, a
           ? MEMBERS_SMOKE_JEST
           : {
               projectType: 'custom',
-              configFile: 'package.json',
+              config: MUTATION_JEST_CONFIG,
               enableFindRelatedTests: true,
             },
       config: buildStrykerConfig('smoke', MANIFEST, shard.id),
@@ -907,7 +1002,7 @@ test('all shards and complete use exact Jest, reporters, mutators, thresholds, a
       concurrency: 4,
       jest: {
         projectType: 'custom',
-        configFile: 'package.json',
+        config: MUTATION_JEST_CONFIG,
         enableFindRelatedTests: true,
       },
       config: buildStrykerConfig('complete', MANIFEST, shard.id),

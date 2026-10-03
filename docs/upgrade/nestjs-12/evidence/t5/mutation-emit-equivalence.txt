@@ -1,0 +1,21 @@
+file:///workspace/book-library-nestjs/node_modules/@stryker-mutator/instrumenter/dist/src/transformers/ignorer-bookkeeper.js:15
+            this.ignorers.forEach((ignorer) => {
+                          ^
+
+TypeError: Cannot read properties of undefined (reading 'forEach')
+    at IgnorerBookkeeper.enterNode (file:///workspace/book-library-nestjs/node_modules/@stryker-mutator/instrumenter/dist/src/transformers/ignorer-bookkeeper.js:15:27)
+    at enter (file:///workspace/book-library-nestjs/node_modules/@stryker-mutator/instrumenter/dist/src/transformers/babel-transformer.js:40:35)
+    at NodePath._call (/workspace/book-library-nestjs/node_modules/@babel/traverse/lib/path/context.js:50:20)
+    at NodePath.call (/workspace/book-library-nestjs/node_modules/@babel/traverse/lib/path/context.js:36:15)
+    at NodePath.visit (/workspace/book-library-nestjs/node_modules/@babel/traverse/lib/path/context.js:87:31)
+    at TraversalContext.visitQueue (/workspace/book-library-nestjs/node_modules/@babel/traverse/lib/context.js:96:16)
+    at TraversalContext.visitSingle (/workspace/book-library-nestjs/node_modules/@babel/traverse/lib/context.js:72:19)
+    at TraversalContext.visit (/workspace/book-library-nestjs/node_modules/@babel/traverse/lib/context.js:119:19)
+    at traverseNode (/workspace/book-library-nestjs/node_modules/@babel/traverse/lib/traverse-node.js:130:17)
+    at traverse (/workspace/book-library-nestjs/node_modules/@babel/traverse/lib/index.js:53:34)
+    at transformBabel (file:///workspace/book-library-nestjs/node_modules/@stryker-mutator/instrumenter/dist/src/transformers/babel-transformer.js:33:5)
+    at Instrumenter.transform [as _transform] (file:///workspace/book-library-nestjs/node_modules/@stryker-mutator/instrumenter/dist/src/transformers/transformer.js:24:13)
+    at Instrumenter.instrument (file:///workspace/book-library-nestjs/node_modules/@stryker-mutator/instrumenter/dist/src/instrumenter.js:34:18)
+    at async file:///tmp/nestjs-t5-emit-equivalence.mjs:12:22
+
+Node.js v24.19.0

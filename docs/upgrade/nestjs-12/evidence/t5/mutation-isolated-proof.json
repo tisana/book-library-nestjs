@@ -1,0 +1,662 @@
+{
+  "node": "v24.19.0",
+  "typescript": "6.0.2",
+  "tsJest": "29.4.14",
+  "generatedMutants": 1744,
+  "comparison": "Independent typed versus isolated ts-jest compilers; CommonJS/Bundler, interop and diagnostics option retained. Business class member AST includes constructor assignments/properties/methods. Original production classes additionally matched and instantiated through real Nest TestingModule; Model/Connection metadata differences overridden by identical explicit tokens.",
+  "mandatoryTypedCoverageUnchanged": true,
+  "results": [
+    {
+      "source": "src/auth/token-session.service.ts",
+      "kind": "original",
+      "businessMembers": [
+        "constructor",
+        "onModuleInit",
+        "onModuleDestroy",
+        "createFamily",
+        "rotate",
+        "resolveFamilyId",
+        "reconcileExpiredPendingMarkers",
+        "runExpiredPendingMarkers",
+        "revokeRefreshToken",
+        "revokeFamily",
+        "revokeSubject",
+        "hashRefreshToken",
+        "getRefreshCookieOptions",
+        "getClearRefreshCookieOptions",
+        "prepareRotation",
+        "handleExistingMarker",
+        "recoverAfterInterruptedCas",
+        "finalizeAndRevoke",
+        "commitMarker",
+        "revokeAsReplay",
+        "revocationUpdate",
+        "rotationResult",
+        "generateRefreshToken",
+        "isDuplicateKeyError",
+        "denyRefresh"
+      ],
+      "businessAstEqual": true,
+      "businessAstSha256": "42f552ee2959cb39d632b1302ad181511ce9e40ced3f9f8a99018ae8734bb5bc",
+      "wholeModuleByteEqual": false,
+      "productionBusinessAstEqual": true,
+      "effectiveNestDiTokens": [
+        {
+          "kind": "explicit-token",
+          "value": "RefreshTokenFamilyModel"
+        },
+        {
+          "kind": "explicit-token",
+          "value": "RefreshTokenReplayMarkerModel"
+        }
+      ],
+      "importedClassBindingsIdentical": true,
+      "optionalIndices": [],
+      "actualNestTestingModuleVersions": [
+        "production-dist",
+        "typed-ts-jest",
+        "isolated-ts-jest"
+      ],
+      "constructorAssignments": [
+        {
+          "property": "refreshTokenFamilyModel",
+          "dependencyIndex": 0
+        },
+        {
+          "property": "replayMarkerModel",
+          "dependencyIndex": 1
+        }
+      ],
+      "designMetadataDifferences": []
+    },
+    {
+      "source": "src/auth/token-session.service.ts",
+      "kind": "instrumented-all-mutants",
+      "businessMembers": [
+        "constructor",
+        "onModuleInit",
+        "onModuleDestroy",
+        "createFamily",
+        "rotate",
+        "resolveFamilyId",
+        "reconcileExpiredPendingMarkers",
+        "runExpiredPendingMarkers",
+        "revokeRefreshToken",
+        "revokeFamily",
+        "revokeSubject",
+        "hashRefreshToken",
+        "getRefreshCookieOptions",
+        "getClearRefreshCookieOptions",
+        "prepareRotation",
+        "handleExistingMarker",
+        "recoverAfterInterruptedCas",
+        "finalizeAndRevoke",
+        "commitMarker",
+        "revokeAsReplay",
+        "revocationUpdate",
+        "rotationResult",
+        "generateRefreshToken",
+        "isDuplicateKeyError",
+        "denyRefresh"
+      ],
+      "businessAstEqual": true,
+      "businessAstSha256": "5ec7069eeee5db3d9c2e3dacf52269e610763d0e57081601e243491d663ef190",
+      "wholeModuleByteEqual": false
+    },
+    {
+      "source": "src/auth/auth-identifier-repair.service.ts",
+      "kind": "original",
+      "businessMembers": [
+        "constructor",
+        "dryRun",
+        "apply",
+        "cancel",
+        "prepareBatch",
+        "activateBatch",
+        "completeParent",
+        "compensateBatch",
+        "finishFailedParent",
+        "reserveReplacement",
+        "applyAggregateIdentifier",
+        "setAggregateIdentifier",
+        "loadConflict",
+        "validateManifestSubjects",
+        "verifyPersistedManifest",
+        "requireKey",
+        "requireOperation",
+        "requireTransactionSession",
+        "recordResume",
+        "partition",
+        "result",
+        "subjectKey",
+        "isTerminal",
+        "currentKeyVersion",
+        "maxAssignments"
+      ],
+      "businessAstEqual": true,
+      "businessAstSha256": "085bf8fb56a01fa5596cc002ed527dc66f903a98ce4a5a1a8c06097e555df214",
+      "wholeModuleByteEqual": false,
+      "productionBusinessAstEqual": true,
+      "effectiveNestDiTokens": [
+        {
+          "kind": "explicit-token",
+          "value": "AuthIdentifierOperationModel"
+        },
+        {
+          "kind": "explicit-token",
+          "value": "AuthIdentifierRepairBatchModel"
+        },
+        {
+          "kind": "explicit-token",
+          "value": "AuthIdentifierModel"
+        },
+        {
+          "kind": "explicit-token",
+          "value": "StaffUserModel"
+        },
+        {
+          "kind": "explicit-token",
+          "value": "MemberModel"
+        },
+        {
+          "kind": "function",
+          "name": "AuthIdentifierRepairAuthorizationService"
+        },
+        {
+          "kind": "function",
+          "name": "AuthIdentifierRepairKeyPolicyService"
+        },
+        {
+          "kind": "function",
+          "name": "SecurityActivityService"
+        },
+        {
+          "kind": "function",
+          "name": "ConfigService"
+        }
+      ],
+      "importedClassBindingsIdentical": true,
+      "optionalIndices": [],
+      "actualNestTestingModuleVersions": [
+        "production-dist",
+        "typed-ts-jest",
+        "isolated-ts-jest"
+      ],
+      "constructorAssignments": [
+        {
+          "property": "authorization",
+          "dependencyIndex": 5
+        },
+        {
+          "property": "configService",
+          "dependencyIndex": 8
+        },
+        {
+          "property": "identifierModel",
+          "dependencyIndex": 2
+        },
+        {
+          "property": "keyPolicy",
+          "dependencyIndex": 6
+        },
+        {
+          "property": "memberModel",
+          "dependencyIndex": 4
+        },
+        {
+          "property": "operationModel",
+          "dependencyIndex": 0
+        },
+        {
+          "property": "repairBatchModel",
+          "dependencyIndex": 1
+        },
+        {
+          "property": "securityActivity",
+          "dependencyIndex": 7
+        },
+        {
+          "property": "staffUserModel",
+          "dependencyIndex": 3
+        }
+      ],
+      "designMetadataDifferences": []
+    },
+    {
+      "source": "src/auth/auth-identifier-repair.service.ts",
+      "kind": "instrumented-all-mutants",
+      "businessMembers": [
+        "constructor",
+        "dryRun",
+        "apply",
+        "cancel",
+        "prepareBatch",
+        "activateBatch",
+        "completeParent",
+        "compensateBatch",
+        "finishFailedParent",
+        "reserveReplacement",
+        "applyAggregateIdentifier",
+        "setAggregateIdentifier",
+        "loadConflict",
+        "validateManifestSubjects",
+        "verifyPersistedManifest",
+        "requireKey",
+        "requireOperation",
+        "requireTransactionSession",
+        "recordResume",
+        "partition",
+        "result",
+        "subjectKey",
+        "isTerminal",
+        "currentKeyVersion",
+        "maxAssignments"
+      ],
+      "businessAstEqual": true,
+      "businessAstSha256": "e6d2046c160e1c4637ac4c56d5f5702b32d6e74ffaf2e822832b1bd81f006093",
+      "wholeModuleByteEqual": false
+    },
+    {
+      "source": "src/auth/auth-identifier-reconciliation.service.ts",
+      "kind": "original",
+      "businessMembers": [
+        "constructor",
+        "onApplicationBootstrap",
+        "startWhenMigrationsReady",
+        "startWhenMigrationsReadyOnce",
+        "onModuleDestroy",
+        "onApplicationShutdown",
+        "reconcileOnce",
+        "renewLease",
+        "registerSchedule",
+        "runBoundedPass",
+        "candidateFilter",
+        "repairKeyAvailable",
+        "claim",
+        "process",
+        "requiredMigrationsReady",
+        "registerReadinessProbe",
+        "runReadinessProbe",
+        "failInvalidOperation",
+        "attachMissingReservationReferences",
+        "recoverApplying",
+        "recoverCompensating",
+        "finalize",
+        "cleanup",
+        "findReservation",
+        "transition",
+        "releaseLease",
+        "correlationFor",
+        "decodeConfiguredSecret",
+        "leaseSeconds",
+        "intervalSeconds",
+        "batchSize",
+        "retentionDays",
+        "maxAssignments"
+      ],
+      "businessAstEqual": true,
+      "businessAstSha256": "5930c1c6a53d622700362e5ef2b39154801dd03a6ebe0aabb3d7e58c989a93ae",
+      "wholeModuleByteEqual": false,
+      "productionBusinessAstEqual": true,
+      "effectiveNestDiTokens": [
+        {
+          "kind": "explicit-token",
+          "value": "AuthIdentifierOperationModel"
+        },
+        {
+          "kind": "explicit-token",
+          "value": "AuthIdentifierModel"
+        },
+        {
+          "kind": "explicit-token",
+          "value": "AuthIdentifierRepairBatchModel"
+        },
+        {
+          "kind": "function",
+          "name": "AuthIdentifierRepairKeyPolicyService"
+        },
+        {
+          "kind": "function",
+          "name": "SecurityActivityService"
+        },
+        {
+          "kind": "function",
+          "name": "ConfigService"
+        },
+        {
+          "kind": "function",
+          "name": "SchedulerRegistry"
+        },
+        {
+          "kind": "explicit-token",
+          "value": "DatabaseConnection"
+        }
+      ],
+      "importedClassBindingsIdentical": true,
+      "optionalIndices": [
+        7,
+        6
+      ],
+      "actualNestTestingModuleVersions": [
+        "production-dist",
+        "typed-ts-jest",
+        "isolated-ts-jest"
+      ],
+      "constructorAssignments": [
+        {
+          "property": "configService",
+          "dependencyIndex": 5
+        },
+        {
+          "property": "connection",
+          "dependencyIndex": 7
+        },
+        {
+          "property": "identifierModel",
+          "dependencyIndex": 1
+        },
+        {
+          "property": "keyPolicy",
+          "dependencyIndex": 3
+        },
+        {
+          "property": "operationModel",
+          "dependencyIndex": 0
+        },
+        {
+          "property": "repairBatchModel",
+          "dependencyIndex": 2
+        },
+        {
+          "property": "schedulerRegistry",
+          "dependencyIndex": 6
+        },
+        {
+          "property": "securityActivityService",
+          "dependencyIndex": 4
+        }
+      ],
+      "designMetadataDifferences": []
+    },
+    {
+      "source": "src/auth/auth-identifier-reconciliation.service.ts",
+      "kind": "instrumented-all-mutants",
+      "businessMembers": [
+        "constructor",
+        "onApplicationBootstrap",
+        "startWhenMigrationsReady",
+        "startWhenMigrationsReadyOnce",
+        "onModuleDestroy",
+        "onApplicationShutdown",
+        "reconcileOnce",
+        "renewLease",
+        "registerSchedule",
+        "runBoundedPass",
+        "candidateFilter",
+        "repairKeyAvailable",
+        "claim",
+        "process",
+        "requiredMigrationsReady",
+        "registerReadinessProbe",
+        "runReadinessProbe",
+        "failInvalidOperation",
+        "attachMissingReservationReferences",
+        "recoverApplying",
+        "recoverCompensating",
+        "finalize",
+        "cleanup",
+        "findReservation",
+        "transition",
+        "releaseLease",
+        "correlationFor",
+        "decodeConfiguredSecret",
+        "leaseSeconds",
+        "intervalSeconds",
+        "batchSize",
+        "retentionDays",
+        "maxAssignments"
+      ],
+      "businessAstEqual": true,
+      "businessAstSha256": "1285179ac9f22bb85ce9dad755481f77e197c8d3cbd376abce2ccfcd04a59826",
+      "wholeModuleByteEqual": false
+    },
+    {
+      "source": "src/members/members.service.ts",
+      "kind": "original",
+      "businessMembers": [
+        "constructor",
+        "create",
+        "findAll",
+        "findOne",
+        "findSelfServiceProfile",
+        "update",
+        "getPolicyStatus",
+        "findByLoginIdentifierWithPassword",
+        "findActiveById",
+        "touchLastLogin",
+        "setMemberCredentials",
+        "findDocumentById",
+        "bumpAuthVersion",
+        "toResponse",
+        "normalizeLoginIdentifier",
+        "reserveIdentifier",
+        "releaseIdentifier",
+        "revokeSessions",
+        "recordMemberChange"
+      ],
+      "businessAstEqual": true,
+      "businessAstSha256": "eeabbbd310df1533fcb96e2c8c026a9b58d59302c11afab0e007d85369110c08",
+      "wholeModuleByteEqual": false,
+      "productionBusinessAstEqual": true,
+      "effectiveNestDiTokens": [
+        {
+          "kind": "explicit-token",
+          "value": "MemberModel"
+        },
+        {
+          "kind": "function",
+          "name": "MembershipTypesService"
+        },
+        {
+          "kind": "explicit-token",
+          "value": "AuthIdentifierModel"
+        },
+        {
+          "kind": "explicit-token",
+          "value": "RefreshTokenFamilyModel"
+        },
+        {
+          "kind": "function",
+          "name": "SecurityActivityService"
+        }
+      ],
+      "importedClassBindingsIdentical": true,
+      "optionalIndices": [
+        4,
+        3,
+        2
+      ],
+      "actualNestTestingModuleVersions": [
+        "production-dist",
+        "typed-ts-jest",
+        "isolated-ts-jest"
+      ],
+      "constructorAssignments": [
+        {
+          "property": "identifierModel",
+          "dependencyIndex": 2
+        },
+        {
+          "property": "memberModel",
+          "dependencyIndex": 0
+        },
+        {
+          "property": "membershipTypesService",
+          "dependencyIndex": 1
+        },
+        {
+          "property": "refreshTokenFamilyModel",
+          "dependencyIndex": 3
+        },
+        {
+          "property": "securityActivityService",
+          "dependencyIndex": 4
+        }
+      ],
+      "designMetadataDifferences": []
+    },
+    {
+      "source": "src/members/members.service.ts",
+      "kind": "instrumented-all-mutants",
+      "businessMembers": [
+        "constructor",
+        "create",
+        "findAll",
+        "findOne",
+        "findSelfServiceProfile",
+        "update",
+        "getPolicyStatus",
+        "findByLoginIdentifierWithPassword",
+        "findActiveById",
+        "touchLastLogin",
+        "setMemberCredentials",
+        "findDocumentById",
+        "bumpAuthVersion",
+        "toResponse",
+        "normalizeLoginIdentifier",
+        "reserveIdentifier",
+        "releaseIdentifier",
+        "revokeSessions",
+        "recordMemberChange"
+      ],
+      "businessAstEqual": true,
+      "businessAstSha256": "b7e20ffe41cf5b13e0b4a7c74d54aec82ca5d7a1d0b9005faff98cc9224871d5",
+      "wholeModuleByteEqual": false
+    },
+    {
+      "source": "src/borrowings/borrowings.service.ts",
+      "kind": "original",
+      "businessMembers": [
+        "constructor",
+        "create",
+        "returnBorrowing",
+        "findAll",
+        "findOne",
+        "findOneForMember",
+        "findOverdue",
+        "findByMember",
+        "calculateDueAt",
+        "buildListFilter",
+        "hasOverdueLoans",
+        "findBorrowing",
+        "findBook",
+        "findCategory",
+        "findMember",
+        "findMembershipType",
+        "runInTransaction",
+        "requireActor",
+        "toResponse"
+      ],
+      "businessAstEqual": true,
+      "businessAstSha256": "31a1f48b57c15edc2f83f046e67b5b3e0656f0ab131d26b242ba64dc5374d054",
+      "wholeModuleByteEqual": false,
+      "productionBusinessAstEqual": true,
+      "effectiveNestDiTokens": [
+        {
+          "kind": "explicit-token",
+          "value": "DatabaseConnection"
+        },
+        {
+          "kind": "explicit-token",
+          "value": "BorrowingModel"
+        },
+        {
+          "kind": "explicit-token",
+          "value": "BookModel"
+        },
+        {
+          "kind": "explicit-token",
+          "value": "BookCategoryModel"
+        },
+        {
+          "kind": "explicit-token",
+          "value": "MemberModel"
+        },
+        {
+          "kind": "explicit-token",
+          "value": "MembershipTypeModel"
+        },
+        {
+          "kind": "function",
+          "name": "BorrowingsRulesService"
+        }
+      ],
+      "importedClassBindingsIdentical": true,
+      "optionalIndices": [],
+      "actualNestTestingModuleVersions": [
+        "production-dist",
+        "typed-ts-jest",
+        "isolated-ts-jest"
+      ],
+      "constructorAssignments": [
+        {
+          "property": "bookCategoryModel",
+          "dependencyIndex": 3
+        },
+        {
+          "property": "bookModel",
+          "dependencyIndex": 2
+        },
+        {
+          "property": "borrowingModel",
+          "dependencyIndex": 1
+        },
+        {
+          "property": "connection",
+          "dependencyIndex": 0
+        },
+        {
+          "property": "memberModel",
+          "dependencyIndex": 4
+        },
+        {
+          "property": "membershipTypeModel",
+          "dependencyIndex": 5
+        },
+        {
+          "property": "rulesService",
+          "dependencyIndex": 6
+        }
+      ],
+      "designMetadataDifferences": []
+    },
+    {
+      "source": "src/borrowings/borrowings.service.ts",
+      "kind": "instrumented-all-mutants",
+      "businessMembers": [
+        "constructor",
+        "create",
+        "returnBorrowing",
+        "findAll",
+        "findOne",
+        "findOneForMember",
+        "findOverdue",
+        "findByMember",
+        "calculateDueAt",
+        "buildListFilter",
+        "hasOverdueLoans",
+        "findBorrowing",
+        "findBook",
+        "findCategory",
+        "findMember",
+        "findMembershipType",
+        "runInTransaction",
+        "requireActor",
+        "toResponse"
+      ],
+      "businessAstEqual": true,
+      "businessAstSha256": "e5913fed7f53d0c15216e33e31649a0f2702af19785189ba59891eed79f5abc6",
+      "wholeModuleByteEqual": false
+    }
+  ]
+}
