@@ -1,0 +1,38 @@
+✖ records a schema-v1 baseline from exact Node 24 complete provenance (30.915033ms)
+✖ refuses a baseline when complete provenance is not exact (31.651052ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 202.381203
+
+✖ failing tests:
+
+test at test/quality/mutation-policy.test.mjs:347:1
+✖ records a schema-v1 baseline from exact Node 24 complete provenance (30.915033ms)
+  TypeError: complete summary nodeMajor must equal 22.
+      at fail (file:///workspace/book-library-nestjs/scripts/quality/mutation-policy.mjs:33:9)
+      at validateCompleteProvenance (file:///workspace/book-library-nestjs/scripts/quality/mutation-policy.mjs:752:5)
+      at recordBaseline (file:///workspace/book-library-nestjs/scripts/quality/mutation-policy.mjs:874:3)
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-policy.test.mjs:348:20)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+test at test/quality/mutation-policy.test.mjs:373:1
+✖ refuses a baseline when complete provenance is not exact (31.651052ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception: previous Node 22 major
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-policy.test.mjs:438:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /nodeMajor must equal 24/,
+    operator: 'throws',
+    diff: 'simple'
+  }

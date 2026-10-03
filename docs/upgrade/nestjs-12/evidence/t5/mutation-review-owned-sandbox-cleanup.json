@@ -1,0 +1,15 @@
+{
+  "purpose": "Remove only owned Stryker temporary sandbox roots before canonical quality reporting checks; preserve actual logs/reports/summaries",
+  "removed": [
+    "reports/mutation/smoke/shards/token-session/.stryker-tmp"
+  ],
+  "logsUnchanged": true,
+  "preservedLogSha256": {
+    "reports/mutation/complete/shards/token-session/stryker.log": "09f054e1ac713a2bf6a160bc6fabbd0ca51c17f7e002f456d0ad6f421fdf9d12",
+    "reports/mutation/smoke/shards/borrowings/stryker.log": "b090369fc71f52dd6ff5b411ae6bff8cd905ed45e1bd85d97e1a58a2275584c4",
+    "reports/mutation/smoke/shards/members/stryker.log": "a418f121ea11d9d8d3260d55c5d0ad34579ad26ee3507756daa3380531c16dab",
+    "reports/mutation/smoke/shards/identifier-repair/stryker.log": "6858a1912e1d87cfc7dca5d88abe184558c98449ce4015f899c9651efe67ed2b",
+    "reports/mutation/smoke/shards/identifier-reconciliation/stryker.log": "b3b5fb33a88e0ebe23cc0b8ef845fc5eba1a38a01cab9880b71dbc5f7aea3311",
+    "reports/mutation/smoke/shards/token-session/stryker.log": "14199960ec9467c009e7f3dfddbe1a923badd7247aa60ff09b2ce28664b654f6"
+  }
+}
