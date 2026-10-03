@@ -1,6 +1,6 @@
 ## Task T6: Rehearse rollback and prepare release evidence
 
-**Implementer:** gpt-6.1-sol / medium.  
+**Implementer:** gpt-6.1-sol / medium.
 **Reviewer:** gpt-6.1-sol / high.
 
 **Files**
