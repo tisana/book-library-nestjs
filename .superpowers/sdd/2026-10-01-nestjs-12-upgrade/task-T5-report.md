@@ -30,7 +30,7 @@ Evidence is under `docs/upgrade/nestjs-12/evidence/t5/`; summaries record the ac
 | Backend full e2e | 254/254,30 suites,zero pending (measured new count) |
 | Production process/signal | 54/54,2 suites,zero pending; T4 expected negative timeout/recovery cases remain passing assertions of failure |
 | Quality reporting tests | 68/68 |
-| Mutation runner/policy regression | 106/106,zero skipped,including real mixed live/zombie groups and strict timeout descendant cleanup |
+| Mutation runner/policy regression | Fresh post-review106/106,zero skipped,including real mixed live/zombie groups and strict timeout descendant cleanup |
 | Frontend coverage | 186/186,42 test files;65 covered source files;85.41/82.58/81.48/85.95 |
 | Existing mocked Playwright | 87/87:29 each desktop/tablet/mobile;zero failed/skipped/flaky,retries0 in the final CI-mode producer |
 | Live Playwright | 3/3 against actual built application and disposable database;zero failed/skipped/flaky |
@@ -79,3 +79,11 @@ Committed repair input hashes were captured before adding `tsconfig.mutation.jso
 - This report is committed separately; its containing commit is reporting metadata only.
 
 T5 is DONE_WITH_CONCERNS with mutation acceptance explicitly blocked, plus the separate T1 devcontainer gap. T6 may rehearse and document these blockers; release, merge and deployment remain unapproved.
+
+## Review fixes and final verification
+
+Two concrete review findings are fixed in `97ec26d612d04993f5b9896913a7de6ebed42db9`. The workflow regression now requires `tsconfig.mutation.json` and `tsconfig.jest.json` in the exact PR path list, preserving both actual filters. `recordBaseline` now requires Node24, consistent with the runtime pin. Existing tests now accept exact Node24 complete provenance and reject the previous Node22 major. The Node24 test failed before the validator fix, and the Node22 case showed the missing rejection; saved RED evidence reproduces both. Canonical1744count, current-commit matching, source/config hashes, evaluatedscore matching, historical floor, exact900000ms budget and all five shard-success checks remain strict. Synthetic canonical reports are confined to unit fixtures and disposable CLI-test directories; the tracked historical baseline is unchanged.
+
+The actual strict CI command `node --test test/quality/mutation-runner.test.mjs test/quality/mutation-policy.test.mjs` passes106/106 in16102ms, with0failed/cancelled/skipped/todo after both changes. `npm run test:quality-reporting` passes68/68 across exactly4canonical suites, and `npm run mutation:check` passes89rules. Only the owned smoke token `.stryker-tmp` root was removed before reporting to prevent duplicate sandbox suites; original producer logs/reports/summaries remain preserved. Final committed input hashes and actual command outcomes are in `mutation-review-final-provenance.json`. The earlier isolated-config green result predates the CI filter change and is not claimed as final post-review verification.
+
+Independent scoped re-review is pending. This repairs the reviewed CI failure and future Node24 baseline-recording incompatibility; T5 remains DONE_WITH_CONCERNS with actual mutation acceptance and the separate T1 devcontainer gate blocked.

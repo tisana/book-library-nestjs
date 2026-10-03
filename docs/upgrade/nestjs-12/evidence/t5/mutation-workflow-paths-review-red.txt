@@ -1,0 +1,43 @@
+✖ mutation workflow distributes five shards and merges one exact profile (3.615404ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 100.235184
+
+✖ failing tests:
+
+test at test/quality/mutation-runner.test.mjs:2155:1
+✖ mutation workflow distributes five shards and merges one exact profile (3.615404ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  ... Skipped lines
+  
+    [
+      'src/auth/token-session.service.ts',
+      'src/auth/token-session.service.spec.ts',
+      'src/auth/auth-identifier-repair.service.ts',
+      'src/auth/auth-identifier-repair.service.spec.ts',
+  ...
+      'stryker.config.mjs',
+  +   'tsconfig.mutation.json',
+  +   'tsconfig.jest.json',
+      'package.json',
+      'package-lock.json',
+      '.github/workflows/mutation.yml'
+    ]
+  
+      at TestContext.<anonymous> (file:///workspace/book-library-nestjs/test/quality/mutation-runner.test.mjs:2183:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'src/auth/token-session.service.ts', 'src/auth/token-session.service.spec.ts', 'src/auth/auth-identifier-repair.service.ts', 'src/auth/auth-identifier-repair.service.spec.ts', 'src/auth/auth-identifier-reconciliation.service.ts', 'src/auth/auth-identifier-reconciliation.service.spec.ts', 'src/members/members.service.ts', 'src/members/members.service.spec.ts', 'src/borrowings/borrowings.service.ts', 'src/borrowings/borrowings.service.spec.ts', 'test/support/**', 'test/quality/**', 'scripts/quality/**', 'stryker.config.mjs', 'tsconfig.mutation.json', 'tsconfig.jest.json', 'package.json', 'package-lock.json', '.github/workflows/mutation.yml' ],
+    expected: [ 'src/auth/token-session.service.ts', 'src/auth/token-session.service.spec.ts', 'src/auth/auth-identifier-repair.service.ts', 'src/auth/auth-identifier-repair.service.spec.ts', 'src/auth/auth-identifier-reconciliation.service.ts', 'src/auth/auth-identifier-reconciliation.service.spec.ts', 'src/members/members.service.ts', 'src/members/members.service.spec.ts', 'src/borrowings/borrowings.service.ts', 'src/borrowings/borrowings.service.spec.ts', 'test/support/**', 'test/quality/**', 'scripts/quality/**', 'stryker.config.mjs', 'package.json', 'package-lock.json', '.github/workflows/mutation.yml' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
