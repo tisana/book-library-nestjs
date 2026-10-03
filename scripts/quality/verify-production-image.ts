@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { createArtifactFixture } from './disposable-artifact-fixture';
 
 let phase = 'initialization';
+let diagnosticSecrets: string[] = [];
 const image =
   process.env.PRODUCTION_IMAGE ?? 'book-library-upgrade:verification';
 if (!/^[a-zA-Z0-9][a-zA-Z0-9._/:-]+$/.test(image))
@@ -31,13 +32,31 @@ function docker(args: string[]): string {
         stdio: ['ignore', 'pipe', 'pipe'],
       },
     ).trim();
-  } catch {
+  } catch (error) {
+    const failure = error as { stderr?: Buffer; code?: string };
+    let detail = failure.stderr?.toString().slice(-2000) ?? '';
+    for (const secret of diagnosticSecrets)
+      detail = detail.split(secret).join('[redacted]');
+    detail = detail
+      .replace(/mongodb(?:\+srv)?:\/\/\S+/gi, '[redacted-database]')
+      .replace(/\b[A-Za-z0-9_-]{32,}\b/g, '[redacted-id]');
+    console.error(
+      JSON.stringify({ dockerCommand: args[0], code: failure.code, detail }),
+    );
     throw new Error('Production verification Docker command failed');
   }
 }
 async function main() {
   phase = 'disposable-fixture';
   const fixture = await createArtifactFixture(true);
+  diagnosticSecrets = [
+    fixture.uri,
+    fixture.password,
+    ...Object.entries(fixture.environment)
+      .filter(([name]) => /SECRET|KEYS/.test(name))
+      .map(([, value]) => value)
+      .filter((value): value is string => Boolean(value)),
+  ];
   const directory = await mkdtemp(join(tmpdir(), 'library-image-check-'));
   const children = new Set<string>();
   try {
