@@ -1,0 +1,17 @@
+
+> book-library@0.0.1 verify:production-image
+> ts-node --transpile-only -r tsconfig-paths/register scripts/quality/verify-production-image.ts
+
+Applied 000 migration-record
+Applied 001 library-core
+Applied 002 member-auth
+Applied 003 auth-roles-permissions
+{"node":"24.19.0","npm":"11.9.0","check":"production-image","result":"pass","installedPackages":235,"entry":"dist/main.js","user":"node"}
+Unsafe/missing production settings: 3 rejected
+{"check":"shutdown-observation","readinessFailureMs":4010,"exit":0}
+{"check":"dependency-loss","result":"pass","readinessFailureMs":4010,"shutdownExit":0,"shutdownMs":282}
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

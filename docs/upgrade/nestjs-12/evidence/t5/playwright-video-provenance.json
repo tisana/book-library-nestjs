@@ -1,0 +1,24 @@
+{
+  "source": "Standalone synthetic recording fixture; no accounts, API or product interaction. Existing mocked suite retained recording policy; its failure video paths are in red logs. Final87 clean passes retain no failure videos.",
+  "node": "v24.19.0",
+  "chromium": "151.0.7922.173",
+  "systemChromium": "Chromium 151.0.7922.173 built on Debian GNU/Linux 13 (trixie)",
+  "systemFfmpeg": "ffmpeg version 7.1.5-0+deb13u1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "encoderArtifact": "/tmp/nestjs-t5-playwright/ffmpeg-1011/ffmpeg-linux copied from /usr/bin/ffmpeg",
+  "savedArtifact": "docs/upgrade/nestjs-12/evidence/t5/playwright-video-proof.webm",
+  "metadata": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "vp8",
+        "width": 640,
+        "height": 480
+      }
+    ],
+    "format": {
+      "duration": "0.960000",
+      "size": "3586"
+    }
+  }
+}

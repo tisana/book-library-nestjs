@@ -1,0 +1,9 @@
+
+> book-library@0.0.1 quality:report:frontend-unit
+> ts-node --transpile-only scripts/quality/report-quality.ts --stream frontend-unit --coverage frontend/coverage/coverage-summary.json --unit-tests frontend/test-results/vitest-results.json --baselines quality/coverage-baselines.json --markdown frontend/test-results/unit-summary.md --json frontend/test-results/unit-summary.json --producer-outcome frontend-lint=success --producer-outcome frontend-unit=success --changed-line-diff test-results/upgrade.diff --changed-line-lcov frontend/coverage/lcov.info
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

@@ -1,0 +1,20 @@
+{
+  "producerCommit": "aa272b8b3fa6eeab09c07e745006d53caa322a92",
+  "logs": [
+    {
+      "source": "reports/mutation/smoke/shards/token-session/stryker.log",
+      "saved": "docs/upgrade/nestjs-12/evidence/t5/mutation-smoke-token-isolated.txt",
+      "bytes": 9017,
+      "sha256": "14199960ec9467c009e7f3dfddbe1a923badd7247aa60ff09b2ce28664b654f6",
+      "copiedOriginalBytes": true
+    },
+    {
+      "source": "reports/mutation/complete/shards/token-session/stryker.log",
+      "saved": "docs/upgrade/nestjs-12/evidence/t5/mutation-complete-token-isolated.txt",
+      "bytes": 37075,
+      "sha256": "09f054e1ac713a2bf6a160bc6fabbd0ca51c17f7e002f456d0ad6f421fdf9d12",
+      "copiedOriginalBytes": true
+    }
+  ],
+  "acceptance": false
+}

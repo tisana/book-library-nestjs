@@ -1,0 +1,104 @@
+
+> book-library@0.0.1 frontend:test:coverage
+> npm run test:coverage --prefix frontend
+
+
+> book-library-frontend@0.0.1 test:coverage
+> vitest run --coverage
+
+
+ RUN  v4.1.11 /workspace/book-library-nestjs/frontend
+      Coverage enabled with v8
+
+ ✓ src/features/auth/shared-login.test.tsx (9 tests) 3707ms
+     ✓ routes staff@example.com from authenticated role area and permissions  691ms
+     ✓ routes member-no-access@example.com from authenticated role area and permissions  430ms
+     ✓ routes no-role@example.com from authenticated role area and permissions  943ms
+     ✓ allows a retry after a generic authentication failure  393ms
+     ✓ shows a generic error and does not route when the returned role area lacks its session  393ms
+ ✓ src/features/auth/identifier-conflicts.test.tsx (4 tests) 6714ms
+     ✓ uses safe labels, validates replacements, and resolves a fully accounted conflict  5735ms
+     ✓ shows a retryable safe error when conflict resolution fails  684ms
+ ✓ src/routes/staff/books.test.tsx (3 tests) 4514ms
+     ✓ shows empty and searched-empty catalog states  1597ms
+     ✓ saves a book and closes the add form  1570ms
+     ✓ keeps the add form open and shows a safe conflict error  1325ms
+ ✓ src/routes/staff/borrowings.new.test.tsx (9 tests) 1997ms
+     ✓ blocks a borrowing when Member is suspended  630ms
+ ✓ src/features/auth/security-activity.test.tsx (7 tests) 573ms
+     ✓ renders safe event context and applies event and outcome filters  448ms
+ ✓ src/features/auth/identifier-conflicts.integration.test.tsx (3 tests) 1313ms
+     ✓ retries a safe failure, completes resolution, and removes stale conflict data after refetch  979ms
+ ✓ src/routes/member/index.test.tsx (13 tests) 1263ms
+     ✓ uses membership tier precedence for 'Gold Member'  399ms
+ ✓ src/features/auth/staff-role-management.test.tsx (4 tests) 2334ms
+     ✓ creates staff and assigns approved roles and status  2200ms
+ ✓ src/routes/staff/borrowings.$borrowingId.test.tsx (5 tests) 1720ms
+     ✓ shows a not-found state for an unavailable borrowing  368ms
+     ✓ confirms and records an active return  852ms
+ ✓ src/routes/member/borrowings.$borrowingId.test.tsx (4 tests) 1804ms
+     ✓ shows a loading state before the private borrowing resolves  465ms
+     ✓ shows a private not-found state with safe server failure copy  944ms
+ ✓ src/routes/public.test.tsx (4 tests) 793ms
+     ✓ offers only shared sign-in and member-home destinations publicly  306ms
+     ✓ routes a member from the server-returned role area  404ms
+ ✓ src/features/auth/staff-role-management.integration.test.tsx (3 tests) 914ms
+     ✓ renders a visible loading state before empty and forbidden responses through real hooks  596ms
+ ✓ src/routes/member/borrowings.test.tsx (2 tests) 581ms
+     ✓ shows returned books in the current and recent borrowing history  483ms
+ ✓ src/routes/staff/route.test.tsx (6 tests) 531ms
+ ✓ src/features/staff-dashboard/staff-dashboard.test.tsx (2 tests) 357ms
+     ✓ shows staff summaries, five attention items, and the new borrowing workflow  301ms
+ ✓ src/routes/staff/books.$bookId.test.tsx (4 tests) 817ms
+     ✓ shows author, ISBN, availability, and no-cover fallbacks  408ms
+ ✓ src/features/member-home/member-home.test.tsx (7 tests) 259ms
+ ✓ src/components/layout/staff-shell.test.tsx (1 test) 250ms
+ ✓ src/components/data-table/data-table.test.tsx (2 tests) 277ms
+ ✓ src/features/books/book-form.test.tsx (1 test) 260ms
+ ✓ src/routes/staff/members.$memberId.test.tsx (4 tests) 166ms
+ ✓ src/components/layout/member-shell.test.tsx (1 test) 267ms
+ ✓ src/features/member-home/reminders.test.tsx (3 tests) 302ms
+ ✓ src/lib/api/auth.test.ts (12 tests) 209ms
+ ✓ src/lib/api/members.test.ts (4 tests) 208ms
+ ✓ src/lib/auth/session.test.ts (11 tests) 87ms
+ ✓ src/lib/api/member-self-service.test.ts (3 tests) 162ms
+ ✓ src/lib/api/borrowings.test.ts (5 tests) 174ms
+ ✓ src/lib/api/books.test.ts (4 tests) 198ms
+ ✓ src/lib/api/catalog.test.ts (3 tests) 174ms
+ ✓ src/lib/api/membership-types.test.ts (3 tests) 129ms
+ ✓ src/lib/auth/sign-out.test.ts (3 tests) 41ms
+ ✓ src/lib/api/client.test.ts (4 tests) 61ms
+ ✓ src/routes/member/route.test.tsx (2 tests) 43ms
+ ✓ src/lib/validation/schemas.test.ts (5 tests) 67ms
+ ✓ src/lib/dates/due-status.test.ts (2 tests) 26ms
+ ✓ src/lib/auth/route-guards.test.ts (6 tests) 23ms
+ ✓ src/lib/api/mutations.test.ts (5 tests) 14ms
+ ✓ src/lib/api/query-keys.test.ts (2 tests) 11ms
+ ✓ src/app/router.test.tsx (2 tests) 12ms
+ ✓ src/lib/api/errors.test.ts (7 tests) 16ms
+ ✓ src/features/borrowings/borrowing-display.test.ts (2 tests) 10ms
+
+ Test Files  42 passed (42)
+      Tests  186 passed (186)
+   Start at  07:02:37
+   Duration  186.90s (transform 4.12s, setup 21.63s, import 49.39s, tests 33.38s, environment 57.25s)
+
+JSON report written to /workspace/book-library-nestjs/frontend/test-results/vitest-results.json
+ % Coverage report from v8
+
+=============================== Coverage summary ===============================
+Statements   : 85.41% ( 884/1035 )
+Branches     : 82.58% ( 607/735 )
+Functions    : 81.48% ( 361/443 )
+Lines        : 85.95% ( 851/990 )
+================================================================================
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

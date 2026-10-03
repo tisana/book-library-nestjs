@@ -1,0 +1,1 @@
+scripts/quality/disposable-artifact-fixture.ts(10,22): error TS2353: Object literal may only specify known properties, and 'ip' does not exist in type 'MongoMemoryInstanceOptsBase'.

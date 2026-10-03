@@ -1,0 +1,5 @@
+
+> book-library@0.0.1 mutation:check
+> node scripts/quality/update-critical-rule-manifest.mjs --check
+
+Critical mutation manifest error: manifest.rules[0] has a stale sourceSha256.

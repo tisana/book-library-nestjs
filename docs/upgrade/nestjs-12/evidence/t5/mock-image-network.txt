@@ -1,0 +1,10 @@
+HTTP/1.1 403 Forbidden
+content-length: 16
+content-type: text/plain
+date: Sat, 03 Oct 2026 07:25:14 GMT
+server: envoy
+connection: close
+
+
+Exact fixture URL: https://covers.openlibrary.org/b/isbn/9780132350884-L.jpg
+CONNECT tunnel rejected with403 by enforced policy; no custom hosts configured.
