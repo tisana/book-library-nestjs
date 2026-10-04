@@ -1,16 +1,15 @@
 # NestJS 12 release and rollback runbook
 
-**Release blocked. No production deployment was performed.** T6 rehearses an independent compatibility gate; it does not turn reviewed T5 `DONE_WITH_CONCERNS` into a pass.
+**Release blocked pending actual devcontainer verification and production prerequisites. No production deployment was performed.** The reviewed CI follow-up closes the historical T5 mutation acceptance gap.
 
 ## Required approvals and evidence
 
 Before scheduling a deployment, the named deployment owner and on-call operator must adopt production error/latency thresholds, establish the measured production baseline and minimum traffic, confirm the actual scheduler shutdown grace, and approve a maintenance window. These people and adopted objectives are currently undefined. The following implementation gates remain open:
 
 - T1: build/start the actual devcontainer after supported network configuration permits `westus.data.mcr.microsoft.com`, `www.mongodb.org`, and `repo.mongodb.org`. Current enforced package-manager policy has no custom hosts; no bypass was attempted.
-- T5 follow-up: the genuine current five-shard complete baseline passes (1744 mutants, raw score95.35550458715596% above historical95.2518818760857%, all shards under900000ms). [Actual current evidence](evidence/ci-pr119/current-complete-6871bb72/README.md) preserves original failures and genuine producer provenance. Coherent GitHub smoke acceptance (1366 mutants, unchanged350000ms per-shard budget) remains pending.
 - Production: immutable registry digests for both approved images, secret/configuration version references, database backup/recovery confirmation, named owner, approved SLOs, traffic sampling and deployed grace. Local rehearsal image IDs are evidence, not production registry references.
 
-Normal runtime, production image, live browser, coverage and security gates have measured T5 passes; see [T5 evidence](../../../.superpowers/sdd/2026-10-01-nestjs-12-upgrade/task-T5-report.md). Earlier failures and blockers remain preserved.
+Normal runtime, production image, live browser, coverage and security gates have measured T5 passes; see [T5 evidence](../../../.superpowers/sdd/2026-10-01-nestjs-12-upgrade/task-T5-report.md). Earlier failures and blockers remain preserved. The T5 mutation gap is closed by the [genuine current complete baseline](evidence/ci-pr119/current-complete-6871bb72/README.md) (1744 mutants,95.35550458715596% above the historical floor, every shard below900000ms) and [coherent GitHub smoke](evidence/ci-pr119/github-21c4354/smoke/summary.md) (1366 mutants,99.78038067349927%, every shard below350000ms). [Main CI](https://github.com/tisana/book-library-nestjs/actions/runs/37180305467) and [mutation CI](https://github.com/tisana/book-library-nestjs/actions/runs/37180305407) both pass on head21c4354; all budgets, critical rules and equivalents are preserved.
 
 ## Strategy and prerequisites
 

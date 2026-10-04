@@ -108,4 +108,4 @@ T1's actual devcontainer verification remains blocked on its MCR CDN prerequisit
 
 ## T6 release disposition
 
-The original baseline above remains historical. The actual execution-base Nest11 image is separately built and exercised in the [release runbook](release-runbook.md), including disposable old/new/old persisted-session and worker recovery checks. T1 devcontainer access and T5 mutation acceptance remain release blockers; production objectives and deployment owner still require adoption. No production deployment or data migration occurred.
+The original baseline above remains historical. The actual execution-base Nest11 image is separately built and exercised in the [release runbook](release-runbook.md), including disposable old/new/old persisted-session and worker recovery checks. T1 devcontainer access remains a release blocker; production objectives and deployment owner still require adoption. The reviewed [CI follow-up](evidence/ci-pr119/findings.md) closes the historical T5 mutation gap with actual current complete and coherent GitHub smoke acceptance. No production deployment or data migration occurred.
