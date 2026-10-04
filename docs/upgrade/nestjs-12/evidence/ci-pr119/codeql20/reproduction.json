@@ -1,0 +1,64 @@
+[
+  {
+    "version": "before",
+    "name": "LF",
+    "exitCode": 0,
+    "matched": true,
+    "durationMs": 0.08876399999999762
+  },
+  {
+    "version": "before",
+    "name": "CRLF",
+    "exitCode": 0,
+    "matched": true,
+    "durationMs": 0.09099700000000155
+  },
+  {
+    "version": "before",
+    "name": "blank-lines",
+    "exitCode": 0,
+    "matched": true,
+    "durationMs": 0.09127799999999908
+  },
+  {
+    "version": "before",
+    "name": "missing-schedule-28",
+    "exitCode": null,
+    "error": "ETIMEDOUT"
+  },
+  {
+    "version": "after",
+    "name": "LF",
+    "exitCode": 0,
+    "matched": true,
+    "durationMs": 0.09329999999999927
+  },
+  {
+    "version": "after",
+    "name": "CRLF",
+    "exitCode": 0,
+    "matched": true,
+    "durationMs": 0.15400200000000197
+  },
+  {
+    "version": "after",
+    "name": "blank-lines",
+    "exitCode": 0,
+    "matched": true,
+    "durationMs": 0.13252000000000308
+  },
+  {
+    "version": "after",
+    "name": "missing-schedule-28",
+    "exitCode": 0,
+    "matched": false,
+    "durationMs": 0.3483749999999972
+  },
+  {
+    "version": "after",
+    "name": "missing-schedule-20000",
+    "exitCode": 0,
+    "matched": false,
+    "durationMs": 2.222348
+  }
+]

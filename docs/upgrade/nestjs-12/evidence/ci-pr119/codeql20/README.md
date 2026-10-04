@@ -1,0 +1,11 @@
+# CodeQL alert20: inefficient workflow matcher
+
+Alert: https://github.com/tisana/book-library-nestjs/security/code-scanning/20 (`js/redos`). The screenshot identifies the path-block matcher in `test/quality/mutation-runner.test.mjs`, now at line2202. Historical lines differ. The separate CodeQL security check111372863115 on head2fa7558 reports one high-severity alert even though its analysis workflow job succeeds; workflow success alone does not establish clean security findings.
+
+Repeated whitespace groups used `\s`, which also consumes newlines. Blank lines between quoted paths can be assigned to more than one iteration; failure to find the final schedule marker forces excessive backtracking. The replacement restricts indentation/trailing whitespace to spaces/tabs and quoted paths to one line. Repeated alternatives each consume exactly one path or blank line. It preserves the actual workflow path-list/order assertion, LF/CRLF and blank path lines without suppressing the query.
+
+The bounded before/after reproduction in `reproduction.json` reads the actual old committed and new working matcher. Both accept valid LF, CRLF and blank-line blocks. The original cannot reject28 blank-separated path lines without a schedule marker within500ms; the replacement rejects them in0.35ms and20000 lines in2.22ms. Child time limits protect the diagnosis; they do not change any application or mutation-test deadline. An initial large-input diagnostic hit the OS argument-size limit; the saved successful comparison passes input via stdin.
+
+The exact three-file Node runner/policy gate passes134/134 with zero failures/skips; its output is retained. Prettier and diff whitespace checks pass. The change affects only a test matcher and documentation, not the mutation runner, compiler, selected sources, application tests, budgets, equivalents or configuration hash. Existing complete baseline/source provenance remains valid; no full complete producer was repeated.
+
+Completion requires verifying the actual CodeQL security check after pushing, separately from the analysis job. The alert on default branch master may remain open until the branch fix is merged; no dismissal or merge is part of this task.
