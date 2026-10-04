@@ -1,0 +1,464 @@
+[32m05:20:02 (850) INFO ProjectReader[39m Found 1 of 1765 file(s) to be mutated.
+[32m05:20:02 (850) INFO Instrumenter[39m Instrumented 1 source file(s) with 538 mutant(s)
+[32m05:20:05 (850) INFO ConcurrencyTokenProvider[39m Creating 2 test runner process(es).
+[32m05:20:05 (850) INFO BroadcastReporter[39m Detected that current console does not support the "progress" reporter, downgrading to "progress-append-only" reporter
+[32m05:20:06 (850) INFO DryRunExecutor[39m Starting initial test run (jest test runner with "perTest" coverage analysis). This may take a while.
+[32m05:20:08 (850) INFO DryRunExecutor[39m Initial test run succeeded. Ran 85 tests in 1 second (net 93 ms, overhead 1881 ms).
+Mutation testing 7% (elapsed: <1m, remaining: ~2m) 25/538 tested (5 survived, 0 timed out)
+Mutation testing 13% (elapsed: <1m, remaining: ~2m) 48/538 tested (10 survived, 0 timed out)
+Mutation testing 17% (elapsed: <1m, remaining: ~2m) 69/538 tested (16 survived, 0 timed out)
+Mutation testing 22% (elapsed: <1m, remaining: ~2m) 87/538 tested (17 survived, 0 timed out)
+Mutation testing 25% (elapsed: <1m, remaining: ~2m) 103/538 tested (19 survived, 0 timed out)
+Mutation testing 32% (elapsed: ~1m, remaining: ~2m) 116/538 tested (19 survived, 0 timed out)
+Mutation testing 35% (elapsed: ~1m, remaining: ~2m) 129/538 tested (19 survived, 0 timed out)
+Mutation testing 43% (elapsed: ~1m, remaining: ~1m) 142/538 tested (19 survived, 0 timed out)
+Mutation testing 49% (elapsed: ~1m, remaining: ~1m) 154/538 tested (19 survived, 0 timed out)
+Mutation testing 51% (elapsed: ~1m, remaining: ~1m) 163/538 tested (19 survived, 0 timed out)
+Mutation testing 54% (elapsed: ~1m, remaining: ~1m) 172/538 tested (19 survived, 0 timed out)
+Mutation testing 57% (elapsed: ~2m, remaining: ~1m) 180/538 tested (19 survived, 0 timed out)
+Mutation testing 60% (elapsed: ~2m, remaining: ~1m) 188/538 tested (19 survived, 0 timed out)
+Mutation testing 62% (elapsed: ~2m, remaining: ~1m) 194/538 tested (19 survived, 0 timed out)
+Mutation testing 62% (elapsed: ~2m, remaining: ~1m) 200/538 tested (19 survived, 0 timed out)
+[33m05:22:44 (850) WARN ChildProcessProxy[39m Child process [pid 887] ran out of memory. Stdout and stderr are logged on debug level.
+[32m05:22:44 (850) INFO RetryRejectedDecorator[39m Test runner process [887] ran out of memory. You probably have a memory leak in your tests. Don't worry, Stryker will restart the process, but you might want to investigate this later, because this decreases performance.
+Mutation testing 62% (elapsed: ~2m, remaining: ~1m) 207/538 tested (19 survived, 0 timed out)
+Mutation testing 65% (elapsed: ~2m, remaining: ~1m) 221/538 tested (23 survived, 0 timed out)
+Mutation testing 66% (elapsed: ~3m, remaining: ~1m) 228/538 tested (23 survived, 0 timed out)
+[33m05:23:16 (850) WARN ChildProcessProxy[39m Child process [pid 886] ran out of memory. Stdout and stderr are logged on debug level.
+[32m05:23:16 (850) INFO RetryRejectedDecorator[39m Test runner process [886] ran out of memory. You probably have a memory leak in your tests. Don't worry, Stryker will restart the process, but you might want to investigate this later, because this decreases performance.
+Mutation testing 68% (elapsed: ~3m, remaining: ~1m) 239/538 tested (25 survived, 0 timed out)
+Mutation testing 68% (elapsed: ~3m, remaining: ~1m) 262/538 tested (26 survived, 0 timed out)
+Mutation testing 72% (elapsed: ~3m, remaining: ~1m) 281/538 tested (26 survived, 0 timed out)
+Mutation testing 74% (elapsed: ~3m, remaining: ~1m) 300/538 tested (26 survived, 0 timed out)
+Mutation testing 74% (elapsed: ~3m, remaining: ~1m) 316/538 tested (26 survived, 0 timed out)
+Mutation testing 75% (elapsed: ~4m, remaining: ~1m) 333/538 tested (26 survived, 0 timed out)
+Mutation testing 76% (elapsed: ~4m, remaining: ~1m) 347/538 tested (26 survived, 0 timed out)
+Mutation testing 77% (elapsed: ~4m, remaining: ~1m) 360/538 tested (26 survived, 0 timed out)
+Mutation testing 77% (elapsed: ~4m, remaining: ~1m) 372/538 tested (26 survived, 0 timed out)
+Mutation testing 78% (elapsed: ~4m, remaining: ~1m) 383/538 tested (26 survived, 0 timed out)
+Mutation testing 79% (elapsed: ~4m, remaining: ~1m) 393/538 tested (26 survived, 0 timed out)
+Mutation testing 80% (elapsed: ~5m, remaining: ~1m) 404/538 tested (26 survived, 0 timed out)
+Mutation testing 80% (elapsed: ~5m, remaining: ~1m) 411/538 tested (26 survived, 0 timed out)
+Mutation testing 81% (elapsed: ~5m, remaining: ~1m) 417/538 tested (26 survived, 0 timed out)
+Mutation testing 81% (elapsed: ~5m, remaining: ~1m) 425/538 tested (26 survived, 0 timed out)
+[33m05:25:39 (850) WARN ChildProcessProxy[39m Child process [pid 956] ran out of memory. Stdout and stderr are logged on debug level.
+[32m05:25:39 (850) INFO RetryRejectedDecorator[39m Test runner process [956] ran out of memory. You probably have a memory leak in your tests. Don't worry, Stryker will restart the process, but you might want to investigate this later, because this decreases performance.
+Mutation testing 82% (elapsed: ~5m, remaining: ~1m) 438/538 tested (26 survived, 0 timed out)
+Mutation testing 82% (elapsed: ~5m, remaining: ~1m) 451/538 tested (26 survived, 0 timed out)
+Mutation testing 83% (elapsed: ~6m, remaining: ~1m) 464/538 tested (26 survived, 0 timed out)
+Mutation testing 84% (elapsed: ~6m, remaining: ~1m) 472/538 tested (26 survived, 0 timed out)
+[33m05:26:25 (850) WARN ChildProcessProxy[39m Child process [pid 977] ran out of memory. Stdout and stderr are logged on debug level.
+[32m05:26:25 (850) INFO RetryRejectedDecorator[39m Test runner process [977] ran out of memory. You probably have a memory leak in your tests. Don't worry, Stryker will restart the process, but you might want to investigate this later, because this decreases performance.
+Mutation testing 85% (elapsed: ~6m, remaining: ~1m) 483/538 tested (26 survived, 0 timed out)
+Mutation testing 90% (elapsed: ~6m, remaining: <1m) 505/538 tested (26 survived, 0 timed out)
+Mutation testing 92% (elapsed: ~6m, remaining: <1m) 523/538 tested (27 survived, 0 timed out)
+
+All tests/auth-identifier-reconciliation.service.spec.ts
+  ✓ AuthIdentifierReconciliationService checks a repair key before acquiring a lease and leaves data unchanged when missing [line 130] (killed 17)
+  ✓ AuthIdentifierReconciliationService claims an offline repair only when policy and key material are available [line 155] (killed 23)
+  ~ AuthIdentifierReconciliationService skips an offline repair when policy allows but key material is absent [line 182] (covered 51)
+  ✓ AuthIdentifierReconciliationService uses the legacy key version and canonical base64url material in a public assignment write [line 211] (killed 47)
+  ✓ AuthIdentifierReconciliationService uses the legacy key version and literal UTF-8 material in a public assignment write [line 211] (killed 1)
+  ✓ AuthIdentifierReconciliationService uses the public terminal write to apply the default retention duration [line 276] (killed 15)
+  ✓ AuthIdentifierReconciliationService uses MongoDB time for atomic lease acquisition and renewal [line 307] (killed 66)
+  ✓ AuthIdentifierReconciliationService discovers pending reservations and attaches an HMAC-only reference [line 453] (killed 9)
+  ✓ AuthIdentifierReconciliationService moves an operation to retryable failure when owned reservations exceed the assignment cap [line 501] (killed 8)
+  ✓ AuthIdentifierReconciliationService attaches exactly the maximum owned reservations without treating the boundary as over-cap [line 529] (killed 4)
+  ✓ AuthIdentifierReconciliationService does not attach a discovered reservation with an assignment already linked [line 591] (killed 5)
+  ✓ AuthIdentifierReconciliationService does not attach a discovered reservation with a subject-type mismatch [line 591] (killed 1)
+  ✓ AuthIdentifierReconciliationService does not attach a discovered reservation with a subject-id mismatch [line 591] (killed 1)
+  ✓ AuthIdentifierReconciliationService does not attach a discovered reservation with an action mismatch [line 591] (killed 1)
+  ✓ AuthIdentifierReconciliationService moves a recoverable failed operation through a valid retry transition [line 616] (killed 2)
+  ✓ AuthIdentifierReconciliationService finds an assignment reservation by exact operation-owned identity [line 634] (killed 3)
+  ✓ AuthIdentifierReconciliationService does not persist a no-op transition and releases only its owned lease [line 656] (killed 2)
+  ✓ AuthIdentifierReconciliationService returns incomplete application recovery for missing reservation [line 692] (killed 11)
+  ✓ AuthIdentifierReconciliationService returns incomplete application recovery for wrong durable status [line 692] (killed 2)
+  ✓ AuthIdentifierReconciliationService returns incomplete application recovery for wrong operation owner [line 692] (killed 2)
+  ✓ AuthIdentifierReconciliationService recovers a durable release assignment only from released state owned by the operation [line 711] (killed 8)
+  ✓ AuthIdentifierReconciliationService returns incomplete compensation recovery for missing reservation [line 746] (killed 10)
+  ✓ AuthIdentifierReconciliationService returns incomplete compensation recovery for wrong operation owner [line 746] (killed 2)
+  ~ AuthIdentifierReconciliationService persists the idempotent terminal event before writing terminal TTL state [line 769] (covered 45)
+  ✓ AuthIdentifierReconciliationService replays finalization without creating a second logical terminal event [line 799] (killed 1)
+  ✓ AuthIdentifierReconciliationService bounds gate and batch cleanup and expires the parent only after both are clear [line 823] (killed 24)
+  ✓ AuthIdentifierReconciliationService releases residual gates for a failed terminal repair instead of unlocking them [line 859] (killed 3)
+  ~ AuthIdentifierReconciliationService ignores clean terminal operations [line 880] (covered 34)
+  ✓ AuthIdentifierReconciliationService still completes teardown when an active reconciliation query rejects [line 892] (killed 1)
+  ✓ AuthIdentifierReconciliationService waits for a claimed pass in module destroy before database teardown [line 904] (killed 2)
+  ✓ AuthIdentifierReconciliationService retries failed bootstrap readiness through one probe until the migration appears [line 923] (killed 54)
+  ✓ AuthIdentifierReconciliationService starts one bounded schedule at bootstrap and clears it once on shutdown [line 958] (killed 2)
+  ✓ AuthIdentifierReconciliationService registers only a readiness probe when bootstrap has no Mongo connection [line 993] (killed 3)
+  ✓ AuthIdentifierReconciliationService invalidates stale in-flight readiness before a restarted lifecycle schedules work [line 1016] (killed 12)
+  ✓ AuthIdentifierReconciliationService never treats reconciliation as scheduled without a SchedulerRegistry [line 1062] (killed 7)
+  ✓ AuthIdentifierReconciliationService starts scheduled work when the public readiness probe observes the migration [line 1086] (killed 1)
+  ✓ AuthIdentifierReconciliationService contains a scheduled reconciliation rejection and keeps the interval owned [line 1125] (killed 2)
+  ~ AuthIdentifierReconciliationService contains a rejected startup pass after registering the schedule [line 1165] (covered 70)
+  ✓ AuthIdentifierReconciliationService does not register work after shutdown wins a migration-readiness race [line 1195] (killed 1)
+  ~ AuthIdentifierReconciliationService does not delete a schedule no longer owned by this service on shutdown [line 1229] (covered 99)
+  ~ AuthIdentifierReconciliationService skips reconciliation scheduling until the required auth migration is recorded [line 1260] (covered 117)
+  ✓ AuthIdentifierReconciliationService serializes concurrent ready checks into one schedule and startup pass [line 1299] (killed 1)
+  ~ AuthIdentifierReconciliationService does not start after shutdown when an in-flight readiness query resolves [line 1339] (covered 36)
+  ~ AuthIdentifierReconciliationService contains readiness query failures and allows a later successful probe [line 1375] (covered 69)
+  ✓ AuthIdentifierReconciliationService shares one in-flight reconciliation pass between concurrent callers [line 1407] (killed 1)
+  ✓ AuthIdentifierReconciliationService counts a lost claim as examined without claiming or processing it [line 1429] (killed 2)
+  ✓ AuthIdentifierReconciliationService caps claims at the configured batch size and releases every acquired lease [line 1457] (killed 3)
+  ~ AuthIdentifierReconciliationService processes claimed terminal cleanup and releases its lease through the public pass [line 1502] (covered 172)
+  ~ AuthIdentifierReconciliationService reports lost lease ownership without changing operation state [line 1527] (covered 22)
+  ✓ AuthIdentifierReconciliationService fails an invalid transition terminally with a redacted event [line 1538] (killed 24)
+  ~ AuthIdentifierReconciliationService continues processing later claimed operations after one operation fails [line 1592] (covered 102)
+  ~ AuthIdentifierReconciliationService skips an offline repair with unavailable audit material before claiming it [line 1621] (covered 51)
+  ✓ AuthIdentifierReconciliationService recovers applied reservations into finalization when every assignment is durable [line 1642] (killed 1)
+  ✓ AuthIdentifierReconciliationService compensates a pending reservation and advances a recovered operation to finalization [line 1675] (killed 10)
+  ~ AuthIdentifierReconciliationService returns incomplete application recovery to a retryable state [line 1709] (covered 28)
+  ✓ AuthIdentifierReconciliationService returns compensation with applied assignments to a retryable state [line 1728] (killed 1)
+  ✓ AuthIdentifierReconciliationService contains a real processing failure, logs its fixed category, and releases the exact lease [line 1746] (killed 2)
+  ✓ AuthIdentifierReconciliationService dispatches a pending operation through the exact Applying transition [line 1777] (killed 1)
+  ✓ AuthIdentifierReconciliationService records a member actor when an invalid member-owned operation fails terminally [line 1801] (killed 2)
+  ✓ AuthIdentifierReconciliationService compensates pending assignments in reverse with exact owned assignment writes [line 1821] (killed 8)
+  ✓ AuthIdentifierReconciliationService does not look up or compensate an assignment already durably applied [line 1872] (killed 3)
+  ✓ AuthIdentifierReconciliationService treats mixed compensated and applied finalization as a successful recovery [line 1897] (killed 16)
+  ✓ AuthIdentifierReconciliationService emits exact bounded cleanup queries and terminal parent retention when no work remains [line 1955] (killed 13)
+  ~ AuthIdentifierReconciliationService public recovery matrix does not run cleanup mutations for a clean terminal operation [line 2009] (covered 107)
+  ✓ AuthIdentifierReconciliationService public recovery matrix retries toward compensation when any assignment is compensated and toward application otherwise [line 2032] (killed 5)
+  ✓ AuthIdentifierReconciliationService public recovery matrix skips already-applied and already-compensated assignments during recovery [line 2081] (killed 8)
+  ~ AuthIdentifierReconciliationService public recovery matrix returns missing application and operation-mismatched compensation reservations to retryable [line 2138] (covered 166)
+  ✓ AuthIdentifierReconciliationService public recovery matrix restores retain compensation to conflict [line 2209] (killed 5)
+  ✓ AuthIdentifierReconciliationService public recovery matrix restores release compensation to active [line 2209] (killed 2)
+  ~ AuthIdentifierReconciliationService public recovery matrix restores replace compensation to released [line 2209] (covered 162)
+  ~ AuthIdentifierReconciliationService public recovery matrix ignores an unmatched discovered reservation without mutating assignments [line 2243] (covered 137)
+  ~ AuthIdentifierReconciliationService public recovery matrix attaches an HMAC-only reservation reference under the requested key version [line 2276] (covered 170)
+  ✓ AuthIdentifierReconciliationService public recovery matrix attaches only the reservation ID with missing requested key version [line 2336] (killed 4)
+  ✓ AuthIdentifierReconciliationService public recovery matrix attaches only the reservation ID with missing requested key material [line 2336] (killed 4)
+  ✓ AuthIdentifierReconciliationService public recovery matrix records terminal actor, outcome, and reason for explicit failure result [line 2433] (killed 6)
+  ✓ AuthIdentifierReconciliationService public recovery matrix records terminal actor, outcome, and reason for all-compensated fallback [line 2433] (killed 5)
+  ~ AuthIdentifierReconciliationService public recovery matrix records terminal actor, outcome, and reason for successful system recovery [line 2433] (covered 157)
+  ✓ AuthIdentifierReconciliationService public recovery matrix records the terminal event before finalizing cleanup-pending state without a parent TTL [line 2477] (killed 1)
+  ~ AuthIdentifierReconciliationService public recovery matrix records the terminal event before clean terminal state and retention TTL [line 2517] (covered 157)
+  ✓ AuthIdentifierReconciliationService public recovery matrix cleans gated identifiers correctly for failed-terminal operations [line 2576] (killed 11)
+  ~ AuthIdentifierReconciliationService public recovery matrix cleans gated identifiers correctly for completed operations [line 2576] (covered 183)
+  ✓ AuthIdentifierReconciliationService public recovery matrix defers batch expiry when gated identifiers exhaust cleanup capacity [line 2627] (killed 5)
+  ✓ AuthIdentifierReconciliationService public recovery matrix keeps cleanup pending while gate or batch work remains [line 2670] (killed 11)
+  ~ AuthIdentifierReconciliationService public recovery matrix completes empty cleanup remainder and applies retention only after terminal event fields exist [line 2715] (covered 172)
+  ~ AuthIdentifierReconciliationService public recovery matrix releases every claimed lease when one public operation recovery fails [line 2770] (covered 149)
+
+[Survived] ConditionalExpression
+src/auth/auth-identifier-reconciliation.service.ts:103:9
+-       if (this.stopped) {
++       if (true) {
+Tests ran:
+    AuthIdentifierReconciliationService retries failed bootstrap readiness through one probe until the migration appears
+    AuthIdentifierReconciliationService starts one bounded schedule at bootstrap and clears it once on shutdown
+    AuthIdentifierReconciliationService registers only a readiness probe when bootstrap has no Mongo connection
+  and 8 more tests!
+
+
+[Survived] BooleanLiteral
+src/auth/auth-identifier-reconciliation.service.ts:107:19
+-       let started = false;
++       let started = true;
+Tests ran:
+    AuthIdentifierReconciliationService retries failed bootstrap readiness through one probe until the migration appears
+    AuthIdentifierReconciliationService starts one bounded schedule at bootstrap and clears it once on shutdown
+    AuthIdentifierReconciliationService registers only a readiness probe when bootstrap has no Mongo connection
+  and 8 more tests!
+
+
+[Survived] BlockStatement
+src/auth/auth-identifier-reconciliation.service.ts:110:13
+-       } catch {
+-         this.logger.warn('Auth identifier migration readiness check failed');
+-       }
++       } catch {}
+Tests ran:
+    AuthIdentifierReconciliationService retries failed bootstrap readiness through one probe until the migration appears
+
+
+[Survived] StringLiteral
+src/auth/auth-identifier-reconciliation.service.ts:111:24
+-         this.logger.warn('Auth identifier migration readiness check failed');
++         this.logger.warn("");
+Tests ran:
+    AuthIdentifierReconciliationService retries failed bootstrap readiness through one probe until the migration appears
+
+
+[Survived] ConditionalExpression
+src/auth/auth-identifier-reconciliation.service.ts:113:9
+-       if (!started) {
++       if (true) {
+Tests ran:
+    AuthIdentifierReconciliationService retries failed bootstrap readiness through one probe until the migration appears
+    AuthIdentifierReconciliationService starts one bounded schedule at bootstrap and clears it once on shutdown
+    AuthIdentifierReconciliationService registers only a readiness probe when bootstrap has no Mongo connection
+  and 8 more tests!
+
+
+[Survived] ConditionalExpression
+src/auth/auth-identifier-reconciliation.service.ts:133:9
+-       if (this.stopped || this.scheduled || !(await this.requiredMigrationsReady())) {
++       if (false || !(await this.requiredMigrationsReady())) {
+Tests ran:
+    AuthIdentifierReconciliationService retries failed bootstrap readiness through one probe until the migration appears
+    AuthIdentifierReconciliationService starts one bounded schedule at bootstrap and clears it once on shutdown
+    AuthIdentifierReconciliationService registers only a readiness probe when bootstrap has no Mongo connection
+  and 11 more tests!
+
+
+[Survived] LogicalOperator
+src/auth/auth-identifier-reconciliation.service.ts:133:9
+-       if (this.stopped || this.scheduled || !(await this.requiredMigrationsReady())) {
++       if (this.stopped && this.scheduled || !(await this.requiredMigrationsReady())) {
+Tests ran:
+    AuthIdentifierReconciliationService retries failed bootstrap readiness through one probe until the migration appears
+    AuthIdentifierReconciliationService starts one bounded schedule at bootstrap and clears it once on shutdown
+    AuthIdentifierReconciliationService registers only a readiness probe when bootstrap has no Mongo connection
+  and 11 more tests!
+
+
+[Survived] ConditionalExpression
+src/auth/auth-identifier-reconciliation.service.ts:144:9
+-       if (this.stopped || generation !== this.lifecycleGeneration || !this.scheduled) {
++       if (false || !this.scheduled) {
+Tests ran:
+    AuthIdentifierReconciliationService retries failed bootstrap readiness through one probe until the migration appears
+    AuthIdentifierReconciliationService starts one bounded schedule at bootstrap and clears it once on shutdown
+    AuthIdentifierReconciliationService invalidates stale in-flight readiness before a restarted lifecycle schedules work
+  and 8 more tests!
+
+
+[Survived] ConditionalExpression
+src/auth/auth-identifier-reconciliation.service.ts:144:25
+-       if (this.stopped || generation !== this.lifecycleGeneration || !this.scheduled) {
++       if (this.stopped || false || !this.scheduled) {
+Tests ran:
+    AuthIdentifierReconciliationService retries failed bootstrap readiness through one probe until the migration appears
+    AuthIdentifierReconciliationService starts one bounded schedule at bootstrap and clears it once on shutdown
+    AuthIdentifierReconciliationService invalidates stale in-flight readiness before a restarted lifecycle schedules work
+  and 8 more tests!
+
+
+[Survived] LogicalOperator
+src/auth/auth-identifier-reconciliation.service.ts:144:9
+-       if (this.stopped || generation !== this.lifecycleGeneration || !this.scheduled) {
++       if (this.stopped && generation !== this.lifecycleGeneration || !this.scheduled) {
+Tests ran:
+    AuthIdentifierReconciliationService retries failed bootstrap readiness through one probe until the migration appears
+    AuthIdentifierReconciliationService starts one bounded schedule at bootstrap and clears it once on shutdown
+    AuthIdentifierReconciliationService invalidates stale in-flight readiness before a restarted lifecycle schedules work
+  and 8 more tests!
+
+
+[Survived] BlockStatement
+src/auth/auth-identifier-reconciliation.service.ts:149:13
+-       } catch {
+-         this.logger.warn('Auth identifier reconciliation startup pass failed');
+-       }
++       } catch {}
+Tests ran:
+    AuthIdentifierReconciliationService contains a rejected startup pass after registering the schedule
+
+
+[Survived] StringLiteral
+src/auth/auth-identifier-reconciliation.service.ts:150:24
+-         this.logger.warn('Auth identifier reconciliation startup pass failed');
++         this.logger.warn("");
+Tests ran:
+    AuthIdentifierReconciliationService contains a rejected startup pass after registering the schedule
+
+
+[Survived] BlockStatement
+src/auth/auth-identifier-reconciliation.service.ts:158:39
+-       await this.activeRun?.catch(() => {
+-         this.logger.warn(
+-           'Auth identifier reconciliation interrupted during shutdown',
+-         );
+-       });
++       await this.activeRun?.catch(() => {});
+Tests ran:
+    AuthIdentifierReconciliationService still completes teardown when an active reconciliation query rejects
+
+
+[Survived] StringLiteral
+src/auth/auth-identifier-reconciliation.service.ts:160:9
+-           'Auth identifier reconciliation interrupted during shutdown',
++           "",
+Tests ran:
+    AuthIdentifierReconciliationService still completes teardown when an active reconciliation query rejects
+
+
+[Survived] ConditionalExpression
+src/auth/auth-identifier-reconciliation.service.ts:168:9
+-       if (this.readinessProbe) {
++       if (true) {
+Tests ran:
+    AuthIdentifierReconciliationService still completes teardown when an active reconciliation query rejects
+    AuthIdentifierReconciliationService waits for a claimed pass in module destroy before database teardown
+    AuthIdentifierReconciliationService retries failed bootstrap readiness through one probe until the migration appears
+  and 13 more tests!
+
+
+[Survived] OptionalChaining
+src/auth/auth-identifier-reconciliation.service.ts:174:7
+-         this.schedulerRegistry?.doesExist('interval', SCHEDULE_NAME)
++         this.schedulerRegistry.doesExist('interval', SCHEDULE_NAME)
+Tests ran:
+    AuthIdentifierReconciliationService retries failed bootstrap readiness through one probe until the migration appears
+    AuthIdentifierReconciliationService starts one bounded schedule at bootstrap and clears it once on shutdown
+    AuthIdentifierReconciliationService invalidates stale in-flight readiness before a restarted lifecycle schedules work
+  and 7 more tests!
+
+
+[Survived] BlockStatement
+src/auth/auth-identifier-reconciliation.service.ts:183:60
+-         this.activeRun = this.runBoundedPass().finally(() => {
+-           this.activeRun = undefined;
+-         });
++         this.activeRun = this.runBoundedPass().finally(() => {});
+Tests ran:
+    AuthIdentifierReconciliationService checks a repair key before acquiring a lease and leaves data unchanged when missing
+    AuthIdentifierReconciliationService claims an offline repair only when policy and key material are available
+    AuthIdentifierReconciliationService skips an offline repair when policy allows but key material is absent
+  and 43 more tests!
+
+
+[Survived] BlockStatement
+src/auth/auth-identifier-reconciliation.service.ts:222:45
+-         void this.reconcileOnce().catch(() => {
+-           this.logger.warn(
+-             'Scheduled auth identifier reconciliation pass failed',
+-           );
+-         });
++         void this.reconcileOnce().catch(() => {});
+Tests ran:
+    AuthIdentifierReconciliationService contains a scheduled reconciliation rejection and keeps the interval owned
+
+
+[Survived] StringLiteral
+src/auth/auth-identifier-reconciliation.service.ts:224:11
+-             'Scheduled auth identifier reconciliation pass failed',
++             "",
+Tests ran:
+    AuthIdentifierReconciliationService contains a scheduled reconciliation rejection and keeps the interval owned
+
+
+[Survived] OptionalChaining
+src/auth/auth-identifier-reconciliation.service.ts:421:10
+-       if (!this.connection?.db) {
++       if (!this.connection.db) {
+Tests ran:
+    AuthIdentifierReconciliationService retries failed bootstrap readiness through one probe until the migration appears
+    AuthIdentifierReconciliationService starts one bounded schedule at bootstrap and clears it once on shutdown
+    AuthIdentifierReconciliationService registers only a readiness probe when bootstrap has no Mongo connection
+  and 11 more tests!
+
+
+[Survived] BlockStatement
+src/auth/auth-identifier-reconciliation.service.ts:421:31
+-       if (!this.connection?.db) {
+-         return false;
+-       }
++       if (!this.connection?.db) {}
+Tests ran:
+    AuthIdentifierReconciliationService registers only a readiness probe when bootstrap has no Mongo connection
+
+
+[Survived] ConditionalExpression
+src/auth/auth-identifier-reconciliation.service.ts:421:9
+-       if (!this.connection?.db) {
++       if (false) {
+Tests ran:
+    AuthIdentifierReconciliationService retries failed bootstrap readiness through one probe until the migration appears
+    AuthIdentifierReconciliationService starts one bounded schedule at bootstrap and clears it once on shutdown
+    AuthIdentifierReconciliationService registers only a readiness probe when bootstrap has no Mongo connection
+  and 11 more tests!
+
+
+[Survived] ObjectLiteral
+src/auth/auth-identifier-reconciliation.service.ts:427:18
+-           .findOne({ version: REQUIRED_AUTH_MIGRATION }),
++           .findOne({}),
+Tests ran:
+    AuthIdentifierReconciliationService retries failed bootstrap readiness through one probe until the migration appears
+    AuthIdentifierReconciliationService starts one bounded schedule at bootstrap and clears it once on shutdown
+    AuthIdentifierReconciliationService invalidates stale in-flight readiness before a restarted lifecycle schedules work
+  and 10 more tests!
+
+
+[Survived] ConditionalExpression
+src/auth/auth-identifier-reconciliation.service.ts:446:11
+-         if (this.readinessProbe) {
++         if (true) {
+Tests ran:
+    AuthIdentifierReconciliationService retries failed bootstrap readiness through one probe until the migration appears
+    AuthIdentifierReconciliationService invalidates stale in-flight readiness before a restarted lifecycle schedules work
+    AuthIdentifierReconciliationService starts scheduled work when the public readiness probe observes the migration
+  and 2 more tests!
+
+
+[Survived] BlockStatement
+src/auth/auth-identifier-reconciliation.service.ts:450:13
+-       } catch {
+-         this.logger.warn('Auth identifier migration readiness check failed');
+-       }
++       } catch {}
+Tests ran:
+    AuthIdentifierReconciliationService contains readiness query failures and allows a later successful probe
+
+
+[Survived] StringLiteral
+src/auth/auth-identifier-reconciliation.service.ts:451:24
+-         this.logger.warn('Auth identifier migration readiness check failed');
++         this.logger.warn("");
+Tests ran:
+    AuthIdentifierReconciliationService contains readiness query failures and allows a later successful probe
+
+
+[Survived] StringLiteral
+src/auth/auth-identifier-reconciliation.service.ts:890:28
+-         : Buffer.from(value, 'utf8');
++         : Buffer.from(value, "");
+Tests ran:
+    AuthIdentifierReconciliationService uses the legacy key version and literal UTF-8 material in a public assignment write
+    AuthIdentifierReconciliationService discovers pending reservations and attaches an HMAC-only reference
+    AuthIdentifierReconciliationService attaches exactly the maximum owned reservations without treating the boundary as over-cap
+  and 1 more test!
+
+
+[Survived] StringLiteral
+src/auth/auth-identifier-reconciliation.service.ts:903:9
+-           'auth.identifierReconciliationIntervalSeconds',
++           "",
+Tests ran:
+    AuthIdentifierReconciliationService retries failed bootstrap readiness through one probe until the migration appears
+    AuthIdentifierReconciliationService starts one bounded schedule at bootstrap and clears it once on shutdown
+    AuthIdentifierReconciliationService registers only a readiness probe when bootstrap has no Mongo connection
+  and 9 more tests!
+
+
+[Survived] StringLiteral
+src/auth/auth-identifier-reconciliation.service.ts:48:33
+-   const REQUIRED_AUTH_MIGRATION = '003';
++   const REQUIRED_AUTH_MIGRATION = "";
+Ran all tests for this mutant.
+
+[Survived] StringLiteral
+src/auth/auth-identifier-reconciliation.service.ts:49:38
+-   const MIGRATION_RECORDS_COLLECTION = 'migration_records';
++   const MIGRATION_RECORDS_COLLECTION = "";
+Ran all tests for this mutant.
+
+Ran 14.64 tests per mutant on average.
+-------------------------------------------|------------------|----------|-----------|------------|----------|----------|
+                                           | % Mutation score |          |           |            |          |          |
+File                                       |  total | covered | # killed | # timeout | # survived | # no cov | # errors |
+-------------------------------------------|--------|---------|----------|-----------|------------|----------|----------|
+All files                                  |  94.42 |   94.42 |      508 |         0 |         30 |        0 |        0 |
+ auth-identifier-reconciliation.service.ts |  94.42 |   94.42 |      508 |         0 |         30 |        0 |        0 |
+-------------------------------------------|--------|---------|----------|-----------|------------|----------|----------|
+[32m05:26:55 (850) INFO MutationTestReportHelper[39m Final mutation score of 94.42 is greater than or equal to break threshold 70
+[32m05:26:55 (850) INFO JsonReporter[39m Your report can be found at: file:///workspace/book-library-nestjs/reports/mutation/complete/shards/identifier-reconciliation/mutation.json
+[32m05:26:55 (850) INFO HtmlReporter[39m Your report can be found at: file:///workspace/book-library-nestjs/reports/mutation/complete/shards/identifier-reconciliation/mutation.html
+[32m05:26:55 (850) INFO MutationTestExecutor[39m Done in 6 minutes and 52 seconds.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
