@@ -1,0 +1,27 @@
+{
+  "headCommit": "21c43547133b631beb7a2ef6ae1ef2df030c5505",
+  "testedMergeCommit": "63b2e80306d479f1280a74910007d9054410eee9",
+  "mutationRun": 37180305407,
+  "artifactId": 11294654028,
+  "artifactZipSha256": "2685806729347db09d6b62b23a4f2aa4ea7379d593f7ab66c3451d5bce572251",
+  "canonicalMutantCount": 1366,
+  "rawCombinedScore": 99.78038067349927,
+  "configurationSha256": "17196a829ccf2cecdd793ab64fca18029d5b3392c89af5bd7e784cdc8bfd8d12",
+  "policyPassed": true,
+  "files": {
+    "workflows.json": "bdb9cfeee31ed6c0836647886d1f3d533932b09c858c4f44b64c654e503c6bdf",
+    "smoke/summary.json": "d993b0d56c8c174be0fd7f0321bbf589d4c838102abb21930cdcefbb2602aec7",
+    "smoke/summary.md": "ca2b1cee4a14263dcc6af8267fb8cb306b270df178155e36d2e282e61b1094bb",
+    "smoke/mutation.json": "68c95478c771251074e4ba6f3849a2e12b48ca58221bbff12b9164ccdba08491",
+    "smoke/shards/borrowings/duration.json": "c45577ca23049af52474ff26f8295de3401942acf9cb2e66564a702d1a1e2ab3",
+    "smoke/shards/borrowings/summary.json": "24f6296ff11c517f63cae77c77cf43ec80222e72c6510dd1fd917792faeb475f",
+    "smoke/shards/members/duration.json": "a8f9ea44a109bf4f464daea6488e8152fd2283e1dd2c73306942bf14adaa9ed6",
+    "smoke/shards/members/summary.json": "d0f7e0978014952fd369c6a9b81444eaabf1dcbd35c8438dcac5dddbe665192f",
+    "smoke/shards/identifier-repair/duration.json": "187b4789c56f7722e04704f8d9ed08fe0406c399b85cba1569e01ed23c601b8f",
+    "smoke/shards/identifier-repair/summary.json": "a763930e70646aa53430f74cebb2a4c9da3012767a8a005bc4a1b63b239068ac",
+    "smoke/shards/identifier-reconciliation/duration.json": "1380af5bb8128200325c42d9fe4f66ada427b3cd35fff27fc8d20a92bc3887fa",
+    "smoke/shards/identifier-reconciliation/summary.json": "68fd25d22d3fad90faeb12b47f1004d155e6311066260344840ae74ed4b251a3",
+    "smoke/shards/token-session/duration.json": "fd369ebff4aa5878fe23e2de1bc11aa50859f03d65c2d630ce224e041d0cc95c",
+    "smoke/shards/token-session/summary.json": "24fd6ff19a82078bc2350bbb5818c031b21ff72918be19fb298b85ff47af8bb3"
+  }
+}

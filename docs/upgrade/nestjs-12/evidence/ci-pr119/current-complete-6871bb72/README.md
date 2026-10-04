@@ -16,4 +16,4 @@ Each actual shard exits 0 below its unchanged **900000 ms** deadline. No Runtime
 
 Historical bytes stayed unchanged during all producers. Only after all five genuine artifacts existed, the previously reviewed temporary hash carrier retained the exact historical floor for synchronous existing `complete-merge` and `record-baseline` commands. The carrier was never committed; the recorder wrote the actual producer/date/current source hashes and increased score. Historical and recorded bytes, operation logs, resume script, collection proof, raw reports and SHA256 map are retained here.
 
-This closes the complete-baseline source-hash gap. Coherent current five-shard smoke acceptance remains pending GitHub verification. This does not close the actual devcontainer or production approval prerequisites.
+This closes the complete-baseline source-hash gap. Coherent current five-shard smoke acceptance is now verified by [the GitHub artifact](../github-21c4354/smoke/summary.md):1366 mutants,99.78038067349927%, all shards below350000ms, existing critical equivalents only. This does not close the actual devcontainer or production approval prerequisites.
