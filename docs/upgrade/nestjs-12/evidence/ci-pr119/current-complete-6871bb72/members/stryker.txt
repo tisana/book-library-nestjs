@@ -1,0 +1,277 @@
+[32m17:47:39 (99017) INFO ProjectReader[39m Found 1 of 1765 file(s) to be mutated.
+[32m17:47:39 (99017) INFO Instrumenter[39m Instrumented 1 source file(s) with 286 mutant(s)
+[32m17:47:43 (99017) INFO ConcurrencyTokenProvider[39m Creating 2 test runner process(es).
+[32m17:47:44 (99017) INFO BroadcastReporter[39m Detected that current console does not support the "progress" reporter, downgrading to "progress-append-only" reporter
+[32m17:47:45 (99017) INFO DryRunExecutor[39m Starting initial test run (jest test runner with "perTest" coverage analysis). This may take a while.
+[32m17:48:00 (99017) INFO DryRunExecutor[39m Initial test run succeeded. Ran 129 tests in 15 seconds (net 4615 ms, overhead 10472 ms).
+Mutation testing 0% (elapsed: <1m, remaining: ~10h 48m) 11/286 tested (0 survived, 0 timed out)
+Mutation testing 0% (elapsed: <1m, remaining: ~11h 26m) 24/286 tested (2 survived, 0 timed out)
+Mutation testing 0% (elapsed: <1m, remaining: ~14h 35m) 36/286 tested (4 survived, 0 timed out)
+Mutation testing 0% (elapsed: <1m, remaining: ~12h 12m) 47/286 tested (5 survived, 0 timed out)
+Mutation testing 0% (elapsed: <1m, remaining: ~9h 36m) 58/286 tested (5 survived, 0 timed out)
+Mutation testing 0% (elapsed: ~1m, remaining: ~9h 15m) 67/286 tested (5 survived, 0 timed out)
+Mutation testing 0% (elapsed: ~1m, remaining: ~9h 21m) 74/286 tested (5 survived, 0 timed out)
+Mutation testing 0% (elapsed: ~1m, remaining: ~9h 6m) 82/286 tested (5 survived, 0 timed out)
+Mutation testing 0% (elapsed: ~1m, remaining: ~8h 55m) 92/286 tested (5 survived, 0 timed out)
+Mutation testing 0% (elapsed: ~1m, remaining: ~8h 57m) 99/286 tested (5 survived, 0 timed out)
+Mutation testing 0% (elapsed: ~1m, remaining: ~9h 5m) 107/286 tested (5 survived, 0 timed out)
+Mutation testing 0% (elapsed: ~2m, remaining: ~9h 43m) 113/286 tested (5 survived, 0 timed out)
+Mutation testing 0% (elapsed: ~2m, remaining: ~10h 14m) 121/286 tested (5 survived, 0 timed out)
+Mutation testing 0% (elapsed: ~2m, remaining: ~10h 48m) 128/286 tested (5 survived, 0 timed out)
+Mutation testing 0% (elapsed: ~2m, remaining: ~11h 30m) 134/286 tested (5 survived, 0 timed out)
+Mutation testing 0% (elapsed: ~2m, remaining: ~12h 6m) 140/286 tested (5 survived, 0 timed out)
+Mutation testing 0% (elapsed: ~2m, remaining: ~12h 44m) 146/286 tested (5 survived, 0 timed out)
+Mutation testing 3% (elapsed: ~3m, remaining: ~1h 15m) 151/286 tested (5 survived, 0 timed out)
+Mutation testing 7% (elapsed: ~3m, remaining: ~40m) 153/286 tested (5 survived, 0 timed out)
+Mutation testing 10% (elapsed: ~3m, remaining: ~27m) 157/286 tested (5 survived, 0 timed out)
+Mutation testing 14% (elapsed: ~3m, remaining: ~21m) 159/286 tested (5 survived, 0 timed out)
+Mutation testing 17% (elapsed: ~3m, remaining: ~17m) 161/286 tested (5 survived, 0 timed out)
+Mutation testing 20% (elapsed: ~3m, remaining: ~14m) 163/286 tested (5 survived, 0 timed out)
+Mutation testing 24% (elapsed: ~4m, remaining: ~12m) 166/286 tested (5 survived, 0 timed out)
+Mutation testing 25% (elapsed: ~4m, remaining: ~12m) 167/286 tested (5 survived, 0 timed out)
+Mutation testing 28% (elapsed: ~4m, remaining: ~10m) 170/286 tested (5 survived, 0 timed out)
+Mutation testing 31% (elapsed: ~4m, remaining: ~9m) 173/286 tested (5 survived, 0 timed out)
+Mutation testing 34% (elapsed: ~4m, remaining: ~9m) 175/286 tested (5 survived, 0 timed out)
+Mutation testing 39% (elapsed: ~4m, remaining: ~7m) 180/286 tested (5 survived, 0 timed out)
+Mutation testing 40% (elapsed: ~5m, remaining: ~7m) 183/286 tested (5 survived, 0 timed out)
+Mutation testing 40% (elapsed: ~5m, remaining: ~7m) 186/286 tested (5 survived, 0 timed out)
+Mutation testing 40% (elapsed: ~5m, remaining: ~7m) 188/286 tested (5 survived, 0 timed out)
+Mutation testing 40% (elapsed: ~5m, remaining: ~7m) 190/286 tested (5 survived, 0 timed out)
+Mutation testing 42% (elapsed: ~5m, remaining: ~7m) 191/286 tested (5 survived, 0 timed out)
+Mutation testing 44% (elapsed: ~5m, remaining: ~7m) 193/286 tested (5 survived, 1 timed out)
+Mutation testing 48% (elapsed: ~6m, remaining: ~6m) 195/286 tested (5 survived, 1 timed out)
+Mutation testing 50% (elapsed: ~6m, remaining: ~6m) 197/286 tested (5 survived, 1 timed out)
+Mutation testing 52% (elapsed: ~6m, remaining: ~5m) 198/286 tested (5 survived, 1 timed out)
+Mutation testing 53% (elapsed: ~6m, remaining: ~5m) 199/286 tested (5 survived, 2 timed out)
+Mutation testing 59% (elapsed: ~6m, remaining: ~4m) 203/286 tested (5 survived, 2 timed out)
+Mutation testing 62% (elapsed: ~6m, remaining: ~4m) 207/286 tested (5 survived, 2 timed out)
+Mutation testing 65% (elapsed: ~7m, remaining: ~3m) 213/286 tested (5 survived, 2 timed out)
+Mutation testing 67% (elapsed: ~7m, remaining: ~3m) 220/286 tested (5 survived, 2 timed out)
+Mutation testing 69% (elapsed: ~7m, remaining: ~3m) 227/286 tested (5 survived, 2 timed out)
+Mutation testing 70% (elapsed: ~7m, remaining: ~3m) 238/286 tested (5 survived, 2 timed out)
+Mutation testing 70% (elapsed: ~7m, remaining: ~3m) 248/286 tested (5 survived, 2 timed out)
+Mutation testing 76% (elapsed: ~7m, remaining: ~2m) 252/286 tested (5 survived, 2 timed out)
+Mutation testing 80% (elapsed: ~8m, remaining: ~1m) 256/286 tested (5 survived, 2 timed out)
+Mutation testing 85% (elapsed: ~8m, remaining: ~1m) 262/286 tested (5 survived, 2 timed out)
+Mutation testing 88% (elapsed: ~8m, remaining: ~1m) 267/286 tested (5 survived, 2 timed out)
+Mutation testing 92% (elapsed: ~8m, remaining: <1m) 274/286 tested (5 survived, 2 timed out)
+Mutation testing 94% (elapsed: ~8m, remaining: <1m) 283/286 tested (5 survived, 2 timed out)
+Mutation testing 96% (elapsed: ~8m, remaining: <1m) 284/286 tested (5 survived, 2 timed out)
+
+All tests
+  auth
+    auth-endpoint-throttle.guard.spec.ts
+      ✘ AuthEndpointThrottleGuard counts a valid login source before DTO handling and attaches safe context [line 38] (covered 0)
+      ✘ AuthEndpointThrottleGuard counts a normalizable missing-credential request against both boundaries [line 61] (covered 0)
+      ✘ AuthEndpointThrottleGuard resolves a refresh family before consuming source and family boundaries [line 77] (covered 0)
+      ✘ AuthEndpointThrottleGuard fails closed with one generic 429 and optional Retry-After [line 96] (covered 0)
+    auth.controller.spec.ts
+      ✘ AuthController shared authentication adapters maps login to shared auth and sets the absolute-expiry named cookie [line 135] (covered 0)
+      ✘ AuthController shared authentication adapters maps staffLogin to shared auth and sets the absolute-expiry named cookie [line 135] (covered 0)
+      ✘ AuthController shared authentication adapters maps memberLogin to shared auth and sets the absolute-expiry named cookie [line 135] (covered 0)
+      ✘ AuthController shared authentication adapters projects member and staff auth contexts without cross-area fields [line 162] (covered 0)
+      ✘ AuthController shared authentication adapters forwards the public security activity query result [line 200] (covered 0)
+      ✘ AuthController shared authentication adapters reports when security activity is unavailable [line 215] (covered 0)
+      ✘ AuthController shared authentication adapters returns only the public conflict outcome and applies its HTTP status [line 223] (covered 0)
+      ✘ AuthController shared authentication adapters clears the named cookie without a service call when auth context is absent [line 245] (covered 0)
+      ✘ AuthController shared authentication adapters revokes all sessions for a present auth context before clearing the cookie [line 259] (covered 0)
+      ✘ AuthController shared authentication adapters preserves generic login failures while recording identifier throttle state [line 291] (covered 0)
+      ✘ AuthController shared authentication adapters preserves generic compatibility-login failures without throttle identifier context [line 315] (covered 0)
+    auth.service.spec.ts
+      ✘ AuthService login contract when AuthService is implemented returns a JWT and redacted user for valid active staff credentials [line 36] (covered 0)
+      ✘ AuthService login contract when AuthService is implemented rejects inactive staff/admin users before issuing a token [line 101] (covered 0)
+      ✘ AuthService login contract when AuthService is implemented creates a staff refresh session with hashed-token family metadata [line 134] (covered 0)
+      ~ AuthService login contract when AuthService is implemented returns a member JWT and redacted member profile for valid member credentials [line 185] (covered 3)
+      ~ AuthService login contract when AuthService is implemented rejects suspended member credentials before issuing a token [line 264] (covered 3)
+      ✘ AuthService login contract when AuthService is implemented revokes a rotated member family when the member is no longer active [line 298] (covered 0)
+      ✘ AuthService login contract when AuthService is implemented revokes a rotated member family when authVersion is stale [line 333] (covered 0)
+      ✘ AuthService login contract when AuthService is implemented keeps the refresh denial generic when inactive-family revocation fails [line 367] (covered 0)
+      ✘ AuthService login contract when AuthService is implemented revokes a rotated staff family when account authVersion is newer than the session [line 404] (covered 0)
+      ✘ AuthService shared login resolution when identifier reservations are available uses the normalized reserved staff identity and server role area [line 604] (covered 0)
+      ~ AuthService shared login resolution when identifier reservations are available uses empty membership type fields when the member profile is absent [line 627] (covered 3)
+      ✘ AuthService shared login resolution when identifier reservations are available accepts a completed activation gate and fails closed for missing or failed gates [line 653] (covered 0)
+      ✘ AuthService shared login resolution when identifier reservations are available fails a inactive reservation generically with a redacted request [line 719] (covered 0)
+      ✘ AuthService shared login resolution when identifier reservations are available fails a active reservation without a subject type generically with a redacted request [line 719] (covered 0)
+      ✘ AuthService shared login resolution when identifier reservations are available fails a active reservation without a subject id generically with a redacted request [line 719] (covered 0)
+      ✘ AuthService shared login resolution when identifier reservations are available keeps unresolved identifier generic and records only a redacted category [line 843] (covered 0)
+      ✘ AuthService shared login resolution when identifier reservations are available keeps conflicting identifier generic and records only a redacted category [line 843] (covered 0)
+      ✘ AuthService shared login resolution when identifier reservations are available keeps mismatched staff reservation generic and records only a redacted category [line 843] (covered 0)
+      ✘ AuthService shared login resolution when identifier reservations are available keeps inactive staff account generic and records only a redacted category [line 843] (covered 0)
+      ✘ AuthService shared login resolution when identifier reservations are available keeps invalid staff password generic and records only a redacted category [line 843] (covered 0)
+      ~ AuthService shared login resolution when identifier reservations are available keeps mismatched member reservation generic and records only a redacted category [line 843] (covered 3)
+      ~ AuthService shared login resolution when identifier reservations are available keeps inactive member account generic and records only a redacted category [line 843] (covered 3)
+      ~ AuthService shared login resolution when identifier reservations are available keeps locked member authentication generic and records only a redacted category [line 843] (covered 3)
+      ~ AuthService shared login resolution when identifier reservations are available keeps member without a password credential generic and records only a redacted category [line 843] (covered 3)
+      ~ AuthService shared login resolution when identifier reservations are available keeps invalid member password generic and records only a redacted category [line 843] (covered 3)
+      ✘ AuthService shared login resolution when identifier reservations are available fails a non-string identifier generically without querying reservations [line 861] (covered 0)
+      ✘ AuthService shared login resolution when identifier reservations are available fails generically when identifier reservations are unavailable [line 876] (covered 0)
+      ✘ AuthService shared login resolution when identifier reservations are available keeps dedicated failed-sign-in recording behind the generic response [line 891] (covered 0)
+      ✘ AuthService shared login resolution when identifier reservations are available normalizes a non-string password into the same generic denial [line 906] (covered 0)
+      ✘ AuthService shared login resolution when identifier reservations are available fails a gated reservation when the operation model is unavailable [line 917] (covered 0)
+      ~ AuthService shared login resolution when identifier reservations are available uses zero auth versions when reserved account versions are absent [line 938] (covered 3)
+      ✘ AuthService shared login resolution when identifier reservations are available keeps unresolved activity redacted with fallback-version string key material [line 966] (covered 0)
+      ✘ AuthService shared login resolution when identifier reservations are available fails a reserved member generically when member auth is unavailable [line 988] (covered 0)
+      ✘ AuthService shared login resolution when identifier reservations are available authenticates a staff identity with no roles but issues no permissions [line 1007] (covered 0)
+    permissions.guard.spec.ts
+      ✘ PermissionsGuard and permission mapping maps staff and admin roles to stable permissions [line 27] (covered 0)
+      ✘ PermissionsGuard and permission mapping denies by default when permission metadata is missing [line 49] (covered 0)
+      ✘ PermissionsGuard and permission mapping bypasses permission checks only for explicit public metadata [line 64] (covered 0)
+      ✘ PermissionsGuard and permission mapping rejects member tokens from staff permissions and records a safe denial event [line 78] (covered 0)
+      ✘ PermissionsGuard and permission mapping allows authenticated users with all required permissions [line 107] (covered 0)
+    permissions.service.spec.ts
+      ✘ PermissionsService returns no permissions for empty scope undefined [line 21] (covered 0)
+      ✘ PermissionsService returns no permissions for empty scope "" [line 21] (covered 0)
+      ✘ PermissionsService returns no permissions for empty scope "   " [line 21] (covered 0)
+      ✘ PermissionsService filters unknown permissions from scopes and payload arrays [line 28] (covered 0)
+      ✘ PermissionsService uses default staff roles and payload permissions before role permissions [line 44] (covered 0)
+      ~ PermissionsService builds member contexts with default member permissions and token metadata [line 56] (covered 3)
+      ~ PermissionsService uses scoped payload permissions and account auth versions when present [line 81] (covered 3)
+      ✘ PermissionsService prefers embedded authContext and rejects incomplete request users [line 98] (covered 0)
+      ✘ PermissionsService normalizes a complete request user and requires every requested permission [line 104] (covered 0)
+      ✘ PermissionsService preserves supplied staff context fields during request normalization [line 135] (covered 0)
+      ✘ PermissionsService reviews every staff role with its effective permissions [line 162] (covered 0)
+  book-categories/book-categories.controller.spec.ts
+    ✘ BookCategoriesController forwards the original create DTO and actor and returns the service response [line 35] (covered 0)
+    ✘ BookCategoriesController forwards the exact list query and returns the service response [line 61] (covered 0)
+    ✘ BookCategoriesController forwards the id, original update DTO, and actor and returns the service response [line 84] (covered 0)
+  books/books.controller.spec.ts
+    ✘ Books Controller findAll should return an array of Books [line 33] (covered 0)
+  members/members.service.spec.ts
+    ✓ MembersService creates active members with normalized member number, active policy validation, and audit actor [line 115] (killed 11)
+    ✓ MembersService rejects duplicate member numbers before persisting [line 162] (killed 1)
+    ✓ MembersService lists members filtered by search, status, and membership type with pagination [line 183] (killed 9)
+    ✓ MembersService builds literal case-insensitive search filters [line 220] (killed 7)
+    ✓ MembersService returns not found for missing members [line 245] (killed 5)
+    ✓ MembersService returns self-service profile with readable membership tier metadata [line 259] (killed 5)
+    ✓ MembersService updates status, loan count, membership type, and audit actor [line 285] (killed 19)
+    ✓ MembersService reports remaining allowance and eligibility for active members below limit [line 317] (killed 9)
+    ✓ MembersService reports limit reached and inactive status eligibility separately [line 344] (killed 3)
+    ✓ MembersService looks up credentials with normalized login identifiers and the password hash selected [line 370] (killed 12)
+    ✓ MembersService rejects a non-active member status pair (suspended, active) as not found [line 402] (killed 6)
+    ✓ MembersService rejects a non-active member status pair (active, locked) as not found [line 402] (killed 2)
+    ✓ MembersService returns the active-member not-found contract when the member does not exist [line 421] (killed 2)
+    ✓ MembersService updates last login atomically without loading the member document [line 439] (killed 4)
+    ✓ MembersService sets normalized credentials, increments auth version, and records the actor [line 455] (killed 8)
+    ✓ MembersService keeps a same-owner active identifier idempotent without a prior member login [line 488] (killed 13)
+    ✓ MembersService rejects an active identifier owned by another member [line 522] (killed 7)
+    ~ MembersService rejects an active identifier owned by staff [line 522] (covered 40)
+    ✓ MembersService reactivates a released reservation with member ownership and no release timestamp [line 552] (killed 6)
+    ✓ MembersService maps an identifier create duplicate-key rejection to the fixed conflict [line 592] (killed 11)
+    ✓ MembersService propagates an identifier create nonduplicate coded object rejection unchanged [line 619] (killed 3)
+    ~ MembersService propagates an identifier create nonduplicate object without a code rejection unchanged [line 619] (covered 41)
+    ✓ MembersService propagates an identifier create string primitive rejection unchanged [line 619] (killed 4)
+    ✓ MembersService propagates an identifier create null primitive rejection unchanged [line 619] (killed 2)
+    ✓ MembersService does not release its active reservation when credentials keep the same normalized identifier [line 644] (killed 3)
+    ✓ MembersService releases only the newly acquired reservation when credential persistence fails [line 675] (killed 6)
+    ~ MembersService saves hashed and versioned credentials without the optional identifier model [line 712] (covered 51)
+    ✓ MembersService leaves member credentials unchanged when the normalized login identifier conflicts [line 735] (killed 5)
+    ✓ MembersService rejects a missing member when bumping its auth version [line 773] (killed 8)
+    ✓ MembersService updates a member profile without validating membership policy when membership and status do not change [line 791] (killed 4)
+    ✓ MembersService reserves a changed email, revokes active sessions, and audits identifier and status changes [line 806] (killed 38)
+    ✓ MembersService releases a newly reserved email when saving the member change fails [line 889] (killed 3)
+    ✓ MembersService recovers a released credential identifier and revokes sessions after saving credentials [line 915] (killed 2)
+    ~ MembersService releases a newly reserved credential identifier when saving credentials fails [line 972] (covered 40)
+    ✓ MembersService creates without an optional exists method and preserves activeLoanCount 0 [line 1004] (killed 4)
+    ~ MembersService creates without an optional exists method and preserves activeLoanCount 2 [line 1004] (covered 15)
+    ✓ MembersService clears email without reserving an empty identifier and revokes sessions [line 1056] (killed 19)
+    ✓ MembersService skips identifier and lifecycle effects for the same normalized email [line 1139] (killed 9)
+    ✓ MembersService initializes an absent auth version and revokes only active member families on status change [line 1180] (killed 3)
+    ✓ MembersService completes the owned member update when every optional integration is absent [line 1249] (killed 1)
+    ✓ MembersService updates a phone while an unchanged status leaves authorization lifecycle state untouched [line 1281] (killed 3)
+    ✓ MembersService does not compensate an unchanged email when a different profile write fails [line 1312] (killed 2)
+    ✓ MembersService compensates a failed email change with the public system actor contract [line 1334] (killed 2)
+    ✓ MembersService returns the member document only for the fully active public state pair [line 1375] (killed 1)
+    ✓ MembersService bumps an existing member authorization version without returning an error [line 1385] (killed 1)
+    ✓ MembersService rejects active staff owner with the same subject id instead of treating it as the exact active owner [line 1421] (killed 3)
+    ~ MembersService rejects active member owner with a different subject id instead of treating it as the exact active owner [line 1421] (covered 42)
+    ✓ MembersService rejects pending member owner with the same subject id instead of treating it as the exact active owner [line 1421] (killed 1)
+    ✓ MembersService persists a system-owned credential replacement with exact lifecycle effects [line 1449] (killed 6)
+    ✓ MembersService compensates a failed credential write with the public system actor contract [line 1530] (killed 1)
+    ✓ MembersService uses the same public active-member error for absent auth status [line 1579] (killed 1)
+    ~ MembersService uses the same public active-member error for locked auth status [line 1579] (covered 15)
+    ~ MembersService uses the same public active-member error for reset-required auth status [line 1579] (covered 15)
+    ✓ MembersService clamps remaining policy allowance at zero above the tier maximum [line 1594] (killed 1)
+  membership-types/membership-types.controller.spec.ts
+    ✘ MembershipTypesController forwards the original create DTO and actor and returns the service response [line 35] (covered 0)
+    ✘ MembershipTypesController forwards the exact list query and returns the service response [line 61] (covered 0)
+    ✘ MembershipTypesController forwards the id, original update DTO, and actor and returns the service response [line 84] (covered 0)
+  staff-users/staff-users.controller.spec.ts
+    ✘ StaffUsersController forwards the original create DTO and actor and returns the service response [line 36] (covered 0)
+    ✘ StaffUsersController forwards the exact list query and returns the service response [line 64] (covered 0)
+    ✘ StaffUsersController forwards the id, original update DTO, and actor and returns the service response [line 89] (covered 0)
+
+[NoCoverage] OptionalChaining
+src/members/members.service.ts:548:23
+-     return member.id ?? maybeObjectId?.toString?.() ?? '';
++     return member.id ?? maybeObjectId?.toString() ?? '';
+
+[NoCoverage] OptionalChaining
+src/members/members.service.ts:548:23
+-     return member.id ?? maybeObjectId?.toString?.() ?? '';
++     return member.id ?? maybeObjectId.toString?.() ?? '';
+
+[NoCoverage] StringLiteral
+src/members/members.service.ts:548:54
+-     return member.id ?? maybeObjectId?.toString?.() ?? '';
++     return member.id ?? maybeObjectId?.toString?.() ?? "Stryker was here!";
+
+[Survived] StringLiteral
+src/members/members.service.ts:85:35
+-         throw new ConflictException('Member number already exists');
++         throw new ConflictException("");
+Tests ran:
+    MembersService rejects duplicate member numbers before persisting
+
+
+[Survived] ConditionalExpression
+src/members/members.service.ts:109:9
+-       if (query.q) {
++       if (true) {
+Tests ran:
+    MembersService lists members filtered by search, status, and membership type with pagination
+    MembersService builds literal case-insensitive search filters
+
+
+[Survived] ConditionalExpression
+src/members/members.service.ts:118:9
+-       if (query.status) {
++       if (true) {
+Tests ran:
+    MembersService lists members filtered by search, status, and membership type with pagination
+    MembersService builds literal case-insensitive search filters
+
+
+[Survived] StringLiteral
+src/members/members.service.ts:124:49
+-           toMongoObjectId(query.membershipTypeId, 'membershipTypeId'),
++           toMongoObjectId(query.membershipTypeId, ""),
+Tests ran:
+    MembersService lists members filtered by search, status, and membership type with pagination
+
+
+[Survived] ArrowFunction
+src/members/members.service.ts:135:24
+-       return members.map((member) => this.toResponse(member));
++       return members.map(() => undefined);
+Tests ran:
+    MembersService lists members filtered by search, status, and membership type with pagination
+    MembersService builds literal case-insensitive search filters
+
+
+Ran 7.57 tests per mutant on average.
+--------------------|------------------|----------|-----------|------------|----------|----------|
+                    | % Mutation score |          |           |            |          |          |
+File                |  total | covered | # killed | # timeout | # survived | # no cov | # errors |
+--------------------|--------|---------|----------|-----------|------------|----------|----------|
+All files           |  97.20 |   98.23 |      276 |         2 |          5 |        3 |        0 |
+ members.service.ts |  97.20 |   98.23 |      276 |         2 |          5 |        3 |        0 |
+--------------------|--------|---------|----------|-----------|------------|----------|----------|
+[32m17:56:58 (99017) INFO MutationTestReportHelper[39m Final mutation score of 97.20 is greater than or equal to break threshold 70
+[32m17:56:58 (99017) INFO JsonReporter[39m Your report can be found at: file:///workspace/book-library-nestjs/reports/mutation/complete/shards/members/mutation.json
+[32m17:56:58 (99017) INFO HtmlReporter[39m Your report can be found at: file:///workspace/book-library-nestjs/reports/mutation/complete/shards/members/mutation.html
+[32m17:56:58 (99017) INFO MutationTestExecutor[39m Done in 9 minutes and 20 seconds.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

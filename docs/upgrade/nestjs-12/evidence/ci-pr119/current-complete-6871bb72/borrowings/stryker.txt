@@ -1,0 +1,386 @@
+[32m05:26:56 (1059) INFO ProjectReader[39m Found 1 of 1765 file(s) to be mutated.
+[32m05:26:56 (1059) INFO Instrumenter[39m Instrumented 1 source file(s) with 231 mutant(s)
+[32m05:26:59 (1059) INFO ConcurrencyTokenProvider[39m Creating 2 test runner process(es).
+[32m05:26:59 (1059) INFO BroadcastReporter[39m Detected that current console does not support the "progress" reporter, downgrading to "progress-append-only" reporter
+[32m05:27:00 (1059) INFO DryRunExecutor[39m Starting initial test run (jest test runner with "perTest" coverage analysis). This may take a while.
+[32m05:27:01 (1059) INFO DryRunExecutor[39m Initial test run succeeded. Ran 39 tests in 1 second (net 27 ms, overhead 1484 ms).
+Mutation testing 12% (elapsed: <1m, remaining: ~1m) 24/231 tested (0 survived, 0 timed out)
+Mutation testing 17% (elapsed: <1m, remaining: ~1m) 46/231 tested (6 survived, 0 timed out)
+Mutation testing 17% (elapsed: <1m, remaining: ~2m) 66/231 tested (7 survived, 0 timed out)
+Mutation testing 23% (elapsed: <1m, remaining: ~2m) 82/231 tested (7 survived, 0 timed out)
+Mutation testing 25% (elapsed: <1m, remaining: ~2m) 98/231 tested (7 survived, 0 timed out)
+Mutation testing 29% (elapsed: ~1m, remaining: ~2m) 110/231 tested (7 survived, 0 timed out)
+Mutation testing 40% (elapsed: ~1m, remaining: ~1m) 123/231 tested (7 survived, 0 timed out)
+Mutation testing 47% (elapsed: ~1m, remaining: ~1m) 136/231 tested (7 survived, 0 timed out)
+Mutation testing 54% (elapsed: ~1m, remaining: ~1m) 147/231 tested (7 survived, 0 timed out)
+Mutation testing 69% (elapsed: ~1m, remaining: <1m) 158/231 tested (7 survived, 0 timed out)
+Mutation testing 76% (elapsed: ~1m, remaining: <1m) 170/231 tested (13 survived, 0 timed out)
+Mutation testing 81% (elapsed: ~2m, remaining: <1m) 178/231 tested (14 survived, 0 timed out)
+Mutation testing 85% (elapsed: ~2m, remaining: <1m) 185/231 tested (14 survived, 0 timed out)
+Mutation testing 88% (elapsed: ~2m, remaining: <1m) 190/231 tested (16 survived, 0 timed out)
+Mutation testing 92% (elapsed: ~2m, remaining: <1m) 195/231 tested (16 survived, 0 timed out)
+[33m05:29:40 (1059) WARN ChildProcessProxy[39m Child process [pid 1084] ran out of memory. Stdout and stderr are logged on debug level.
+[32m05:29:40 (1059) INFO RetryRejectedDecorator[39m Test runner process [1084] ran out of memory. You probably have a memory leak in your tests. Don't worry, Stryker will restart the process, but you might want to investigate this later, because this decreases performance.
+Mutation testing 94% (elapsed: ~2m, remaining: <1m) 199/231 tested (17 survived, 0 timed out)
+[33m05:29:45 (1059) WARN ChildProcessProxy[39m Child process [pid 1083] ran out of memory. Stdout and stderr are logged on debug level.
+[32m05:29:45 (1059) INFO RetryRejectedDecorator[39m Test runner process [1083] ran out of memory. You probably have a memory leak in your tests. Don't worry, Stryker will restart the process, but you might want to investigate this later, because this decreases performance.
+Mutation testing 97% (elapsed: ~2m, remaining: <1m) 216/231 tested (21 survived, 0 timed out)
+
+All tests/borrowings.service.spec.ts
+  ✓ BorrowingsService calculates due dates from the book category loan period in UTC days [line 36] (killed 3)
+  ✓ BorrowingsService maps populated member and book display fields into borrowing responses [line 45] (killed 33)
+  ✓ BorrowingsService returns safe display labels when member or book references are unavailable [line 76] (killed 19)
+  ~ BorrowingsService does not mutate the borrowed date while calculating the due date [line 95] (covered 3)
+  ✓ BorrowingsService requires an authenticated staff actor before creating borrowing records [line 104] (killed 7)
+  ✓ BorrowingsService requires an authenticated staff actor before returning borrowing records [line 117] (killed 1)
+  ✓ BorrowingsService filters current borrowings to unreturned active and overdue records [line 127] (killed 8)
+  ✓ BorrowingsService rejects member self-service queries with a mismatched memberId [line 145] (killed 5)
+  ✓ BorrowingsService accepts an explicit member filter only when it matches the authenticated owner [line 159] (killed 6)
+  ✓ BorrowingsService creates a borrowing only after active member, book, category, and membership policy pass [line 179] (killed 39)
+  ~ BorrowingsService does not change book availability or member loans when borrowing persistence fails [line 245] (covered 49)
+  ✓ BorrowingsService returns an active borrowing and decrements the member loan count once [line 264] (killed 15)
+  ✓ BorrowingsService returns an overdue loan at the supplied time without a negative loan count [line 303] (killed 5)
+  ✓ BorrowingsService denies a non-returned loan in an illegal state without writes [line 326] (killed 4)
+  ✓ BorrowingsService rejects a duplicate return without changing availability or loan count [line 347] (killed 3)
+  ✓ BorrowingsService uses member ownership and requested pagination values for member borrowing history [line 376] (killed 4)
+  ✓ BorrowingsService applies exact book and status filters without widening the list query [line 391] (killed 4)
+  ✓ BorrowingsService reports the exact memberId field when a list identifier is malformed [line 424] (killed 1)
+  ✓ BorrowingsService reports the exact bookId field when a list identifier is malformed [line 424] (killed 1)
+  ✓ BorrowingsService applies the overdue-only filter before listing overdue borrowings [line 435] (killed 10)
+  ✓ BorrowingsService returns not found when a borrowing lookup has no matching record [line 449] (killed 4)
+  ✓ BorrowingsService looks up a borrowing with an exact ObjectId equality filter [line 459] (killed 2)
+  ✓ BorrowingsService applies both borrowing and member ObjectId ownership filters for self-service detail [line 480] (killed 6)
+  ✓ BorrowingsService reports the member ownership field for malformed self-service detail input [line 510] (killed 1)
+  ✓ BorrowingsService rejects either persisted returned marker (2026-06-10T00:00:00.000Z, active) before any side effect [line 525] (killed 1)
+  ✓ BorrowingsService rejects either persisted returned marker (undefined, returned) before any side effect [line 525] (killed 1)
+  ✓ BorrowingsService returns the exact transactional not-found contract when the borrowing is absent [line 552] (killed 3)
+  ✓ BorrowingsService stops borrowing creation at a missing member with the exact public contract [line 573] (killed 3)
+  ✓ BorrowingsService stops borrowing creation at a missing book with the exact public contract [line 573] (killed 3)
+  ✓ BorrowingsService stops borrowing creation at a missing category with the exact public contract [line 573] (killed 3)
+  ✓ BorrowingsService stops borrowing creation at a missing membership type with the exact public contract [line 573] (killed 3)
+  ✓ BorrowingsService reports the overdue member-id field when persisted ownership is malformed [line 605] (killed 1)
+  ✓ BorrowingsService reports the exact bookId field when a persisted borrowing reference is malformed [line 628] (killed 1)
+  ✓ BorrowingsService reports the exact memberId field when a persisted borrowing reference is malformed [line 628] (killed 1)
+  ✓ BorrowingsService reports the exact categoryId field when a persisted creation reference is malformed [line 663] (killed 1)
+  ✓ BorrowingsService reports the exact membershipTypeId field when a persisted creation reference is malformed [line 663] (killed 1)
+  ✓ BorrowingsService does not reveal a foreign borrowing when the owner filter is absent or wrong [line 687] (killed 3)
+  ~ BorrowingsService uses the same not-found response for a valid missing self-service borrowing [line 706] (covered 10)
+  ~ BorrowingsService keeps malformed borrowing IDs in the shared Mongo ID validation contract [line 718] (covered 2)
+
+[Survived] MethodExpression
+src/borrowings/borrowings.service.ts:159:30
+-       const borrowings = await this.borrowingModel
+-         .find(filter)
+-         .populate('bookId')
+-         .populate('memberId')
+-         .sort({ dueAt: 1 })
++       const borrowings = await this.borrowingModel.find(filter).populate('bookId').populate('memberId')
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService filters current borrowings to unreturned active and overdue records
+  and 4 more tests!
+
+
+[Survived] StringLiteral
+src/borrowings/borrowings.service.ts:161:17
+-         .populate('bookId')
++         .populate("")
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService filters current borrowings to unreturned active and overdue records
+  and 4 more tests!
+
+
+[Survived] StringLiteral
+src/borrowings/borrowings.service.ts:162:17
+-         .populate('memberId')
++         .populate("")
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService filters current borrowings to unreturned active and overdue records
+  and 4 more tests!
+
+
+[Survived] ObjectLiteral
+src/borrowings/borrowings.service.ts:163:13
+-         .sort({ dueAt: 1 })
++         .sort({})
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService filters current borrowings to unreturned active and overdue records
+  and 4 more tests!
+
+
+[Survived] StringLiteral
+src/borrowings/borrowings.service.ts:174:17
+-         .populate('bookId')
++         .populate("")
+Tests ran:
+    BorrowingsService returns not found when a borrowing lookup has no matching record
+    BorrowingsService looks up a borrowing with an exact ObjectId equality filter
+
+
+[Survived] StringLiteral
+src/borrowings/borrowings.service.ts:175:17
+-         .populate('memberId')
++         .populate("")
+Tests ran:
+    BorrowingsService returns not found when a borrowing lookup has no matching record
+    BorrowingsService looks up a borrowing with an exact ObjectId equality filter
+
+
+[Survived] StringLiteral
+src/borrowings/borrowings.service.ts:179:35
+-         throw new NotFoundException('Borrowing record not found');
++         throw new NotFoundException("");
+Tests ran:
+    BorrowingsService returns not found when a borrowing lookup has no matching record
+
+
+[Survived] ConditionalExpression
+src/borrowings/borrowings.service.ts:390:7
+-         borrowing.status === LoanState.Active &&
+-         !borrowing.returnedAt &&
+-         borrowing.dueAt < now
++         false
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService creates a borrowing only after active member, book, category, and membership policy pass
+  and 4 more tests!
+
+
+[Survived] ConditionalExpression
+src/borrowings/borrowings.service.ts:390:7
+-         borrowing.status === LoanState.Active &&
+-         !borrowing.returnedAt &&
++         true &&
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService creates a borrowing only after active member, book, category, and membership policy pass
+  and 4 more tests!
+
+
+[Survived] LogicalOperator
+src/borrowings/borrowings.service.ts:390:7
+-         borrowing.status === LoanState.Active &&
+-         !borrowing.returnedAt &&
++         borrowing.status === LoanState.Active || !borrowing.returnedAt &&
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService creates a borrowing only after active member, book, category, and membership policy pass
+  and 4 more tests!
+
+
+[Survived] ConditionalExpression
+src/borrowings/borrowings.service.ts:390:7
+-         borrowing.status === LoanState.Active &&
++         true &&
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService creates a borrowing only after active member, book, category, and membership policy pass
+  and 4 more tests!
+
+
+[Survived] EqualityOperator
+src/borrowings/borrowings.service.ts:390:7
+-         borrowing.status === LoanState.Active &&
++         borrowing.status !== LoanState.Active &&
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService creates a borrowing only after active member, book, category, and membership policy pass
+  and 4 more tests!
+
+
+[Survived] BooleanLiteral
+src/borrowings/borrowings.service.ts:391:7
+-         !borrowing.returnedAt &&
++         borrowing.returnedAt &&
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService creates a borrowing only after active member, book, category, and membership policy pass
+  and 2 more tests!
+
+
+[Survived] EqualityOperator
+src/borrowings/borrowings.service.ts:392:7
+-         borrowing.dueAt < now
++         borrowing.dueAt <= now
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService creates a borrowing only after active member, book, category, and membership policy pass
+  and 2 more tests!
+
+
+[Survived] LogicalOperator
+src/borrowings/borrowings.service.ts:420:5
+-       value &&
+-       typeof value === 'object' &&
+-       '_id' in value &&
+-       (value as { _id?: { toString?: () => string } })._id?.toString
++       value && typeof value === 'object' && '_id' in value || (value as {
++     _id?: {
++       toString?: () => string;
++     };
++   })._id?.toString
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService creates a borrowing only after active member, book, category, and membership policy pass
+  and 4 more tests!
+
+
+[Survived] ConditionalExpression
+src/borrowings/borrowings.service.ts:420:5
+-       value &&
+-       typeof value === 'object' &&
+-       '_id' in value &&
++       true &&
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService creates a borrowing only after active member, book, category, and membership policy pass
+  and 4 more tests!
+
+
+[Survived] OptionalChaining
+src/borrowings/borrowings.service.ts:423:5
+-       (value as { _id?: { toString?: () => string } })._id?.toString
++       (value as {
++     _id?: {
++       toString?: () => string;
++     };
++   })._id.toString
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+
+
+[Survived] ConditionalExpression
+src/borrowings/borrowings.service.ts:433:5
+-       value &&
+-       typeof value === 'object' &&
+-       'title' in value &&
+-       typeof (value as { title?: unknown }).title === 'string'
++       true
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService looks up a borrowing with an exact ObjectId equality filter
+  and 1 more test!
+
+
+[Survived] LogicalOperator
+src/borrowings/borrowings.service.ts:433:5
+-       value &&
+-       typeof value === 'object' &&
+-       'title' in value &&
+-       typeof (value as { title?: unknown }).title === 'string'
++       value && typeof value === 'object' && 'title' in value || typeof (value as {
++     title?: unknown;
++   }).title === 'string'
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService looks up a borrowing with an exact ObjectId equality filter
+  and 1 more test!
+
+
+[Survived] ConditionalExpression
+src/borrowings/borrowings.service.ts:433:5
+-       value &&
+-       typeof value === 'object' &&
+-       'title' in value &&
++       true &&
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService looks up a borrowing with an exact ObjectId equality filter
+  and 1 more test!
+
+
+[Survived] ConditionalExpression
+src/borrowings/borrowings.service.ts:436:5
+-       typeof (value as { title?: unknown }).title === 'string'
++       true
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+
+
+[Survived] ConditionalExpression
+src/borrowings/borrowings.service.ts:446:5
+-       value &&
+-       typeof value === 'object' &&
+-       'fullName' in value &&
+-       typeof (value as { fullName?: unknown }).fullName === 'string'
++       true
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService looks up a borrowing with an exact ObjectId equality filter
+  and 1 more test!
+
+
+[Survived] LogicalOperator
+src/borrowings/borrowings.service.ts:446:5
+-       value &&
+-       typeof value === 'object' &&
+-       'fullName' in value &&
+-       typeof (value as { fullName?: unknown }).fullName === 'string'
++       value && typeof value === 'object' && 'fullName' in value || typeof (value as {
++     fullName?: unknown;
++   }).fullName === 'string'
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService looks up a borrowing with an exact ObjectId equality filter
+  and 1 more test!
+
+
+[Survived] ConditionalExpression
+src/borrowings/borrowings.service.ts:446:5
+-       value &&
+-       typeof value === 'object' &&
+-       'fullName' in value &&
++       true &&
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+    BorrowingsService returns safe display labels when member or book references are unavailable
+    BorrowingsService looks up a borrowing with an exact ObjectId equality filter
+  and 1 more test!
+
+
+[Survived] ConditionalExpression
+src/borrowings/borrowings.service.ts:449:5
+-       typeof (value as { fullName?: unknown }).fullName === 'string'
++       true
+Tests ran:
+    BorrowingsService maps populated member and book display fields into borrowing responses
+
+
+Ran 5.07 tests per mutant on average.
+-----------------------|------------------|----------|-----------|------------|----------|----------|
+                       | % Mutation score |          |           |            |          |          |
+File                   |  total | covered | # killed | # timeout | # survived | # no cov | # errors |
+-----------------------|--------|---------|----------|-----------|------------|----------|----------|
+All files              |  89.18 |   89.18 |      206 |         0 |         25 |        0 |        0 |
+ borrowings.service.ts |  89.18 |   89.18 |      206 |         0 |         25 |        0 |        0 |
+-----------------------|--------|---------|----------|-----------|------------|----------|----------|
+[32m05:29:57 (1059) INFO MutationTestReportHelper[39m Final mutation score of 89.18 is greater than or equal to break threshold 70
+[32m05:29:57 (1059) INFO JsonReporter[39m Your report can be found at: file:///workspace/book-library-nestjs/reports/mutation/complete/shards/borrowings/mutation.json
+[32m05:29:57 (1059) INFO HtmlReporter[39m Your report can be found at: file:///workspace/book-library-nestjs/reports/mutation/complete/shards/borrowings/mutation.html
+[32m05:29:57 (1059) INFO MutationTestExecutor[39m Done in 3 minutes and 1 second.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

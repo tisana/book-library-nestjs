@@ -1,21 +1,27 @@
 {
-  "schemaVersion": 1,
   "profile": "complete",
-  "rawCombinedScore": 95.35550458715596,
-  "generatedFromCommit": "6871bb72035229e3a262b020a8c82e1ca25efa65",
-  "generatedAt": "2026-10-04T05:29:57.774Z",
-  "selectedSources": [
-    "src/auth/token-session.service.ts",
-    "src/auth/auth-identifier-repair.service.ts",
-    "src/auth/auth-identifier-reconciliation.service.ts",
-    "src/members/members.service.ts",
-    "src/borrowings/borrowings.service.ts"
-  ],
+  "shardId": "token-session",
+  "source": "src/auth/token-session.service.ts",
+  "startedAt": "2026-10-03T17:56:59.446Z",
+  "finishedAt": "2026-10-03T18:01:47.632Z",
+  "durationMs": 288185.755574,
+  "budgetMs": 900000,
+  "timedOut": false,
+  "strykerExitCode": 0,
+  "artifactExitCode": 0,
+  "policyExitCode": 0,
+  "processError": null,
+  "signal": null,
+  "commitSha": "6871bb72035229e3a262b020a8c82e1ca25efa65",
+  "nodeVersion": "v24.19.0",
+  "os": "linux 6.18.44 x64",
   "sourceSha256": {
     "src/auth/token-session.service.ts": "fd877bca5956b96846a5414e7cea4b1d14b1212700ce44051441958cedfb9658",
     "src/auth/auth-identifier-repair.service.ts": "a8f4bf8847acfed54dc0c9a7258a01979bed058ba3f47bcdd37f84cae83b4e1f",
     "src/auth/auth-identifier-reconciliation.service.ts": "686a5371deaeb81d4e70767e3e254b8e01b4ac7841de5652109959b2fc144f53",
     "src/members/members.service.ts": "03e5a2d54626ef11cc9f9d73dfcda4a39d30d7bab3d2d249985dfeec2baf0ad9",
     "src/borrowings/borrowings.service.ts": "91a41fb81abd1c1ebc57586fcb4f07299fc455735973f23289a62348c318b647"
-  }
+  },
+  "configurationSha256": "17196a829ccf2cecdd793ab64fca18029d5b3392c89af5bd7e784cdc8bfd8d12",
+  "reportSchemaVersion": "1.0"
 }

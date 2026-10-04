@@ -8,3 +8,7 @@ Head:64898654d30d6cf02a05dc3c10cb7de8636039ec; tested merge:25a949ef6151fd6508af
 ## First fix confirmed remotely
 
 Commit1ef70f173d8d54c454e2ae23e9c51fe1566211cb: main CI run37134555154 succeeds, including production/image/performance and dependent build. Selective mutation run37134555152 still fails. No mutation acceptance claim.
+
+## Reviewed mutation fixes and current complete baseline
+
+Supported public Jest runner avoids loading pending-only suites using the successful baseline inventory. Token-session smoke/complete and members complete retain exact matching caller tests, static/unfiltered discovery, source/config/test hashes, conservative fallback, and all existing selections/budgets/critical rules. Scoped independent reviews approve both changes. Current complete producer6871bb7 accepts1744 mutants, raw95.35550458715596% >= historical95.2518818760857%, all5under900000ms and only3unchanged approved equivalents. Actual baseline recorder replaces the historical source-hash gap with genuine current provenance; the temporary floor carrier was never committed. See current-complete-6871bb72/README.md and raw artifacts. Fresh current-baseline explicit Node gate134/134 passes. Coherent GitHub smoke and final main CI remain pending.
