@@ -2197,8 +2197,9 @@ test('mutation workflow distributes five shards and merges one exact profile', (
     'package-lock.json',
     '.github/workflows/mutation.yml',
   ];
+  // Keep each repeated alternative on one line; \s also consumes newlines.
   const pathBlock = workflow.match(
-    /pull_request:\s*\r?\n\s+paths:\s*\r?\n(?<paths>(?:\s+-\s+'[^']+'\s*\r?\n)+)\s+schedule:/,
+    /pull_request:[ \t]*\r?\n[ \t]+paths:[ \t]*\r?\n(?<paths>(?:[ \t]+-[ \t]+'[^'\r\n]+'[ \t]*\r?\n|[ \t]*\r?\n)+)[ \t]+schedule:/,
   );
   assert.ok(pathBlock, 'pull-request path filter must precede schedule');
   assert.deepEqual(
