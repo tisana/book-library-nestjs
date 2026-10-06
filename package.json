@@ -71,7 +71,7 @@
     "mongoose": "^9.8.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
-    "proxy-addr": "^2.0.7",
+    "proxy-addr": "^2.0.8",
     "reflect-metadata": "^0.2.2",
     "rimraf": "^3.0.2",
     "rxjs": "^7.8.2",
