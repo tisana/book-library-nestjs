@@ -139,5 +139,8 @@
     "typed-rest-client": {
       "qs": "6.16.0"
     }
+  },
+  "allowScripts": {
+    "mongodb-memory-server@11.2.0": true
   }
 }
