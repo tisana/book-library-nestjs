@@ -2273,7 +2273,7 @@ test('mutation workflow distributes five shards and merges one exact profile', (
   );
 
   assert.equal(
-    (workflow.match(/uses: actions\/upload-artifact@v4/g) ?? []).length,
+    (workflow.match(/uses: actions\/upload-artifact@v6/g) ?? []).length,
     2,
   );
   assert.equal((workflow.match(/if: always\(\)/g) ?? []).length, 3);
@@ -2281,7 +2281,7 @@ test('mutation workflow distributes five shards and merges one exact profile', (
     (workflow.match(/path: reports\/mutation\/\*\*/g) ?? []).length,
     2,
   );
-  assert.match(workflow, /uses: actions\/download-artifact@v4/);
+  assert.match(workflow, /uses: actions\/download-artifact@v7/);
   assert.match(workflow, /merge-multiple: true/);
   assert.doesNotMatch(
     workflow,

@@ -10,7 +10,7 @@ import {
   symlinkSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { after, mock, test } from 'node:test';
 
@@ -86,7 +86,7 @@ async function harness(work) {
             {
               fullName: entry.path.includes('caller')
                 ? 'Caller shared behavior'
-                : entry.path.endsWith('/members.spec.ts')
+                : basename(entry.path) === 'members.spec.ts'
                   ? 'MembersService behavior'
                   : 'TokenSessionService behavior',
               status: this.status ?? 'passed',
@@ -313,14 +313,20 @@ process.stdout.write(JSON.stringify({baseline:2,matchingPatterns:2,staticErrors:
     assert.match(proof.stdout, /"staticErrors":2/);
   });
 
-test('symlinked inventory cannot import test names from outside the owned sandbox', async () => {
+test('symlinked inventory cannot import test names from outside the owned sandbox', async (t) => {
   await harness(async ({ run }) => {
     const f = fixture();
     await run(f);
     const outside = join(f.root, 'foreign-inventory.json');
     writeFileSync(outside, readFileSync(f.inventory));
     rmSync(f.inventory);
-    symlinkSync(outside, f.inventory);
+    try {
+      symlinkSync(outside, f.inventory);
+    } catch (error) {
+      if (process.platform !== 'win32' || error.code !== 'EPERM') throw error;
+      t.skip('Creating file symlinks requires Windows developer mode or elevated privileges');
+      return;
+    }
     process.env.__STRYKER_ACTIVE_MUTANT__ = '1';
     assert.deepEqual(
       await run(f, 'TokenSessionService behavior'),
