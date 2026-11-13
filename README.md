@@ -251,6 +251,23 @@ npm run migrate:status
 
 ## Quality reporting and coverage ratchet
 
+### Selective mutation approvals
+
+The scheduled `Selective mutation` workflow runs five shards, then enforces the
+aggregate policy. Exact equivalent mutants are recorded in
+[`test/quality/mutation-equivalents.json`](test/quality/mutation-equivalents.json).
+Each approval expires within 90 days of review, even when the source is unchanged.
+An expired entry fails the aggregate job with `allowlist.entries[n] is expired.`
+
+Run `npm run mutation:check` to check source hashes and approval expiry before
+running mutation tests. Before an approval expires, have an independent reviewer
+check the exact fingerprint, source hash, and equivalence proof against the current
+report and pinned Node runtime. Record the actual reviewer and new review/expiry
+dates only after approval; keep the validity window at most 90 days. The approvals
+reviewed on November 13, 2026 expire on February 11, 2027 at 00:00 UTC.
+
+### Coverage streams
+
 CI publishes three independent reporting streams. Their percentages must never be
 added together or presented as one combined score:
 
