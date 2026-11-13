@@ -59,10 +59,10 @@ jobs:
           - borrowings
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Use pinned Node.js 24
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: '.node-version'
           cache: npm
@@ -90,7 +90,7 @@ jobs:
 
       - name: Upload shard mutation evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: mutation-shard-${{ github.event_name == 'schedule' && 'complete' || (github.event_name == 'pull_request' && 'smoke' || inputs.profile) }}-${{ matrix.shard }}
           path: reports/mutation/**
@@ -104,10 +104,10 @@ jobs:
     timeout-minutes: 17
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Use pinned Node.js 24
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: '.node-version'
           cache: npm
@@ -122,7 +122,7 @@ jobs:
         run: npm ci
 
       - name: Download shard mutation evidence
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           pattern: mutation-shard-*
           path: reports/mutation
@@ -133,7 +133,7 @@ jobs:
 
       - name: Upload aggregate mutation evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: mutation-aggregate-${{ github.event_name == 'schedule' && 'complete' || (github.event_name == 'pull_request' && 'smoke' || inputs.profile) }}
           path: reports/mutation/**
