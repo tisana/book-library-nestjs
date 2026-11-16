@@ -29,13 +29,13 @@ const SMOKE_SHARDS = [
     id: 'token-session',
     source: SELECTED_SOURCES[0],
     concurrency: 2,
-    mutantCount: 211,
+    mutantCount: 225,
   },
   {
     id: 'identifier-repair',
     source: SELECTED_SOURCES[1],
     concurrency: 2,
-    mutantCount: 401,
+    mutantCount: 405,
   },
   {
     id: 'identifier-reconciliation',
@@ -62,19 +62,19 @@ const COMPLETE_SHARDS = [
     id: 'token-session',
     source: SELECTED_SOURCES[0],
     concurrency: 4,
-    mutantCount: 272,
+    mutantCount: 287,
   },
   {
     id: 'identifier-repair',
     source: SELECTED_SOURCES[1],
     concurrency: 4,
-    mutantCount: 417,
+    mutantCount: 421,
   },
   {
     id: 'identifier-reconciliation',
     source: SELECTED_SOURCES[2],
     concurrency: 4,
-    mutantCount: 538,
+    mutantCount: 547,
   },
   {
     id: 'members',
@@ -175,6 +175,7 @@ function temporaryRepository() {
     'tsconfig.jest.json',
     'tsconfig.mutation.json',
     'package.json',
+    'package-lock.json',
   ]) {
     const source = join(REPOSITORY_ROOT, ...trackedPath.split('/'));
     const target = join(root, ...trackedPath.split('/'));
@@ -1524,7 +1525,7 @@ test('canonical merge writes five source maps with unmodified statuses and truth
     SELECTED_SOURCES.map((source) => report.files[source].mutants[0].status),
     statuses,
   );
-  assert.equal(result.canonicalMutantCount, 1366);
+  assert.equal(result.canonicalMutantCount, 1384);
   const html = readFileSync(
     join(root, 'reports', 'mutation', 'smoke', 'mutation.html'),
     'utf8',
@@ -1539,7 +1540,7 @@ test('canonical merge writes five source maps with unmodified statuses and truth
 
 // Production break caught: five complete reports plus a one-mutant omission
 // pass canonical merge despite violating the observed exact smoke union.
-test('canonical merge rejects a 1365-mutant whole-source union', () => {
+test('canonical merge rejects a 1383-mutant whole-source union', () => {
   const root = temporaryRepository();
   writeAllShardArtifacts(root);
   const shard = SMOKE_SHARDS[0];
@@ -1556,7 +1557,7 @@ test('canonical merge rejects a 1365-mutant whole-source union', () => {
         shards: SMOKE_SHARDS,
         shardResults: [],
       }),
-    /1366|canonical mutant union/i,
+    /1384|canonical mutant union/i,
   );
 });
 
@@ -1729,7 +1730,7 @@ test('local smoke evidence runs five shards sequentially with independent budget
   );
   assert.equal(maximumActive, 1);
   assert.equal(scheduled.filter(({ delay }) => delay === 350000).length, 5);
-  assert.equal(result.canonicalMutantCount, 1366);
+  assert.equal(result.canonicalMutantCount, 1384);
   assert.equal(result.policyExitCode, 0);
   assert.equal(result.referenceBudgetEvidence, false);
 });
@@ -1861,8 +1862,8 @@ test('whole-source merge rejects mismatched shard provenance', () => {
 });
 
 // Production break caught: whole-source aggregation omits or duplicates one
-// canonical identity instead of returning the exact five-source 1366 union.
-test('whole-source merge returns five files and exactly 1366 identities', () => {
+// canonical identity instead of returning the exact five-source 1384 union.
+test('whole-source merge returns five files and exactly 1384 identities', () => {
   const root = temporaryRepository();
   for (const shard of WHOLE_SOURCE_SHARDS) {
     writeWholeSourceEvidence(root, shard);
@@ -1875,7 +1876,7 @@ test('whole-source merge returns five files and exactly 1366 identities', () => 
     shardResults: [],
   });
 
-  assert.equal(result.canonicalMutantCount, 1366);
+  assert.equal(result.canonicalMutantCount, 1384);
   assert.deepEqual(Object.keys(result.report.files), SELECTED_SOURCES);
 });
 
@@ -1995,14 +1996,14 @@ test('named complete shard preserves but rejects stale mutation artifacts', asyn
 
 // Production break caught: complete merge trusts report-local mutant ids,
 // accepts mixed provenance, or omits part of the preserved 1,744 denominator.
-test('complete canonical merge is id-independent and requires exact provenance and 1744 union', async (t) => {
+test('complete canonical merge is id-independent and requires exact provenance and 1772 union', async (t) => {
   await t.test('exact five-source union', () => {
     const root = temporaryRepository();
     writeAllCompleteShardEvidence(root);
 
     const result = mergeCompleteReports(root);
 
-    assert.equal(result.canonicalMutantCount, 1744);
+    assert.equal(result.canonicalMutantCount, 1772);
     assert.deepEqual(Object.keys(result.report.files), SELECTED_SOURCES);
   });
 
@@ -2032,7 +2033,7 @@ test('complete canonical merge is id-independent and requires exact provenance a
 
     assert.throws(
       () => mergeCompleteReports(root),
-      /1744|canonical mutant union/i,
+      /1772|canonical mutant union/i,
     );
   });
 
@@ -2105,7 +2106,7 @@ test('complete merge writes one canonical policy summary for all five shards', a
   const summary = readArtifact(root, 'complete', 'summary.json');
 
   assert.equal(result.exitCode, 0);
-  assert.equal(result.canonicalMutantCount, 1744);
+  assert.equal(result.canonicalMutantCount, 1772);
   assert.equal(result.policyExitCode, 0);
   assert.equal(summary.profile, 'complete');
   assert.equal(summary.nodeMajor, 22);
@@ -2299,6 +2300,7 @@ test('configuration provenance binds runner, compiler chain and inline Jest byte
   const root = temporaryRepository();
   const original = runnerModule.configurationSha256(root);
   for (const filename of [
+    'package-lock.json',
     'scripts/quality/mutation-jest-runner.cjs',
     'stryker.config.mjs',
     'tsconfig.mutation.json',
@@ -2336,6 +2338,51 @@ test('merge rejects old shard evidence after custom runner bytes drift', () => {
   const target = join(root, 'scripts/quality/mutation-jest-runner.cjs');
   writeFileSync(target, `${readFileSync(target, 'utf8')}\n// changed runner\n`);
   assert.throws(() => mergeShardReports(root), /configuration|provenance/i);
+});
+
+test('smoke and complete merges reject evidence captured with a different lockfile', () => {
+  for (const profile of ['smoke', 'complete']) {
+    const root = temporaryRepository();
+    if (profile === 'smoke') {
+      for (const shard of SMOKE_SHARDS) writeWholeSourceEvidence(root, shard);
+      mergeShardReports(root);
+    } else {
+      writeAllCompleteShardEvidence(root);
+      mergeCompleteReports(root);
+    }
+    const lockfile = join(root, 'package-lock.json');
+    writeFileSync(lockfile, `${readFileSync(lockfile, 'utf8')}\n`);
+    assert.throws(
+      () =>
+        profile === 'smoke'
+          ? mergeShardReports(root)
+          : mergeCompleteReports(root),
+      /configuration|provenance/i,
+      profile,
+    );
+  }
+});
+
+test('smoke and complete merges reject shards with mixed dependency provenance', () => {
+  const smokeRoot = temporaryRepository();
+  for (const shard of SMOKE_SHARDS) writeWholeSourceEvidence(smokeRoot, shard);
+  writeWholeSourceEvidence(smokeRoot, SMOKE_SHARDS[1], {
+    configurationSha256: 'f'.repeat(64),
+  });
+  assert.throws(
+    () => mergeShardReports(smokeRoot),
+    /configuration|provenance/i,
+  );
+
+  const completeRoot = temporaryRepository();
+  writeAllCompleteShardEvidence(completeRoot);
+  writeCompleteShardEvidence(completeRoot, COMPLETE_SHARDS[1], {
+    configurationSha256: 'f'.repeat(64),
+  });
+  assert.throws(
+    () => mergeCompleteReports(completeRoot),
+    /configuration|provenance/i,
+  );
 });
 
 test('only token-session profiles and members complete use the supported custom runner', () => {

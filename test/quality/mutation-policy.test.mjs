@@ -149,7 +149,7 @@ function makeReport(mutantsBySource = {}) {
 }
 
 function makeCanonicalCompleteReport() {
-  const counts = [272, 417, 538, 286, 231];
+  const counts = [287, 421, 547, 286, 231];
   return makeReport(
     Object.fromEntries(
       SELECTED_SOURCES.map((source, sourceIndex) => [
@@ -165,7 +165,7 @@ function makeCanonicalCompleteReport() {
 }
 
 function makeCompleteSummary(overrides = {}) {
-  const counts = [272, 417, 538, 286, 231];
+  const counts = [287, 421, 547, 286, 231];
   return {
     profile: 'complete',
     commitSha: '0123456789abcdef0123456789abcdef01234567',
@@ -176,7 +176,7 @@ function makeCompleteSummary(overrides = {}) {
     configurationSha256:
       'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
     reportSchemaVersion: '2.0',
-    canonicalMutantCount: 1744,
+    canonicalMutantCount: 1772,
     maxShardDurationMs: 100,
     budgetMs: 900000,
     timedOut: false,
@@ -391,7 +391,7 @@ test('refuses a baseline when complete provenance is not exact', () => {
       (summary) => {
         summary.canonicalMutantCount = 1726;
       },
-      /exactly 1744/,
+      /exactly 1772/,
     ],
     [
       'timed out producer',

@@ -61,8 +61,8 @@ const COMPLETE_SHARDS = SMOKE_SHARDS.map(({ id, source }) => ({
   source,
   concurrency: 4,
 }));
-const SMOKE_MUTANT_COUNT = 1366;
-const COMPLETE_MUTANT_COUNT = 1744;
+const SMOKE_MUTANT_COUNT = 1384;
+const COMPLETE_MUTANT_COUNT = 1772;
 const BUDGETS = { smoke: 350000, complete: 900000 };
 const CLEANUP_GRACE_MS = 10000;
 const FORCE_CLEANUP_VERIFY_MS = 10000;
@@ -165,6 +165,7 @@ function sourceHashes(manifest) {
 
 export function configurationSha256(root) {
   const paths = [
+    'package-lock.json',
     'scripts/quality/mutation-jest-runner.cjs',
     'stryker.config.mjs',
     'tsconfig.json',
