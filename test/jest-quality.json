@@ -1,11 +1,8 @@
 {
-  "moduleFileExtensions": [
-    "js",
-    "json",
-    "ts"
-  ],
+  "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": "..",
   "testEnvironment": "node",
+  "modulePathIgnorePatterns": ["<rootDir>/reports/mutation/"],
   "testRegex": "test/quality/.*\\.spec\\.ts$",
   "transform": {
     "^.+\\.(t|j)s$": [

@@ -397,6 +397,35 @@ describe('AuthIdentifierRepairService', () => {
     },
   );
 
+  it('rejects changed conflict claimants before resuming a repair', async () => {
+    const fixture = createFixture();
+    fixture.operationModel.findOne.mockResolvedValue(
+      repairOperation('repair-claimants-changed', manifest),
+    );
+    fixture.identifierModel.findById.mockResolvedValue({
+      ...conflictReservation(),
+      conflictingSubjects: [
+        ...conflictReservation().conflictingSubjects,
+        {
+          subjectType: AuthIdentifierSubjectType.Member,
+          subjectId: 'new-claimant',
+        },
+      ],
+    });
+
+    await expect(
+      fixture.service.apply({
+        token: 'redacted-admin-token',
+        operationId: 'repair-claimants-changed',
+        resumeId: 'resume-claimants-changed',
+        manifest,
+      }),
+    ).rejects.toMatchObject({
+      message: 'Repair manifest must account for every conflict claimant',
+    });
+    expectNoModelMutations(fixture);
+  });
+
   it.each([
     ['apply', 'stable-resume-missing'],
     ['cancel', undefined],

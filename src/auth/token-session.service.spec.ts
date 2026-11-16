@@ -555,6 +555,7 @@ describe('TokenSessionService', () => {
     expect(marker).not.toHaveProperty('leaseExpiresAt');
     expect(family.status).toBe(RefreshTokenFamilyStatus.Revoked);
     expect(family.revokedReason).toBe('refresh-rotation-invariant');
+    expect(markers.findOneAndUpdateArguments).toHaveLength(1);
   });
 
   it('finalizes a pending marker whose family no longer exists', async () => {
@@ -684,6 +685,7 @@ describe('TokenSessionService', () => {
     });
     expect(family.status).toBe(RefreshTokenFamilyStatus.Revoked);
     expect(family.revokedReason).toBe('refresh-rotation-orphaned');
+    expect(markers.findOneAndUpdateArguments).toHaveLength(1);
   });
 
   it('allows at most one successor under concurrent exchange', async () => {
@@ -812,6 +814,7 @@ describe('TokenSessionService', () => {
       }),
     );
     expect(markers.documents[0].status).toBe('committed');
+    expect(markers.findOneAndUpdateArguments).toHaveLength(1);
   });
 
   it('fails closed when a completed rotation marker cannot be found', async () => {
