@@ -251,6 +251,16 @@ describe('TokenSessionService', () => {
     );
   });
 
+  it('preserves a refresh family lifetime within the supported range', async () => {
+    const now = new Date('2026-07-15T00:00:00.000Z');
+    jest.useFakeTimers().setSystemTime(now);
+
+    const result = await createFamily('staff-user-id', 600);
+
+    expect(result.expiresAt.getTime()).toBe(now.getTime() + 600_000);
+    expect(families.documents[0].expiresAt).toEqual(result.expiresAt);
+  });
+
   it('commits a hash-only marker after operation-correlated family CAS', async () => {
     const now = new Date('2026-07-15T00:00:00.000Z');
     jest.useFakeTimers().setSystemTime(now);
