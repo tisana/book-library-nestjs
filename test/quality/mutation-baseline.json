@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "profile": "complete",
-  "rawCombinedScore": 95.35550458715596,
-  "generatedFromCommit": "6871bb72035229e3a262b020a8c82e1ca25efa65",
-  "generatedAt": "2026-10-04T05:29:57.774Z",
+  "rawCombinedScore": 95.372460496614,
+  "generatedFromCommit": "2adaa1c51b7412450e23807c524bea3aafadd6ea",
+  "generatedAt": "2026-11-16T15:11:46.477Z",
   "selectedSources": [
     "src/auth/token-session.service.ts",
     "src/auth/auth-identifier-repair.service.ts",
